@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel = "stylesheet" type = "text/css" href = "static/styles.css" />
+        <script src="/socket.io/socket.io.js"></script>
     </head>
     <body>
         <div class="app-content">
@@ -13,7 +14,11 @@
                 <form>
                     <label>
                         Name
-                        <input type="text"/>
+                        <input id="name" type="text"/>
+                    </label>
+                    <label>
+                        Time (Minutes, Optional)
+                        <input id="time" type="number"/>
                     </label>
                 </form>
                 <h3>Add cards to the deck.</h3>

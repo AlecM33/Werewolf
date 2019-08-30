@@ -1,5 +1,8 @@
 import {cards} from './cards.js'
 
+const socket = io();
+var games = [];
+
 // important declarations
 class Card {
     constructor(role, team, description, powerRole) {
@@ -11,12 +14,25 @@ class Card {
     }
 }
 
+class Game {
+    constructor(accessCode, size, deck, time, players) {
+        this.accessCode = accessCode;
+        this.size = size;
+        this.deck = deck;
+        this.time = time;
+        this.players = players;
+        this.state = "lobby";
+    }
+}
+
 var deck = [];
+var gameSize = 0;
+var time = null;
 
 
 // register event listeners on buttons
 document.getElementById("reset-btn").addEventListener("click", resetCardQuantities);
-document.getElementById("create-btn").addEventListener("click", generateAccessCode);
+document.getElementById("create-btn").addEventListener("click", createGame);
 
 // render all of the available cards to the user
 window.onload = function() {
@@ -43,11 +59,11 @@ window.onload = function() {
 };
 
 function updateGameSize() {
-    let totalQuantity = 0;
+    gameSize = 0;
     for (let card of deck) {
-        totalQuantity += card.quantity;
+        gameSize += card.quantity;
     }
-    document.getElementById("game-size").innerText = totalQuantity + " Players";
+    document.getElementById("game-size").innerText = gameSize + " Players";
 }
 
 function resetCardQuantities() {
@@ -60,14 +76,24 @@ function resetCardQuantities() {
     });
 }
 
-function generateAccessCode() {
+function createGame() {
     let code = "";
     let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (let i = 0; i < 6; i++) {
         code += charPool[getRandomInt(61)]
     }
-    console.log("Access Code: " + code);
-    return code;
+    console.log(code);
+    const game = new Game(
+        code,
+        gameSize,
+        deck,
+        document.getElementById("time").value,
+        [document.getElementById("name").value]
+        );
+
+    socket.emit('newGame', game);
+    sessionStorage.setItem('accessCode', code);
+    window.location.replace('/' + code);
 }
 
 function getRandomInt(max) {

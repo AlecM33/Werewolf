@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Werewolf</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel = "stylesheet" type = "text/css" href = "static/styles.css" />
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="app-content">
+        <div id="join-game-container">
+            <h2 class="app-header">Join a Game</h2>
+            <form>
+                <label>
+                    Name
+                    <input id="name" type="text"/>
+                </label>
+                <label>
+                    Access Code
+                    <input id="code" type="text"/>
+                </label>
+            </form>
+            <a href="/">
+                <button class="app-btn-secondary">Cancel</button>
+            </a>
+            <button id="join-btn" class="app-btn">Join</button>
+        </div>
+    </div>
+    <script type="module" src="/static/join.js"></script>
+</body>
+</html>

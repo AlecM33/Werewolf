@@ -1,9 +1,17 @@
+import {cards} from './cards.js'
+
 class Card {
     constructor(name, team, description) {
         this.name = name;
         this.team = team;
         this.description = description;
     }
+}
+
+console.log(cards);
+
+document.getElementById("card-select").onload = function() {
+    let jsonCards = JSON.parse('')
 }
 
 function generateAccessCode() {

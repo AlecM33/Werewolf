@@ -1,4 +1,4 @@
-{
+export const cards = {
   "cards": {
     "1": {
       "role": "Villager",
@@ -26,4 +26,4 @@
       "description": "You are villager, but you know who the wolves are - and want them to win."
     }
   }
-}
+};

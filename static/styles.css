@@ -1,3 +1,23 @@
+@media(max-width: 750px) {
+    .app-header {
+        font-size: 35px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+}
+
+@media(min-width: 750.01px) {
+    .app-header {
+        font-size: 50px;
+    }
+
+    h3 {
+        font-size: 30px;
+    }
+}
+
 body {
     margin: 0 auto;
     width: 100vw;
@@ -13,9 +33,11 @@ body {
 .app-header {
     color: #7d0b0b;
     letter-spacing: 0.1em;
-    font-size: 50px;
 }
 
+h3 {
+    color: gray;
+}
 .app-btn {
     background-color: #7d0b0b;
     color: white;

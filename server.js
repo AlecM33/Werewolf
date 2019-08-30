@@ -34,17 +34,24 @@ server.listen(5000, function() {
 
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
-    socket.on('newGame', function(game) {
+    socket.on('newGame', function(game, onSucess) {
         activeGames[game.accessCode] = game;
+        onSucess();
     });
     socket.on('joinGame', function(playerInfo) {
         activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players[socket.id] = playerInfo.name;
-        console.log("Player " + playerInfo.name + " has joined the game");
     });
     socket.on('requestState', function(data) {
-        console.log(data);
-        console.log(activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
-        socket.emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+        if(Object.keys(socket.rooms).includes(data.code) === false) {
+            console.log("new socket");
+            socket.join(data.code, function() {
+                console.log("request for state");
+                io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+            });
+        } else {
+            console.log("old socket");
+            io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+        }
     });
 });
 

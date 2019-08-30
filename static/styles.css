@@ -196,3 +196,27 @@ label {
     display: flex;
     flex-direction: column;
 }
+
+
+/* lobby */
+
+#lobby-container {
+    padding: 1em;
+    max-width: 26em;
+    margin: 0 auto;
+}
+
+.lobby-player {
+    color: #7d0b0b;
+    border-radius: 3px;
+    font-size: 1.2em;
+    background-color: rgba(0, 0, 0, .1);
+    padding: 0.5em;
+    margin: 0.5em 0;
+    text-align: left;
+    box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+.lobby-player p {
+    margin: 0;
+}

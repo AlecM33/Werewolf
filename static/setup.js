@@ -91,9 +91,12 @@ function createGame() {
         document.getElementById("time").value,
         { [socket.id]: document.getElementById("name").value }
         );
-    socket.emit('newGame', game);
-    sessionStorage.setItem('code', code);
-    window.location.replace('/' + code);
+    socket.emit('newGame', game, function(data) {
+        console.log(data);
+        socket.emit('joinGame', { code: code, name: document.getElementById("name").value});
+        sessionStorage.setItem('code', code);
+        window.location.replace('/' + code);
+    });
 }
 
 function getRandomInt(max) {

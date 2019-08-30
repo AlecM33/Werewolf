@@ -1,5 +1,10 @@
 const socket = io();
-var games = [];
-socket.on('message', function(data) {
-    console.log(data);
+var currentGame = null
+socket.on('state', function(game) {
+    currentGame = game;
+    console.log(currentGame);
 });
+
+window.onload = function() {
+    socket.emit('requestState', {code: sessionStorage.getItem("code")});
+}

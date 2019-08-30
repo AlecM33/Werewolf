@@ -83,16 +83,16 @@ function createGame() {
         code += charPool[getRandomInt(61)]
     }
     console.log(code);
+    let id = socket.id
     const game = new Game(
         code,
         gameSize,
         deck,
         document.getElementById("time").value,
-        [document.getElementById("name").value]
+        { [socket.id]: document.getElementById("name").value }
         );
-
     socket.emit('newGame', game);
-    sessionStorage.setItem('accessCode', code);
+    sessionStorage.setItem('code', code);
     window.location.replace('/' + code);
 }
 

@@ -6,7 +6,7 @@ const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
 
-var activeGames = [];
+var activeGames = {};
 
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static')); // Routing
@@ -34,14 +34,17 @@ server.listen(5000, function() {
 
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
-    console.log('Client connected.');
     socket.on('newGame', function(game) {
-        activeGames.push(game);
+        activeGames[game.accessCode] = game;
     });
     socket.on('joinGame', function(playerInfo) {
-        activeGames[activeGames.findIndex((game) => game.accessCode === playerInfo.code)].players.push(playerInfo.name);
+        activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players[socket.id] = playerInfo.name;
         console.log("Player " + playerInfo.name + " has joined the game");
     });
-    console.log('games: ', activeGames);
+    socket.on('requestState', function(data) {
+        console.log(data);
+        console.log(activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+        socket.emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+    });
 });
 

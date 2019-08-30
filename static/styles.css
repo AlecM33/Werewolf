@@ -1,0 +1,84 @@
+body {
+    margin: 0 auto;
+    width: 100vw;
+    font-family: sans-serif;
+}
+
+.app-content {
+    text-align: center;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.app-header {
+    color: #7d0b0b;
+    letter-spacing: 0.1em;
+    font-size: 50px;
+}
+
+.app-btn {
+    background-color: #7d0b0b;
+    color: white;
+    border: none;
+    width: 10em;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.app-btn-secondary {
+    background-color: transparent;
+    color: #7d0b0b;
+    border: 1px solid #7d0b0b;
+    width: 10em;
+    padding: 1em;
+    margin-right: 1em;
+}
+
+.app-btn:hover, .app-btn:focus {
+    cursor: pointer;
+    background-color: #bd2a2a;
+}
+
+.app-btn-secondary:hover, .app-btn-secondary:focus {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+#main-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#create-game-container {
+    display: inline-block;
+    text-align: left;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+input[type=text] {
+    background-color: transparent;
+    border: 2px solid #7d0b0b;
+    caret-color: gray;
+    margin: 0.5em 0 1em 0;
+    color: gray;
+    padding: 0.5rem;
+    width: 8em;
+    font-size: 1.1em;
+}
+
+input[type=text]:hover {
+    background-color: lightgray;
+}
+
+label {
+    margin-bottom: 1em;
+    font-size: 1.4em;
+    display: flex;
+    flex-direction: column;
+}

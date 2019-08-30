@@ -1,3 +1,23 @@
+@media(max-width: 750px) {
+    .app-header {
+        font-size: 35px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+}
+
+@media(min-width: 750.01px) {
+    .app-header {
+        font-size: 50px;
+    }
+
+    h3 {
+        font-size: 30px;
+    }
+}
+
 body {
     margin: 0 auto;
     width: 100vw;
@@ -13,9 +33,11 @@ body {
 .app-header {
     color: #7d0b0b;
     letter-spacing: 0.1em;
-    font-size: 50px;
 }
 
+h3 {
+    color: gray;
+}
 .app-btn {
     background-color: #7d0b0b;
     color: white;
@@ -23,6 +45,43 @@ body {
     width: 10em;
     padding: 1em;
     margin-bottom: 1em;
+}
+
+.card {
+    text-align: center;
+    height: 8em;
+    cursor: pointer;
+    width: 4.5em;
+    color: gray;
+    border: 1px solid #7d0b0b;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    padding: 1em;
+    margin: 0.5em;
+    user-select: none;
+}
+
+.card:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.card-quantity {
+    font-weight: bold;
+    color: #7d0b0b;
+    font-size: 2.5em;
+    margin: 0;
+}
+
+.card-role {
+    color: gray;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+#card-select {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 3em;
 }
 
 .app-btn-secondary {
@@ -49,6 +108,27 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+#card-select-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+#card-select-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #7d0b0b;
+}
+
+#reset-btn {
+    background-color: transparent;
+    color: #7d0b0b;
+    border: 1px solid #7d0b0b;
+    width: 8em;
+    padding: 0.5em;
+    margin: 0 1em 0 0;
 }
 
 #create-game-container {

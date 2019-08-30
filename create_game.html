@@ -16,12 +16,20 @@
                         <input type="text"/>
                     </label>
                 </form>
+                <h3>Add cards to the deck.</h3>
+                <div id="card-select-header">
+                    <button id="reset-btn">Reset Deck</button>
+                    <h3 id="game-size">0 Players</h3>
+                </div>
+                <div id="card-select">
+
+                </div>
                 <a href="/">
                     <button class="app-btn-secondary">Cancel</button>
                 </a>
-                <button class="app-btn" onclick="generateAccessCode()">Create</button>
+                <button id="create-btn" class="app-btn">Create</button>
             </div>
         </div>
-        <script src="/static/setup.js"></script>
+        <script type="module" src="/static/setup.js"></script>
     </body>
 </html>

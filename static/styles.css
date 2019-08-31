@@ -1,7 +1,7 @@
 @media(max-width: 750px) {
     .app-header {
         font-size: 50px;
-        margin: 0.3em 0;
+        margin: 2em 0 0.5em 0;
     }
 
     .app-header-secondary {
@@ -233,6 +233,7 @@ label {
 }
 
 #message-box {
+    height: 2em;
     max-width: 25em;
     margin: 1em auto;
     border-bottom: 1px solid #7d0b0b;
@@ -312,9 +313,9 @@ label {
     justify-content: space-between;
     max-width: 17em;
     border-radius: 3px;
-    height: 25em;
+    height: 23em;
     margin: 0 auto 2em auto;
-    width: 82%;
+    width: 72%;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     perspective: 1000px;
     animation: flip 0.7s;

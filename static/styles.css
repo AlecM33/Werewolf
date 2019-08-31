@@ -217,6 +217,32 @@ label {
     box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.3);
 }
 
+.highlighted {
+    border: 2px solid #7d0b0b;
+}
+
+.disabled {
+    opacity: 0.7;
+    color: gray;
+    background-color: white;
+    border: 1px solid gray;
+    pointer-events: none;
+
+}
+
+#lobby-subheader {
+    text-align: left;
+    margin-bottom: 2em;
+}
+
+#join-count, #deck-size {
+    font-size: 1.5em;
+}
+
 .lobby-player p {
     margin: 0;
+}
+
+#launch-btn {
+    margin-top: 2em;
 }

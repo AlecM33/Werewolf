@@ -77,27 +77,47 @@ function resetCardQuantities() {
 }
 
 function createGame() {
+    // generate 6 digit access code
     let code = "";
     let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (let i = 0; i < 6; i++) {
         code += charPool[getRandomInt(61)]
     }
     console.log(code);
-    let id = socket.id
+
+    // generate unique player Id for session
+    let id = generateID();
+    sessionStorage.setItem("id", id);
+
+    // player who creates the game is the host
+    sessionStorage.setItem("host", true);
+
+    // send a new game to the server, and then join it
+    const playerInfo = {name: document.getElementById("name").value, code: code, id: id};
     const game = new Game(
         code,
         gameSize,
         deck,
         document.getElementById("time").value,
-        { [socket.id]: document.getElementById("name").value }
+        { [socket.id]:  playerInfo}
         );
     socket.emit('newGame', game, function(data) {
         console.log(data);
-        socket.emit('joinGame', { code: code, name: document.getElementById("name").value});
+        socket.emit('joinGame', playerInfo);
         sessionStorage.setItem('code', code);
         window.location.replace('/' + code);
     });
 }
+
+function generateID() {
+    let code = "";
+    let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    for (let i = 0; i < 10; i++) {
+        code += charPool[getRandomInt(61)]
+    }
+    return code;
+}
+
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));

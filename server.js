@@ -39,7 +39,7 @@ io.on('connection', function(socket) {
         onSucess();
     });
     socket.on('joinGame', function(playerInfo) {
-        activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players[socket.id] = playerInfo.name;
+        activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players[socket.id] = {name: playerInfo.name, id: playerInfo.id};
     });
     socket.on('requestState', function(data) {
         if(Object.keys(socket.rooms).includes(data.code) === false) {

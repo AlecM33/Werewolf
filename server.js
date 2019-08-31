@@ -28,7 +28,7 @@ app.get('/:code', function(request, response) {
 });
 
 // Starts the server.
-server.listen(5000, function() {
+server.listen(process.env.PORT || 5000, function() {
     console.log('Starting server on port 5000');
 });
 

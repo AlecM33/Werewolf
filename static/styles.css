@@ -6,7 +6,7 @@
 
     .app-header-secondary {
         font-size: 35px;
-        margin: 2em 0 0.5em 0;
+        margin: 0.3em 0;
     }
 
     .card {
@@ -19,7 +19,7 @@
     }
 
     .app-content {
-        width: 95%;
+        width: 92%;
     }
 }
 

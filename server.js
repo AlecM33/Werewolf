@@ -39,7 +39,7 @@ io.on('connection', function(socket) {
         onSucess();
     });
     socket.on('joinGame', function(playerInfo) {
-        activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players[socket.id] = {name: playerInfo.name, id: playerInfo.id};
+        activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players.push({name: playerInfo.name, id: playerInfo.id});
     });
     socket.on('requestState', function(data) {
         if(Object.keys(socket.rooms).includes(data.code) === false) {
@@ -52,6 +52,19 @@ io.on('connection', function(socket) {
             console.log("old socket");
             io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
         }
+    });
+    socket.on('startGame', function(gameData) {
+        let game = activeGames[Object.keys(activeGames).find((key) => key === gameData.code)];
+        game.state = "started";
+        game.players = gameData.players;
+        io.to(gameData.code).emit('state', game);
+    });
+    socket.on('killPlayer', function(id, code) {
+        let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
+        let player = game.players.find((player) => player.id === id);
+        game.players.find((player) => player.id === id).dead = true;
+        game.message = player.name + ", a " + player.card.role + ", has been killed!";
+        io.to(code).emit('state', game);
     });
 });
 

@@ -1,4 +1,5 @@
 import {cards} from './cards.js'
+import {utility} from './util.js'
 
 const socket = io();
 var games = [];
@@ -6,6 +7,7 @@ var games = [];
 // important declarations
 class Card {
     constructor(role, team, description, powerRole) {
+        this.id = null;
         this.role = role;
         this.team = team;
         this.description = description;
@@ -15,17 +17,17 @@ class Card {
 }
 
 class Game {
-    constructor(accessCode, size, deck, time, players) {
+    constructor(accessCode, size, deck, time) {
         this.accessCode = accessCode;
         this.size = size;
         this.deck = deck;
         this.time = time;
-        this.players = players;
+        this.players = [];
         this.state = "lobby";
     }
 }
 
-var deck = [];
+var fullDeck = [];
 var gameSize = 0;
 var time = null;
 
@@ -40,7 +42,7 @@ window.onload = function() {
         const newCard = new Card(card.role, card.team, card.description, card.powerRole);
         const cardContainer = document.createElement("div");
 
-        deck.push(newCard);
+        fullDeck.push(newCard);
 
         cardContainer.setAttribute("class", "card");
         cardContainer.innerHTML = "<p class='card-role'>" + newCard.role + "</p><br><p class='card-quantity'>" + newCard.quantity + "</p>";
@@ -60,14 +62,14 @@ window.onload = function() {
 
 function updateGameSize() {
     gameSize = 0;
-    for (let card of deck) {
+    for (let card of fullDeck) {
         gameSize += card.quantity;
     }
     document.getElementById("game-size").innerText = gameSize + " Players";
 }
 
 function resetCardQuantities() {
-    for (let card of deck) {
+    for (let card of fullDeck) {
         card.quantity = 0;
     }
     updateGameSize();
@@ -76,17 +78,28 @@ function resetCardQuantities() {
     });
 }
 
+function buildDeckFromQuantities() {
+    let playerDeck = [];
+    for (const card of fullDeck) {
+        for (let i = 0; i < card.quantity; i++) {
+            let newCard = new Card(card.role, card.team, card.description, card.powerRole);
+            newCard.id = utility.generateID();
+            playerDeck.push(newCard);
+        }
+    }
+    return playerDeck;
+}
+
 function createGame() {
     // generate 6 digit access code
     let code = "";
     let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (let i = 0; i < 6; i++) {
-        code += charPool[getRandomInt(61)]
+        code += charPool[utility.getRandomInt(61)]
     }
-    console.log(code);
 
     // generate unique player Id for session
-    let id = generateID();
+    let id = utility.generateID();
     sessionStorage.setItem("id", id);
 
     // player who creates the game is the host
@@ -97,9 +110,8 @@ function createGame() {
     const game = new Game(
         code,
         gameSize,
-        deck,
-        document.getElementById("time").value,
-        { [socket.id]:  playerInfo}
+        buildDeckFromQuantities(),
+        document.getElementById("time").value
         );
     socket.emit('newGame', game, function(data) {
         console.log(data);
@@ -107,18 +119,4 @@ function createGame() {
         sessionStorage.setItem('code', code);
         window.location.replace('/' + code);
     });
-}
-
-function generateID() {
-    let code = "";
-    let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    for (let i = 0; i < 10; i++) {
-        code += charPool[getRandomInt(61)]
-    }
-    return code;
-}
-
-
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
 }

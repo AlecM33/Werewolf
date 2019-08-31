@@ -39,7 +39,6 @@
 html, body {
     margin: 0 auto;
     width: 100%;
-    margin-bottom: 2em;
     font-family: sans-serif;
 }
 
@@ -197,6 +196,12 @@ label {
     flex-direction: column;
 }
 
+#message-box {
+    margin: 1em 1em;
+    border-bottom: 1px solid #7d0b0b;
+    padding: 0.5em;
+}
+
 
 /* lobby */
 
@@ -230,6 +235,10 @@ label {
 
 }
 
+.hidden {
+    display: none;
+}
+
 #lobby-subheader {
     text-align: left;
     margin-bottom: 2em;
@@ -245,4 +254,87 @@ label {
 
 #launch-btn {
     margin-top: 2em;
+}
+
+/* GAME */
+
+@keyframes flip {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(-180deg);
+    }
+}
+
+.game-card {
+    border: 1px solid #7d0b0b;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 17em;
+    border-radius: 3px;
+    height: 25em;
+    margin: 0 auto 2em auto;
+    width: 82%;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    perspective: 1000px;
+    animation: flip 0.7s;
+    animation-fill-mode: forwards;
+    animation-direction: reverse;
+    transform-style: preserve-3d;
+}
+
+.game-card h2 {
+    font-size: 2em;
+    color: #7d0b0b;
+}
+
+.game-card p {
+    padding: 1em;
+}
+
+.game-container {
+    margin-top: 1em;
+}
+
+/* This container is needed to position the front and back side */
+.game-card-inner {
+    position: relative;
+    width: 95%;
+    height: 97%;
+    margin: auto auto;
+    border-radius: 3px;
+    text-align: center;
+    border: 1px solid gray;
+}
+
+.game-card:hover {
+}
+
+/* Position the front and back side */
+.game-card-front, .game-card-back {
+    background-color: #f0f0f0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+.game-card-back {
+    transform: rotateY(180deg);
+}
+
+.killed-btn {
+    border-radius: 5px;
+    width: 13em;
+    font-size: 1.2em;
+    margin: 0
+}
+
+#players-remaining {
+    font-size: 1.7em;
+    color: gray;
+    margin-bottom: 0.5em;
 }

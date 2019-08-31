@@ -95,7 +95,7 @@ function renderLobby() {
     // Render lobby header
     if (document.getElementsByClassName("lobby-player").length === 0) {
         let header = document.createElement("h2");
-        header.setAttribute("class", "app-header");
+        header.setAttribute("class", "app-header-secondary");
         header.innerText = "Lobby";
         document.getElementById("lobby-container").appendChild(header);
         let subHeader = document.createElement("div");

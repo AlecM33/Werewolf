@@ -191,7 +191,7 @@ button {
 #create-game-container, #join-game-container {
     display: inline-block;
     text-align: left;
-    margin-bottom: 3em;
+    margin: 3em 1em;
 }
 
 a {
@@ -376,4 +376,15 @@ label {
     font-size: 1.7em;
     color: gray;
     margin-bottom: 0.5em;
+}
+
+#clock {
+    font-size: 1.7em;
+    width: 4em;
+    margin-bottom: 0.5em;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-evenly;
 }

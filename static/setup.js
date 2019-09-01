@@ -24,6 +24,7 @@ class Game {
         this.time = time;
         this.players = [];
         this.state = "lobby";
+        this.endTime = null;
     }
 }
 

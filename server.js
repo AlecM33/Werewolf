@@ -5,6 +5,7 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
+const moment = require('moment');
 
 var activeGames = {};
 
@@ -57,6 +58,11 @@ io.on('connection', function(socket) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === gameData.code)];
         game.state = "started";
         game.players = gameData.players;
+        if (game.time) {
+            let d = new Date();
+            d.setMinutes(d.getMinutes() + parseInt(game.time));
+            game.endTime = d.toJSON();
+        }
         io.to(gameData.code).emit('state', game);
     });
     socket.on('killPlayer', function(id, code) {

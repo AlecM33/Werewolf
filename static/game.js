@@ -1,7 +1,8 @@
 import {utility} from './util.js'
 
 const socket = io();
-var currentGame = null;
+let clock;
+let currentGame = null;
 
 // respond to the game state received from the server
 socket.on('state', function(game) {
@@ -52,6 +53,9 @@ function getLiveCount() {
 }
 
 function renderGame() {
+    if (currentGame.time) {
+        renderClock();
+    }
     const player = currentGame.players.find((player) => player.id === sessionStorage.getItem("id"));
     const card = player.card;
 
@@ -60,7 +64,10 @@ function renderGame() {
     document.getElementById("launch").setAttribute("class", "hidden");
     document.getElementById("game-container").setAttribute("class", "game-container");
     document.getElementById("game-container").innerHTML =
-        "<div id='players-remaining'>" + getLiveCount() + "/" + currentGame.size + " Players alive</div>" +
+        "<div class='game-header'>" +
+            "<div id='players-remaining'>" + getLiveCount() + "/" + currentGame.size + " alive</div>" +
+            "<div id='clock'></div>" +
+        "</div>" +
         "<div class='game-card'>" +
             "<div class='game-card-inner'" +
                 "<div class='game-card-front'>" +
@@ -83,6 +90,29 @@ function renderGame() {
     }
     document.getElementById("game-container").appendChild(killedBtn);
     document.getElementById("dead-btn").addEventListener("click", killPlayer);
+}
+
+function renderClock() {
+    clock = setInterval(function() {
+        const now = new Date().getTime();
+        const end = new Date(currentGame.endTime);
+        const delta = end - now;
+        if (delta <= 0) {
+            clearInterval(clock);
+            endGame(true);
+        } else {
+            let minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((delta % (1000 * 60)) / 1000);
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            document.getElementById("clock").innerText = minutes + ":" + seconds;
+        }
+    }, 1000);
+}
+
+function endGame(timeExpired) {
+    if (timeExpired) {
+        console.log("expired");
+    }
 }
 
 function killPlayer() {

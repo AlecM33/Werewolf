@@ -393,6 +393,7 @@ label {
 #players-remaining {
     font-size: 1.7em;
     color: gray;
+    width: 4em;
     margin-bottom: 0.5em;
 }
 
@@ -410,5 +411,6 @@ label {
 .game-header {
     display: flex;
     margin: 0 auto;
+    max-width: 35em;
     justify-content: space-evenly;
 }

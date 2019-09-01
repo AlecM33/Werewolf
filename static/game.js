@@ -4,6 +4,7 @@ const socket = io();
 let clock;
 let currentGame = null;
 let cardFlippedOver = false;
+let cardDealt = false;
 
 // respond to the game state received from the server
 socket.on('state', function(game) {
@@ -81,7 +82,10 @@ function renderGame() {
         "</div>";
 
     // initially flip the card over for a reveal, allow it to be flipped on click/tap
-    flipCard();
+    if (!cardDealt) {
+        flipCard();
+        cardDealt = true;
+    }
     document.getElementById("game-card").addEventListener("click", flipCard);
 
     let killedBtn = document.createElement("button");

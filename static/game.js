@@ -3,8 +3,6 @@ import {utility} from './util.js'
 const socket = io();
 var currentGame = null;
 
-document.getElementById("launch").addEventListener("click", launchGame);
-
 // respond to the game state received from the server
 socket.on('state', function(game) {
     currentGame = game;
@@ -125,9 +123,12 @@ function renderLobby() {
     }
     // display the launch button if the player is the host
     if (sessionStorage.getItem("host")) {
-        currentGame.players.length === currentGame.size ?
-            document.getElementById("launch").innerHTML = "<button class='app-btn'>Start Game</button>"
-            : document.getElementById("launch").innerHTML = "<button class='app-btn disabled'>Start Game</button>"
+        if (currentGame.players.length === currentGame.size) {
+            document.getElementById("launch").innerHTML = "<button class='app-btn'>Start Game</button>";
+            document.getElementById("launch").addEventListener("click", launchGame);
+        } else {
+            document.getElementById("launch").innerHTML = "<button class='app-btn disabled'>Start Game</button>";
+        }
     } else {
         document.getElementById("launch").innerHTML = "<p>The host will start the game.</p>"
     }

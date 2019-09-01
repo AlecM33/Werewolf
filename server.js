@@ -5,7 +5,6 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
-const moment = require('moment');
 
 var activeGames = {};
 

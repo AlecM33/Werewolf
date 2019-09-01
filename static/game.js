@@ -3,6 +3,7 @@ import {utility} from './util.js'
 const socket = io();
 let clock;
 let currentGame = null;
+let cardFlippedOver = false;
 
 // respond to the game state received from the server
 socket.on('state', function(game) {
@@ -68,15 +69,21 @@ function renderGame() {
             "<div id='players-remaining'>" + getLiveCount() + "/" + currentGame.size + " alive</div>" +
             "<div id='clock'></div>" +
         "</div>" +
-        "<div class='game-card'>" +
-            "<div class='game-card-inner'" +
+        "<div id='game-card'>" +
+            "<div class='game-card-inner'>" +
                 "<div class='game-card-front'>" +
                     "<h2>" + card.role + "</h2>" +
                     "<p>" + card.description + "</p>" +
+                    "<p id='flip-instruction'>Click to flip</p>" +
                 "</div>" +
                 "<div class='game-card-back'></div>" +
             "</div>" +
         "</div>";
+
+    // initially flip the card over for a reveal, allow it to be flipped on click/tap
+    flipCard();
+    document.getElementById("game-card").addEventListener("click", flipCard);
+
     let killedBtn = document.createElement("button");
     killedBtn.setAttribute("id", "dead-btn");
 
@@ -90,6 +97,13 @@ function renderGame() {
     }
     document.getElementById("game-container").appendChild(killedBtn);
     document.getElementById("dead-btn").addEventListener("click", killPlayer);
+}
+
+function flipCard() {
+    cardFlippedOver ?
+        document.getElementById("game-card").setAttribute("class", "flip-down")
+        : document.getElementById("game-card").setAttribute("class", "flip-up");
+    cardFlippedOver = !cardFlippedOver;
 }
 
 function renderClock() {

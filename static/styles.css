@@ -296,7 +296,7 @@ label {
 
 /* GAME */
 
-@keyframes flip {
+@keyframes flip-up {
     0% {
         transform: rotateY(0deg);
     }
@@ -305,7 +305,17 @@ label {
     }
 }
 
-.game-card {
+@keyframes flip-down {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(180deg);
+    }
+}
+
+
+#game-card {
     border: 1px solid #7d0b0b;
     background-color: #f0f0f0;
     display: flex;
@@ -318,19 +328,27 @@ label {
     width: 72%;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     perspective: 1000px;
-    animation: flip 0.7s;
-    animation-fill-mode: forwards;
-    animation-direction: reverse;
     transform-style: preserve-3d;
 }
 
-.game-card h2 {
+.flip-up {
+    animation: flip-up 0.7s;
+    animation-fill-mode: forwards;
+    animation-direction: reverse;
+}
+
+.flip-down {
+    animation: flip-down 0.7s;
+    animation-fill-mode: forwards;
+}
+
+#game-card h2 {
     font-size: 2em;
     color: #7d0b0b;
     font-family: 'diavlo', sans-serif;
 }
 
-.game-card p {
+#game-card p {
     padding: 1em;
 }
 
@@ -384,7 +402,13 @@ label {
     margin-bottom: 0.5em;
 }
 
+#flip-instruction {
+    margin: 7em 0 0 0;
+    color: gray;
+}
+
 .game-header {
     display: flex;
+    margin: 0 auto;
     justify-content: space-evenly;
 }

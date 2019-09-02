@@ -1,12 +1,40 @@
 const socket = io();
 import { utility } from './util.js'
 
-document.getElementById("join-btn").addEventListener("click", function() {
-    sessionStorage.setItem("code", document.getElementById("code").value);
-    let playerId = utility.generateID();
-    sessionStorage.setItem("id", playerId);
-    const playerInfo = {name: document.getElementById("name").value, id: playerId, code: document.getElementById("code").value};
-    socket.emit('joinGame', playerInfo);
+// respond to the game state received from the server
+socket.on('joinError', function(message) {
+   document.getElementById("code").classList.add("error");
+   document.getElementById("join-error").innerText = message;
+});
+
+// respond to the game state received from the server
+socket.on('success', function() {
+    if (document.getElementById("code").classList.contains("error")) {
+        document.getElementById("code").classList.remove("error");
+        document.getElementById("join-error").innerText = "";
+    }
+    // If a player was a host of a previous game, don't make them the host of this one
+    if (sessionStorage.getItem("host")) {
+        sessionStorage.removeItem("host");
+    }
     window.location.replace('/' + document.getElementById("code").value);
+});
+
+document.getElementById("join-btn").addEventListener("click", function() {
+    if (document.getElementById("name").value.length > 0) {
+        if (document.getElementById("name").classList.contains("error")) {
+            document.getElementById("name").classList.remove("error");
+            document.getElementById("name-error").innerText = "";
+        }
+        sessionStorage.setItem("code", document.getElementById("code").value);
+        let playerId = utility.generateID();
+        sessionStorage.setItem("id", playerId);
+        const playerInfo = {name: document.getElementById("name").value, id: playerId, code: document.getElementById("code").value};
+        socket.emit('joinGame', playerInfo);
+    } else {
+        document.getElementById("name").classList.add("error");
+        document.getElementById("name-error").innerText = "Name is required.";
+    }
+
 });
 

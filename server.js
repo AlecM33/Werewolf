@@ -32,24 +32,69 @@ server.listen(process.env.PORT || 5000, function() {
     console.log('Starting server on port 5000');
 });
 
+function didVillageWin(game) {
+    let liveCount = 0;
+    for (const player of game.players) {
+        if (player.card.role === "Werewolf" && !player.dead) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function teamWon(game) {
+    let wolvesAlive = 0;
+    let villagersAlive = 0;
+    let hunterAlive = false;
+    for (const player of game.players) {
+        if (player.card.team === "village" && !player.dead) {
+            villagersAlive++;
+        }
+        if (player.card.team === "wolf" && !player.dead) {
+            wolvesAlive++;
+        }
+        if (player.card.role === "Hunter" && !player.dead) {
+            hunterAlive = true;
+        }
+    }
+    console.log("wolves: " + wolvesAlive + " villagers: " + villagersAlive);
+    if ((wolvesAlive === villagersAlive) && (wolvesAlive + villagersAlive !== 2)) {
+        return "wolf";
+    }
+    if (wolvesAlive === 0) {
+        return "village"
+    }
+    if (wolvesAlive + villagersAlive === 2) {
+        return hunterAlive ? "village" : "wolf"
+    }
+    return false;
+}
+
 // Add the WebSocket handlers
 io.on('connection', function(socket) {
-    socket.on('newGame', function(game, onSucess) {
+    socket.on('newGame', function(game, onSuccess) {
         activeGames[game.accessCode] = game;
-        onSucess();
+        onSuccess();
     });
     socket.on('joinGame', function(playerInfo) {
-        activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players.push({name: playerInfo.name, id: playerInfo.id});
+        const game = activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)];
+        if (game && game.players.length < game.size) {
+            activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players.push({name: playerInfo.name, id: playerInfo.id});
+            socket.emit('success');
+        } else {
+            if (game && game.players.length === game.size) {
+                socket.emit("joinError", "This game is full - sorry!")
+            } else {
+                socket.emit("joinError", "No game found");
+            }
+        }
     });
     socket.on('requestState', function(data) {
         if(Object.keys(socket.rooms).includes(data.code) === false) {
-            console.log("new socket");
             socket.join(data.code, function() {
-                console.log("request for state");
                 io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
             });
         } else {
-            console.log("old socket");
             io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
         }
     });
@@ -84,7 +129,18 @@ io.on('connection', function(socket) {
         let player = game.players.find((player) => player.id === id);
         game.players.find((player) => player.id === id).dead = true;
         game.message = player.name + ", a " + player.card.role + ", has been killed!";
-        io.to(code).emit('state', game);
+        const winCheck = teamWon(game);
+        if (winCheck === "wolf") {
+            game.winningTeam = "wolf";
+            game.state = "ended";
+            io.to(code).emit('state', game);
+        } else if (winCheck === "village") {
+            game.winningTeam = "village";
+            game.state = "ended";
+            io.to(code).emit('state', game);
+        } else {
+            io.to(code).emit('state', game);
+        }
     });
 });
 

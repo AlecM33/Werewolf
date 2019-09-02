@@ -52,7 +52,6 @@ window.onload = function() {
             if(!newCard.powerRole || (newCard.powerRole && newCard.quantity === 0)) {
                 newCard.quantity += 1;
             }
-            console.log(newCard);
             cardContainer.getElementsByClassName("card-quantity")[0].innerHTML = newCard.quantity;
             updateGameSize();
         });
@@ -92,32 +91,36 @@ function buildDeckFromQuantities() {
 }
 
 function createGame() {
-    // generate 6 digit access code
-    let code = "";
-    let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    for (let i = 0; i < 6; i++) {
-        code += charPool[utility.getRandomInt(61)]
+    if (document.getElementById("name").value.length > 0) {
+        // generate 6 digit access code
+        let code = "";
+        let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (let i = 0; i < 6; i++) {
+            code += charPool[utility.getRandomInt(61)]
+        }
+
+        // generate unique player Id for session
+        let id = utility.generateID();
+        sessionStorage.setItem("id", id);
+
+        // player who creates the game is the host
+        sessionStorage.setItem("host", true);
+
+        // send a new game to the server, and then join it
+        const playerInfo = {name: document.getElementById("name").value, code: code, id: id};
+        const game = new Game(
+            code,
+            gameSize,
+            buildDeckFromQuantities(),
+            document.getElementById("time").value
+            );
+        socket.emit('newGame', game, function(data) {
+            socket.emit('joinGame', playerInfo);
+            sessionStorage.setItem('code', code);
+            window.location.replace('/' + code);
+        });
+    } else {
+        document.getElementById("name").classList.add("error");
+        document.getElementById("name-error").innerText = "Name is required.";
     }
-
-    // generate unique player Id for session
-    let id = utility.generateID();
-    sessionStorage.setItem("id", id);
-
-    // player who creates the game is the host
-    sessionStorage.setItem("host", true);
-
-    // send a new game to the server, and then join it
-    const playerInfo = {name: document.getElementById("name").value, code: code, id: id};
-    const game = new Game(
-        code,
-        gameSize,
-        buildDeckFromQuantities(),
-        document.getElementById("time").value
-        );
-    socket.emit('newGame', game, function(data) {
-        console.log(data);
-        socket.emit('joinGame', playerInfo);
-        sessionStorage.setItem('code', code);
-        window.location.replace('/' + code);
-    });
 }

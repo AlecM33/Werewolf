@@ -12,7 +12,6 @@ socket.on('state', function(game) {
     if (game.message) {
         document.getElementById("message-box").innerText = game.message;
     }
-    console.log(currentGame);
     buildGameBasedOnState();
 });
 
@@ -23,6 +22,9 @@ function buildGameBasedOnState() {
             break;
         case "started":
             renderGame();
+            break;
+        case "ended":
+            renderEndSplash();
             break;
         default:
             break;
@@ -52,6 +54,26 @@ function getLiveCount() {
         }
     }
     return liveCount;
+}
+
+function renderEndSplash() {
+    document.getElementById("game-container").classList.add("hidden");
+    document.getElementById("message-box").classList.add("hidden");
+    currentGame.winningTeam === "village"
+    ? document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-village'>Village</p> wins!</div>"
+    : document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-wolf'>Wolves</p>win!</div>";
+    const wolfContainer = document.createElement("div");
+    wolfContainer.setAttribute("id", "wolves");
+    let wolfContent = "<div class='evil-header'><span>The</span><p class='evil-subheader'>evil</p> <span>players were:</span></div>";
+    for (const player of currentGame.players) {
+        if (player.card.role === "Werewolf" || player.card.role === "Minion") {
+            wolfContent += "<div class='evil-list-item'>" + player.name + ": " + player.card.role + "</div>"
+        }
+    }
+    wolfContent += "<a href='/'><button class='app-btn'>Home</button></a>";
+    wolfContainer.innerHTML = wolfContent;
+    document.getElementById("end-container").appendChild(wolfContainer);
+
 }
 
 function renderGame() {
@@ -133,15 +155,27 @@ function pauseOrResumeGame() {
 }
 
 function getFlipState() {
-    console.log(cardFlippedOver);
     return cardFlippedOver ? "flip-down" : "flip-up";
 }
 
 function flipCard() {
-    cardFlippedOver ?
-        document.getElementById("game-card").setAttribute("class", "flip-down")
-        : document.getElementById("game-card").setAttribute("class", "flip-up");
+    cardFlippedOver
+        ? flipUp()
+        : flipDown();
+
     cardFlippedOver = !cardFlippedOver;
+}
+
+function flipUp(){
+    const card = document.getElementById("game-card");
+    card.classList.add("flip-up");
+    card.classList.remove("flip-down");
+}
+
+function flipDown(){
+    const card = document.getElementById("game-card");
+    card.classList.add("flip-down");
+    card.classList.remove("flip-up");
 }
 
 function renderClock() {
@@ -166,7 +200,6 @@ function renderClock() {
 
 function endGame(timeExpired) {
     if (timeExpired) {
-        console.log("expired");
     }
 }
 

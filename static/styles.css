@@ -122,6 +122,33 @@ button {
     font-family: 'sitewide-sans-serif', sans-serif;
 }
 
+.error {
+    border: 1px solid #bd2a2a !important;
+    background-color: rgba(189, 42, 42, 0.1) !important;
+}
+
+#join-error, #name-error {
+    color: #bd2a2a;
+    font-size: 0.9em;
+    height: 2em;
+    margin: 0;
+    font-weight: bold;
+}
+
+#join-game-container span {
+    display: flex;
+    flex-direction: column;
+}
+
+#join-game-container form {
+    margin-bottom: 2em;
+}
+
+#join-game-container input[type=text], #create-game-container input[type=text] {
+    margin-right: 0.5em;
+    margin-bottom: 0;
+}
+
 .app-btn {
     background-color: #f8f8f8;
     color: #bd2a2a;
@@ -245,6 +272,7 @@ input[type=text] {
     margin: 0.5em 0 1em 0;
     color: gray;
     padding: 0.7em;
+    height: 1.2em;
     width: 9em;
     border-radius: 5px;
     font-size: 1.1em;
@@ -258,6 +286,7 @@ input[type=number] {
     margin: 0.5em 0 1em 0;
     color: gray;
     padding: 0.7em;
+    height: 1.2em;
     width: 4em;
     font-size: 1.1em;
 }
@@ -485,4 +514,54 @@ label {
 #play-pause:active, #play-pause:focus {
     opacity: 0.4;
     transform: scale(0.90);
+}
+
+/* end splash */
+
+#end-container {
+    margin: 0 auto;
+    display: inline-block;
+    text-align: left;
+}
+
+#end-container .winner-header {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 30px;
+}
+
+#end-container .evil-subheader {
+    font-family: 'diavlo', sans-serif;
+    color: #7d0b0b;
+    margin: 0 0.3em;
+    font-size: 1.5em;
+}
+
+#end-container .evil-header {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    margin-bottom: 2em;
+}
+
+
+#end-container p {
+    font-weight: bold;
+    margin-right: 0.3em;
+    font-size: 50px;
+}
+
+#end-container button {
+    margin-top: 3em;
+}
+
+#end-container .winner-village {
+    font-family: 'diavlo', sans-serif;
+    color: #171469;
+}
+
+#end-container .winner-wolf {
+    font-family: 'diavlo', sans-serif;
+    color: #7d0b0b;
 }

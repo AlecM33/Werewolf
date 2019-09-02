@@ -4,7 +4,7 @@ const socket = io();
 let clock;
 let currentGame = null;
 let cardFlippedOver = false;
-let cardDealt = false;
+let cardRendered = false;
 
 // respond to the game state received from the server
 socket.on('state', function(game) {
@@ -56,29 +56,29 @@ function getLiveCount() {
 
 function renderGame() {
     const player = currentGame.players.find((player) => player.id === sessionStorage.getItem("id"));
-    const card = player.card;
 
-    // render the players card
+    // render the header
     document.getElementById("lobby-container").setAttribute("class", "hidden");
     document.getElementById("launch").setAttribute("class", "hidden");
     document.getElementById("game-container").setAttribute("class", "game-container");
-    document.getElementById("game-container").innerHTML =
-        "<div id='game-header'>" +
+    const gameHeader = document.createElement("div");
+    gameHeader.setAttribute("id", "game-header");
+    gameHeader.innerHTML =
             "<div id='players-remaining'>" + getLiveCount() + "/" + currentGame.size + " alive</div>" +
             "<div id='clock'></div>" +
-            "<div id='pause-container'></div>" +
-        "</div>" +
-        "<div id='game-card'>" +
-            "<div class='game-card-inner'>" +
-                "<div class='game-card-front'>" +
-                    "<h2>" + card.role + "</h2>" +
-                    "<p>" + card.description + "</p>" +
-                    "<p id='flip-instruction'>Click to flip</p>" +
-                "</div>" +
-                "<div class='game-card-back'></div>" +
-            "</div>" +
-        "</div>";
+            "<div id='pause-container'></div>";
+    if (document.getElementById("game-header")) {
+        document.getElementById("game-container").removeChild(document.getElementById("game-header"));
+    }
+    document.getElementById("game-container").prepend(gameHeader);
 
+    // render the card if it hasn't been yet
+    if (!cardRendered) {
+        renderPlayerCard(player);
+        cardRendered = true;
+    }
+
+    // build the clock
     if (currentGame.time) {
         renderClock();
         document.getElementById("pause-container").innerHTML = currentGame.paused ?
@@ -87,26 +87,41 @@ function renderGame() {
         document.getElementById("play-pause").addEventListener("click", pauseOrResumeGame)
     }
 
-    // initially flip the card over for a reveal, allow it to be flipped on click/tap
-    if (!cardDealt) {
-        flipCard();
-        cardDealt = true;
-    }
-    document.getElementById("game-card").addEventListener("click", flipCard);
-
+    // add the "I'm dead" button
     let killedBtn = document.createElement("button");
     killedBtn.setAttribute("id", "dead-btn");
 
-    // render the "I'm dead" button based on the player's state
     if (player.dead) {
-        killedBtn.setAttribute("class", "app-btn-secondary killed-btn disabled");
+        killedBtn.setAttribute("class", "app-btn killed-btn disabled");
         killedBtn.innerText = "Killed"
     } else {
-        killedBtn.setAttribute("class", "app-btn-secondary killed-btn");
+        killedBtn.setAttribute("class", "app-btn killed-btn");
         killedBtn.innerText = "I'm dead";
+    }
+    if (document.getElementById("dead-btn")) {
+        document.getElementById("game-container").removeChild(document.getElementById("dead-btn"));
     }
     document.getElementById("game-container").appendChild(killedBtn);
     document.getElementById("dead-btn").addEventListener("click", killPlayer);
+}
+
+function renderPlayerCard(player) {
+    const card = player.card;
+    const cardClass = player.card.team === "village" ? "game-card-inner village" : "game-card-inner wolf";
+    const playerCard = document.createElement("div");
+    playerCard.setAttribute("id", "game-card");
+    playerCard.setAttribute("class", getFlipState());
+    playerCard.innerHTML =
+        "<div class='" + cardClass + "'>" +
+            "<div class='game-card-front'>" +
+                "<h2>" + card.role + "</h2>" +
+                "<p>" + card.description + "</p>" +
+                "<p id='flip-instruction'>Click to flip</p>" +
+            "</div>" +
+            "<div class='game-card-back'></div>" +
+        "</div>";
+    document.getElementById("game-container").appendChild(playerCard);
+    document.getElementById("game-card").addEventListener("click", flipCard);
 }
 
 function pauseOrResumeGame() {
@@ -115,6 +130,11 @@ function pauseOrResumeGame() {
     } else {
         socket.emit('pauseGame', currentGame.accessCode);
     }
+}
+
+function getFlipState() {
+    console.log(cardFlippedOver);
+    return cardFlippedOver ? "flip-down" : "flip-up";
 }
 
 function flipCard() {

@@ -55,9 +55,6 @@ function getLiveCount() {
 }
 
 function renderGame() {
-    if (currentGame.time) {
-        renderClock();
-    }
     const player = currentGame.players.find((player) => player.id === sessionStorage.getItem("id"));
     const card = player.card;
 
@@ -66,9 +63,10 @@ function renderGame() {
     document.getElementById("launch").setAttribute("class", "hidden");
     document.getElementById("game-container").setAttribute("class", "game-container");
     document.getElementById("game-container").innerHTML =
-        "<div class='game-header'>" +
+        "<div id='game-header'>" +
             "<div id='players-remaining'>" + getLiveCount() + "/" + currentGame.size + " alive</div>" +
             "<div id='clock'></div>" +
+            "<div id='pause-container'></div>" +
         "</div>" +
         "<div id='game-card'>" +
             "<div class='game-card-inner'>" +
@@ -80,6 +78,14 @@ function renderGame() {
                 "<div class='game-card-back'></div>" +
             "</div>" +
         "</div>";
+
+    if (currentGame.time) {
+        renderClock();
+        document.getElementById("pause-container").innerHTML = currentGame.paused ?
+            "<img alt='pause' src='../assets/images/play-button.svg' id='play-pause'/>"
+            : "<img alt='pause' src='../assets/images/pause-button.svg' id='play-pause'/>";
+        document.getElementById("play-pause").addEventListener("click", pauseOrResumeGame)
+    }
 
     // initially flip the card over for a reveal, allow it to be flipped on click/tap
     if (!cardDealt) {
@@ -103,6 +109,14 @@ function renderGame() {
     document.getElementById("dead-btn").addEventListener("click", killPlayer);
 }
 
+function pauseOrResumeGame() {
+    if (currentGame.paused) {
+        socket.emit('resumeGame', currentGame.accessCode);
+    } else {
+        socket.emit('pauseGame', currentGame.accessCode);
+    }
+}
+
 function flipCard() {
     cardFlippedOver ?
         document.getElementById("game-card").setAttribute("class", "flip-down")
@@ -112,9 +126,12 @@ function flipCard() {
 
 function renderClock() {
     clock = setInterval(function() {
-        const now = new Date().getTime();
+        const start = currentGame.paused ? new Date(currentGame.pauseTime) : new Date();
         const end = new Date(currentGame.endTime);
-        const delta = end - now;
+        const delta = end - start;
+        if (currentGame.paused) {
+            clearInterval(clock);
+        }
         if (delta <= 0) {
             clearInterval(clock);
             endGame(true);

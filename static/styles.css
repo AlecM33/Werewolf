@@ -64,6 +64,10 @@ html, body {
     font-family: 'sitewide-sans-serif', sans-serif;
 }
 
+@keyframes fadein {
+    from { opacity: 0 }
+    to { opacity: 1 }
+}
 .app-content {
     text-align: center;
     margin: 0 auto;
@@ -192,6 +196,10 @@ button {
     display: inline-block;
     text-align: left;
     margin: 3em 1em;
+}
+
+#create-game-container, #lobby-container, #join-game-container, #game-container, #launch, #message-box {
+    animation: fadein 0.8s;
 }
 
 a {
@@ -349,7 +357,7 @@ label {
 }
 
 #game-card p {
-    padding: 1em;
+    padding: 0.5em;
 }
 
 .game-container {
@@ -404,13 +412,25 @@ label {
 }
 
 #flip-instruction {
-    margin: 7em 0 0 0;
     color: gray;
 }
 
-.game-header {
+#game-header {
     display: flex;
     margin: 0 auto;
     max-width: 35em;
     justify-content: space-evenly;
+}
+
+#play-pause {
+    width: 2.5em;
+    height: 2.5em;
+}
+
+#play-pause:hover {
+}
+
+#play-pause:active, #play-pause:focus {
+    opacity: 0.4;
+    transform: scale(0.90);
 }

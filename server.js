@@ -64,6 +64,21 @@ io.on('connection', function(socket) {
         }
         io.to(gameData.code).emit('state', game);
     });
+    socket.on('pauseGame', function(code) {
+        let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
+        game.pauseTime = (new Date()).toJSON();
+        game.paused = true;
+        io.to(code).emit('state', game);
+    });
+    socket.on('resumeGame', function(code) {
+        let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
+        game.paused = false;
+        let newTime = new Date(game.endTime).getTime() + (new Date().getTime() - new Date(game.pauseTime).getTime());
+        let newDate = new Date(game.endTime);
+        newDate.setTime(newTime);
+        game.endTime = newDate.toJSON();
+        io.to(code).emit('state', game);
+    });
     socket.on('killPlayer', function(id, code) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
         let player = game.players.find((player) => player.id === id);

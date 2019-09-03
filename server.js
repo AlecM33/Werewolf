@@ -11,13 +11,6 @@ const CronJob = require('cron').CronJob;
 
 var activeGames = {};
 
-const job = new CronJob('* * 2 * * *', function() {
-    activeGames = activeGames.filter((game) => game.state !== "ended");
-    console.log("Games pruned at: " + (new Date()).toDateString());
-});
-console.log("cron job created");
-job.start();
-
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static')); // Routing
 app.use('/assets', express.static(__dirname + '/assets')); // Routing

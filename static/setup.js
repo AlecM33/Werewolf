@@ -36,14 +36,24 @@ var atLeastOnePlayer = false;
 // register event listeners on buttons
 document.getElementById("reset-btn").addEventListener("click", resetCardQuantities);
 document.getElementById("create-btn").addEventListener("click", createGame);
+document.getElementById("role-btn").addEventListener("click", displayRoleModal);
+document.getElementById("close").addEventListener("click", closeModal);
 
 // render all of the available cards to the user
 window.onload = function() {
     for (const card of cards) {
         const newCard = new Card(card.role, card.team, card.description, card.powerRole);
-        const cardContainer = document.createElement("div");
+        // put card info in the informational role description modal
+        const modalRole = document.createElement("div");
+        modalRole.setAttribute("class", "modal-role");
+        modalRole.innerHTML = card.team === "village" ?
+            "<h2 class='role-village'>" + card.role + "</h2><p>" + card.description + "</p>"
+            : "<h2 class='role-wolf'>" + card.role + "</h2><p>" + card.description + "</p>";
+        document.getElementById("roles").appendChild(modalRole);
 
         fullDeck.push(newCard);
+
+        const cardContainer = document.createElement("div");
 
         cardContainer.setAttribute("class", "card");
         cardContainer.innerHTML = "<p class='card-role'>" + newCard.role + "</p><br><p class='card-quantity'>" + newCard.quantity + "</p>";
@@ -82,6 +92,14 @@ function resetCardQuantities() {
     Array.prototype.filter.call(document.getElementsByClassName("card-quantity"), function(quantities){
         return quantities.innerHTML = 0;
     });
+}
+
+function displayRoleModal() {
+    document.getElementById("role-modal").classList.remove("hidden");
+}
+
+function closeModal() {
+    document.getElementById("role-modal").classList.add("hidden");
 }
 
 function buildDeckFromQuantities() {

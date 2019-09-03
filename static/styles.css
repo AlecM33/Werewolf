@@ -24,6 +24,30 @@
         font-size: 0.9em;
         margin: 0 0.7em 0.7em 0;
     }
+
+    .modal {
+        width: 92%;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+
+    .modal-body {
+        padding: 1em;
+    }
+
+    .modal-header {
+        padding: 0 1em;
+    }
+
+    .modal-role {
+        margin-right: 2em;
+    }
+
+    #learn-container {
+        margin: 3em 1em;
+    }
 }
 
 @media(min-width: 750.01px) {
@@ -51,6 +75,30 @@
 
     .app-content {
         width: 80%;
+    }
+
+    #learn-container {
+        margin: 3em;
+    }
+
+    .modal-body {
+        padding: 2em 4em;
+    }
+
+    .modal {
+        width: 92%;
+    }
+
+    .modal-content {
+        width: 90%;
+    }
+
+    .modal-header {
+        padding: 0 3em;
+    }
+
+    .modal-role {
+        margin-right: 3em;
     }
 }
 
@@ -221,8 +269,9 @@ button {
 
 #card-select-header {
     display: flex;
-    align-items: center;
+    justify-content: center;
     margin-bottom: 1em;
+    flex-direction: column;
 }
 
 #card-select-header h3 {
@@ -233,6 +282,12 @@ button {
 
 #card-select-header button {
     margin-right: 1em;
+    padding: 0.5em;
+}
+
+#card-select-header span {
+    display: flex;
+    align-items: center;
 }
 
 #reset-btn {
@@ -570,4 +625,100 @@ label {
 #end-container .winner-wolf {
     font-family: 'diavlo', sans-serif;
     color: #7d0b0b;
+}
+
+#learn-container h2 {
+    font-family: 'diavlo', sans-serif;
+    color: #7d0b0b;
+    font-size: 40px;
+}
+
+#learn-container button {
+    margin-top: 1em;
+}
+
+#roles {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.modal-role {
+    width: 22em;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-header {
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    color: gray;
+}
+
+.modal-header h2 {
+    margin-top: 2em;
+    margin-bottom: 0;
+    color: black;
+}
+
+.modal-footer {
+    padding: 1em;
+    background-color: white;
+    color: white;
+}
+
+.modal-content {
+    border-radius: 5px;
+    position: relative;
+    background-color: #fefefe;
+    margin: 1em auto;
+    padding: 0;
+    border: 1px solid #888;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+.role-wolf {
+    color: #7d0b0b;
+    font-family: 'diavlo', sans-serif;
+}
+
+.role-village {
+    color: #171469;
+    font-family: 'diavlo', sans-serif;
+}
+
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+.close {
+    margin-top: 0.2em;
+    color: #aaa;
+    float: right;
+    font-size: 46px;
+    height: 1em;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
 }

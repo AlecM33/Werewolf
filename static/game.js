@@ -199,7 +199,6 @@ function renderClock() {
 
 function endGameDueToTimeExpired() {
     clearInterval(clock);
-    console.log("expired!");
     socket.emit("timerExpired", currentGame.accessCode);
 }
 

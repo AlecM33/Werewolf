@@ -6,28 +6,45 @@ const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
 
-// cron job for periodically clearing finished games
+
 const CronJob = require('cron').CronJob;
 
 var activeGames = {};
+
+// cron job for periodically clearing finished games
+const job = new CronJob('0 0 */2 * * *', function() {
+    console.log(activeGames);
+    for (const key in activeGames) {
+        if (activeGames.hasOwnProperty(key) && activeGames[key].state === "ended") {
+            delete activeGames[key];
+        }
+    }
+    console.log("Games pruned at: " + (new Date().toDateString()) + " " + (new Date()).toTimeString());
+});
+console.log("cron job created");
+job.start();
 
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static')); // Routing
 app.use('/assets', express.static(__dirname + '/assets')); // Routing
 app.get('/', function(request, response) {
-    response.sendFile(__dirname + '/index.html');
+    response.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/learn', function(request, response) {
+    response.sendFile(__dirname + '/views/learn.html');
 });
 
 app.get('/create', function(request, response) {
-    response.sendFile(__dirname + '/create_game.html');
+    response.sendFile(__dirname + '/views/create_game.html');
 });
 
 app.get('/join', function(request, response) {
-    response.sendFile(__dirname + '/join_game.html');
+    response.sendFile(__dirname + '/views/join_game.html');
 });
 
 app.get('/:code', function(request, response) {
-    response.sendFile(__dirname + '/game.html');
+    response.sendFile(__dirname + '/views/game.html');
 });
 
 // Starts the server.
@@ -82,6 +99,7 @@ io.on('connection', function(socket) {
             }
         }
     });
+    // broadcast current game state to all sockets in the room with a particular access code
     socket.on('requestState', function(data) {
         if(Object.keys(socket.rooms).includes(data.code) === false) {
             socket.join(data.code, function() {

@@ -6,6 +6,10 @@ const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
 
+const secure = require('express-force-https');
+app.use(secure);
+
+
 
 const CronJob = require('cron').CronJob;
 
@@ -25,6 +29,7 @@ console.log("cron job created");
 job.start();
 
 app.set('port', 5000);
+
 app.use('/static', express.static(__dirname + '/static')); // Routing
 app.use('/assets', express.static(__dirname + '/assets')); // Routing
 app.get('/', function(request, response) {
@@ -67,7 +72,6 @@ function teamWon(game) {
             hunterAlive = true;
         }
     }
-    console.log("wolves: " + wolvesAlive + " villagers: " + villagersAlive);
     if (wolvesAlive === 0) {
         return "village"
     }
@@ -84,6 +88,7 @@ function teamWon(game) {
 io.on('connection', function(socket) {
     socket.on('newGame', function(game, onSuccess) {
         activeGames[game.accessCode] = game;
+        console.log("Game created at " + (new Date().toDateString()) + " " + (new Date()).toTimeString());
         onSuccess();
     });
     socket.on('joinGame', function(playerInfo) {

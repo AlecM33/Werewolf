@@ -127,7 +127,7 @@ button {
     background-color: rgba(189, 42, 42, 0.1) !important;
 }
 
-#join-error, #name-error {
+#join-error, #name-error, #size-error {
     color: #bd2a2a;
     font-size: 0.9em;
     height: 2em;
@@ -254,6 +254,12 @@ button {
     display: inline-block;
     text-align: left;
     margin: 3em 1em;
+}
+
+#game-size {
+    border-radius: 5px;
+    padding: 0.3em 0.5em;
+    margin-right: 0.5em !important;
 }
 
 #create-game-container, #lobby-container, #join-game-container, #game-container, #launch, #message-box {
@@ -470,7 +476,7 @@ label {
 .killed-btn {
     border-radius: 5px;
     width: 13em;
-    font-size: 1.2em;
+    font-size: 1em;
     margin: 0
 }
 

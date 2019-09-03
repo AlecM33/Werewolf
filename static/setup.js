@@ -30,7 +30,7 @@ class Game {
 
 var fullDeck = [];
 var gameSize = 0;
-var time = null;
+var atLeastOnePlayer = false;
 
 
 // register event listeners on buttons
@@ -66,6 +66,12 @@ function updateGameSize() {
         gameSize += card.quantity;
     }
     document.getElementById("game-size").innerText = gameSize + " Players";
+    if (gameSize > 0) {
+        atLeastOnePlayer = true;
+    } else {
+        atLeastOnePlayer = false;
+    }
+    return gameSize;
 }
 
 function resetCardQuantities() {
@@ -91,7 +97,7 @@ function buildDeckFromQuantities() {
 }
 
 function createGame() {
-    if (document.getElementById("name").value.length > 0) {
+    if (document.getElementById("name").value.length > 0 && atLeastOnePlayer) {
         // generate 6 digit access code
         let code = "";
         let charPool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -120,6 +126,13 @@ function createGame() {
             window.location.replace('/' + code);
         });
     } else {
+        if (!atLeastOnePlayer) {
+            document.getElementById("game-size").classList.add("error");
+            document.getElementById("size-error").innerText = "Add at least one card";
+        } else {
+            document.getElementById("game-size").classList.remove("error");
+            document.getElementById("size-error").innerText = "";
+        }
         document.getElementById("name").classList.add("error");
         document.getElementById("name-error").innerText = "Name is required.";
     }

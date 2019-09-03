@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cron": "^1.7.1",
     "express": "^4.17.1",
     "socket.io": "^2.2.0"
   }

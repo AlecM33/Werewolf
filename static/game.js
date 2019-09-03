@@ -187,8 +187,7 @@ function renderClock() {
             clearInterval(clock);
         }
         if (delta <= 0) {
-            clearInterval(clock);
-            endGame(true);
+            endGameDueToTimeExpired();
         } else {
             let minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
             let seconds = Math.floor((delta % (1000 * 60)) / 1000);
@@ -198,9 +197,10 @@ function renderClock() {
     }, 1000);
 }
 
-function endGame(timeExpired) {
-    if (timeExpired) {
-    }
+function endGameDueToTimeExpired() {
+    clearInterval(clock);
+    console.log("expired!");
+    socket.emit("timerExpired", currentGame.accessCode);
 }
 
 function killPlayer() {

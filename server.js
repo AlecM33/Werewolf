@@ -6,7 +6,17 @@ const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
 
+// cron job for periodically clearing finished games
+const CronJob = require('cron').CronJob;
+
 var activeGames = {};
+
+const job = new CronJob('* * 2 * * *', function() {
+    activeGames = activeGames.filter((game) => game.state !== "ended");
+    console.log("Games pruned at: " + (new Date()).toDateString());
+});
+console.log("cron job created");
+job.start();
 
 app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static')); // Routing
@@ -31,16 +41,6 @@ app.get('/:code', function(request, response) {
 server.listen(process.env.PORT || 5000, function() {
     console.log('Starting server on port 5000');
 });
-
-function didVillageWin(game) {
-    let liveCount = 0;
-    for (const player of game.players) {
-        if (player.card.role === "Werewolf" && !player.dead) {
-            return false;
-        }
-    }
-    return true;
-}
 
 function teamWon(game) {
     let wolvesAlive = 0;
@@ -122,6 +122,12 @@ io.on('connection', function(socket) {
         let newDate = new Date(game.endTime);
         newDate.setTime(newTime);
         game.endTime = newDate.toJSON();
+        io.to(code).emit('state', game);
+    });
+    socket.on("timerExpired", function(code) {
+        let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
+        game.winningTeam = "wolf";
+        game.state = "ended";
         io.to(code).emit('state', game);
     });
     socket.on('killPlayer', function(id, code) {

@@ -32,7 +32,8 @@ app.set('port', 5000);
 
 app.use('/static', express.static(__dirname + '/static')); // Routing
 app.use('/assets', express.static(__dirname + '/assets')); // Routing
-app.get('/', function(request, response) {
+app.use('/node_modules/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client')); // Routing
+app.get('', function(request, response) {
     response.sendFile(__dirname + '/views/index.html');
 });
 

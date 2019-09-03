@@ -46,9 +46,9 @@ window.onload = function() {
         // put card info in the informational role description modal
         const modalRole = document.createElement("div");
         modalRole.setAttribute("class", "modal-role");
-        modalRole.innerHTML = card.team === "village" ?
-            "<h2 class='role-village'>" + card.role + "</h2><p>" + card.description + "</p>"
-            : "<h2 class='role-wolf'>" + card.role + "</h2><p>" + card.description + "</p>";
+        modalRole.innerHTML = card.team === "good" ?
+            "<h2 class='role-village'>" + card.role + "</h2><p>" + card.team + "</p><p>" + card.description + "</p>"
+            : "<h2 class='role-wolf'>" + card.role + "</h2><p>" + card.team + "</p><p>" + card.description + "</p>";
         document.getElementById("roles").appendChild(modalRole);
 
         fullDeck.push(newCard);

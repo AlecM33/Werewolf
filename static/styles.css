@@ -121,17 +121,60 @@ html, body {
 @keyframes fadein {
     from {
         opacity: 0;
-        left: -200px;
 
     }
     to {
         opacity: 1;
-        left: 0;
     }
 }
+
+@keyframes slide-fade {
+    from {
+        opacity: 0;
+        margin-right: 0.5em;
+
+    }
+    to {
+        opacity: 1;
+        margin-right: 0;
+    }
+}
+
 .app-content {
     text-align: center;
     margin: 0 auto;
+}
+
+.app-title .app-header {
+    width: 6em;
+    display: flex;
+}
+
+.app-title {
+    margin-top: 5em;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    line-height: 0.95;
+}
+
+.app-title h1:nth-child(1) {
+    margin: 0;
+    animation: slide-fade 0.7s ease-in-out;
+    animation-fill-mode: backwards;
+    animation-direction: normal;
+}
+
+.app-title h1:nth-child(2) {
+    margin: 0 0 0 1.5em;
+    animation: slide-fade 0.7s ease-in-out;
+    animation-delay: 0.4s;
+    animation-fill-mode: backwards;
+    animation-direction: normal;
+}
+
+.app-title .title-question-mark {
+    color: #171469;
 }
 
 #footer {
@@ -199,7 +242,7 @@ button {
 
 .app-btn {
     background-color: #f8f8f8;
-    color: #bd2a2a;
+    color: #171469;
     border: 1px solid #d3d3d3;
     width: 10em;
     padding: 1em;
@@ -383,12 +426,16 @@ label {
 .lobby-player {
     color: #7d0b0b;
     border-radius: 3px;
-    font-size: 1.2em;
+    font-size: 1em;
     background-color: rgba(23, 20, 105, 0.1);
-    padding: 0.5em;
+    padding: 0.3em;
     margin: 0.5em 0;
     text-align: left;
     box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.3);
+}
+
+#game-code {
+    font-family: "Courier New", serif;
 }
 
 .highlighted {
@@ -646,6 +693,15 @@ label {
     width: 22em;
 }
 
+.modal-role p:first-of-type {
+    margin-top: 0;
+    color: gray;
+}
+
+.modal-role h2 {
+    margin-bottom: 0;
+}
+
 .modal {
     position: fixed;
     z-index: 1;
@@ -707,7 +763,7 @@ label {
 
 .close {
     margin-top: 0.2em;
-    color: #aaa;
+    color: black;
     float: right;
     font-size: 46px;
     height: 1em;

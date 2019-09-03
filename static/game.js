@@ -129,7 +129,7 @@ function renderGame() {
 
 function renderPlayerCard(player) {
     const card = player.card;
-    const cardClass = player.card.team === "village" ? "game-card-inner village" : "game-card-inner wolf";
+    const cardClass = player.card.team === "good" ? "game-card-inner village" : "game-card-inner wolf";
     const playerCard = document.createElement("div");
     playerCard.setAttribute("id", "game-card");
     playerCard.setAttribute("class", getFlipState());

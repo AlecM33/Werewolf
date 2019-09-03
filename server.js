@@ -57,10 +57,10 @@ function teamWon(game) {
     let villagersAlive = 0;
     let hunterAlive = false;
     for (const player of game.players) {
-        if (player.card.team === "village" && !player.dead) {
+        if (player.card.team === "good" && !player.dead) {
             villagersAlive++;
         }
-        if (player.card.team === "wolf" && !player.dead) {
+        if (player.card.role === "Werewolf" && !player.dead) {
             wolvesAlive++;
         }
         if (player.card.role === "Hunter" && !player.dead) {
@@ -68,11 +68,11 @@ function teamWon(game) {
         }
     }
     console.log("wolves: " + wolvesAlive + " villagers: " + villagersAlive);
-    if ((wolvesAlive === villagersAlive) && (wolvesAlive + villagersAlive !== 2)) {
-        return "wolf";
-    }
     if (wolvesAlive === 0) {
         return "village"
+    }
+    if ((wolvesAlive === villagersAlive) && (wolvesAlive + villagersAlive !== 2)) {
+        return "wolf";
     }
     if (wolvesAlive + villagersAlive === 2) {
         return hunterAlive ? "village" : "wolf"

@@ -16,10 +16,10 @@ const CronJob = require('cron').CronJob;
 var activeGames = {};
 
 // cron job for periodically clearing finished games
-const job = new CronJob('0 0 */2 * * *', function() {
+const job = new CronJob('0 0 */1 * * *', function() {
     console.log(activeGames);
     for (const key in activeGames) {
-        if (activeGames.hasOwnProperty(key) && activeGames[key].state === "ended") {
+        if (activeGames.hasOwnProperty(key) && (Math.abs((new Date()) - (new Date(activeGames[key].startTime))) / 36e5) >= 2) {
             delete activeGames[key];
         }
     }
@@ -89,6 +89,7 @@ function teamWon(game) {
 io.on('connection', function(socket) {
     socket.on('newGame', function(game, onSuccess) {
         activeGames[game.accessCode] = game;
+        activeGames[game.accessCode].startTime = (new Date()).toJSON();
         console.log("Game created at " + (new Date().toDateString()) + " " + (new Date()).toTimeString());
         onSuccess();
     });

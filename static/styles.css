@@ -494,7 +494,7 @@ label {
 
 
 #game-card {
-    background-color: #f0f0f0;
+    background-color: transparent;
     display: flex;
     flex-direction: column;
     cursor: pointer;

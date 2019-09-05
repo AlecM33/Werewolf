@@ -19,8 +19,8 @@
 
     .card {
         padding: 0.5em;
-        width: 5em;
-        height: 7.5em;
+        width: 7em;
+        height: 10.5em;
         font-size: 0.9em;
         margin: 0 0.7em 0.7em 0;
     }
@@ -62,8 +62,8 @@
     }
 
     .card {
-        height: 8.5em;
-        width: 5em;
+        width: 7em;
+        height: 10.5em;
         padding: 1em;
         font-size: 1.1em;
         margin: 0.5em;
@@ -148,6 +148,7 @@ html, body {
 .app-title .app-header {
     width: 6em;
     display: flex;
+    font-weight: bold;
 }
 
 .app-title {
@@ -253,8 +254,9 @@ button {
 .card {
     text-align: center;
     cursor: pointer;
+    position: relative;
     color: gray;
-    border: 1px solid #7d0b0b;
+    border: 1px solid black;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
     user-select: none;
@@ -264,11 +266,52 @@ button {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
+.card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 50%;
+    border-bottom: 1px solid gray;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: flex-end;
+    height: 50%;
+    align-items: flex-start;
+}
+
+.card-top p {
+    margin: 0;
+    font-size: 2.5em;
+    pointer-events: none;
+}
+
+.card-top p.card-role {
+    font-size: 1em;
+    pointer-events: none;
+}
+
+.card-bottom p {
+    pointer-events: none;
+    font-size: 3em;
+    margin: 0;
+}
+
 .card-quantity {
+    pointer-events: none;
     font-weight: bold;
     color: #7d0b0b;
     font-size: 2.5em;
     margin: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 32%;
+    width: 1.5em;
+    background-color: white;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .card-role {
@@ -509,16 +552,8 @@ label {
     transform-style: preserve-3d;
 }
 
-.village {
-    border: 2px solid rgba(23, 20, 105, 0.5);
-}
-
 .village h2 {
     color: #171469;
-}
-
-.wolf {
-    border: 2px solid rgba(125, 11, 11, 0.5);
 }
 
 .wolf h2 {
@@ -557,9 +592,7 @@ label {
     margin: auto auto;
     border-radius: 3px;
     text-align: center;
-}
-
-.game-card:hover {
+    border: 2px solid rgba(59, 59, 59, 0.5);
 }
 
 /* Position the front and back side */
@@ -758,6 +791,14 @@ label {
 .role-village {
     color: #171469;
     font-family: 'diavlo', sans-serif;
+}
+
+.quantity-village {
+    color: #171469;
+}
+
+.quantity-wolf {
+    color: #7d0b0b;
 }
 
 @keyframes animatetop {

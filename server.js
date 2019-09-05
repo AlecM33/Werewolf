@@ -16,7 +16,7 @@ const CronJob = require('cron').CronJob;
 var activeGames = {};
 
 // cron job for periodically clearing finished games
-const job = new CronJob('0 0 */1 * * *', function() {
+const job = new CronJob('0 0 */2 * * *', function() {
     console.log(activeGames);
     for (const key in activeGames) {
         if (activeGames.hasOwnProperty(key) && (Math.abs((new Date()) - (new Date(activeGames[key].startTime))) / 36e5) >= 2) {

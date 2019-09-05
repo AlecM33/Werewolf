@@ -29,7 +29,7 @@ document.getElementById("join-btn").addEventListener("click", function() {
         sessionStorage.setItem("code", document.getElementById("code").value);
         let playerId = utility.generateID();
         sessionStorage.setItem("id", playerId);
-        const playerInfo = {name: document.getElementById("name").value, id: playerId, code: document.getElementById("code").value};
+        const playerInfo = {name: document.getElementById("name").value, id: playerId, code: document.getElementById("code").value.toString().trim()};
         socket.emit('joinGame', playerInfo);
     } else {
         document.getElementById("name").classList.add("error");

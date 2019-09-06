@@ -17,19 +17,20 @@ socket.on('success', function() {
     if (sessionStorage.getItem("host")) {
         sessionStorage.removeItem("host");
     }
-    window.location.replace('/' + document.getElementById("code").value);
+    window.location.replace('/' + document.getElementById("code").value.toString().trim());
 });
 
 document.getElementById("join-btn").addEventListener("click", function() {
     if (document.getElementById("name").value.length > 0) {
+        const code = document.getElementById("code").value.toString().trim();
         if (document.getElementById("name").classList.contains("error")) {
             document.getElementById("name").classList.remove("error");
             document.getElementById("name-error").innerText = "";
         }
-        sessionStorage.setItem("code", document.getElementById("code").value);
+        sessionStorage.setItem("code", code);
         let playerId = utility.generateID();
         sessionStorage.setItem("id", playerId);
-        const playerInfo = {name: document.getElementById("name").value, id: playerId, code: document.getElementById("code").value.toString().trim()};
+        const playerInfo = {name: document.getElementById("name").value, id: playerId, code: code};
         socket.emit('joinGame', playerInfo);
     } else {
         document.getElementById("name").classList.add("error");

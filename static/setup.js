@@ -2,7 +2,6 @@ import {cards} from './cards.js'
 import {utility} from './util.js'
 
 const socket = io();
-var games = [];
 
 // important declarations
 class Card {
@@ -28,9 +27,9 @@ class Game {
     }
 }
 
-var fullDeck = [];
-var gameSize = 0;
-var atLeastOnePlayer = false;
+const fullDeck = [];
+let gameSize = 0;
+let atLeastOnePlayer = false;
 
 
 // register event listeners on buttons
@@ -55,7 +54,7 @@ window.onload = function() {
 
         const cardContainer = document.createElement("div");
 
-        const quantityClass = cards[i].team === "good" ? "card-quantity quantity-village" : "card-quantity quantity-wolf"
+        const quantityClass = cards[i].team === "good" ? "card-quantity quantity-village" : "card-quantity quantity-wolf";
 
         cardContainer.setAttribute("class", "card");
         cardContainer.setAttribute("id", "card-" + i);
@@ -68,7 +67,7 @@ window.onload = function() {
             "<div class='card-bottom'>" +
                 "<p>-</p>" +
             "</div>";
-        document.getElementById("card-select").appendChild(cardContainer)
+        document.getElementById("card-select").appendChild(cardContainer);
         let cardTop = document.getElementById("card-" + i).getElementsByClassName("card-top")[0];
         let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];
         let cardBottom = document.getElementById("card-" + i).getElementsByClassName("card-bottom")[0];
@@ -104,11 +103,7 @@ function updateGameSize() {
         gameSize += card.quantity;
     }
     document.getElementById("game-size").innerText = gameSize + " Players";
-    if (gameSize > 0) {
-        atLeastOnePlayer = true;
-    } else {
-        atLeastOnePlayer = false;
-    }
+    atLeastOnePlayer = gameSize > 0;
     return gameSize;
 }
 
@@ -166,7 +161,7 @@ function createGame() {
             buildDeckFromQuantities(),
             Math.ceil(document.getElementById("time").value)
             );
-        socket.emit('newGame', game, function(data) {
+        socket.emit('newGame', game, function() {
             socket.emit('joinGame', playerInfo);
             sessionStorage.setItem('code', code);
             window.location.replace('/' + code);

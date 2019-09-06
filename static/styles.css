@@ -108,6 +108,11 @@
 }
 
 @font-face {
+    font-family: 'diavlo-bold';
+    src: url("../assets/fonts/Diavlo_BOOK_II_37.otf") format("opentype");
+}
+
+@font-face {
     font-family: 'sitewide-sans-serif';
     src: url("../assets/fonts/manrope-light.otf") format("opentype");
 }
@@ -148,7 +153,7 @@ html, body {
 .app-title .app-header {
     width: 6em;
     display: flex;
-    font-weight: bold;
+    font-family: diavlo-bold, sans-serif;
 }
 
 .app-title {
@@ -263,7 +268,7 @@ button {
 }
 
 .card:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: #e8e8e8;
 }
 
 .card-top {
@@ -312,6 +317,10 @@ button {
     background-color: white;
     margin-left: auto;
     margin-right: auto;
+}
+
+.card:hover .card-quantity, .card:active .card-quantity {
+    background-color: #e8e8e8;
 }
 
 .card-role {
@@ -640,7 +649,7 @@ label {
     display: flex;
     margin: 0 auto;
     max-width: 35em;
-    justify-content: space-evenly;
+    justify-content: center;
 }
 
 #play-pause {

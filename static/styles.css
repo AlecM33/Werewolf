@@ -629,15 +629,15 @@ label {
 }
 
 #players-remaining {
-    font-size: 1.7em;
+    font-size: 1.5em;
     color: gray;
-    width: 4em;
+    width: 3.8em;
     margin-bottom: 0.5em;
 }
 
 #clock {
-    font-size: 1.7em;
-    width: 4em;
+    font-size: 1.5em;
+    width: 3.8em;
     margin-bottom: 0.5em;
 }
 

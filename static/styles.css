@@ -9,6 +9,11 @@
         margin: 0.3em 0;
     }
 
+    #main-buttons button {
+        width: 12em;
+        padding: 1.7em;
+    }
+
     h3 {
         font-size: 20px;
     }
@@ -19,8 +24,8 @@
 
     .card {
         padding: 0.5em;
-        width: 7em;
-        height: 10.5em;
+        width: 8em;
+        height: 11.5em;
         font-size: 0.9em;
         margin: 0 0.7em 0.7em 0;
     }
@@ -334,6 +339,7 @@ button {
     display: -webkit-flex;
     -webkit-flex-wrap: wrap;
     margin-bottom: 3em;
+    justify-content: center;
 }
 
 .app-btn-secondary {
@@ -379,7 +385,8 @@ button {
 
 #card-select-header button {
     margin-right: 1em;
-    padding: 0.5em;
+    width: 11em;
+    padding: 1em;
 }
 
 #card-select-header span {

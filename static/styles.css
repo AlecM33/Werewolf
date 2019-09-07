@@ -24,8 +24,8 @@
 
     .card {
         padding: 0.5em;
-        width: 8em;
-        height: 11.5em;
+        width: 7em;
+        height: 10.5em;
         font-size: 0.9em;
         margin: 0 0.7em 0.7em 0;
     }
@@ -385,8 +385,8 @@ button {
 
 #card-select-header button {
     margin-right: 1em;
-    width: 11em;
-    padding: 1em;
+    width: 10em;
+    padding: 0.8em;
 }
 
 #card-select-header span {

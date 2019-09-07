@@ -97,6 +97,7 @@ io.on('connection', function(socket) {
         const game = activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)];
         if (game && game.players.length < game.size) {
             activeGames[Object.keys(activeGames).find((key) => key === playerInfo.code)].players.push({name: playerInfo.name, id: playerInfo.id});
+            console.log(playerInfo.name + " joined the game!");
             socket.emit('success');
         } else {
             if (game && game.players.length === game.size) {

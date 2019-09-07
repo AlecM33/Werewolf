@@ -81,7 +81,6 @@ window.onload = function() {
 };
 
 function incrementCardQuantity(e) {
-    console.log(e.target);
     if(e.target.card.quantity < 25) {
         e.target.card.quantity += 1;
     }

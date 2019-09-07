@@ -12,7 +12,7 @@ export const cards = [
         powerRole: false
     },
     {
-        role: "Sycophant",
+        role: "Minion",
         team: "evil",
         description: "You are an evil villager - you know who the wolves are, and you want them to win.",
         powerRole: true
@@ -44,9 +44,9 @@ export const cards = [
         powerRole: true
     },
     {
-        role: "Martyr",
+        role: "Mason",
         team: "good",
-        description: "If you die, take someone else with you.",
+        description: "Masons know who other Masons are. Wake them up to see each other on the first night.",
         powerRole: true
     }
 ];

@@ -145,26 +145,30 @@ io.on('connection', function(socket) {
     });
     socket.on("timerExpired", function(code) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
-        game.winningTeam = "wolf";
-        game.state = "ended";
-        io.to(code).emit('state', game);
-    });
-    socket.on('killPlayer', function(id, code) {
-        let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
-        let player = game.players.find((player) => player.id === id);
-        game.players.find((player) => player.id === id).dead = true;
-        game.message = player.name + ", a " + player.card.role + ", has been killed!";
-        const winCheck = teamWon(game);
-        if (winCheck === "wolf") {
+        if (game) {
             game.winningTeam = "wolf";
             game.state = "ended";
             io.to(code).emit('state', game);
-        } else if (winCheck === "village") {
-            game.winningTeam = "village";
-            game.state = "ended";
-            io.to(code).emit('state', game);
-        } else {
-            io.to(code).emit('state', game);
+        }
+    });
+    socket.on('killPlayer', function(id, code) {
+        let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
+        if (game) {
+            let player = game.players.find((player) => player.id === id);
+            game.players.find((player) => player.id === id).dead = true;
+            game.message = player.name + ", a " + player.card.role + ", has been killed!";
+            const winCheck = teamWon(game);
+            if (winCheck === "wolf") {
+                game.winningTeam = "wolf";
+                game.state = "ended";
+                io.to(code).emit('state', game);
+            } else if (winCheck === "village") {
+                game.winningTeam = "village";
+                game.state = "ended";
+                io.to(code).emit('state', game);
+            } else {
+                io.to(code).emit('state', game);
+            }
         }
     });
 });

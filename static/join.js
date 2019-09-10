@@ -17,12 +17,12 @@ socket.on('success', function() {
     if (sessionStorage.getItem("host")) {
         sessionStorage.removeItem("host");
     }
-    window.location.replace('/' + document.getElementById("code").value.toString().trim());
+    window.location.replace('/' + document.getElementById("code").value.toString().trim().toLowerCase());
 });
 
 document.getElementById("join-btn").addEventListener("click", function() {
     if (document.getElementById("name").value.length > 0) {
-        const code = document.getElementById("code").value.toString().trim();
+        const code = document.getElementById("code").value.toString().trim().toLowerCase();
         if (document.getElementById("name").classList.contains("error")) {
             document.getElementById("name").classList.remove("error");
             document.getElementById("name-error").innerText = "";

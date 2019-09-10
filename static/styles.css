@@ -191,20 +191,32 @@ html, body {
 #footer {
     position: absolute;
     bottom: 0;
+    margin: 0 0 1.5em 0;
     width: 100%;
     height: 5rem;
+    font-size: 0.75em;
     text-align: center;
     align-items: center;
     display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
+#footer div {
+    display: flex;
+    align-items: center;
+}
+
+#footer p {
+    margin: 0 0 0 1em;
+    color: gray;
+}
+
 #footer a {
-    font-size: 0.9em;
     color: #bd2a2a;
     text-decoration: #bd2a2a;
     cursor: pointer;
-    margin-left: 1em;
+    margin: 0 0 0 1em;
 }
 
 #footer a:hover {
@@ -412,7 +424,11 @@ button {
 #create-game-container, #join-game-container {
     display: inline-block;
     text-align: left;
-    margin: 3em 1em;
+    margin: 3em 0.5em;
+}
+
+#create-game-container button {
+    margin-right: 1em;
 }
 
 #game-size {
@@ -570,6 +586,15 @@ label {
     transform-style: preserve-3d;
 }
 
+#game-card img {
+    width: 160px;
+}
+
+.placeholder {
+    width: 160px;
+    height: 160px;
+}
+
 .village h2 {
     color: #171469;
 }
@@ -590,12 +615,14 @@ label {
 }
 
 #game-card h2 {
-    font-size: 2em;
+    font-size: 1.7em;
     font-family: 'diavlo', sans-serif;
+    margin: 0.3em;
 }
 
 #game-card p {
     padding: 0.5em;
+    font-size: 0.7em;
 }
 
 .game-container {
@@ -630,6 +657,12 @@ label {
     transform: rotateY(180deg);
 }
 
+.game-card-front p:first-of-type {
+    margin: 0.7em;
+    border: 1px solid gray;
+    border-radius: 3px;
+}
+
 .killed-btn {
     border-radius: 5px;
     width: 13em;
@@ -652,6 +685,7 @@ label {
 
 #flip-instruction {
     color: gray;
+    margin: 0;
 }
 
 #game-header {

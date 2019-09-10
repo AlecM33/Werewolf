@@ -1,6 +1,7 @@
 import {utility} from './util.js'
 
 const socket = io();
+const finishedArtArray = ["Villager", "Werewolf"];
 let clock;
 let currentGame = null;
 let cardFlippedOver = false;
@@ -129,6 +130,9 @@ function renderGame() {
 
 function renderPlayerCard(player) {
     const card = player.card;
+    const cardArt = finishedArtArray.includes(card.role) ?
+        "<img alt='" + card.role + "' src='../assets/images/roles/" + card.role + ".png' />"
+        : "<div class='placeholder'></div>";
     const cardClass = player.card.team === "good" ? "game-card-inner village" : "game-card-inner wolf";
     const playerCard = document.createElement("div");
     playerCard.setAttribute("id", "game-card");
@@ -137,6 +141,7 @@ function renderPlayerCard(player) {
         "<div class='" + cardClass + "'>" +
             "<div class='game-card-front'>" +
                 "<h2>" + card.role + "</h2>" +
+                cardArt +
                 "<p>" + card.description + "</p>" +
                 "<p id='flip-instruction'>Click to flip</p>" +
             "</div>" +

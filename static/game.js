@@ -1,7 +1,8 @@
 import {utility} from './util.js'
 
 const socket = io();
-const finishedArtArray = ["Villager", "Werewolf", "Seer", "Hunter"];
+
+const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter"];
 let clock;
 let currentGame = null;
 let cardFlippedOver = false;

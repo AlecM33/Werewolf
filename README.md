@@ -1,5 +1,3 @@
-# Werewolf
-
 An online multiplayer version of the social deception game Werewolf, and currently a work in progress. This project is a learning experience for me in regards to socket programming. 
 
 This is a Javascript application running on a node express server. I am using the socket.io package as a wrapper for Javascript Websocket.

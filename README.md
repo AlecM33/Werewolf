@@ -1,5 +1,7 @@
 <img alt="Werewolf" src="/assets/images/roles-small/wolf_logo.png" />
 
+This is the code currently running at <a href="https://play-werewolf.herokuapp.com">https://play-werewolf.herokuapp.com</a>
+
 An online multiplayer version of the social deception game Werewolf.
 
 This is a Javascript application running on a node express server. I am using the socket.io package as a wrapper for Javascript Websocket. This was built from scratch as a learning project. 

@@ -61,25 +61,29 @@ server.listen(process.env.PORT || 5000, function() {
 function teamWon(game) {
     let wolvesAlive = 0;
     let villagersAlive = 0;
+    let totalAlive = 0;
     let hunterAlive = false;
     for (const player of game.players) {
         if (player.card.team === "good" && !player.dead) {
-            villagersAlive++;
+            villagersAlive ++;
         }
         if (player.card.role === "Werewolf" && !player.dead) {
-            wolvesAlive++;
+            wolvesAlive ++;
         }
         if (player.card.role === "Hunter" && !player.dead) {
             hunterAlive = true;
+        }
+        if (!player.dead) {
+            totalAlive ++;
         }
     }
     if (wolvesAlive === 0) {
         return "village"
     }
-    if ((wolvesAlive === villagersAlive) && (wolvesAlive + villagersAlive !== 2)) {
+    if ((wolvesAlive === villagersAlive) && (totalAlive !== 2)) {
         return "wolf";
     }
-    if (wolvesAlive + villagersAlive === 2) {
+    if (totalAlive === 2) {
         return hunterAlive ? "village" : "wolf"
     }
     return false;

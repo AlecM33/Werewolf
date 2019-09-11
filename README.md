@@ -2,7 +2,7 @@
 
 An online multiplayer version of the social deception game Werewolf.
 
-This is a Javascript application running on a node express server. I am using the socket.io package as a wrapper for Javascript Websocket.
+This is a Javascript application running on a node express server. I am using the socket.io package as a wrapper for Javascript Websocket. This was built from scratch as a learning project. 
 
 This is meant to facilitate the game in a real-life social setting and provide utility/convenience - not control all aspects of the game flow. The app allows players to create or join a game lobby where state is synchronized. The creator of the game will have built a deck with certain roles in it, and once the game begins, this deck will be randomly dealt to all participants. 
 

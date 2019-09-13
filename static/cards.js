@@ -26,8 +26,8 @@ export const cards = [
     {
         role: "Shadow",
         team: "evil",
-        description: "If the Seer checks you, the Seer dies that night instead of whoever the wolves chose to kill. You" +
-            " do not know who the wolves are.",
+        description: "If the Seer checks you, the Seer dies that night instead of whoever the wolves chose to kill. Reveal" +
+            " yourself to the moderator.",
         powerRole: true
     },
     {

@@ -113,39 +113,48 @@ io.on('connection', function(socket) {
     });
     // broadcast current game state to all sockets in the room with a particular access code
     socket.on('requestState', function(data) {
-        if(Object.keys(socket.rooms).includes(data.code) === false) {
+        const game = activeGames[Object.keys(activeGames).find((key) => key === data.code)];
+        if (game && Object.keys(socket.rooms).includes(data.code) === false) {
             socket.join(data.code, function() {
-                io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+                io.to(data.code).emit('state', game);
             });
         } else {
-            io.to(data.code).emit('state', activeGames[Object.keys(activeGames).find((key) => key === data.code)]);
+            if (game) {
+                io.to(data.code).emit('state', game);
+            }
         }
     });
     socket.on('startGame', function(gameData) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === gameData.code)];
-        game.state = "started";
-        game.players = gameData.players;
-        if (game.time) {
-            let d = new Date();
-            d.setMinutes(d.getMinutes() + parseInt(game.time));
-            game.endTime = d.toJSON();
+        if (game) {
+            game.state = "started";
+            game.players = gameData.players;
+            if (game.time) {
+                let d = new Date();
+                d.setMinutes(d.getMinutes() + parseInt(game.time));
+                game.endTime = d.toJSON();
+            }
+            io.to(gameData.code).emit('state', game);
         }
-        io.to(gameData.code).emit('state', game);
     });
     socket.on('pauseGame', function(code) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
-        game.pauseTime = (new Date()).toJSON();
-        game.paused = true;
-        io.to(code).emit('state', game);
+        if (game) {
+            game.pauseTime = (new Date()).toJSON();
+            game.paused = true;
+            io.to(code).emit('state', game);
+        }
     });
     socket.on('resumeGame', function(code) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
-        game.paused = false;
-        let newTime = new Date(game.endTime).getTime() + (new Date().getTime() - new Date(game.pauseTime).getTime());
-        let newDate = new Date(game.endTime);
-        newDate.setTime(newTime);
-        game.endTime = newDate.toJSON();
-        io.to(code).emit('state', game);
+        if (game) {
+            game.paused = false;
+            let newTime = new Date(game.endTime).getTime() + (new Date().getTime() - new Date(game.pauseTime).getTime());
+            let newDate = new Date(game.endTime);
+            newDate.setTime(newTime);
+            game.endTime = newDate.toJSON();
+            io.to(code).emit('state', game);
+        }
     });
     socket.on("timerExpired", function(code) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];

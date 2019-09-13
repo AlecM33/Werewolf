@@ -2,7 +2,7 @@ import {utility} from './util.js'
 
 const socket = io();
 
-const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter"];
+const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason"];
 let clock;
 let currentGame = null;
 let cardFlippedOver = false;
@@ -68,7 +68,7 @@ function renderEndSplash() {
     wolfContainer.setAttribute("id", "wolves");
     let wolfContent = "<div class='evil-header'><span>The</span><p class='evil-subheader'>evil</p> <span>players were:</span></div>";
     for (const player of currentGame.players) {
-        if (player.card.role === "Werewolf" || player.card.role === "Minion") {
+        if (player.card.team === "evil") {
             wolfContent += "<div class='evil-list-item'>" + player.name + ": " + player.card.role + "</div>"
         }
     }
@@ -133,7 +133,7 @@ function renderPlayerCard(player) {
     const card = player.card;
     const cardArt = finishedArtArray.includes(card.role) ?
         "<img alt='" + card.role + "' src='../assets/images/roles/" + card.role + ".png' />"
-        : "<div class='placeholder'></div>";
+        : "<div class='placeholder'>Art coming soon.</div>";
     const cardClass = player.card.team === "good" ? "game-card-inner village" : "game-card-inner wolf";
     const playerCard = document.createElement("div");
     playerCard.setAttribute("id", "game-card");

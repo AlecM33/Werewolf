@@ -2,6 +2,7 @@ import {cards} from './cards.js'
 import {utility} from './util.js'
 
 const socket = io();
+const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion"];
 
 // important declarations
 class Card {
@@ -45,9 +46,16 @@ window.onload = function() {
         // put card info in the informational role description modal
         const modalRole = document.createElement("div");
         modalRole.setAttribute("class", "modal-role");
-        modalRole.innerHTML = cards[i].team === "good" ?
-            "<h2 class='role-village'>" + cards[i].role + "</h2><p>" + cards[i].team + "</p><p>" + cards[i].description + "</p>"
-            : "<h2 class='role-wolf'>" + cards[i].role + "</h2><p>" + cards[i].team + "</p><p>" + cards[i].description + "</p>";
+        const roleClass = cards[i].team === "good" ? "role-village" : "role-wolf";
+        const roleImage = finishedArtArray.includes(cards[i].role) ?
+            "<img alt='No art' src='/assets/images/roles-small/" + cards[i].role + ".png' />"
+            : "<span>Art soon.</span>";
+        modalRole.innerHTML =
+            "<h2 class='" + roleClass + "'>" + cards[i].role + "</h2>" +
+            roleImage +
+            "<p>" + cards[i].team + "</p>" +
+            "<p>" + cards[i].description + "</p>";
+
         document.getElementById("roles").appendChild(modalRole);
 
         fullDeck.push(newCard);

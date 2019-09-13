@@ -784,6 +784,7 @@ label {
 
 .modal-role {
     width: 22em;
+    position: relative;
 }
 
 .modal-role p:first-of-type {
@@ -793,6 +794,13 @@ label {
 
 .modal-role h2 {
     margin-bottom: 0;
+}
+
+.modal-role img {
+    position: absolute;
+    top: 8px;
+    left: 110px;
+    width: 65px;
 }
 
 .modal {

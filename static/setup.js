@@ -2,7 +2,7 @@ import {cards} from './cards.js'
 import {utility} from './util.js'
 
 const socket = io();
-const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion"];
+const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer"];
 
 // important declarations
 class Card {

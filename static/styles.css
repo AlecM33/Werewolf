@@ -13,7 +13,7 @@
         font-size: 20px;
     }
 
-    .app-content {
+    #app-content {
         width: 92%;
     }
 
@@ -76,7 +76,7 @@
         font-size: 30px;
     }
 
-    .app-content {
+    #app-content {
         width: 80%;
     }
 
@@ -161,7 +161,7 @@ html, body {
     }
 }
 
-.app-content {
+#app-content {
     text-align: center;
     margin: 0 auto;
 }
@@ -853,21 +853,29 @@ label {
 .modal-role {
     width: 22em;
     position: relative;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 0.5em;
+}
+
+.modal-role div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-role div div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .modal-role p:first-of-type {
-    margin-top: 0;
+    margin: 0;
     color: gray;
 }
 
 .modal-role h2 {
-    margin-bottom: 0;
-}
-
-.modal-role img {
-    position: absolute;
-    top: -10px;
-    left: 110px;
+    margin: 0;
 }
 
 .modal {

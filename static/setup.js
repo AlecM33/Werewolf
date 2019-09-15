@@ -51,9 +51,13 @@ window.onload = function() {
             "<img alt='No art' src='/assets/images/roles-small/" + cards[i].role + ".png' />"
             : "<span>Art soon.</span>";
         modalRole.innerHTML =
-            "<h2 class='" + roleClass + "'>" + cards[i].role + "</h2>" +
-            roleImage +
-            "<p>" + cards[i].team + "</p>" +
+            "<div>" +
+                roleImage +
+                "<div>" +
+                    "<h2 class='" + roleClass + "'>" + cards[i].role + "</h2>" +
+                    "<p>" + cards[i].team + "</p>" +
+                "</div>" +
+            "</div>" +
             "<p>" + cards[i].description + "</p>";
 
         document.getElementById("roles").appendChild(modalRole);
@@ -126,10 +130,12 @@ function resetCardQuantities() {
 
 function displayRoleModal() {
     document.getElementById("role-modal").classList.remove("hidden");
+    document.getElementById("app-content").classList.add("hidden");
 }
 
 function closeModal() {
     document.getElementById("role-modal").classList.add("hidden");
+    document.getElementById("app-content").classList.remove("hidden");
 }
 
 function buildDeckFromQuantities() {

@@ -143,8 +143,10 @@ function renderPlayerCard(player) {
             "<div class='game-card-front'>" +
                 "<h2>" + card.role + "</h2>" +
                 cardArt +
-                "<p>" + card.description + "</p>" +
-                "<p id='flip-instruction'>Click to flip</p>" +
+                "<div>" +
+                    "<p>" + card.description + "</p>" +
+                    "<p id='flip-instruction'>Click to flip</p>" +
+                "</div>" +
             "</div>" +
             "<div class='game-card-back'></div>" +
         "</div>";

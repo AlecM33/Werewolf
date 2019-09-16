@@ -51,6 +51,15 @@
     .app-title img {
         width: 100%;
     }
+    
+    #card-select-header, #game-start {
+        align-items: center;
+        justify-content: center;
+    }
+
+    #card-select {
+        justify-content: center;
+    }
 }
 
 @media(min-width: 750.01px) {
@@ -152,18 +161,19 @@ html, body {
 @keyframes slide-fade {
     from {
         opacity: 0;
-        margin-right: 0.5em;
+        left: -50px;
 
     }
     to {
         opacity: 1;
-        margin-right: 0;
+        left: 0px;
     }
 }
 
 #app-content {
     text-align: center;
     margin: 0 auto;
+    position: relative;
 }
 
 .app-title .app-header {
@@ -177,25 +187,6 @@ html, body {
     align-items: center;
     flex-direction: column;
     line-height: 0.95;
-}
-
-.app-title h1:nth-child(1) {
-    margin: 0;
-    animation: slide-fade 0.7s ease-in-out;
-    animation-fill-mode: backwards;
-    animation-direction: normal;
-}
-
-.app-title h1:nth-child(2) {
-    margin: 0 0 0 1.5em;
-    animation: slide-fade 0.7s ease-in-out;
-    animation-delay: 0.4s;
-    animation-fill-mode: backwards;
-    animation-direction: normal;
-}
-
-.app-title .title-question-mark {
-    color: #171469;
 }
 
 #footer {
@@ -387,7 +378,7 @@ button {
     box-shadow: none !important;
     cursor: pointer;
     background-color: rgba(23, 20, 105, 0.15);
-    animation: press-down 0.1s;
+    animation: press-down 0.2s;
     animation-fill-mode: forwards;
     animation-direction: normal;
 }
@@ -402,6 +393,23 @@ button {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+#main-buttons a:nth-child(1) {
+    animation: fadein 0.3s ease-in;
+    animation-fill-mode: backwards;
+}
+
+#main-buttons a:nth-child(2) {
+    animation: fadein 0.3s ease-in;
+    animation-fill-mode: backwards;
+    animation-delay: 0.1s;
+}
+
+#main-buttons a:nth-child(3) {
+    animation: fadein 0.3s ease-in;
+    animation-fill-mode: backwards;
+    animation-delay: 0.2s;
 }
 
 #main-buttons button {
@@ -434,7 +442,7 @@ button {
     width: 50%;
     padding: 0.8em;
     height: 4em;
-    max-width: 15em;
+    width: 12em;
 }
 
 #game-start a button {
@@ -448,18 +456,18 @@ button {
 }
 
 #game-start a {
-    width: 50%;
     margin-right: 0.3em;
-    max-width: 12em;
 }
 
 #game-start button {
     margin-left: 0.3em;
+    width: 12em;
 }
 
 #game-start a button {
     margin-right: 0.3em;
     margin-left: 0;
+    width: 12em;
 }
 
 #card-select-header button:nth-child(1) {
@@ -503,7 +511,10 @@ button {
 }
 
 #create-game-container, #lobby-container, #join-game-container, #game-container, #launch, #message-box {
-    animation: fadein 0.8s ease-in;
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: slide-fade 0.5s;
 }
 
 a {

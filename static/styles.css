@@ -510,7 +510,7 @@ button {
     margin-right: 0.5em !important;
 }
 
-#create-game-container, #lobby-container, #join-game-container, #game-container, #launch, #message-box {
+#create-game-container, #join-game-container {
     position: absolute;
     left: 0;
     top: 0;

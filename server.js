@@ -116,11 +116,11 @@ io.on('connection', function(socket) {
         const game = activeGames[Object.keys(activeGames).find((key) => key === data.code)];
         if (game && Object.keys(socket.rooms).includes(data.code) === false) {
             socket.join(data.code, function() {
-                io.to(data.code).emit('state', game);
+                io.sockets.in(data.code).emit('state', game);
             });
         } else {
             if (game) {
-                io.to(data.code).emit('state', game);
+                io.sockets.in(data.code).emit('state', game);
             }
         }
     });
@@ -134,7 +134,7 @@ io.on('connection', function(socket) {
                 d.setMinutes(d.getMinutes() + parseInt(game.time));
                 game.endTime = d.toJSON();
             }
-            io.to(gameData.code).emit('state', game);
+            io.sockets.in(gameData.code).emit('state', game);
         }
     });
     socket.on('pauseGame', function(code) {
@@ -142,7 +142,7 @@ io.on('connection', function(socket) {
         if (game) {
             game.pauseTime = (new Date()).toJSON();
             game.paused = true;
-            io.to(code).emit('state', game);
+            io.sockets.in(code).emit('state', game);
         }
     });
     socket.on('resumeGame', function(code) {
@@ -153,7 +153,7 @@ io.on('connection', function(socket) {
             let newDate = new Date(game.endTime);
             newDate.setTime(newTime);
             game.endTime = newDate.toJSON();
-            io.to(code).emit('state', game);
+            io.sockets.in(code).emit('state', game);
         }
     });
     socket.on("timerExpired", function(code) {
@@ -161,7 +161,7 @@ io.on('connection', function(socket) {
         if (game) {
             game.winningTeam = "wolf";
             game.state = "ended";
-            io.to(code).emit('state', game);
+            io.sockets.in(code).emit('state', game);
         }
     });
     socket.on('killPlayer', function(id, code) {
@@ -174,13 +174,13 @@ io.on('connection', function(socket) {
             if (winCheck === "wolf") {
                 game.winningTeam = "wolf";
                 game.state = "ended";
-                io.to(code).emit('state', game);
+                io.sockets.in(code).emit('state', game);
             } else if (winCheck === "village") {
                 game.winningTeam = "village";
                 game.state = "ended";
-                io.to(code).emit('state', game);
+                io.sockets.in(code).emit('state', game);
             } else {
-                io.to(code).emit('state', game);
+                io.sockets.in(code).emit('state', game);
             }
         }
     });

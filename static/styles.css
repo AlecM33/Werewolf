@@ -60,6 +60,36 @@
     #card-select {
         justify-content: center;
     }
+
+    #join-game-container {
+        display: flex;
+        flex-direction: column
+    }
+
+    #join-game-container input[type=text] {
+        width: 10em;
+        height: 1.3em;
+        font-size: 1em;
+    }
+
+    #join-game-container label {
+        font-size: 1.3em;
+    }
+    
+    #join-game-container h2 {
+        font-size: 2.5em;
+        margin-bottom: 1em;
+    }
+
+    #join-game-container button, #join-game-container a {
+        width: 45%;
+        max-width: 15em;
+        margin-right: 0.5em;
+    }
+
+    #join-game-container a button {
+        width: 100%;
+    }
 }
 
 @media(min-width: 750.01px) {
@@ -69,7 +99,7 @@
     }
 
     .app-header-secondary {
-        font-size: 50px;
+        font-size: 70px;
         margin: 0.3em 0;
     }
 
@@ -125,6 +155,26 @@
         justify-content: flex-start;
     }
 
+    #join-game-container input[type=text] {
+        width: 17em;
+        height: 1.7em;
+        font-size: 1.1em;
+    }
+
+    #join-game-container label {
+        font-size: 1.3em;
+    }
+    
+    #join-game-container h2 {
+        font-size: 4em;
+    }
+
+    #join-game-container button, #join-game-container a button {
+        width: 15em;
+        padding: 1.5em;
+        margin-right: 1em;
+    }
+
 }
 
 @font-face {
@@ -161,12 +211,12 @@ html, body {
 @keyframes slide-fade {
     from {
         opacity: 0;
-        left: -50px;
+        transform: translateX(-80px)
 
     }
     to {
         opacity: 1;
-        left: 0px;
+        transform: translateX(0);
     }
 }
 
@@ -252,6 +302,12 @@ button {
 #join-game-container span {
     display: flex;
     flex-direction: column;
+}
+
+#join-game-container div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 #join-game-container form {
@@ -499,9 +555,8 @@ button {
 }
 
 #create-game-container, #join-game-container {
-    display: inline-block;
     text-align: left;
-    margin: 3em 0.5em;
+    margin: 1em 0.5em 2em 0.5em;
 }
 
 #game-size {
@@ -510,10 +565,18 @@ button {
     margin-right: 0.5em !important;
 }
 
-#create-game-container, #join-game-container {
-    position: absolute;
-    left: 0;
-    top: 0;
+#create-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    animation: slide-fade 0.5s;
+}
+
+
+#join-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     animation: slide-fade 0.5s;
 }
 

@@ -11,7 +11,8 @@ let cardRendered = false;
 // respond to the game state received from the server
 socket.on('state', function(game) {
     currentGame = game;
-    if (game.message) {
+    if (game.killedPlayer && game.killedRole) {
+        playKilledAnimation();
         document.getElementById("message-box").innerText = game.message;
     }
     buildGameBasedOnState();
@@ -31,6 +32,10 @@ function buildGameBasedOnState() {
         default:
             break;
     }
+}
+
+function playKilledAnimation() {
+    
 }
 
 function launchGame() {

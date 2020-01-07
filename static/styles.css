@@ -220,55 +220,6 @@ html, body {
     }
 }
 
-@keyframes slide-fade-top {
-    0% {
-        opacity: 0;
-        transform: translateY(-150px)
-
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateY(-150px)
-
-    }
-}
-
-@keyframes slide-fade-bottom {
-    0% {
-        opacity: 0;
-        transform: translateY(150px)
-
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateY(150px)
-
-    }
-}
-
-@keyframes fade-overlay {
-    0% {
-        background-color: rgba(0,0,0,0.0);
-    }
-    50% {
-        background-color: rgba(0,0,0,0.9);
-    }
-
-    100% {
-        background-color: rgba(0,0,0,0.0);
-    }
-}
-
 #app-content {
     text-align: center;
     margin: 0 auto;
@@ -1081,8 +1032,10 @@ label {
     color: #7d0b0b;
 }
 
-.overlay {
+#overlay {
     position: fixed;
+    user-select: none;
+    display: none;
     width: 100%;
     height: 100%;
     top: 0;
@@ -1091,42 +1044,139 @@ label {
     bottom: 0;
     background-color: rgba(0,0,0,0.9);
     z-index: 3;
-    animation: fade-overlay 5s;
-    animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
 }
 
 #killed-name {
+    display: none;
     color: white;
     padding-top: 2em;
     font-size: 2.5em;
     margin: 0;
-    animation: slide-fade-top 5s;
-    animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
 }
 
 #killed-role {
-    animation: slide-fade-bottom 5s;
-    animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
+    display: none;
+    margin: 0 auto;
 }
 
+@keyframes slide-fade-in-top {
+    0% {
+        opacity: 0;
+        transform: translateY(-150px)
 
-.killed-card {
-    width: 50px;
-    height: 200px;
-    background-color: white;
-    position: absolute;
-    top: 19%;
-    left: 14%;
-    background-color: transparent;
-    cursor: pointer;
-    justify-content: space-between;
-    max-width: 17em;
-    border-radius: 3px;
-    height: 23em;
-    width: 72%;
-    box-shadow: 0 13px 17px rgba(0,0,0,0.6);
-    perspective: 1000px;
-    transform-style: preserve-3d;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-fade-out-top {
+    0% {
+        opacity: 1;
+        transform: translateY(0px)
+
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-150px);
+    }
+}
+
+@keyframes slide-fade-in-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(150px)
+
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-fade-out-bottom {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(150px)
+
+    }
+}
+
+@keyframes fade-overlay-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-overlay-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.animate-overlay-in {
+    animation: fade-overlay-in 5s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-fill-mode: forwards;
+    -webkit-animation: fade-overlay-in 5s;
+    -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-overlay-out {
+    animation: fade-overlay-out 1s;
+    animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    animation-fill-mode: forwards;
+    -webkit-animation: fade-overlay-out 1s;
+    -webkit-animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-name-in {
+    animation: slide-fade-in-top 5s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-in-top 5s;
+    -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-name-out {
+    animation: slide-fade-out-top 1s;
+    animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-out-top 1s;
+    -webkit-animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-role-in {
+    animation: slide-fade-in-bottom 5s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-in-bottom 5s;
+    -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-role-out {
+    animation: slide-fade-out-bottom 1s;
+    animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-out-bottom 1s;
+    -webkit-animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-animation-fill-mode: forwards;
 }
 
 @keyframes animatetop {

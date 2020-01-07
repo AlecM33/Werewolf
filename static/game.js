@@ -7,11 +7,13 @@ let clock;
 let currentGame = null;
 let cardFlippedOver = false;
 let cardRendered = false;
+let lastKilled = null;
 
 // respond to the game state received from the server
 socket.on('state', function(game) {
     currentGame = game;
-    if (game.killedPlayer && game.killedRole) {
+    if (game.killedPlayer && game.killedRole && game.lastKilled !== lastKilled) { // a new player has been killed
+        lastKilled = game.lastKilled;
         playKilledAnimation();
         document.getElementById("message-box").innerText = game.message;
     }
@@ -34,8 +36,40 @@ function buildGameBasedOnState() {
     }
 }
 
+function hideAfterExit(e) {
+    e.target.style.display = 'none'
+    e.target.removeEventListener('animationend', triggerExitAnimation);
+    e.target.removeEventListener('animationend', hideAfterExit);
+}
+
+function triggerExitAnimation(e) {
+    e.target.classList.remove(e.target.entranceClass);
+    e.target.classList.remove(e.target.exitClass);
+    e.target.offsetWidth;
+    e.target.classList.add(e.target.exitClass);
+    window.setTimeout(()=>{
+        e.target.addEventListener('animationend', hideAfterExit);
+    },0);
+}
+
+function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
+        let transitionEl = document.querySelector(selector);
+        transitionEl.style.display = 'block';
+        transitionEl.addEventListener('animationend', triggerExitAnimation);
+        transitionEl.classList.remove(entranceClass);
+        transitionEl.entranceClass = entranceClass;
+        transitionEl.exitClass = exitClass;
+        transitionEl.offsetWidth;
+        if (image) {
+            transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole + ".png");
+        }
+        transitionEl.classList.add(entranceClass);
+}
+
 function playKilledAnimation() {
-    
+    triggerEntranceAnimation('#overlay', 'animate-overlay-in', 'animate-overlay-out', false);
+    triggerEntranceAnimation('#killed-role', 'animate-role-in', 'animate-role-out', true);
+    triggerEntranceAnimation('#killed-name', 'animate-name-in', 'animate-name-out', false);
 }
 
 function launchGame() {

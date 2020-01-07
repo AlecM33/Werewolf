@@ -169,8 +169,10 @@ io.on('connection', function(socket) {
         if (game) {
             let player = game.players.find((player) => player.id === id);
             game.players.find((player) => player.id === id).dead = true;
-            game.killedPlayer = player;
+            game.killedPlayer = player.name;
+            game.lastKilled = player.id;
             game.killedRole = player.card.role;
+            game.message = player.name + ", a " + player.card.role + " was killed!"
             const winCheck = teamWon(game);
             if (winCheck === "wolf") {
                 game.winningTeam = "wolf";

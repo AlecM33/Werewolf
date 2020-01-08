@@ -50,6 +50,7 @@
 
     .app-title img {
         width: 100%;
+        filter: drop-shadow(45px -15px 100px rgba(255,255,255, 1));
     }
     
     #card-select-header, #game-start {
@@ -219,7 +220,9 @@
 html, body {
     margin: 0 auto;
     width: 100%;
+    color: #bfb8b8;
     font-family: 'sitewide-sans-serif', sans-serif;
+    background-color: #23282b !important;
 }
 
 @keyframes fadein {
@@ -294,12 +297,13 @@ html, body {
 }
 
 #footer a:hover {
-    color: rgba(23, 20, 105, 0.4);
+    color: #333243;
 }
 
 .app-header, .app-header-secondary {
     font-family: 'diavlo', sans-serif;
-    color: #7d0b0b;
+    filter: drop-shadow(2px 2px 4px black);
+    color: #992626;
 }
 
 h3 {
@@ -315,7 +319,7 @@ button {
     background-color: rgba(189, 42, 42, 0.1) !important;
 }
 
-#join-error, #name-error, #size-error {
+#join-error, #name-error, #size-error, #some-error {
     color: #bd2a2a;
     font-size: 0.9em;
     height: 2em;
@@ -344,9 +348,10 @@ button {
 }
 
 .app-btn {
-    background-color: #f8f8f8;
-    color: #171469;
-    border: 1px solid #d3d3d3;
+    background-color: #992626;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.4);
+    color: #bfb8b8;
+    border: none;
     width: 10em;
     padding: 1em;
     border-radius: 3px;
@@ -358,15 +363,15 @@ button {
     cursor: pointer;
     position: relative;
     margin: 0.3em;
+    background-color: #393a40;
     color: gray;
-    border: 1px solid black;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
     user-select: none;
 }
 
 .card:hover {
-    background-color: #e8e8e8;
+    background-color: #55565c;
 }
 
 .card-top {
@@ -390,6 +395,7 @@ button {
     font-size: 2.5em;
     pointer-events: none;
     line-height: 1;
+    color: #bfb8b8;
 }
 
 .card-top p.card-role {
@@ -410,6 +416,7 @@ button {
     line-height: 1;
     font-size: 3em;
     margin: 0;
+    color: #bfb8b8;
 }
 
 .card-image {
@@ -423,18 +430,14 @@ button {
     pointer-events: none;
     font-weight: bold;
     text-align: left;
-    color: #7d0b0b;
+    color: #bd2a2a;
     font-size: 1.5em;
     margin: 0 0 0 0.2em;
     width: 1.5em;
 }
 
-.card:hover .card-quantity, .card:active .card-quantity {
-    background-color: #e8e8e8;
-}
-
 .card-role {
-    color: gray;
+    color: #bfb8b8;
     margin: 0;
 }
 
@@ -448,8 +451,8 @@ button {
 .app-btn-secondary {
     background-color: white;
     border-radius: 3px;
-    color: #7d0b0b;
-    border: 1px solid #7d0b0b;
+    color: #bd2a2a;
+    border: 1px solid #bd2a2a;
     width: 10em;
     padding: 0.5em;
     margin-right: 1em;
@@ -462,13 +465,13 @@ button {
 
 .app-btn:hover, .app-btn:focus {
     cursor: pointer;
-    background-color: rgba(23, 20, 105, 0.15);
+    background-color: #333243;
 }
 
 #main-buttons .app-btn:hover, #main-buttons .app-btn:focus {
     box-shadow: none !important;
     cursor: pointer;
-    background-color: rgba(23, 20, 105, 0.15);
+    background-color: #333243;
     animation: press-down 0.2s;
     animation-fill-mode: forwards;
     animation-direction: normal;
@@ -508,7 +511,8 @@ button {
     padding: 1.2em;
     font-size: 1em;
     box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.4);
-    color: #7d0b0b;
+    background-color: #992626;
+    color: #bfb8b8;
 }
 
 #main-buttons a {
@@ -526,7 +530,7 @@ button {
 #card-select-header h3 {
     margin: 0;
     font-size: 1.2em;
-    color: #7d0b0b;
+    color: #bfb8b8;
 }
 
 #create-game-container button {
@@ -543,7 +547,6 @@ button {
 #game-start {
     display: flex;
     width: 100%;
-    margin-bottom: 2em;
 }
 
 #game-start a {
@@ -576,17 +579,13 @@ button {
 
 #reset-btn {
     /*background-color: transparent;*/
-    /*color: #7d0b0b;*/
+    /*color: #bd2a2a;*/
     /*border-radius: 5px;*/
-    /*border: 1px solid #7d0b0b;*/
+    /*border: 1px solid #bd2a2a;*/
     /*width: 8em;*/
     /*padding: 0.5em;*/
     /*margin: 0 1em 0 0;*/
     /*cursor: pointer;*/
-}
-
-#reset-btn:hover {
-    background-color: rgba(24, 9, 82, 0.15);
 }
 
 #create-game-container, #join-game-container {
@@ -622,7 +621,7 @@ a {
 
 input[type=text] {
     background-color: transparent;
-    border: 1px solid #171469;
+    border: 1px solid #464552;
     caret-color: gray;
     margin: 0.5em 0 1em 0;
     color: gray;
@@ -635,7 +634,7 @@ input[type=text] {
 
 input[type=number] {
     background-color: transparent;
-    border: 1px solid #171469;
+    border: 1px solid #464552;
     border-radius: 5px;
     caret-color: gray;
     margin: 0.5em 0 1em 0;
@@ -646,8 +645,8 @@ input[type=number] {
     font-size: 1.1em;
 }
 
-input[type=text]:hover {
-    background-color: rgba(23, 20, 105, 0.15);
+input[type=text]:hover, input[type=number]:hover {
+    background-color: rgba(51, 50, 67, 0.35);
 }
 
 label {
@@ -661,7 +660,7 @@ label {
     height: 2em;
     max-width: 25em;
     margin: 1em auto;
-    border-bottom: 1px solid #7d0b0b;
+    border-bottom: 1px solid #992626;
     padding: 0.5em;
 }
 
@@ -675,10 +674,10 @@ label {
 }
 
 .lobby-player {
-    color: #7d0b0b;
+    color: #bfb8b8;
     border-radius: 3px;
     font-size: 1em;
-    background-color: rgba(23, 20, 105, 0.1);
+    background-color: rgba(51, 50, 67, 0.35);
     padding: 0.3em;
     margin: 0.5em 0;
     text-align: left;
@@ -690,14 +689,14 @@ label {
 }
 
 .highlighted {
-    border: 2px solid #7d0b0b;
+    border: 2px solid #bd2a2a;
 }
 
 .disabled {
-    opacity: 0.7;
+    opacity: 0.5;
     color: gray;
     background-color: white;
-    border: 1px solid gray;
+    border: none;
     pointer-events: none;
 
 }
@@ -784,11 +783,11 @@ label {
 }
 
 .village h2 {
-    color: #171469;
+    color: #4a6bff;
 }
 
 .wolf h2 {
-    color: #7d0b0b;
+    color: #bd2a2a;
 }
 
 .flip-up {
@@ -816,7 +815,8 @@ label {
 
 #game-card p {
     padding: 0.5em;
-    font-size: 0.7em;
+    font-size: 0.8em;
+    color: #464552;
 }
 
 .game-container {
@@ -829,16 +829,17 @@ label {
     width: 95%;
     height: 97%;
     margin: auto auto;
-    border-radius: 3px;
+    border-radius: 5px;
     text-align: center;
-    border: 2px solid rgba(59, 59, 59, 0.5);
+    border: 3px solid #9c9c9c;
 }
 
 /* Position the front and back side */
 .game-card-front, .game-card-back {
-    background-color: #f0f0f0;
+    background-color: #dedede;
     position: absolute;
     display: flex;
+    border-radius: 3px;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
@@ -870,7 +871,7 @@ label {
 
 #players-remaining {
     font-size: 1.5em;
-    color: gray;
+    color: #bfb8b8;
     width: 6em;
     margin-bottom: 0.5em;
 }
@@ -928,7 +929,7 @@ label {
 
 #end-container .evil-subheader {
     font-family: 'diavlo', sans-serif;
-    color: #7d0b0b;
+    color: #bd2a2a;
     margin: 0 0.3em;
     font-size: 1.5em;
 }
@@ -953,17 +954,17 @@ label {
 
 #end-container .winner-village {
     font-family: 'diavlo', sans-serif;
-    color: #171469;
+    color: #4a6bff;
 }
 
 #end-container .winner-wolf {
     font-family: 'diavlo', sans-serif;
-    color: #7d0b0b;
+    color: #bd2a2a;
 }
 
 #learn-container h2 {
     font-family: 'diavlo', sans-serif;
-    color: #7d0b0b;
+    color: #bd2a2a;
     font-size: 40px;
 }
 
@@ -979,7 +980,7 @@ label {
 .modal-role {
     width: 22em;
     position: relative;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid #494f52;
     padding-bottom: 0.5em;
 }
 
@@ -997,7 +998,7 @@ label {
 
 .modal-role p:first-of-type {
     margin: 0;
-    color: gray;
+    color: #bfb8b8;
 }
 
 .modal-role h2 {
@@ -1020,51 +1021,51 @@ label {
 .modal-header {
     border-radius: 5px;
     display: flex;
-    justify-content: space-between;
-    background-color: white;
-    color: gray;
+    justify-content: flex-end;
+    background-color: #23282b;
+    color: #bfb8b8;
 }
 
 .modal-header h2 {
     margin-top: 2em;
     margin-bottom: 0;
-    color: black;
+    color: #bfb8b8;
 }
 
 .modal-footer {
     padding: 1em;
-    background-color: white;
-    color: white;
+    background-color: #23282b;
+    color: #bfb8b8;
 }
 
 .modal-content {
-    border-radius: 5px;
     position: relative;
-    background-color: #fefefe;
+    color: #bfb8b8;
+    background-color: #23282b;
     margin: 1em auto;
     padding: 0;
-    border: 1px solid #888;
+    border: none;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     animation-name: animatetop;
     animation-duration: 0.4s
 }
 
 .role-wolf {
-    color: #7d0b0b;
+    color: #bd2a2a;
     font-family: 'diavlo', sans-serif;
 }
 
 .role-village {
-    color: #171469;
+    color: #4a6bff;
     font-family: 'diavlo', sans-serif;
 }
 
 .quantity-village {
-    color: #171469;
+    color: #4a6bff;
 }
 
 .quantity-wolf {
-    color: #7d0b0b;
+    color: #bd2a2a;
 }
 
 #overlay {
@@ -1084,7 +1085,7 @@ label {
 
 #killed-name {
     display: none;
-    color: white;
+    color: #bfb8b8;
 }
 
 #killed-role {
@@ -1219,7 +1220,7 @@ label {
 
 .close {
     margin-top: 0.2em;
-    color: black;
+    color: #bfb8b8;
     float: right;
     font-size: 46px;
     height: 1em;
@@ -1230,7 +1231,7 @@ label {
 
 .close:hover,
 .close:focus {
-color: black;
+color: #333243;
 text-decoration: none;
 cursor: pointer;
 }

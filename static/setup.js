@@ -185,6 +185,7 @@ function createGame() {
             window.location.replace('/' + code);
         });
     } else {
+        document.getElementById("some-error").innerText = "There are problems with your above setup.";
         if (!atLeastOnePlayer) {
             document.getElementById("game-size").classList.add("error");
             document.getElementById("size-error").innerText = "Add at least one card";

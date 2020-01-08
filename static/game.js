@@ -105,7 +105,7 @@ function getLiveCount() {
 
 function renderEndSplash() {
     document.getElementById("game-container").classList.add("hidden");
-    document.getElementById("message-box").classList.add("hidden");
+    document.querySelector("#message-box").style.display = 'none';
     currentGame.winningTeam === "village"
     ? document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-village'>Village</p> wins!</div>"
     : document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-wolf'>Wolves</p>win!</div>";
@@ -124,6 +124,7 @@ function renderEndSplash() {
 }
 
 function renderGame() {
+    document.querySelector("#message-box").style.display = 'block';
     if (currentGame.killedRole && currentGame.lastKilled !== lastKilled) { // a new player has been killed
         lastKilled = currentGame.lastKilled;
         document.getElementById("killed-name").innerText = currentGame.killedPlayer + " was a " + currentGame.killedRole + "!";
@@ -266,6 +267,7 @@ function killPlayer() {
 }
 
 function renderLobby() {
+    document.querySelector("#message-box").style.display = 'none';
     // Render lobby header
     if (document.getElementsByClassName("lobby-player").length === 0) {
         let header = document.createElement("h2");

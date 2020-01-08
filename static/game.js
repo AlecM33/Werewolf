@@ -60,7 +60,7 @@ function triggerExitAnimation(e) {
 
 function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
         let transitionEl = document.querySelector(selector);
-        transitionEl.style.display = 'block';
+        transitionEl.style.display = 'flex';
         transitionEl.addEventListener('animationend', triggerExitAnimation, {"capture": true, "once": true});
         transitionEl.classList.remove(entranceClass);
         transitionEl.entranceClass = entranceClass;

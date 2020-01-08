@@ -12,13 +12,20 @@ let lastKilled = null;
 // respond to the game state received from the server
 socket.on('state', function(game) {
     currentGame = game;
-    if (game.killedPlayer && game.killedRole && game.lastKilled !== lastKilled) { // a new player has been killed
-        lastKilled = game.lastKilled;
-        playKilledAnimation();
-        document.getElementById("message-box").innerText = game.message;
-    }
     buildGameBasedOnState();
 });
+
+window.onblur = function() { // pause animations if the window is not in focus
+    this.document.querySelector("#overlay").style.animationPlayState = 'paused';
+    this.document.querySelector("#killed-role").style.animationPlayState = 'paused';
+    this.document.querySelector("#killed-name").style.animationPlayState = 'paused';
+}
+
+window.onfocus = function() { // play animations when window is focused
+    this.document.querySelector("#overlay").style.animationPlayState = 'running';
+    this.document.querySelector("#killed-role").style.animationPlayState = 'running';
+    this.document.querySelector("#killed-name").style.animationPlayState = 'running';
+}
 
 function buildGameBasedOnState() {
     switch(currentGame.state) {
@@ -38,8 +45,7 @@ function buildGameBasedOnState() {
 
 function hideAfterExit(e) {
     e.target.style.display = 'none'
-    e.target.removeEventListener('animationend', triggerExitAnimation);
-    e.target.removeEventListener('animationend', hideAfterExit);
+    e.target.classList.remove(e.target.exitClass);
 }
 
 function triggerExitAnimation(e) {
@@ -48,14 +54,14 @@ function triggerExitAnimation(e) {
     e.target.offsetWidth;
     e.target.classList.add(e.target.exitClass);
     window.setTimeout(()=>{
-        e.target.addEventListener('animationend', hideAfterExit);
+        e.target.addEventListener('animationend', hideAfterExit, {"capture": true, "once": true});
     },0);
 }
 
 function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
         let transitionEl = document.querySelector(selector);
         transitionEl.style.display = 'block';
-        transitionEl.addEventListener('animationend', triggerExitAnimation);
+        transitionEl.addEventListener('animationend', triggerExitAnimation, {"capture": true, "once": true});
         transitionEl.classList.remove(entranceClass);
         transitionEl.entranceClass = entranceClass;
         transitionEl.exitClass = exitClass;
@@ -118,6 +124,12 @@ function renderEndSplash() {
 }
 
 function renderGame() {
+    if (currentGame.killedRole && currentGame.lastKilled !== lastKilled) { // a new player has been killed
+        lastKilled = currentGame.lastKilled;
+        document.getElementById("killed-name").innerText = currentGame.killedPlayer + " was a " + currentGame.killedRole + "!";
+        playKilledAnimation();
+        document.getElementById("message-box").innerText = currentGame.message;
+    }
     const player = currentGame.players.find((player) => player.id === sessionStorage.getItem("id"));
 
     // render the header

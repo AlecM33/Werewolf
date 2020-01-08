@@ -172,7 +172,7 @@ io.on('connection', function(socket) {
             game.killedPlayer = player.name;
             game.lastKilled = player.id;
             game.killedRole = player.card.role;
-            game.message = player.name + ", a " + player.card.role + " was killed!"
+            game.message = player.name + ", a " + player.card.role + ", was killed!"
             const winCheck = teamWon(game);
             if (winCheck === "wolf") {
                 game.winningTeam = "wolf";

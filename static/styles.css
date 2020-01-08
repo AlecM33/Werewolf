@@ -24,6 +24,11 @@
         font-size: 0.9em;
     }
 
+    .card-image {
+        top: 21%;
+        left: 14%;
+    }
+
     .modal {
         width: 92%;
     }
@@ -159,6 +164,7 @@
 
     .app-title img {
         width: 35em;
+        filter: drop-shadow(45px -15px 100px rgba(255,255,255, 1));
     }
 
     #main-buttons a {
@@ -167,6 +173,11 @@
 
     #card-select {
         justify-content: flex-start;
+    }
+
+    .card-image {
+        top: 29%;
+        left: 20%;
     }
 
     #join-game-container input[type=text] {
@@ -422,8 +433,6 @@ button {
 .card-image {
     position: absolute;
     pointer-events: none;
-    top: 21%;
-    left: 14%;
 }
 
 .card-quantity {

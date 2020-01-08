@@ -371,10 +371,10 @@ button {
 
 .card-top {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
     height: 50%;
-    border-bottom: 1px solid gray;
 }
 
 .card-bottom {
@@ -382,13 +382,14 @@ button {
     display: -webkit-flex;
     justify-content: flex-end;
     height: 50%;
-    align-items: flex-start;
+    align-items: flex-end;
 }
 
 .card-top p {
     margin: 0;
     font-size: 2.5em;
     pointer-events: none;
+    line-height: 1;
 }
 
 .card-top p.card-role {
@@ -396,26 +397,36 @@ button {
     pointer-events: none;
 }
 
+.card-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+}
+
 .card-bottom p {
     pointer-events: none;
+    line-height: 1;
     font-size: 3em;
     margin: 0;
+}
+
+.card-image {
+    position: absolute;
+    pointer-events: none;
+    top: 21%;
+    left: 14%;
 }
 
 .card-quantity {
     pointer-events: none;
     font-weight: bold;
+    text-align: left;
     color: #7d0b0b;
-    font-size: 2.5em;
-    margin: 0;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 32%;
+    font-size: 1.5em;
+    margin: 0 0 0 0.2em;
     width: 1.5em;
-    background-color: white;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .card:hover .card-quantity, .card:active .card-quantity {

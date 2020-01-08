@@ -72,13 +72,18 @@ window.onload = function() {
         cardContainer.setAttribute("id", "card-" + i);
         cardContainer.innerHTML = 
             "<div class='card-top'>" +
-                "<p class='card-role'>" + newCard.role + "</p>" +
-                "<p>+</p>" +
+                "<div class='card-header'>" +
+                    "<div>" +
+                        "<p class='card-role'>" + newCard.role + "</p>" +
+                        "<div class='" + quantityClass + "'>" + newCard.quantity + "</div>" +
+                    "</div>" +
+                    "<p>+</p>" +
+                "</div>" +
             "</div>" +
-            "<div class='" + quantityClass + "'>" + newCard.quantity + "</div>" +
+            "<img class='card-image' src='../assets/images/roles-small/" + newCard.role + ".png' alt='" + newCard.role + "'/>" + 
             "<div class='card-bottom'>" +
                 "<p>-</p>" +
-            "</div>";
+            "</div>"
         document.getElementById("card-select").appendChild(cardContainer);
         let cardTop = document.getElementById("card-" + i).getElementsByClassName("card-top")[0];
         let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];

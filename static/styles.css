@@ -90,6 +90,19 @@
     #join-game-container a button {
         width: 100%;
     }
+
+    #overlay {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #killed-name {
+        padding-top: 0;
+        margin: 0 0.5em;
+        font-size: 2em;
+    }
 }
 
 @media(min-width: 750.01px) {
@@ -173,6 +186,17 @@
         width: 15em;
         padding: 1.5em;
         margin-right: 1em;
+    }
+
+    #killed-name {
+        padding-top: 2em;
+        font-size: 2.5em;
+        margin: 0;
+    }
+
+    #overlay {
+        justify-content: flex-start;
+        align-items: center;
     }
 
 }
@@ -699,6 +723,17 @@ label {
     }
 }
 
+@keyframes flip-slide {
+    0% {
+        transform: rotateY(0deg);
+        transform: translateX(-100px);
+    }
+    100% {
+        transform: rotateY(-90deg);
+        transform: translateX(0px);
+    }
+}
+
 @keyframes flip-down {
     0% {
         transform: rotateY(0deg);
@@ -755,6 +790,12 @@ label {
     animation: flip-down 0.7s;
     animation-fill-mode: forwards;
 }
+
+.flip-slide{
+    animation: flip-slide 1s;
+    animation-fill-mode: forwards;
+}
+
 
 #game-card h2 {
     font-size: 1.7em;
@@ -1013,6 +1054,151 @@ label {
 
 .quantity-wolf {
     color: #7d0b0b;
+}
+
+#overlay {
+    position: fixed;
+    user-select: none;
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.9);
+    z-index: 3;
+}
+
+#killed-name {
+    display: none;
+    color: white;
+}
+
+#killed-role {
+    display: none;
+    margin: 0 auto;
+}
+
+@keyframes slide-fade-in-top {
+    0% {
+        opacity: 0;
+        transform: translateY(-150px)
+
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-fade-out-top {
+    0% {
+        opacity: 1;
+        transform: translateY(0px)
+
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-150px);
+    }
+}
+
+@keyframes slide-fade-in-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(150px)
+
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-fade-out-bottom {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(150px)
+
+    }
+}
+
+@keyframes fade-overlay-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-overlay-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.animate-overlay-in {
+    animation: fade-overlay-in 5s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-fill-mode: forwards;
+    -webkit-animation: fade-overlay-in 5s;
+    -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-overlay-out {
+    animation: fade-overlay-out 1s;
+    animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    animation-fill-mode: forwards;
+    -webkit-animation: fade-overlay-out 1s;
+    -webkit-animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-name-in {
+    animation: slide-fade-in-top 5s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-in-top 5s;
+    -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-name-out {
+    animation: slide-fade-out-top 1s;
+    animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-out-top 1s;
+    -webkit-animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-role-in {
+    animation: slide-fade-in-bottom 5s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-in-bottom 5s;
+    -webkit-animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+    -webkit-animation-fill-mode: forwards;
+}
+
+.animate-role-out {
+    animation: slide-fade-out-bottom 1s;
+    animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    animation-fill-mode: forwards;
+    -webkit-animation: slide-fade-out-bottom 1s;
+    -webkit-animation-timing-function: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-animation-fill-mode: forwards;
 }
 
 @keyframes animatetop {

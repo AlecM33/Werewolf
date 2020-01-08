@@ -7,15 +7,25 @@ let clock;
 let currentGame = null;
 let cardFlippedOver = false;
 let cardRendered = false;
+let lastKilled = null;
 
 // respond to the game state received from the server
 socket.on('state', function(game) {
     currentGame = game;
-    if (game.message) {
-        document.getElementById("message-box").innerText = game.message;
-    }
     buildGameBasedOnState();
 });
+
+window.onblur = function() { // pause animations if the window is not in focus
+    this.document.querySelector("#overlay").style.animationPlayState = 'paused';
+    this.document.querySelector("#killed-role").style.animationPlayState = 'paused';
+    this.document.querySelector("#killed-name").style.animationPlayState = 'paused';
+}
+
+window.onfocus = function() { // play animations when window is focused
+    this.document.querySelector("#overlay").style.animationPlayState = 'running';
+    this.document.querySelector("#killed-role").style.animationPlayState = 'running';
+    this.document.querySelector("#killed-name").style.animationPlayState = 'running';
+}
 
 function buildGameBasedOnState() {
     switch(currentGame.state) {
@@ -31,6 +41,41 @@ function buildGameBasedOnState() {
         default:
             break;
     }
+}
+
+function hideAfterExit(e) {
+    e.target.style.display = 'none'
+    e.target.classList.remove(e.target.exitClass);
+}
+
+function triggerExitAnimation(e) {
+    e.target.classList.remove(e.target.entranceClass);
+    e.target.classList.remove(e.target.exitClass);
+    e.target.offsetWidth;
+    e.target.classList.add(e.target.exitClass);
+    window.setTimeout(()=>{
+        e.target.addEventListener('animationend', hideAfterExit, {"capture": true, "once": true});
+    },0);
+}
+
+function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
+        let transitionEl = document.querySelector(selector);
+        transitionEl.style.display = 'flex';
+        transitionEl.addEventListener('animationend', triggerExitAnimation, {"capture": true, "once": true});
+        transitionEl.classList.remove(entranceClass);
+        transitionEl.entranceClass = entranceClass;
+        transitionEl.exitClass = exitClass;
+        transitionEl.offsetWidth;
+        if (image) {
+            transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole + ".png");
+        }
+        transitionEl.classList.add(entranceClass);
+}
+
+function playKilledAnimation() {
+    triggerEntranceAnimation('#overlay', 'animate-overlay-in', 'animate-overlay-out', false);
+    triggerEntranceAnimation('#killed-role', 'animate-role-in', 'animate-role-out', true);
+    triggerEntranceAnimation('#killed-name', 'animate-name-in', 'animate-name-out', false);
 }
 
 function launchGame() {
@@ -79,6 +124,12 @@ function renderEndSplash() {
 }
 
 function renderGame() {
+    if (currentGame.killedRole && currentGame.lastKilled !== lastKilled) { // a new player has been killed
+        lastKilled = currentGame.lastKilled;
+        document.getElementById("killed-name").innerText = currentGame.killedPlayer + " was a " + currentGame.killedRole + "!";
+        playKilledAnimation();
+        document.getElementById("message-box").innerText = currentGame.message;
+    }
     const player = currentGame.players.find((player) => player.id === sessionStorage.getItem("id"));
 
     // render the header

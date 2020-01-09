@@ -8,10 +8,10 @@ This is a Javascript application running on a node express server. I am using th
 
 <br>
 <div>
-  <img align="left" alt="create" src="/assets/images/screenshots/create_game.PNG" />
-  <img align="left" alt="lobby" src="/assets/images/screenshots/lobby.PNG" />
-  <img alt="hunter" src="/assets/images/screenshots/hunter.PNG" />
-  <img alt="wolf" src="/assets/images/screenshots/wolf.PNG" />
+  <img align="left" alt="create" width="200" src="/assets/images/screenshots/create.PNG" />
+  <img align="left" alt="lobby" width="200" src="/assets/images/screenshots/lobby.PNG" />
+  <img alt="hunter" width="200" src="/assets/images/screenshots/game.PNG" />
+  <img alt="game" width="200" src="/assets/images/screenshots/hunter.PNG" />
 </div>
 <br>
 <br>

@@ -25,4 +25,6 @@ To learn more about this type of game, see the Wikipedia entry on the game's anc
 
 # Run Locally
 
-Run node server.js from the root directory, navigate to localhost:5000
+Run `npm install` from the root directory.
+
+Run `node server.js` from the root directory, navigate to **localhost:5000**

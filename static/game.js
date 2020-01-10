@@ -54,14 +54,14 @@ function triggerExitAnimation(e) {
     e.target.offsetWidth;
     e.target.classList.add(e.target.exitClass);
     window.setTimeout(()=>{
-        e.target.addEventListener('animationend', hideAfterExit, {"capture": true, "once": true});
+        e.target.addEventListener('animationend', hideAfterExit, true);
     },0);
 }
 
 function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
         let transitionEl = document.querySelector(selector);
         transitionEl.style.display = 'flex';
-        transitionEl.addEventListener('animationend', triggerExitAnimation, {"capture": true, "once": true});
+        transitionEl.addEventListener('animationend', triggerExitAnimation, true);
         transitionEl.classList.remove(entranceClass);
         transitionEl.entranceClass = entranceClass;
         transitionEl.exitClass = exitClass;

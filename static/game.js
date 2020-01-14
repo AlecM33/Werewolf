@@ -5,6 +5,7 @@ const socket = io();
 const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer"];
 let clock;
 let currentGame = null;
+let lastGameState = null;
 let cardFlippedOver = false;
 let cardRendered = false;
 let lastKilled = null;
@@ -12,7 +13,9 @@ let lastKilled = null;
 // respond to the game state received from the server
 socket.on('state', function(game) {
     currentGame = game;
-    buildGameBasedOnState();
+    if(detectChanges(game)) {
+        buildGameBasedOnState(game);
+    }
 });
 
 window.onblur = function() { // pause animations if the window is not in focus
@@ -27,8 +30,8 @@ window.onfocus = function() { // play animations when window is focused
     this.document.querySelector("#killed-name").style.animationPlayState = 'running';
 }
 
-function buildGameBasedOnState() {
-    switch(currentGame.state) {
+function buildGameBasedOnState(game) {
+    switch(game.status) {
         case "lobby":
             renderLobby();
             break;
@@ -41,6 +44,19 @@ function buildGameBasedOnState() {
         default:
             break;
     }
+}
+
+function detectChanges(game) {
+    if (lastGameState === null ||
+        lastGameState.status !== game.status ||
+        lastGameState.paused !== game.paused ||
+        lastGameState.lastKilled !== game.lastKilled ||
+        lastGameState.startTime !== game.startTime ||
+        lastGameState.players.length !== game.players.length) {
+        lastGameState = game;
+        return true;
+    } 
+        return false;
 }
 
 function hideAfterExit(e) {
@@ -312,7 +328,7 @@ function renderLobby() {
     }
 }
 
-// request the current state of the game from the server
-window.onload = function() {
+// request game state from server periodically
+setInterval(function () {
     socket.emit('requestState', {code: sessionStorage.getItem("code")});
-};
+}, 200);

@@ -111,7 +111,7 @@ io.on('connection', function(socket) {
             }
         }
     });
-    // broadcast current game state to all sockets in the room with a particular access code
+    // send the game state to the client that requested it
     socket.on('requestState', function(data) {
         const game = activeGames[Object.keys(activeGames).find((key) => key === data.code)];
         if (game && Object.keys(socket.rooms).includes(data.code) === false) {

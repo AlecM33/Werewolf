@@ -111,30 +111,29 @@ io.on('connection', function(socket) {
             }
         }
     });
-    // broadcast current game state to all sockets in the room with a particular access code
+    // send the game state to the client that requested it
     socket.on('requestState', function(data) {
         const game = activeGames[Object.keys(activeGames).find((key) => key === data.code)];
         if (game && Object.keys(socket.rooms).includes(data.code) === false) {
             socket.join(data.code, function() {
-                io.sockets.in(data.code).emit('state', game);
+                socket.emit('state', game);
             });
         } else {
             if (game) {
-                io.sockets.in(data.code).emit('state', game);
+                socket.emit('state', game);
             }
         }
     });
     socket.on('startGame', function(gameData) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === gameData.code)];
         if (game) {
-            game.state = "started";
+            game.status = "started";
             game.players = gameData.players;
             if (game.time) {
                 let d = new Date();
                 d.setMinutes(d.getMinutes() + parseInt(game.time));
                 game.endTime = d.toJSON();
             }
-            io.sockets.in(gameData.code).emit('state', game);
         }
     });
     socket.on('pauseGame', function(code) {
@@ -142,7 +141,6 @@ io.on('connection', function(socket) {
         if (game) {
             game.pauseTime = (new Date()).toJSON();
             game.paused = true;
-            io.sockets.in(code).emit('state', game);
         }
     });
     socket.on('resumeGame', function(code) {
@@ -153,15 +151,13 @@ io.on('connection', function(socket) {
             let newDate = new Date(game.endTime);
             newDate.setTime(newTime);
             game.endTime = newDate.toJSON();
-            io.sockets.in(code).emit('state', game);
         }
     });
     socket.on("timerExpired", function(code) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
         if (game) {
             game.winningTeam = "wolf";
-            game.state = "ended";
-            io.sockets.in(code).emit('state', game);
+            game.status = "ended";
         }
     });
     socket.on('killPlayer', function(id, code) {
@@ -176,14 +172,10 @@ io.on('connection', function(socket) {
             const winCheck = teamWon(game);
             if (winCheck === "wolf") {
                 game.winningTeam = "wolf";
-                game.state = "ended";
-                io.sockets.in(code).emit('state', game);
-            } else if (winCheck === "village") {
+                game.status = "ended";
+            } if (winCheck === "village") {
                 game.winningTeam = "village";
-                game.state = "ended";
-                io.sockets.in(code).emit('state', game);
-            } else {
-                io.sockets.in(code).emit('state', game);
+                game.status = "ended";
             }
         }
     });

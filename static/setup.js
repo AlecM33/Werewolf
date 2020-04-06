@@ -23,7 +23,7 @@ class Game {
         this.deck = deck;
         this.time = time;
         this.players = [];
-        this.state = "lobby";
+        this.status = "lobby";
         this.endTime = null;
     }
 }

@@ -2,7 +2,7 @@ import {utility} from './util.js'
 
 const socket = io();
 
-const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer"];
+const standardRoles = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer"];
 let clock;
 let currentGame = null;
 let cardFlippedOver = false;
@@ -19,13 +19,13 @@ window.onblur = function() { // pause animations if the window is not in focus
     this.document.querySelector("#overlay").style.animationPlayState = 'paused';
     this.document.querySelector("#killed-role").style.animationPlayState = 'paused';
     this.document.querySelector("#killed-name").style.animationPlayState = 'paused';
-}
+};
 
 window.onfocus = function() { // play animations when window is focused
     this.document.querySelector("#overlay").style.animationPlayState = 'running';
     this.document.querySelector("#killed-role").style.animationPlayState = 'running';
     this.document.querySelector("#killed-name").style.animationPlayState = 'running';
-}
+};
 
 function buildGameBasedOnState() {
     switch(currentGame.state) {
@@ -44,7 +44,7 @@ function buildGameBasedOnState() {
 }
 
 function hideAfterExit(e) {
-    e.target.style.display = 'none'
+    e.target.style.display = 'none';
     e.target.classList.remove(e.target.exitClass);
 }
 
@@ -66,7 +66,7 @@ function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
         transitionEl.entranceClass = entranceClass;
         transitionEl.exitClass = exitClass;
         transitionEl.offsetWidth;
-        if (image) {
+        if (image && standardRoles.includes(currentGame.killedRole)) {
             transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole + ".png");
         }
         transitionEl.classList.add(entranceClass);
@@ -183,9 +183,9 @@ function renderGame() {
 
 function renderPlayerCard(player) {
     const card = player.card;
-    const cardArt = finishedArtArray.includes(card.role) ?
+    const cardArt = standardRoles.includes(card.role) ?
         "<img alt='" + card.role + "' src='../assets/images/roles/" + card.role + ".png' />"
-        : "<div class='placeholder'>Art coming soon.</div>";
+        : "<div class='placeholder'>Custom Role</div>";
     const cardClass = player.card.team === "good" ? "game-card-inner village" : "game-card-inner wolf";
     const playerCard = document.createElement("div");
     playerCard.setAttribute("id", "game-card");

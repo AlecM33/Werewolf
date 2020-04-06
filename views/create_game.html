@@ -5,16 +5,45 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel = "stylesheet" type = "text/css" href = "../static/styles.css" />
+        <link rel="shortcut icon" type="image/png" href="../assets/images/favicon.ico"/>
         <script src="../node_modules/socket.io-client/dist/socket.io.js"></script>
     </head>
     <body>
     <div class="modal hidden" id="role-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <span id="close" class="close">&times;</span>
+                <span class="close" class="close">&times;</span>
             </div>
-            <div id="modal-body" class="modal-body">
+            <div class="modal-body">
                 <div id="roles"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal hidden" id="custom-card-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h2>Add a role for this game only.</h2>
+                <h3 class="disclaimer">Warning: If your role changes the victory condition (like the Hunter), the game will not detect the new condition.</h3>
+                <form id="custom-role-form">
+                    <label for="custom-role-name">Name</label>
+                    <input id="custom-role-name" type="text" required/>
+                    <label for="custom-role-desc">Description</label>
+                    <textarea rows="3" id="custom-role-desc" required></textarea>
+                    <label for="custom-role-team">Team</label>
+                    <select id="custom-role-team">
+                        <option value="good">Good</option>
+                        <option value="evil">Evil</option>
+                    </select>
+                    <div class="checkbox">
+                        <input type="checkbox" id="custom-role-power">
+                        <label for="custom-role-power">Power Role?</label>
+                    </div>
+                    <br><br>
+                    <input type="submit" class="app-btn" value="Add Role">
+                </form>
             </div>
         </div>
     </div>

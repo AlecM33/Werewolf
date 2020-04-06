@@ -29,6 +29,10 @@
         left: 14%;
     }
 
+    .disclaimer, .custom-card h1 {
+        font-size: 15px;
+    }
+
     .modal {
         width: 92%;
     }
@@ -59,10 +63,6 @@
     
     #card-select-header, #game-start {
         align-items: center;
-        justify-content: center;
-    }
-
-    #card-select {
         justify-content: center;
     }
 
@@ -127,6 +127,10 @@
         margin: 0.5em;
     }
 
+    .disclaimer, .custom-card h1 {
+        font-size: 18px;
+    }
+
     h3 {
         font-size: 30px;
     }
@@ -149,6 +153,10 @@
 
     .modal-content {
         width: 90%;
+    }
+
+    #custom-card-modal .modal-content {
+        width: 50%;
     }
 
     .modal-header {
@@ -207,6 +215,12 @@
         align-items: center;
     }
 
+}
+
+@media(max-width: 1225px) and (min-width: 750.01px) {
+    #custom-card-modal .modal-content {
+        width: 75%;
+    }
 }
 
 @font-face {
@@ -385,6 +399,20 @@ button {
     user-select: none;
 }
 
+.custom-card {
+    border: 1px dashed whitesmoke;
+    background-color: transparent;
+}
+
+.custom-card div {
+    font-size: 40px;
+    color: whitesmoke;
+}
+
+.custom-card h1 {
+    color: whitesmoke;
+}
+
 .card:hover {
     background-color: #55565c;
 }
@@ -437,6 +465,12 @@ button {
 .card-image {
     position: absolute;
     pointer-events: none;
+}
+
+.card-image-custom {
+    width: 50px;
+    height: 50px;
+    padding: 25px;
 }
 
 .card-quantity {
@@ -643,6 +677,99 @@ input[type=text] {
     width: 12em;
     border-radius: 5px;
     font-size: 1.1em;
+}
+
+textarea {
+    resize: none;
+    background-color: transparent;
+    border: 1px solid #464552;
+    caret-color: gray;
+    font-family: inherit;
+    margin: 0.5em 0 1em 0;
+    color: gray;
+    padding: 0.9em;
+    border-radius: 5px;
+    font-size: 1.1em;
+}
+
+.checkbox label::before{
+    content: "";
+    display: inline-block;
+    height: 30px;
+    left: -42px;
+    width: 30px;
+    border: 1px solid whitesmoke;
+    border-radius: 3px;
+}
+
+.checkbox input[type=checkbox] {
+    opacity: 0;
+}
+
+.checkbox label::after {
+    display: inline-block;
+    height: 8px;
+    width: 16px;
+    left: -35px;
+    top: 8px;
+    border-left: 3px solid;
+    border-bottom: 3px solid;
+    transform: rotate(-55deg);
+}
+
+.checkbox {
+    display: flex;
+    width: 100%;
+    margin: 1em 0;
+}
+
+.checkbox label {
+    position: relative;
+    margin: 1em 0 1em 1.5em;
+}
+
+.checkbox label::before,
+.checkbox label::after {
+    position: absolute;
+}
+
+.checkbox input[type="checkbox"] + label::after {
+    content: none;
+}
+
+.checkbox input[type="checkbox"]:checked + label::after {
+    content: "";
+}
+
+.checkbox input[type="checkbox"]:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+}
+
+.checkbox label:hover::before {
+    border: 1px solid #333243 !important;
+    cursor: pointer;
+}
+
+.checkbox label:hover {
+    cursor: pointer;
+}
+
+
+.disclaimer {
+    color: #bd2a2a;
+}
+
+select {
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-family: inherit;
+    background-color: transparent;
+    color: whitesmoke;
+}
+
+select option {
+    background: rgb(35,40,43);
 }
 
 input[type=number] {

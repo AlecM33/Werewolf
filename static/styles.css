@@ -315,12 +315,12 @@ html, body {
 
 #footer p {
     margin: 0 0 0 1em;
-    color: gray;
+    color: lightgray;
 }
 
 #footer a {
-    color: #bd2a2a;
-    text-decoration: #bd2a2a;
+    color: #d13d3d;
+    text-decoration: #d13d3d;
     cursor: pointer;
     margin: 0 0 0 1em;
 }

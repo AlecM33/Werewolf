@@ -2,17 +2,17 @@ import {cards} from './cards.js'
 import {utility} from './util.js'
 
 const socket = io();
-const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer"];
+const finishedArtArray = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer", "Dream Wolf"];
 
 // important declarations
 class Card {
-    constructor(role, team, description, powerRole) {
+    constructor(role, team, description, isTypeOfWerewolf) {
         this.id = null;
         this.role = role;
+        this.isTypeOfWerewolf = isTypeOfWerewolf;
         this.team = team;
         this.description = description;
         this.quantity = 0;
-        this.powerRole = powerRole;
     }
 }
 
@@ -51,7 +51,7 @@ window.onload = function() {
 
 function renderAvailableCards() {
     for (let i = 0; i < cards.length; i ++) {
-        const newCard = new Card(cards[i].role, cards[i].team, cards[i].description, cards[i].powerRole);
+        const newCard = new Card(cards[i].role, cards[i].team, cards[i].description, cards[i].isTypeOfWerewolf);
         // put card info in the informational role description modal
         const modalRole = document.createElement("div");
         modalRole.setAttribute("class", "modal-role");
@@ -61,7 +61,7 @@ function renderAvailableCards() {
             roleImage = "<img alt='No art' class='card-image-custom' src='/assets/images/custom.svg' />";
         } else {
             roleImage = finishedArtArray.includes(cards[i].role) ?
-                "<img alt='No art' src='/assets/images/roles-small/" + cards[i].role + ".png' />"
+                "<img alt='No art' src='/assets/images/roles-small/" + cards[i].role.replace(/\s/g, '') + ".png' />"
                 : "<span>Art soon.</span>";
         }
         modalRole.innerHTML =
@@ -96,7 +96,7 @@ function renderAvailableCards() {
             "</div>";
         cardContainer.innerHTML = cards[i].custom
             ? cardContainer.innerHTML += "<img class='card-image card-image-custom' src='../assets/images/custom.svg' alt='" + newCard.role + "'/>"
-            : cardContainer.innerHTML +="<img class='card-image' src='../assets/images/roles-small/" + newCard.role + ".png' alt='" + newCard.role + "'/>";
+            : cardContainer.innerHTML +="<img class='card-image' src='../assets/images/roles-small/" + newCard.role.replace(/\s/g, '') + ".png' alt='" + newCard.role + "'/>";
         cardContainer.innerHTML +=
             "<div class='card-bottom'>" +
             "<p>-</p>" +
@@ -113,6 +113,7 @@ function renderAvailableCards() {
         cardBottom.quantityEl = cardQuantity;
     }
     renderCustomCard();
+    resetCardQuantities();
 }
 
 function renderCustomCard() {
@@ -141,7 +142,7 @@ function addCustomCardToRoles(e) {
         role: document.getElementById("custom-role-name").value,
         team: document.getElementById("custom-role-team").value,
         description: document.getElementById("custom-role-desc").value,
-        powerRole: document.getElementById("custom-role-power").checked,
+        isTypeOfWerewolf: document.getElementById("custom-role-wolf").checked,
         custom: true
     };
     cards.push(newCard);
@@ -203,7 +204,7 @@ function buildDeckFromQuantities() {
     let playerDeck = [];
     for (const card of fullDeck) {
         for (let i = 0; i < card.quantity; i++) {
-            let newCard = new Card(card.role, card.team, card.description, card.powerRole);
+            let newCard = new Card(card.role, card.team, card.description, card.isTypeOfWerewolf);
             newCard.id = utility.generateID();
             playerDeck.push(newCard);
         }

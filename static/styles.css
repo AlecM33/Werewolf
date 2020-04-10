@@ -911,10 +911,16 @@ label {
 }
 
 #game-card img {
-    width: 230px;
-    top: 15px;
+    width: 215px;
+    top: 35px;
     position: absolute;
     z-index: 4;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 .placeholder {
@@ -957,6 +963,8 @@ label {
     padding: 0.5em;
     font-size: 0.8em;
     color: #464552;
+    max-height: 68px;
+    overflow: auto;
 }
 
 .game-container {
@@ -1058,6 +1066,13 @@ label {
     margin: 0 auto;
     display: inline-block;
     text-align: left;
+    width: 100%;
+}
+
+#end-container #roster {
+    width: 100%;
+    flex-wrap: wrap;
+    display: flex;
 }
 
 #end-container .winner-header {
@@ -1065,6 +1080,7 @@ label {
     align-items: center;
     margin: 0;
     font-size: 30px;
+    margin: 10px 0 30px 0;
 }
 
 #end-container .evil-subheader {
@@ -1072,6 +1088,28 @@ label {
     color: #bd2a2a;
     margin: 0 0.3em;
     font-size: 1.5em;
+}
+
+#end-container .roster-list-item {
+    background-color: #40464a;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    width: 33%;
+    min-width: 13em;
+    margin: 0.3em;
+}
+
+#end-container .roster-header {
+    font-size: 25px;
+    margin-bottom: 1em;
+
+}
+
+#end-container .roster-list-item img {
+    margin-right: 0.5em;
 }
 
 #end-container .evil-header {
@@ -1084,8 +1122,8 @@ label {
 
 #end-container p {
     font-weight: bold;
-    margin-right: 0.3em;
-    font-size: 50px;
+    margin: 0 0.3em 0 0;
+    font-size: 70px;
 }
 
 #end-container button {
@@ -1231,6 +1269,11 @@ label {
 #killed-role {
     display: none;
     margin: 0 auto;
+}
+
+.killed-role-custom {
+    width: 190px;
+    padding: 95px;
 }
 
 @keyframes slide-fade-in-top {

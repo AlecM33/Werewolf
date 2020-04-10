@@ -2,7 +2,7 @@ import {utility} from './util.js'
 
 const socket = io();
 
-const standardRoles = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer"];
+const standardRoles = ["Villager", "Werewolf", "Seer", "Shadow", "Hunter", "Mason", "Minion", "Sorcerer", "Dream Wolf"];
 let clock;
 let currentGame = null;
 let lastGameState = null;
@@ -83,7 +83,13 @@ function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
         transitionEl.exitClass = exitClass;
         transitionEl.offsetWidth;
         if (image && standardRoles.includes(currentGame.killedRole)) {
-            transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole + ".png");
+            transitionEl.classList.remove("killed-role-custom");
+            transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole.replace(/\s/g, '') + ".png");
+        } else {
+            if (image) {
+                transitionEl.setAttribute("src", "../assets/images/custom.svg");
+                transitionEl.setAttribute("class", "killed-role-custom");
+            }
         }
         transitionEl.classList.add(entranceClass);
 }
@@ -125,17 +131,20 @@ function renderEndSplash() {
     currentGame.winningTeam === "village"
     ? document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-village'>Village</p> wins!</div>"
     : document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-wolf'>Wolves</p>win!</div>";
-    const wolfContainer = document.createElement("div");
-    wolfContainer.setAttribute("id", "wolves");
-    let wolfContent = "<div class='evil-header'><span>The</span><p class='evil-subheader'>evil</p> <span>players were:</span></div>";
+    const rosterContainer = document.createElement("div");
+    rosterContainer.setAttribute("id", "roster");
+    document.getElementById("end-container").innerHTML += "<div class='roster-header'>Here's what everyone was:</div>";
+    let rosterContent = "";
     for (const player of currentGame.players) {
-        if (player.card.team === "evil") {
-            wolfContent += "<div class='evil-list-item'>" + player.name + ": " + player.card.role + "</div>"
-        }
+        rosterContent += "<div class='roster-list-item'>";
+        rosterContent += standardRoles.includes(player.card.role)
+                         ? "<img alt='' src='/assets/images/roles-small/" + player.card.role.replace(/\s/g, '') + ".png' />"
+                         : "<img alt='' class='card-image-custom' src='/assets/images/custom.svg' />";
+        rosterContent += player.name + ": " + player.card.role + "</div>" 
     }
-    wolfContent += "<a href='/'><button class='app-btn'>Home</button></a>";
-    wolfContainer.innerHTML = wolfContent;
-    document.getElementById("end-container").appendChild(wolfContainer);
+    rosterContainer.innerHTML = rosterContent;
+    document.getElementById("end-container").appendChild(rosterContainer);
+    document.getElementById("end-container").innerHTML += "<a href='/'><button class='app-btn'>Home</button></a>";
 
 }
 
@@ -200,7 +209,7 @@ function renderGame() {
 function renderPlayerCard(player) {
     const card = player.card;
     const cardArt = standardRoles.includes(card.role) ?
-        "<img alt='" + card.role + "' src='../assets/images/roles/" + card.role + ".png' />"
+        "<img alt='" + card.role + "' src='../assets/images/roles/" + card.role.replace(/\s/g, '') + ".png' />"
         : "<div class='placeholder'>Custom Role</div>";
     const cardClass = player.card.team === "good" ? "game-card-inner village" : "game-card-inner wolf";
     const playerCard = document.createElement("div");

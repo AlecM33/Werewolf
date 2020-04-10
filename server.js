@@ -169,11 +169,14 @@ io.on('connection', function(socket) {
             game.lastKilled = player.id;
             game.killedRole = player.card.role;
             game.message = player.name + ", a " + player.card.role + ", was killed!";
+            console.log(game.message);
             const winCheck = teamWon(game);
             if (winCheck === "wolf") {
+                console.log("wolves won the game!");
                 game.winningTeam = "wolf";
                 game.status = "ended";
             } if (winCheck === "village") {
+                console.log("village won the game!");
                 game.winningTeam = "village";
                 game.status = "ended";
             }

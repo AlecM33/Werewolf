@@ -64,10 +64,10 @@ function teamWon(game) {
     let totalAlive = 0;
     let hunterAlive = false;
     for (const player of game.players) {
-        if (player.card.role !== "Werewolf" && !player.dead) {
+        if (!player.card.isTypeOfWerewolf && !player.dead) {
             villagersAlive ++;
         }
-        if (player.card.role === "Werewolf" && !player.dead) {
+        if (player.card.isTypeOfWerewolf && !player.dead) {
             wolvesAlive ++;
         }
         if (player.card.role === "Hunter" && !player.dead) {

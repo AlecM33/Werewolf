@@ -58,6 +58,16 @@ server.listen(process.env.PORT || 5000, function() {
     console.log('Starting server on port 5000');
 });
 
+// If there are multiple dream wolves, convert them all.
+function activateDreamWolvesIfNeeded(game) {
+    game.players.forEach((player) => {
+        if (!player.dead && player.card.role === "Dream Wolf") {
+            player.card.isTypeOfWerewolf = true;
+            console.log("player " + player.name + " was converted to a wolf!");
+        }
+    })
+}
+
 function teamWon(game) {
     let wolvesAlive = 0;
     let villagersAlive = 0;
@@ -164,22 +174,28 @@ io.on('connection', function(socket) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
         if (game) {
             let player = game.players.find((player) => player.id === id);
-            player.dead = true;
-            player.deadAt = new Date().toJSON();
-            game.killedPlayer = player.name;
-            game.lastKilled = player.id;
-            game.killedRole = player.card.role;
-            game.message = player.name + ", a " + player.card.role + ", was killed!";
-            console.log(game.message);
-            const winCheck = teamWon(game);
-            if (winCheck === "wolf") {
-                console.log("wolves won the game!");
-                game.winningTeam = "wolf";
-                game.status = "ended";
-            } if (winCheck === "village") {
-                console.log("village won the game!");
-                game.winningTeam = "village";
-                game.status = "ended";
+            if (player) {
+                player.dead = true;
+                player.deadAt = new Date().toJSON();
+                game.killedPlayer = player.name;
+                game.lastKilled = player.id;
+                game.killedRole = player.card.role;
+                game.message = player.name + ", a " + player.card.role + ", was killed!";
+                console.log(game.message);
+                if (player.card.role === "Werewolf" && game.hasDreamWolf) {
+                    activateDreamWolvesIfNeeded(game);
+                }
+                const winCheck = teamWon(game);
+                if (winCheck === "wolf") {
+                    console.log("wolves won the game!");
+                    game.winningTeam = "wolf";
+                    game.status = "ended";
+                }
+                if (winCheck === "village") {
+                    console.log("village won the game!");
+                    game.winningTeam = "village";
+                    game.status = "ended";
+                }
             }
         }
     });

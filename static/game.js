@@ -18,18 +18,6 @@ socket.on('state', function(game) {
     }
 });
 
-window.onblur = function() { // pause animations if the window is not in focus
-    this.document.querySelector("#overlay").style.animationPlayState = 'paused';
-    this.document.querySelector("#killed-role").style.animationPlayState = 'paused';
-    this.document.querySelector("#killed-name").style.animationPlayState = 'paused';
-};
-
-window.onfocus = function() { // play animations when window is focused
-    this.document.querySelector("#overlay").style.animationPlayState = 'running';
-    this.document.querySelector("#killed-role").style.animationPlayState = 'running';
-    this.document.querySelector("#killed-name").style.animationPlayState = 'running';
-};
-
 function buildGameBasedOnState(game) {
     switch(game.status) {
         case "lobby":

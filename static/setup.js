@@ -45,7 +45,8 @@ Array.from(document.getElementsByClassName("close")).forEach(function(element) {
 });
 
 // render all of the available cards to the user
-window.onload = function() { 
+window.onload = function() {
+    readInUserCustomRoles();
     renderAvailableCards();
 };
 
@@ -111,9 +112,20 @@ function renderAvailableCards() {
         cardTop.quantityEl = cardQuantity;
         cardBottom.card = newCard;
         cardBottom.quantityEl = cardQuantity;
+
+        if (cards[i].custom) {
+            addRemoveButtonToCustomCard(i);
+        }
     }
     renderCustomCard();
     resetCardQuantities();
+}
+
+function addRemoveButtonToCustomCard(i) {
+    let button = document.createElement("button");
+    button.setAttribute("class", "removal-btn");
+    button.innerText = "Remove";
+    document.getElementById("card-" + i).appendChild(button);
 }
 
 function renderCustomCard() {
@@ -149,7 +161,42 @@ function addCustomCardToRoles(e) {
     document.getElementById("card-select").innerHTML = "";
     document.getElementById("roles").innerHTML = "";
     renderAvailableCards();
+
+    if (document.getElementById("custom-role-remember").checked) {
+        let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
+        if (existingRoles !== null) {
+            let rolesArray;
+            try {
+                rolesArray = JSON.parse(existingRoles);
+            } catch(e) {
+                console.error(e.message);
+            }
+            if (rolesArray) {
+                rolesArray.push(newCard);
+            }
+            localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(rolesArray));
+        } else {
+            localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(new Array(newCard)));
+        }
+    }
     closeModal();
+}
+
+function readInUserCustomRoles() {
+    let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
+    if (existingRoles !== null) {
+        let rolesArray;
+        try {
+            rolesArray = JSON.parse(existingRoles);
+        } catch(e) {
+            console.error(e.message);
+        }
+        if (rolesArray) {
+            rolesArray.forEach((role) => {
+                cards.push(role);
+            })
+        }
+    }
 }
 
 

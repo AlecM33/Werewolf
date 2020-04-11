@@ -17,13 +17,14 @@ class Card {
 }
 
 class Game {
-    constructor(accessCode, size, deck, time) {
+    constructor(accessCode, size, deck, time, hasDreamWolf) {
         this.accessCode = accessCode;
         this.size = size;
         this.deck = deck;
         this.time = time;
         this.players = [];
         this.status = "lobby";
+        this.hasDreamWolf = hasDreamWolf;
         this.endTime = null;
     }
 }
@@ -230,11 +231,13 @@ function createGame() {
 
         // send a new game to the server, and then join it
         const playerInfo = {name: document.getElementById("name").value, code: code, id: id};
+        let gameDeck = buildDeckFromQuantities();
         const game = new Game(
             code,
             gameSize,
-            buildDeckFromQuantities(),
-            Math.ceil(document.getElementById("time").value)
+            gameDeck,
+            Math.ceil(document.getElementById("time").value),
+            gameDeck.find((card) => card.role === "Dream Wolf") !== undefined
             );
         socket.emit('newGame', game, function() {
             socket.emit('joinGame', playerInfo);

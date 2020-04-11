@@ -18,18 +18,6 @@ socket.on('state', function(game) {
     }
 });
 
-window.onblur = function() { // pause animations if the window is not in focus
-    this.document.querySelector("#overlay").style.animationPlayState = 'paused';
-    this.document.querySelector("#killed-role").style.animationPlayState = 'paused';
-    this.document.querySelector("#killed-name").style.animationPlayState = 'paused';
-};
-
-window.onfocus = function() { // play animations when window is focused
-    this.document.querySelector("#overlay").style.animationPlayState = 'running';
-    this.document.querySelector("#killed-role").style.animationPlayState = 'running';
-    this.document.querySelector("#killed-name").style.animationPlayState = 'running';
-};
-
 function buildGameBasedOnState(game) {
     switch(game.status) {
         case "lobby":
@@ -102,6 +90,7 @@ function playKilledAnimation() {
 
 function launchGame() {
     randomlyDealCardsToPlayers();
+    utility.shuffle(currentGame.players); // put the players in a random order
     socket.emit('startGame', { players: currentGame.players , code: currentGame.accessCode});
 }
 
@@ -126,7 +115,7 @@ function getLiveCount() {
 }
 
 function renderEndSplash() {
-    document.getElementById("game-container").classList.add("hidden");
+    document.getElementById("game-container").remove();
     document.querySelector("#message-box").style.display = 'none';
     currentGame.winningTeam === "village"
     ? document.getElementById("end-container").innerHTML ="<div class='winner-header'><p class='winner-village'>Village</p> wins!</div>"
@@ -149,6 +138,12 @@ function renderEndSplash() {
 }
 
 function renderGame() {
+    // remove lobby components if present
+    if (document.getElementById("lobby-container") !== null && document.getElementById("launch") !== null) {
+        document.getElementById("lobby-container").remove();
+        document.getElementById("launch").remove();
+    }
+
     document.querySelector("#message-box").style.display = 'block';
     if (currentGame.killedRole && currentGame.lastKilled !== lastKilled) { // a new player has been killed
         lastKilled = currentGame.lastKilled;
@@ -159,8 +154,6 @@ function renderGame() {
     const player = currentGame.players.find((player) => player.id === sessionStorage.getItem("id"));
 
     // render the header
-    document.getElementById("lobby-container").setAttribute("class", "hidden");
-    document.getElementById("launch").setAttribute("class", "hidden");
     document.getElementById("game-container").setAttribute("class", "game-container");
     const gameHeader = document.createElement("div");
     gameHeader.setAttribute("id", "game-header");
@@ -169,9 +162,9 @@ function renderGame() {
             "<div id='clock'></div>" +
             "<div id='pause-container'></div>";
     if (document.getElementById("game-header")) {
-        document.getElementById("game-container").removeChild(document.getElementById("game-header"));
+        document.getElementById("card-container").removeChild(document.getElementById("game-header"));
     }
-    document.getElementById("game-container").prepend(gameHeader);
+    document.getElementById("card-container").prepend(gameHeader);
 
     // render the card if it hasn't been yet
     if (!cardRendered) {
@@ -200,10 +193,64 @@ function renderGame() {
         killedBtn.innerText = "I'm dead";
     }
     if (document.getElementById("dead-btn")) {
-        document.getElementById("game-container").removeChild(document.getElementById("dead-btn"));
+        document.getElementById("card-container").removeChild(document.getElementById("dead-btn"));
     }
-    document.getElementById("game-container").appendChild(killedBtn);
+    document.getElementById("card-container").appendChild(killedBtn);
     document.getElementById("dead-btn").addEventListener("click", killPlayer);
+
+    // add the list of dead/alive players
+    renderDeadAndAliveInformation();
+}
+
+function renderDeadAndAliveInformation() {
+    let infoContainer = document.getElementById("info-container");
+    let alivePlayers = currentGame.players.filter((player) => !player.dead).sort((a, b) =>
+    {
+        return a.card.role > b.card.role ? 1 : -1;
+    });
+    let deadPlayers = currentGame.players.filter((player) => player.dead);
+    console.log(deadPlayers);
+    deadPlayers.sort((a, b) => { // sort players by the time they died
+        return new Date(a.deadAt) > new Date(b.deadAt) ? -1 : 1;
+    });
+    
+    let killedContainer = document.createElement("div");
+    killedContainer.setAttribute("id", "killed-container");
+    let killedHeader = document.createElement("h2");
+    killedHeader.innerText = "Killed Players";
+    killedContainer.appendChild(killedHeader);
+    deadPlayers.forEach((player) => {
+        const killedPlayer = document.createElement("div");
+        killedPlayer.setAttribute("class", "killed-player");
+        killedPlayer.innerText = player.name + ": " + player.card.role;
+        killedContainer.appendChild(killedPlayer);
+    });
+
+    let aliveContainer = document.createElement("div");
+    aliveContainer.setAttribute("id", "alive-container");
+    let aliveHeader = document.createElement("h2");
+    aliveContainer.appendChild(aliveHeader);
+    aliveHeader.innerText = "Roles Still Alive";
+    alivePlayers.forEach((player) => {
+        const alivePlayer = document.createElement("div");
+        alivePlayer.setAttribute("class", "alive-player");
+        alivePlayer.innerText = player.card.role;
+        aliveContainer.appendChild(alivePlayer);
+    });
+    if (infoContainer === null) {
+        infoContainer = document.createElement("div");
+        infoContainer.setAttribute("id", "info-container");
+        infoContainer.appendChild(killedContainer);
+        infoContainer.appendChild(aliveContainer);
+        document.getElementById("game-container").appendChild(infoContainer);
+    } else {
+        document.getElementById("killed-container").remove();
+        document.getElementById("alive-container").remove();
+        document.getElementById("info-container").append(killedContainer);
+        document.getElementById("info-container").append(aliveContainer);
+    }
+    
+    
 }
 
 function renderPlayerCard(player) {
@@ -227,7 +274,7 @@ function renderPlayerCard(player) {
             "</div>" +
             "<div class='game-card-back'></div>" +
         "</div>";
-    document.getElementById("game-container").appendChild(playerCard);
+    document.getElementById("card-container").appendChild(playerCard);
     document.getElementById("game-card").addEventListener("click", flipCard);
 }
 
@@ -274,10 +321,15 @@ function renderClock() {
         if (delta <= 0) {
             endGameDueToTimeExpired();
         } else {
-            let minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((delta % (1000 * 60)) / 1000);
+            let seconds = Math.floor( (delta / 1000) % 60);
+            let minutes = Math.floor( (delta / 1000 / 60) % 60);
+            let hours = Math.floor( (delta / (1000*60*60)) % 24);
             seconds = seconds < 10 ? "0" + seconds : seconds;
-            document.getElementById("clock").innerText = minutes + ":" + seconds;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("clock").innerText = hours > 0
+                ? hours + ":" + minutes + ":" + seconds
+                : minutes + ":" + seconds;
+
         }
     }, 1000);
 }

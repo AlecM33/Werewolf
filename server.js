@@ -164,7 +164,8 @@ io.on('connection', function(socket) {
         let game = activeGames[Object.keys(activeGames).find((key) => key === code)];
         if (game) {
             let player = game.players.find((player) => player.id === id);
-            game.players.find((player) => player.id === id).dead = true;
+            player.dead = true;
+            player.deadAt = new Date().toJSON();
             game.killedPlayer = player.name;
             game.lastKilled = player.id;
             game.killedRole = player.card.role;

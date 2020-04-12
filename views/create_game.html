@@ -19,13 +19,23 @@
             </div>
         </div>
     </div>
+    <div class="modal hidden" id="edit-custom-roles-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="custom-roles"></div>
+            </div>
+        </div>
+    </div>
     <div class="modal hidden" id="custom-card-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <span class="close" class="close">&times;</span>
             </div>
             <div class="modal-body">
-                <h2>Add a role for this game only.</h2>
+                <h2>Add a Custom Role</h2>
                 <form id="custom-role-form">
                     <label for="custom-role-name">Name</label>
                     <input id="custom-role-name" type="text" required/>
@@ -42,7 +52,7 @@
                     </div>
                     <div class="checkbox">
                         <input type="checkbox" id="custom-role-remember">
-                        <label for="custom-role-remember">Remember this role for later</label>
+                        <label for="custom-role-remember">Remember this role for later (uses cookies)</label>
                     </div>
                     <br><br>
                     <input type="submit" class="app-btn" value="Add Role">
@@ -71,6 +81,9 @@
                     </span>
                     <span>
                         <h3 id="game-size">0 Players</h3>
+                        <button id="edit-role-btn" class="app-btn-secondary">Manage Custom Roles
+                            <img src="../assets/images/pencil.svg"/>
+                        </button>
                         <p id="size-error"></p>
                     </span>
                 </div>

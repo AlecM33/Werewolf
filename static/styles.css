@@ -33,9 +33,14 @@
         font-size: 0.9em;
     }
 
+    .card-header > p {
+        right: 7px;
+        top: 19px;
+    }
+
     .card-image {
-        top: 21%;
-        left: 14%;
+        top: 25%;
+        left: 12%;;
     }
 
     .disclaimer, .custom-card h1 {
@@ -123,6 +128,9 @@
         margin: 0.5em 0;
     }
 
+    .card-header > p {
+        right: 17px;
+        top: 30px;
 
     #game-container #card-container {
         min-width: 25em;
@@ -169,7 +177,7 @@
         width: 90%;
     }
 
-    #custom-card-modal .modal-content {
+    #custom-card-modal .modal-content, #edit-custom-roles-modal .modal-content {
         width: 50%;
     }
 
@@ -232,7 +240,7 @@
 }
 
 @media(max-width: 1225px) and (min-width: 750.01px) {
-    #custom-card-modal .modal-content {
+    #custom-card-modal .modal-content, #edit-custom-roles-modal .modal-content {
         width: 75%;
     }
 }
@@ -391,6 +399,9 @@ button {
 }
 
 .app-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #992626;
     box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.4);
     color: #bfb8b8;
@@ -399,6 +410,41 @@ button {
     padding: 1em;
     border-radius: 3px;
     margin-bottom: 1em;
+}
+
+.app-btn img, .app-btn-secondary img {
+    width: 15px;
+}
+
+#custom-roles img {
+    width: 20px;
+}
+
+#custom-roles .custom-role-edit {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    font-size: 19px;
+    align-items: center;
+    background-color: black;
+    border-radius: 5px;
+    margin: 0.3em;
+}
+
+.custom-role-edit p {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
+    max-width: 7em;
+}
+
+#custom-roles .custom-role-edit div > img {
+    margin: 0 1em;
+    cursor: pointer;
+}
+
+#custom-roles .custom-role-edit div > img:hover {
+    filter: brightness(70%);
 }
 
 .card {
@@ -457,7 +503,13 @@ button {
 
 .card-top p.card-role {
     font-size: 1em;
+    height: 1.2em;
     pointer-events: none;
+    max-width: 7em;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    overflow-y: visible;
 }
 
 .card-header {
@@ -466,6 +518,10 @@ button {
     justify-content: space-between;
     align-items: flex-start;
     pointer-events: none;
+}
+
+.card-header > p {
+    position: absolute;
 }
 
 .card-bottom p {
@@ -510,10 +566,13 @@ button {
 }
 
 .app-btn-secondary {
-    background-color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: lightgray;
     border-radius: 3px;
-    color: #bd2a2a;
-    border: 1px solid #bd2a2a;
+    color: black;
+    border: none;
     width: 10em;
     padding: 0.5em;
     margin-right: 1em;
@@ -526,7 +585,7 @@ button {
 
 .app-btn:hover, .app-btn:focus {
     cursor: pointer;
-    background-color: #333243;
+    background-color: #333243 !important;
 }
 
 #main-buttons .app-btn:hover, #main-buttons .app-btn:focus {
@@ -540,7 +599,7 @@ button {
 
 .app-btn-secondary:hover, .app-btn-secondary:focus {
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.15);
+    filter: brightness(70%);
 }
 
 #main-buttons {
@@ -595,10 +654,13 @@ button {
 }
 
 #create-game-container button {
-    width: 50%;
     padding: 0.8em;
-    height: 4em;
-    width: 12em;
+    height: 3em;
+    width: fit-content;
+}
+
+#edit-role-btn > img {
+    margin-left: 0.5em;
 }
 
 #game-start a button {
@@ -614,7 +676,9 @@ button {
     margin-right: 0.3em;
 }
 
-#game-start button {
+#game-start > button {
+    background-color: #8EA604;
+    color: black;
     margin-left: 0.3em;
     width: 12em;
 }
@@ -1007,9 +1071,13 @@ label {
     align-items: center;
     width: 100%;
     height: 100%;
+    transform: rotateX(0deg);
     -webkit-perspective: 0;
     -webkit-backface-visibility: hidden;
     -webkit-transform: translate3d(0,0,0);
+    -moz-backface-visibility: hidden;
+    -moz-transform: translate3d(0, 0, 0);
+    -moz-perspective: 0;
     visibility:visible;
     backface-visibility: hidden;
 }

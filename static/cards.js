@@ -1,4 +1,4 @@
-export const cards = [
+export let cards = [
     {
         role: "Villager",
         team: "good",

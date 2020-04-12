@@ -131,6 +131,7 @@
     .card-header > p {
         right: 17px;
         top: 30px;
+    }
 
     #game-container #card-container {
         min-width: 25em;

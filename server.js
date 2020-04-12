@@ -80,7 +80,7 @@ function teamWon(game) {
     if (wolvesAlive === 0) {
         return "village"
     }
-    if ((wolvesAlive === villagersAlive) && (totalAlive !== 2)) {
+    if ((wolvesAlive >= villagersAlive) && (totalAlive !== 2)) {
         return "wolf";
     }
     if (totalAlive === 2) {

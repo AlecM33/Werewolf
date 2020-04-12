@@ -115,6 +115,7 @@ function getLiveCount() {
 }
 
 function renderEndSplash() {
+    clearInterval(clock);
     document.getElementById("game-container").remove();
     document.querySelector("#message-box").style.display = 'none';
     currentGame.winningTeam === "village"
@@ -209,7 +210,6 @@ function renderDeadAndAliveInformation() {
         return a.card.role > b.card.role ? 1 : -1;
     });
     let deadPlayers = currentGame.players.filter((player) => player.dead);
-    console.log(deadPlayers);
     deadPlayers.sort((a, b) => { // sort players by the time they died
         return new Date(a.deadAt) > new Date(b.deadAt) ? -1 : 1;
     });

@@ -15,7 +15,7 @@ export const cards = [
         role: "Dream Wolf",
         team: "evil",
         description: "If a Werewolf dies, you become a Werewolf. You do not wake up with the Werewolves until this happens.",
-        isTypeOfWerewolf: true        
+        isTypeOfWerewolf: false
     },
     {
         role: "Minion",

@@ -9,8 +9,17 @@
         margin: 0.3em 0;
     }
 
+
+    #game-container #card-container {
+        min-width: 20em;
+    }
+
     h3 {
         font-size: 20px;
+    }
+
+    #game-container {
+        flex-direction: column;
     }
 
     #app-content {
@@ -122,6 +131,9 @@
     .card-header > p {
         right: 17px;
         top: 30px;
+
+    #game-container #card-container {
+        min-width: 25em;
     }
 
     .app-header-secondary {
@@ -973,7 +985,7 @@ label {
     border-radius: 3px;
     height: 23em;
     margin: 0 auto 2em auto;
-    width: 72%;
+    width: 100%;
     box-shadow: 0 13px 17px rgba(0,0,0,0.6);
     perspective: 1000px;
     transform-style: preserve-3d;
@@ -1100,7 +1112,7 @@ label {
 #clock {
     font-size: 1.5em;
     width: 3.8em;
-    margin-bottom: 0.5em;
+    margin: 0 0.5em 0.5em 0;
 }
 
 #flip-instruction {
@@ -1113,6 +1125,20 @@ label {
     margin: 0 auto;
     max-width: 35em;
     justify-content: center;
+}
+
+#game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container .killed-player, #game-container .alive-player {
+    background-color: #494f52;
+    border-radius: 5px;
+    padding: 5px;
+    filter: drop-shadow(3px 10px 10px rgba(0,0,0,0.6));
+    margin: 0.3em;
 }
 
 #play-pause {

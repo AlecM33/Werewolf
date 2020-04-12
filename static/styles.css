@@ -387,9 +387,6 @@ button {
 }
 
 .app-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background-color: #992626;
     box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.4);
     color: #bfb8b8;
@@ -398,6 +395,12 @@ button {
     padding: 1em;
     border-radius: 3px;
     margin-bottom: 1em;
+}
+
+#create-game-container .app-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .app-btn img, .app-btn-secondary img {

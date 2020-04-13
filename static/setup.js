@@ -172,17 +172,21 @@ function addCustomCardToRoles(e) {
             localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(new Array(newCard)));
         }
     }
-    readInUserCustomRoles();
+    updateCustomRoleModal();
     closeModal();
+    document.getElementById("custom-role-form").reset();
 }
 
-function readInUserCustomRoles() {
+function updateCustomRoleModal() {
     document.getElementById("custom-roles").innerHTML = "";
     cards.forEach((card) => {
-        if (card.custom && !card.saved) {
+        if (card.custom) {
             renderCustomRoleInModal(card);
         }
     });
+}
+
+function readInUserCustomRoles() {
     let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
     if (existingRoles !== null) {
         let rolesArray;
@@ -193,7 +197,8 @@ function readInUserCustomRoles() {
         }
         if (rolesArray) {
             rolesArray.forEach((card) => {
-                renderCustomRoleInModal(card)
+                renderCustomRoleInModal(card);
+                cards.push(card);
             })
         }
     }
@@ -203,7 +208,6 @@ function readInUserCustomRoles() {
 }
 
 function renderCustomRoleInModal(card) {
-    cards.push(card);
     let roleElement = document.createElement("div");
     let editRemoveContainer = document.createElement("div");
     let roleName = document.createElement("p");
@@ -240,8 +244,8 @@ function removeCustomRole(name) {
         }
         localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(rolesArray));
     }
+    updateCustomRoleModal();
     renderAvailableCards();
-    readInUserCustomRoles();
 }
 
 

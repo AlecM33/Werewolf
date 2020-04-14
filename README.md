@@ -6,7 +6,7 @@ A Werewolf utility that provides the tools to run games smoothly in the absence 
 
 This is a Javascript application running on a node express server. I am using the socket.io package as a wrapper for Javascript Websocket. This was built from scratch as a learning project; I do not claim it as a shining example of socket programming or web app design in general. I welcome collaboration and suggestions for improvements. 
 
-The pixel art for the standard set of cards is my own (for better or for worse).
+All pixel art is my own (for better or for worse).
 
 This is meant to facilitate the game in a real-life social setting and provide utility/convenience - not control all aspects of the game flow. The app allows players to create or join a game lobby where state is synchronized. The creator of the game can build a deck from either the standard set of provided cards, or from any number of custom cards the user creates. Once the game begins, this deck will be randomly dealt to all participants. 
 

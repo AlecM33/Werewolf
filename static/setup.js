@@ -53,6 +53,9 @@ window.onload = function() {
 };
 
 function renderAvailableCards() {
+    cards.sort(function(a, b) {
+        return a.role.toUpperCase().localeCompare(b.role);
+    });
     document.getElementById("card-select").innerHTML = "";
     document.getElementById("roles").innerHTML = "";
     for (let i = 0; i < cards.length; i ++) {

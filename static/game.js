@@ -340,7 +340,9 @@ function endGameDueToTimeExpired() {
 }
 
 function killPlayer() {
-    socket.emit("killPlayer", currentGame.players.find((player) => player.id === sessionStorage.getItem("id")).id, currentGame.accessCode);
+    if(confirm("Are you sure you are dead?")) {
+        socket.emit("killPlayer", currentGame.players.find((player) => player.id === sessionStorage.getItem("id")).id, currentGame.accessCode);
+    }
 }
 
 function renderLobby() {

@@ -918,9 +918,8 @@ label {
     opacity: 0.5;
     color: gray;
     background-color: white;
-    border: none;
     pointer-events: none;
-
+    border: none;
 }
 
 .hidden {

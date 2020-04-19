@@ -1188,7 +1188,7 @@ label {
 }
 
 #game-container .killed-player, #game-container .alive-player {
-    background-color: #494f52;
+    background-color: black;
     border-radius: 5px;
     padding: 5px;
     display: flex;
@@ -1399,12 +1399,16 @@ label {
     font-family: 'diavlo', sans-serif;
 }
 
-.quantity-village {
+.quantity-village, .alive-player-village, .dead-player-village {
     color: #4a6bff;
 }
 
-.quantity-wolf {
+.quantity-wolf, .alive-player-evil, .dead-player-evil {
     color: #bd2a2a;
+}
+
+.alive-player-wolf, .dead-player-wolf {
+    border: 2px solid #bd2a2a;
 }
 
 #overlay {

@@ -220,8 +220,12 @@ function renderDeadAndAliveInformation() {
     killedHeader.innerText = "Killed Players";
     killedContainer.appendChild(killedHeader);
     deadPlayers.forEach((player) => {
+        let deadPlayerClass = player.card.team === "good" ? "dead-player-village" : "dead-player-evil";
+        if (player.card.isTypeOfWerewolf) {
+            deadPlayerClass += " dead-player-wolf";
+        }
         const killedPlayer = document.createElement("div");
-        killedPlayer.setAttribute("class", "killed-player");
+        killedPlayer.setAttribute("class", "killed-player " + deadPlayerClass);
         killedPlayer.innerText = player.name + ": " + player.card.role;
         killedContainer.appendChild(killedPlayer);
     });
@@ -232,8 +236,12 @@ function renderDeadAndAliveInformation() {
     aliveContainer.appendChild(aliveHeader);
     aliveHeader.innerText = "Roles Still Alive";
     alivePlayers.forEach((player) => {
+        let alivePlayerClass = player.card.team === "good" ? "alive-player-village" : "alive-player-evil";
+        if (player.card.isTypeOfWerewolf) {
+            alivePlayerClass += " alive-player-wolf";
+        }
         const alivePlayer = document.createElement("div");
-        alivePlayer.setAttribute("class", "alive-player");
+        alivePlayer.setAttribute("class", "alive-player " + alivePlayerClass);
         alivePlayer.innerHTML = "<p>" + player.card.role + "</p><img src='../assets/images/info.svg'/>";
         //Add hidden description span - RTM 4/18/2020
         let playerCardInfo=document.createElement("span");

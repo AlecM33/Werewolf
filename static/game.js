@@ -234,7 +234,12 @@ function renderDeadAndAliveInformation() {
     alivePlayers.forEach((player) => {
         const alivePlayer = document.createElement("div");
         alivePlayer.setAttribute("class", "alive-player");
-        alivePlayer.innerText = player.card.role;
+        alivePlayer.innerHTML = "<p>" + player.card.role + "</p><img src='../assets/images/info.svg'/>";
+        //Add hidden description span - RTM 4/18/2020
+        let playerCardInfo=document.createElement("span");
+        playerCardInfo.setAttribute("class","tooltiptext");
+        playerCardInfo.innerText=player.card.description;
+        alivePlayer.appendChild(playerCardInfo);
         aliveContainer.appendChild(alivePlayer);
     });
     if (infoContainer === null) {

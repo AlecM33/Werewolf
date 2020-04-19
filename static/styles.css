@@ -67,7 +67,7 @@
         margin-right: 2em;
     }
 
-    #learn-container {
+    #learn-container, #faq-container {
         margin: 3em 1em;
     }
 
@@ -170,7 +170,7 @@
         width: 80%;
     }
 
-    #learn-container {
+    #learn-container, #faq-container {
         margin: 3em;
     }
 
@@ -253,6 +253,16 @@
         bottom: -36%;
     }
 
+}
+
+@media(max-width: 850px) {
+    #card-select-header span:nth-child(2) {
+        flex-direction: column;
+    }
+
+    #card-select-header span:nth-child(2) > div {
+        margin: 0.5em 0;
+    }
 }
 
 @media(max-width: 1225px) and (min-width: 750.01px) {
@@ -478,6 +488,10 @@ button {
     user-select: none;
 }
 
+.card-werewolf {
+    border: 1px solid red;
+}
+
 .custom-card {
     border: 1px dashed whitesmoke;
     background-color: transparent;
@@ -645,6 +659,12 @@ button {
     animation-delay: 0.2s;
 }
 
+#main-buttons a:nth-child(4) {
+    animation: fadein 0.3s ease-in;
+    animation-fill-mode: backwards;
+    animation-delay: 0.3s;
+}
+
 #main-buttons button {
     width: 100%;
     padding: 1.2em;
@@ -662,8 +682,19 @@ button {
     display: flex;
     width: 100%;
     justify-content: center;
-    margin-bottom: 1em;
+    align-items: flex-start;
+    margin-bottom: 0.5em;
     flex-direction: column;
+}
+
+#card-select-header a {
+    text-decoration: underline;
+    color: #b8c4ff;
+}
+
+#card-select-header span > div  {
+    display: flex;
+    align-items: center;
 }
 
 #card-select-header h3 {
@@ -748,6 +779,14 @@ button {
     flex-direction: column;
     align-items: flex-start;
     animation: slide-fade 0.5s;
+}
+
+#create-game-container #werewolf-key {
+    width: 25px;
+    height: 25px;
+    border: 1px solid red;
+    border-radius: 3px;
+    margin-right: 10px;
 }
 
 
@@ -1262,13 +1301,13 @@ label {
     color: #bd2a2a;
 }
 
-#learn-container h2 {
+#learn-container h2, #faq-container h2 {
     font-family: 'diavlo', sans-serif;
     color: #bd2a2a;
     font-size: 40px;
 }
 
-#learn-container button {
+#learn-container button, #faq-container button {
     margin-top: 1em;
 }
 

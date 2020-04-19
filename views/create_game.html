@@ -48,7 +48,7 @@
                     </select>
                     <div class="checkbox">
                         <input type="checkbox" id="custom-role-wolf">
-                        <label for="custom-role-wolf">Is this role a type of Werewolf?</label>
+                        <label for="custom-role-wolf">Werewolf role (counts for parity)</label>
                     </div>
                     <div class="checkbox">
                         <input type="checkbox" id="custom-role-remember">
@@ -80,10 +80,16 @@
                         <button id="role-btn" class="app-btn">View Role Info</button>
                     </span>
                     <span>
-                        <h3 id="game-size">0 Players</h3>
-                        <button id="edit-role-btn" class="app-btn-secondary">Manage Custom Roles
-                            <img src="../assets/images/pencil.svg"/>
-                        </button>
+                        <div>
+                            <h3 id="game-size">0 Players</h3>
+                            <button id="edit-role-btn" class="app-btn-secondary">Manage Custom Roles
+                                <img src="../assets/images/pencil.svg"/>
+                            </button>
+                        </div>
+                        <div>
+                            <div id="werewolf-key"></div>
+                            <div> = Werewolf role (counts for <a href="/faq">parity</a>)</div>
+                        </div>
                         <p id="size-error"></p>
                     </span>
                 </div>

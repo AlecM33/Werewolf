@@ -90,7 +90,8 @@ function renderAvailableCards() {
 
         const quantityClass = cards[i].team === "good" ? "card-quantity quantity-village" : "card-quantity quantity-wolf";
 
-        cardContainer.setAttribute("class", "card");
+        let cardClass = newCard.isTypeOfWerewolf ? "card card-werewolf" : "card";
+        cardContainer.setAttribute("class", cardClass);
         cardContainer.setAttribute("id", "card-" + i);
         cardContainer.innerHTML =
             "<div class='card-top'>" +

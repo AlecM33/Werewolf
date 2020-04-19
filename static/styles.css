@@ -1446,3 +1446,26 @@ color: #333243;
 text-decoration: none;
 cursor: pointer;
 }
+/*Tooltip styles. Taken from w3schools*/
+#game-container .alive-player .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 50%;
+  left: 150%;
+  margin-left: -60px;
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  /*opacity: 0;*/
+  /*transition: opacity 1s;*/
+}
+
+#game-container .alive-player:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

@@ -115,6 +115,14 @@
         margin: 0 0.5em;
         font-size: 2em;
     }
+
+    #game-container .alive-player .tooltiptext {
+        width: 12em;
+        right: 45%;
+        bottom: 80%;
+        font-size: 12px;
+    }
+
 }
 
 @media(min-width: 750.01px) {
@@ -227,6 +235,13 @@
     #overlay {
         justify-content: flex-start;
         align-items: center;
+    }
+
+    #game-container .alive-player .tooltiptext {
+        width: 15em;
+        font-size: 14px;
+        right: 106%;
+        bottom: -36%;
     }
 
 }
@@ -1066,8 +1081,16 @@ label {
     background-color: #494f52;
     border-radius: 5px;
     padding: 5px;
-    filter: drop-shadow(3px 10px 10px rgba(0,0,0,0.6));
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 3px 10px 10px rgba(0,0,0,0.6);
     margin: 0.3em;
+    position: relative;
+}
+
+#game-container .killed-player p, #game-container .alive-player p {
+    margin: 0;
 }
 
 #play-pause {
@@ -1446,26 +1469,25 @@ color: #333243;
 text-decoration: none;
 cursor: pointer;
 }
+
 /*Tooltip styles. Taken from w3schools*/
 #game-container .alive-player .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 50%;
-  left: 150%;
-  margin-left: -60px;
-  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
-  /*opacity: 0;*/
-  /*transition: opacity 1s;*/
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
 }
 
-#game-container .alive-player:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
+#game-container .alive-player img {
+    width: 25px;
+    height: 25px;
+}
+
+#game-container .alive-player:hover .tooltiptext, #game-container .alive-player:focus .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

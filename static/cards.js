@@ -14,7 +14,7 @@ export let cards = [
     {
         role: "Dream Wolf",
         team: "evil",
-        description: "If a Werewolf dies, you become a Werewolf. You do not wake up with the Werewolves until this happens.",
+        description: "If a Werewolf dies, you become a Werewolf. You do not wake up with the Werewolves until this happens. You count for parity only after converting to a wolf.",
         isTypeOfWerewolf: false
     },
     {

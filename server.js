@@ -41,6 +41,10 @@ app.get('/learn', function(request, response) {
     response.sendFile(__dirname + '/views/learn.html');
 });
 
+app.get('/faq', function(request, response) {
+    response.sendFile(__dirname + '/views/faq.html');
+});
+
 app.get('/create', function(request, response) {
     response.sendFile(__dirname + '/views/create_game.html');
 });

@@ -8,7 +8,7 @@ This is a Javascript application running on a node express server. I am using th
 
 All pixel art is my own (for better or for worse).
 
-This is meant to facilitate the game in a real-life social setting and provide utility/convenience - not control all aspects of the game flow. The app allows players to create or join a game lobby where state is synchronized. The creator of the game can build a deck from either the standard set of provided cards, or from any number of custom cards the user creates. Once the game begins, this deck will be randomly dealt to all participants. 
+This is meant to facilitate the game in a face-to-face social setting and provide utility/convenience - not control all aspects of the game flow. The app allows players to create or join a game lobby where state is synchronized. The creator of the game can build a deck from either the standard set of provided cards, or from any number of custom cards the user creates. Once the game begins, this deck will be randomly dealt to all participants. 
 
 Players will see their card (which can be flipped up and down), an optional timer, and a button to say that they have been killed off. If a player presses the button, they will be removed from the game, and their role revealed to other players. The game will continue until the end of the game is detected, or the timer expires.
 

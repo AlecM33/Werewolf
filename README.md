@@ -1,6 +1,6 @@
 <img alt="Werewolf" src="/assets/images/roles-small/wolf_logo.png" />
 
-This is the code currently running at <a href="https://play-werewolf.herokuapp.com">https://play-werewolf.herokuapp.com</a>
+This app is still in active development. The latest deployment can be found <a href="https://play-werewolf.herokuapp.com">here</a>
 
 A Werewolf utility that provides the tools to run games smoothly in the absence of a deck, or in any context in which traditional moderation is hindered. 
 

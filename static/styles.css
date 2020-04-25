@@ -446,18 +446,40 @@ button {
 }
 
 #custom-roles img {
-    width: 20px;
+    width: 25px;
 }
 
 #custom-roles .custom-role-edit {
     display: flex;
     width: 100%;
+    flex-direction: column;
     justify-content: space-around;
     font-size: 19px;
     align-items: center;
     background-color: black;
     border-radius: 5px;
     margin: 0.3em;
+}
+
+.edit-role-form {
+    background-color: #1a1a1a;
+    padding: 1em;
+}
+
+.custom-role-edit > div:nth-child(1) {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.custom-role-edit > div:nth-child(1) div {
+    display: flex;
+    align-items: center;
+}
+
+.custom-role-edit > div:nth-child(2) {
+    display: flex;
+    width: 100%;
 }
 
 .custom-role-edit p {
@@ -470,6 +492,7 @@ button {
 #custom-roles .custom-role-edit div > img {
     margin: 0 1em;
     cursor: pointer;
+    user-select: none;
 }
 
 #custom-roles .custom-role-edit div > img:hover {
@@ -977,7 +1000,7 @@ label {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 #lobby-subheader {
@@ -1193,7 +1216,7 @@ label {
     padding: 5px;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     box-shadow: 3px 10px 10px rgba(0,0,0,0.6);
     margin: 0.3em;
     position: relative;

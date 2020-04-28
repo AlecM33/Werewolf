@@ -21,12 +21,13 @@ const fullDeck = [];
 let gameSize = 0;
 let atLeastOnePlayer = false;
 
-
 // register event listeners on buttons
 document.getElementById("reset-btn").addEventListener("click", resetCardQuantities);
 document.getElementById("create-btn").addEventListener("click", createGame);
-document.getElementById("role-btn").addEventListener("click", function() { displayModal("role-modal") });
-document.getElementById("edit-role-btn").addEventListener("click", function() { displayModal("edit-custom-roles-modal") });
+document.getElementById("role-view-changer-gallery").addEventListener("click", function() { toggleViewChanger(false) });
+document.getElementById("role-view-changer-list").addEventListener("click", function() { toggleViewChanger(true) });
+document.getElementById("role-btn").addEventListener("click", function() { displayModal("role-modal", undefined) });
+document.getElementById("edit-role-btn").addEventListener("click", function() { displayModal("edit-custom-roles-modal", undefined) });
 document.getElementById("custom-role-form").addEventListener("submit", function(e) {
     addCustomCardToRoles(e);
 });
@@ -37,48 +38,106 @@ Array.from(document.getElementsByClassName("close")).forEach(function(element) {
 // render all of the available cards to the user
 window.onload = function() {
     readInUserCustomRoles();
-    renderAvailableCards();
+    renderAvailableCards(false);
 };
 
-function renderAvailableCards() {
+function renderAvailableCards(isCondensed) {
     cards.sort(function(a, b) {
         return a.role.toUpperCase().localeCompare(b.role);
     });
-    document.getElementById("card-select").innerHTML = "";
+    document.getElementById("card-select-good").innerHTML = "";
+    document.getElementById("card-select-evil").innerHTML = "";
     document.getElementById("roles").innerHTML = "";
     document.getElementById("custom-roles").innerHTML = "";
+
     for (let i = 0; i < cards.length; i ++) {
-        const card = CardManager.createCard(cards[i]);
-        if (card.custom) {
-            renderCustomRoleInModal(cards[i], i);
-        }
-        fullDeck.push(card);
-
-        document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
-        document.getElementById("card-select").appendChild(CardManager.constructDeckBuilderElement(card, i));
-
-        // Add event listeners to the top and bottom halves of the card to change the quantity.
-        let cardTop = document.getElementById("card-" + i).getElementsByClassName("card-top")[0];
-        let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];
-        let cardBottom = document.getElementById("card-" + i).getElementsByClassName("card-bottom")[0];
-        cardTop.addEventListener("click", incrementCardQuantity, false);
-        cardBottom.addEventListener("click", decrementCardQuantity, false);
-        cardTop.card = card;
-        cardTop.quantityEl = cardQuantity;
-        cardBottom.card = card;
-        cardBottom.quantityEl = cardQuantity;
-
+        cards[i].team === "good"
+            ? renderGoodRole(cards[i], i, isCondensed)
+            : renderEvilRole(cards[i], i, isCondensed);
     }
 
     if (document.getElementById("custom-roles").getElementsByClassName("custom-role-edit").length === 0) {
         document.getElementById("custom-roles").innerHTML = "<h2>You haven't added any custom cards.</h2>";
     }
 
-    let customCardElement = CardManager.constructCustomCardIndicator();
-    document.getElementById("card-select").appendChild(customCardElement);
-    customCardElement.addEventListener("click", function() {
-        displayModal("custom-card-modal");
+    let customCardGood = CardManager.constructCustomCardIndicator(isCondensed, "good");
+    let customCardEvil = CardManager.constructCustomCardIndicator(isCondensed, "evil");
+    document.getElementById("card-select-good").appendChild(customCardGood);
+    document.getElementById("card-select-evil").appendChild(customCardEvil);
+    customCardGood.addEventListener("click", function() {
+        displayModal("custom-card-modal", "Good");
     });
+    customCardEvil.addEventListener("click", function() {
+        displayModal("custom-card-modal", "Evil");
+    });
+}
+
+function renderGoodRole(cardInfo, i, isCondensed) {
+    const card = CardManager.createCard(cardInfo);
+    if (card.custom) {
+        renderCustomRoleInModal(card, i);
+    }
+    fullDeck.push(card);
+
+    document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
+    if (isCondensed) {
+        document.getElementById("card-select-good").appendChild(CardManager.constructCompactDeckBuilderElement(card, i));
+        let cardLeft = document.getElementById("card-" + i).getElementsByClassName("compact-card-left")[0];
+        let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];
+        let cardRight = document.getElementById("card-" + i).getElementsByClassName("compact-card-right")[0];
+        cardRight.addEventListener("click", function() { incrementCardQuantity(cardRight) }, true);
+        cardLeft.addEventListener("click", function() { decrementCardQuantity(cardLeft) }, true);
+        cardRight.card = card;
+        cardRight.quantityEl = cardQuantity;
+        cardLeft.card = card;
+        cardLeft.quantityEl = cardQuantity;
+    } else {
+        document.getElementById("card-select-good").appendChild(CardManager.constructDeckBuilderElement(card, i));
+        // Add event listeners to the top and bottom halves of the card to change the quantity.
+        let cardTop = document.getElementById("card-" + i).getElementsByClassName("card-top")[0];
+        let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];
+        let cardBottom = document.getElementById("card-" + i).getElementsByClassName("card-bottom")[0];
+        cardTop.addEventListener("click", function() { incrementCardQuantity(cardTop) }, false);
+        cardBottom.addEventListener("click", function() { decrementCardQuantity(cardBottom) }, false);
+        cardTop.card = card;
+        cardTop.quantityEl = cardQuantity;
+        cardBottom.card = card;
+        cardBottom.quantityEl = cardQuantity;
+    }
+}
+
+function renderEvilRole(cardInfo, i, isCondensed) {
+    const card = CardManager.createCard(cardInfo);
+    if (card.custom) {
+        renderCustomRoleInModal(card, i);
+    }
+    fullDeck.push(card);
+
+    document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
+    if (isCondensed) {
+        document.getElementById("card-select-evil").appendChild(CardManager.constructCompactDeckBuilderElement(card, i));
+        let cardLeft = document.getElementById("card-" + i).getElementsByClassName("compact-card-left")[0];
+        let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];
+        let cardRight = document.getElementById("card-" + i).getElementsByClassName("compact-card-right")[0];
+        cardRight.addEventListener("click", function() { incrementCardQuantity(cardRight) }, false);
+        cardLeft.addEventListener("click", function() { decrementCardQuantity(cardLeft) }, false);
+        cardRight.card = card;
+        cardRight.quantityEl = cardQuantity;
+        cardLeft.card = card;
+        cardLeft.quantityEl = cardQuantity;
+    } else {
+        document.getElementById("card-select-evil").appendChild(CardManager.constructDeckBuilderElement(card, i));
+        // Add event listeners to the top and bottom halves of the card to change the quantity.
+        let cardTop = document.getElementById("card-" + i).getElementsByClassName("card-top")[0];
+        let cardQuantity = document.getElementById("card-" + i).getElementsByClassName("card-quantity")[0];
+        let cardBottom = document.getElementById("card-" + i).getElementsByClassName("card-bottom")[0];
+        cardTop.addEventListener("click", function() { incrementCardQuantity(cardTop) }, false);
+        cardBottom.addEventListener("click", function() { decrementCardQuantity(cardBottom) }, false);
+        cardTop.card = card;
+        cardTop.quantityEl = cardQuantity;
+        cardBottom.card = card;
+        cardBottom.quantityEl = cardQuantity;
+    }
 }
 
 function addCustomCardToRoles(e) {
@@ -93,7 +152,7 @@ function addCustomCardToRoles(e) {
             saved: document.getElementById("custom-role-remember").checked
         };
         cards.push(newCard);
-        renderAvailableCards();
+        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
 
         if (newCard.saved === true) {
             let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
@@ -148,7 +207,6 @@ function renderCustomRoleInModal(card, index) {
     let edit = document.createElement("img");
     let editForm = buildRoleEditForm(index);
 
-    // TODO: add edit functionality
     roleName.innerText = card.role;
     remove.setAttribute("src", "../assets/images/delete.svg");
     remove.setAttribute("title", "Delete");
@@ -181,6 +239,18 @@ function toggleEditForm(event, index) {
     if (document.getElementById("edit-form-" + index).style.display === "block") {
         populateEditRoleForm(cards[index], index);
     }
+}
+
+function toggleViewChanger(isCondensed) {
+
+    if (isCondensed) {
+        document.getElementById("role-view-changer-gallery").classList.remove("selected");
+        document.getElementById("role-view-changer-list").classList.add("selected");
+    } else {
+        document.getElementById("role-view-changer-gallery").classList.add("selected");
+        document.getElementById("role-view-changer-list").classList.remove("selected");
+    }
+    renderAvailableCards(isCondensed);
 }
 
 function buildRoleEditForm(index) {
@@ -230,7 +300,7 @@ function removeCustomRole(name) {
             localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(userCustomRoles));
         }
         updateCustomRoleModal();
-        renderAvailableCards();
+        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
     }
 }
 
@@ -245,7 +315,7 @@ function updateCustomRole(event, index) {
 
         removeOrAddSavedRoleIfNeeded(cardToUpdate);
         toggleEditForm(event, index);
-        renderAvailableCards();
+        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
     }
 }
 
@@ -273,18 +343,18 @@ function removeOrAddSavedRoleIfNeeded(card) {
 
 
 function incrementCardQuantity(e) {
-    if(e.target.card.quantity < 25) {
-        e.target.card.quantity += 1;
+    if(e.card.quantity < 25) {
+        e.card.quantity += 1;
     }
-    e.target.quantityEl.innerHTML = e.target.card.quantity;
+    e.quantityEl.innerHTML = e.card.quantity;
     updateGameSize();
 }
 
 function decrementCardQuantity(e) {
-    if(e.target.card.quantity > 0) {
-        e.target.card.quantity -= 1;
+    if(e.card.quantity > 0) {
+        e.card.quantity -= 1;
     }
-    e.target.quantityEl.innerHTML = e.target.card.quantity;
+    e.quantityEl.innerHTML = e.card.quantity;
     updateGameSize();
 }
 
@@ -308,7 +378,15 @@ function resetCardQuantities() {
     });
 }
 
-function displayModal(modalId) {
+function displayModal(modalId, teamForCustomRole) {
+    if (teamForCustomRole === "Good") {
+        document.getElementById("option-evil").removeAttribute("selected");
+        document.getElementById("option-good").setAttribute("selected", "selected");
+    }
+    if (teamForCustomRole === "Evil") {
+        document.getElementById("option-good").removeAttribute("selected");
+        document.getElementById("option-evil").setAttribute("selected", "selected");
+    }
     document.getElementById(modalId).classList.remove("hidden");
     document.getElementById("app-content").classList.add("hidden");
 }
@@ -366,10 +444,8 @@ function createGame() {
         document.getElementById("some-error").innerText = "There are problems with your above setup.";
         if (!atLeastOnePlayer) {
             document.getElementById("game-size").classList.add("error");
-            document.getElementById("size-error").innerText = "Add at least one card";
         } else {
             document.getElementById("game-size").classList.remove("error");
-            document.getElementById("size-error").innerText = "";
         }
         document.getElementById("name").classList.add("error");
         document.getElementById("name-error").innerText = "Name is required.";

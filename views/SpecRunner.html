@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">>
+<head>
+    <meta charset="utf-8">
+    <title>Werewolf unit tests</title>
+
+    <link rel="shortcut icon" type="image/png" href="lib/jasmine-3.5.0/jasmine_favicon.png">
+    <link rel="stylesheet" href="lib/jasmine-3.5.0/jasmine.css">
+
+    <script src="../lib/jasmine-3.5.0/jasmine.js"></script>
+    <script src="../lib/jasmine-3.5.0/jasmine-html.js"></script>
+    <script src="../lib/jasmine-3.5.0/boot.js"></script>
+    <script src="../node_modules/socket.io-client/dist/socket.io.js"></script>
+
+    <!-- include source files here... -->
+    <!--<script src="/scripts/games.js" type="module"></script>-->
+    <!--<script src="../server-helper.js" type="module"></script>-->
+
+    <!-- include spec files here... -->
+    <script src="/spec/SpecHelper.js" type="module"></script>
+    <script src="/spec/HomeSpec.js" type="module"></script>
+    <style>
+        div#playground {
+            visibility: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+<div id="playground"></div>
+</body>
+</html>

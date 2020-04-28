@@ -38,13 +38,13 @@
                 <h2>Add a Custom Role</h2>
                 <form id="custom-role-form">
                     <label for="custom-role-name">Name</label>
-                    <input id="custom-role-name" type="text" required/>
+                    <input id="custom-role-name" type="text" autocomplete="off" required/>
                     <label for="custom-role-desc">Description</label>
                     <textarea rows="3" id="custom-role-desc" required></textarea>
                     <label for="custom-role-team">Team</label>
                     <select id="custom-role-team">
-                        <option value="good">Good</option>
-                        <option value="evil">Evil</option>
+                        <option id="option-good" value="good">Good</option>
+                        <option id="option-evil" value="evil">Evil</option>
                     </select>
                     <div class="checkbox">
                         <input type="checkbox" id="custom-role-wolf">
@@ -66,13 +66,13 @@
                 <label>
                     Your Name
                     <span>
-                    <input id="name" type="text"/>
+                    <input id="name" type="text" autocomplete="off"/>
                     <p id="name-error"></p>
                 </span>
                 </label>
                 <label>
                     Time (Minutes, Optional)
-                    <input id="time" type="number"/>
+                    <input id="time" type="number" autocomplete="off"/>
                 </label>
                 <div id="card-select-header">
                     <span>
@@ -90,11 +90,23 @@
                             <div id="werewolf-key"></div>
                             <div> = Werewolf role (counts for <a href="/faq">parity</a>)</div>
                         </div>
-                        <p id="size-error"></p>
+                    </span>
+                    <span id="role-view-changer">
+                        <div id="role-view-changer-gallery" class="selected">
+                            <p>Gallery View</p>
+                            <img src="../assets/images/gallery.svg"/>
+                        </div>
+                        <div id="role-view-changer-list">
+                            <p>Condensed View</p>
+                            <img src="../assets/images/list.svg"/>
+                        </div>
                     </span>
                 </div>
                 <div id="card-select">
-
+                    <h2>Good Roles</h2>
+                    <div id="card-select-good"></div>
+                    <h2>Evil Roles</h2>
+                    <div id="card-select-evil"></div>
                 </div>
                 <div id="game-start">
                     <a href="/">

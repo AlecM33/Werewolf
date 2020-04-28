@@ -18,6 +18,10 @@
         font-size: 20px;
     }
 
+    textarea {
+        font-size: 14px;
+    }
+
     #game-container {
         flex-direction: column;
     }
@@ -31,6 +35,22 @@
         width: 8em;
         height: 11.5em;
         font-size: 0.9em;
+    }
+
+    .custom-role-edit {
+        font-size: 15px;
+    }
+
+    .compact-card, .compact-card-header {
+        width: 9em;
+    }
+
+    #card-select-header #role-view-changer img {
+        width: 20px;
+    }
+
+    #role-view-changer div {
+        font-size: 14px;
     }
 
     .card-header > p {
@@ -136,9 +156,17 @@
         margin: 0.5em 0;
     }
 
+    #card-select-header #role-view-changer img {
+        width: 25px;
+    }
+
     .card-header > p {
         right: 17px;
         top: 30px;
+    }
+
+    textarea {
+        font-size: 1.1em;
     }
 
     #game-container #card-container {
@@ -156,6 +184,14 @@
         padding: 1em;
         font-size: 1.1em;
         margin: 0.5em;
+    }
+
+    .compact-card, .compact-card-header {
+        width: 11em;
+    }
+
+    .custom-role-edit {
+        font-size: 19px;
     }
 
     .disclaimer, .custom-card h1 {
@@ -288,8 +324,6 @@
 
 html, body {
     margin: 0 auto;
-    width: 100%;
-    height: 100%;
     color: #bfb8b8;
     font-family: 'sitewide-sans-serif', sans-serif;
     background-color: #23282b !important;
@@ -454,7 +488,6 @@ button {
     width: 100%;
     flex-direction: column;
     justify-content: space-around;
-    font-size: 19px;
     align-items: center;
     background-color: black;
     border-radius: 5px;
@@ -499,7 +532,7 @@ button {
     filter: brightness(70%);
 }
 
-.card {
+.card, .compact-card {
     text-align: center;
     cursor: pointer;
     position: relative;
@@ -509,6 +542,63 @@ button {
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
     user-select: none;
+}
+
+.compact-card {
+    display: flex;
+    height: max-content;
+    position: relative;
+}
+
+.compact-card h1 {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin: 0 10px 0 10px;
+}
+
+.compact-card .card-role {
+    color: #bfb8b8;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 8em;
+}
+
+.compact-card-right p {
+    font-size: 40px;
+    margin: 0 10px 0 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.compact-card-left p {
+    font-size: 40px;
+    margin: 0 0 0 10px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.compact-card-left, .compact-card-right {
+    width: 50%;
+}
+
+.compact-card .card-quantity {
+    text-align: center;
+    margin: 0;
+}
+
+.compact-card-header {
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+    text-align: center;
 }
 
 .card-werewolf {
@@ -523,13 +613,14 @@ button {
 .custom-card div {
     font-size: 40px;
     color: whitesmoke;
+    margin-right: 5px;
 }
 
 .custom-card h1 {
     color: whitesmoke;
 }
 
-.card:hover {
+.card:hover, .compact-card:hover {
     background-color: #55565c;
 }
 
@@ -615,11 +706,23 @@ button {
 }
 
 #card-select {
+    margin-bottom: 2em;
+}
+
+#card-select-good, #card-select-evil {
     display: flex;
     display: -webkit-flex;
     -webkit-flex-wrap: wrap;
-    margin-bottom: 3em;
 }
+
+#card-select > h2:nth-child(1) {
+    color: #4a6bff;
+}
+
+#card-select > h2:nth-child(3) {
+    color: #bd2a2a;
+}
+
 
 .app-btn-secondary {
     display: flex;
@@ -690,8 +793,8 @@ button {
 
 #main-buttons button {
     width: 100%;
-    padding: 1.2em;
-    font-size: 1em;
+    padding: 1em;
+    font-size: 0.9em;
     box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.4);
     background-color: #992626;
     color: #bfb8b8;
@@ -720,6 +823,36 @@ button {
     align-items: center;
 }
 
+#card-select-header #role-view-changer img {
+    margin-left: 15px;
+}
+
+#role-view-changer div {
+    display: flex;
+    justify-content: space-around;
+    width: max-content;
+    margin: 0 15px 0 0;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.selected {
+    background: #494f52;
+}
+
+#role-view-changer div:hover {
+    cursor: pointer;
+    background-color: #494f52;
+}
+
+#role-view-changer {
+    margin: 15px 0 0 0;
+}
+
+#role-view-changer p {
+    margin: 0;
+}
+
 #card-select-header h3 {
     margin: 0;
     font-size: 1.2em;
@@ -729,7 +862,7 @@ button {
 #create-game-container button {
     padding: 0.8em;
     height: 3em;
-    width: fit-content;
+    width: max-content;
 }
 
 #edit-role-btn > img {
@@ -848,7 +981,6 @@ textarea {
     color: gray;
     padding: 0.9em;
     border-radius: 5px;
-    font-size: 1.1em;
 }
 
 .checkbox label::before{

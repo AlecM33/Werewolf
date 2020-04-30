@@ -24,9 +24,11 @@ const port = Array
 app.set("port", port);
 
 app.use(express.static(__dirname));
-app.use(express.static(path.join(__dirname, 'assets')));
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, 'images')));
+app.use(express.static(path.join(__dirname, 'fonts')));
 app.use(express.static(path.join(__dirname, 'views')));
+app.use(express.static(path.join(__dirname, 'scripts')));
+app.use(express.static(path.join(__dirname, 'stylesheets')));
 app.use(express.static(path.join(__dirname, 'spec')));
 
 app.get("/tests",function(request, response){

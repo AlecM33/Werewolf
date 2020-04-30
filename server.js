@@ -5,7 +5,7 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
-const ServerHelper = require('./server-helper');
+const ServerHelper = require('server-helper.js');
 const secure = require('express-force-https');
 app.use(secure);
 

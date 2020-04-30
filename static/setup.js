@@ -21,56 +21,63 @@ const fullDeck = [];
 let gameSize = 0;
 let atLeastOnePlayer = false;
 
-// register event listeners on buttons
-document.getElementById("reset-btn").addEventListener("click", resetCardQuantities);
-document.getElementById("create-btn").addEventListener("click", createGame);
-document.getElementById("role-view-changer-gallery").addEventListener("click", function() { toggleViewChanger(false) });
-document.getElementById("role-view-changer-list").addEventListener("click", function() { toggleViewChanger(true) });
-document.getElementById("role-btn").addEventListener("click", function() { displayModal("role-modal", undefined) });
-document.getElementById("edit-role-btn").addEventListener("click", function() { displayModal("edit-custom-roles-modal", undefined) });
-document.getElementById("custom-role-form").addEventListener("submit", function(e) {
-    addCustomCardToRoles(e);
-});
-Array.from(document.getElementsByClassName("close")).forEach(function(element) {
-    element.addEventListener('click', closeModal);
-});
+export class Setup {
+    constructor() {
+        // render all of the available cards to the user
+        window.onload = function() {
+            // register event listeners on buttons
+            document.getElementById("reset-btn").addEventListener("click", resetCardQuantities);
+            document.getElementById("create-btn").addEventListener("click", createGame);
+            document.getElementById("role-view-changer-gallery").addEventListener("click", function() { toggleViewChanger(false) });
+            document.getElementById("role-view-changer-list").addEventListener("click", function() { toggleViewChanger(true) });
+            document.getElementById("role-btn").addEventListener("click", function() { displayModal("role-modal", undefined) });
+            document.getElementById("edit-role-btn").addEventListener("click", function() { displayModal("edit-custom-roles-modal", undefined) });
+            document.getElementById("custom-role-form").addEventListener("submit", function(e) {
+                addCustomCardToRoles(e);
+            });
+            Array.from(document.getElementsByClassName("close")).forEach(function(element) {
+                element.addEventListener('click', closeModal);
+            });
 
-// render all of the available cards to the user
-window.onload = function() {
-    readInUserCustomRoles();
-    renderAvailableCards(false);
-};
-
-function renderAvailableCards(isCondensed) {
-    cards.sort(function(a, b) {
-        return a.role.toUpperCase().localeCompare(b.role);
-    });
-    document.getElementById("card-select-good").innerHTML = "";
-    document.getElementById("card-select-evil").innerHTML = "";
-    document.getElementById("roles").innerHTML = "";
-    document.getElementById("custom-roles").innerHTML = "";
-
-    for (let i = 0; i < cards.length; i ++) {
-        cards[i].team === "good"
-            ? renderGoodRole(cards[i], i, isCondensed)
-            : renderEvilRole(cards[i], i, isCondensed);
+            readInUserCustomRoles();
+            setup.renderAvailableCards(false);
+        };
     }
-
-    if (document.getElementById("custom-roles").getElementsByClassName("custom-role-edit").length === 0) {
-        document.getElementById("custom-roles").innerHTML = "<h2>You haven't added any custom cards.</h2>";
-    }
-
-    let customCardGood = CardManager.constructCustomCardIndicator(isCondensed, "good");
-    let customCardEvil = CardManager.constructCustomCardIndicator(isCondensed, "evil");
-    document.getElementById("card-select-good").appendChild(customCardGood);
-    document.getElementById("card-select-evil").appendChild(customCardEvil);
-    customCardGood.addEventListener("click", function() {
-        displayModal("custom-card-modal", "Good");
-    });
-    customCardEvil.addEventListener("click", function() {
-        displayModal("custom-card-modal", "Evil");
-    });
 }
+
+export const setup = {
+
+    renderAvailableCards(isCondensed) {
+        cards.sort(function(a, b) {
+            return a.role.toUpperCase().localeCompare(b.role);
+        });
+        document.getElementById("card-select-good").innerHTML = "";
+        document.getElementById("card-select-evil").innerHTML = "";
+        document.getElementById("roles").innerHTML = "";
+        document.getElementById("custom-roles").innerHTML = "";
+
+        for (let i = 0; i < cards.length; i ++) {
+            cards[i].team === "good"
+                ? renderGoodRole(cards[i], i, isCondensed)
+                : renderEvilRole(cards[i], i, isCondensed);
+        }
+
+        if (document.getElementById("custom-roles").getElementsByClassName("custom-role-edit").length === 0) {
+            document.getElementById("custom-roles").innerHTML = "<h2>You haven't added any custom cards.</h2>";
+        }
+
+        let customCardGood = CardManager.constructCustomCardIndicator(isCondensed, "good");
+        let customCardEvil = CardManager.constructCustomCardIndicator(isCondensed, "evil");
+        document.getElementById("card-select-good").appendChild(customCardGood);
+        document.getElementById("card-select-evil").appendChild(customCardEvil);
+        customCardGood.addEventListener("click", function() {
+            displayModal("custom-card-modal", "Good");
+        });
+        customCardEvil.addEventListener("click", function() {
+            displayModal("custom-card-modal", "Evil");
+        });
+    }
+};
 
 function renderGoodRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
@@ -152,7 +159,7 @@ function addCustomCardToRoles(e) {
             saved: document.getElementById("custom-role-remember").checked
         };
         cards.push(newCard);
-        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
+        setup.renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
 
         if (newCard.saved === true) {
             let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
@@ -250,7 +257,7 @@ function toggleViewChanger(isCondensed) {
         document.getElementById("role-view-changer-gallery").classList.add("selected");
         document.getElementById("role-view-changer-list").classList.remove("selected");
     }
-    renderAvailableCards(isCondensed);
+    setup.renderAvailableCards(isCondensed);
 }
 
 function buildRoleEditForm(index) {
@@ -300,7 +307,7 @@ function removeCustomRole(name) {
             localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(userCustomRoles));
         }
         updateCustomRoleModal();
-        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
+        setup.renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
     }
 }
 
@@ -315,7 +322,7 @@ function updateCustomRole(event, index) {
 
         removeOrAddSavedRoleIfNeeded(cardToUpdate);
         toggleEditForm(event, index);
-        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
+        setup.renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
     }
 }
 

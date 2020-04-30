@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine",
-    "test:all": "jasmine && node browsertest.js openBrowser socket"
+    "start": "node server.js",
+    "test": "jasmine && node browsertest.js openBrowser socket",
+    "test:unit": "jasmine",
+    "test:e2e": "node browsertest.js"
   },
   "author": "",
   "license": "ISC",

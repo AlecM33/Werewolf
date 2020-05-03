@@ -20,6 +20,7 @@ app.set('port', 5000);
 
 app.use('/javascript', express.static(__dirname + '/javascript')); // Routing
 app.use('/assets', express.static(__dirname + '/assets')); // Routing
+app.use('/stylesheets', express.static(__dirname + '/stylesheets')); // Routing
 app.use('/node_modules/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client')); // Routing
 app.get('', function(request, response) {
     response.sendFile(__dirname + '/views/index.html');

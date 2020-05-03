@@ -1,5 +1,5 @@
 const debugMode = Array.from(process.argv.map( (arg)=>arg.trim().toLowerCase() )).includes("debug");
-const LOGGER = require("./static/modules/logger")(debugMode);
+const LOGGER = require("./javascript/modules/logger")(debugMode);
 
 module.exports = class {
 

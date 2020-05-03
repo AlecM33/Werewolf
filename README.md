@@ -36,6 +36,14 @@ Run `npm install` from the root directory.
 
 Run `node server.js` from the root directory, navigate to **localhost:5000**
 
+# Testing/Debugging
+
+Use `npm run test` to run unit tests using <a href='https://jasmine.github.io/'>Jasmine</a> (test coverage is currently being expanded)
+<br><br>
+To turn on logging at the debug level, add the `debug` argument like so:
+
+`node server.js -- debug`
+
 # Contributing
 
 Contributions of any kind are welcome. Simply open an issue or pull request and I can respond accordingly. 

@@ -5,13 +5,16 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
-const ServerHelper = require('server-helper.js');
+const ServerHelper = require('./server-helper.js');
 const secure = require('express-force-https');
 app.use(secure);
 
 // Link websocket interaction functions, separated to aid testing
 const CronJob = require('cron').CronJob;
 const serverHelper = new ServerHelper(CronJob);
+
+const debugMode = Array.from(process.argv.map( (arg)=>arg.trim().toLowerCase() )).includes("debug");
+const LOGGER = require("./static/modules/logger")(debugMode);
 
 app.set('port', 5000);
 

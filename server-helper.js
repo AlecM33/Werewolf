@@ -1,8 +1,12 @@
+const debugMode = Array.from(process.argv.map( (arg)=>arg.trim().toLowerCase() )).includes("debug");
+const LOGGER = require("./static/modules/logger")(debugMode);
+
 module.exports = class {
 
     constructor(CronJob) {
         // TODO: do better than a plain object
         this.activeGames = {};
+        this.timers = {};
     
         // cron job for periodically clearing finished games
         this.job = new CronJob('0 0 */2 * * *', function() {
@@ -48,11 +52,22 @@ module.exports = class {
         }
     }
     
-    timerExpired(code) {
+    endGameDueToTimeExpired(code) {
+        if (this.timers[code]) {
+            clearInterval(this.timers[code]);
+        }
         let game = this.findGame(code);
         if (game) {
+            LOGGER.debug("Game " + code + " has ended due to expired timer.");
             game.winningTeam = "wolf";
             game.status = "ended";
+        }
+    }
+
+    clearGameTimer(code) {
+        if (this.timers[code]) {
+            clearInterval(this.timers[code]);
+            LOGGER.debug("game paused and timer cleared for " + code);
         }
     }
     
@@ -64,6 +79,8 @@ module.exports = class {
             let newDate = new Date(game.endTime);
             newDate.setTime(newTime);
             game.endTime = newDate.toJSON();
+            LOGGER.debug("Game " + code + " timer has been unpaused, starting clock anew...");
+            this.startGameClock(code, newDate - Date.now());
         }
     }
     
@@ -72,18 +89,32 @@ module.exports = class {
         if (game) {
             game.pauseTime = (new Date()).toJSON();
             game.paused = true;
+            this.clearGameTimer(code);
         }
+    }
+
+    startGameClock(code, time) {
+        LOGGER.debug("timer started for game " + code);
+        let moduleScope = this;
+        if (this.timers[code]) {
+            clearInterval(this.timers[code]);
+        }
+        this.timers[code] = setInterval(function() {
+            moduleScope.endGameDueToTimeExpired(code)
+        }, time);
     }
     
     startGame(gameData) {
         let game = this.findGame(gameData.code);
         if (game) {
+            LOGGER.debug("game " + gameData.code + " started");
             game.status = "started";
             game.players = gameData.players;
             if (game.time) {
                 let d = new Date();
                 d.setMinutes(d.getMinutes() + parseInt(game.time));
                 game.endTime = d.toJSON();
+                this.startGameClock(gameData.code, game.time * 60 * 1000); // provided time is in minutes
             }
         }
     }

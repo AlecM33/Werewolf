@@ -175,7 +175,7 @@ function renderGame() {
 
     // build the clock
     if (currentGame.time) {
-        renderClock();
+        updateClock();
         document.getElementById("pause-container").innerHTML = currentGame.paused ?
             "<img alt='pause' src='../assets/images/play-button.svg' id='play-pause'/>"
             : "<img alt='pause' src='../assets/images/pause-button.svg' id='play-pause'/>";
@@ -323,33 +323,30 @@ function flipDown(){
     card.classList.remove("flip-up");
 }
 
-function renderClock() {
-    clock = setInterval(function() {
-        const start = currentGame.paused ? new Date(currentGame.pauseTime) : new Date();
-        const end = new Date(currentGame.endTime);
-        const delta = end - start;
-        if (currentGame.paused) {
-            clearInterval(clock);
-        }
-        if (delta <= 0) {
-            endGameDueToTimeExpired();
-        } else {
-            let seconds = Math.floor( (delta / 1000) % 60);
-            let minutes = Math.floor( (delta / 1000 / 60) % 60);
-            let hours = Math.floor( (delta / (1000*60*60)) % 24);
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("clock").innerText = hours > 0
-                ? hours + ":" + minutes + ":" + seconds
-                : minutes + ":" + seconds;
+function displayTime() {
+    const start = currentGame.paused ? new Date(currentGame.pauseTime) : new Date();
+    const end = new Date(currentGame.endTime);
+    const delta = end - start;
+    let seconds = Math.floor((delta / 1000) % 60);
+    let minutes = Math.floor((delta / 1000 / 60) % 60);
+    let hours = Math.floor((delta / (1000 * 60 * 60)) % 24);
 
-        }
-    }, 1000);
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+
+    document.getElementById("clock").innerText = hours > 0
+        ? hours + ":" + minutes + ":" + seconds
+        : minutes + ":" + seconds;
 }
 
-function endGameDueToTimeExpired() {
+function updateClock() {
     clearInterval(clock);
-    socket.emit("timerExpired", currentGame.accessCode);
+    if (document.getElementById("clock") !== null) {
+        displayTime();
+        clock = setInterval(function() {
+            displayTime();
+        }, 1000);
+    }
 }
 
 function killPlayer() {

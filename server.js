@@ -14,12 +14,13 @@ const CronJob = require('cron').CronJob;
 const serverHelper = new ServerHelper(CronJob);
 
 const debugMode = Array.from(process.argv.map( (arg)=>arg.trim().toLowerCase() )).includes("debug");
-const LOGGER = require("./static/modules/logger")(debugMode);
+const LOGGER = require("./javascript/modules/logger")(debugMode);
 
 app.set('port', 5000);
 
-app.use('/static', express.static(__dirname + '/static')); // Routing
+app.use('/javascript', express.static(__dirname + '/javascript')); // Routing
 app.use('/assets', express.static(__dirname + '/assets')); // Routing
+app.use('/stylesheets', express.static(__dirname + '/stylesheets')); // Routing
 app.use('/node_modules/socket.io-client', express.static(__dirname + '/node_modules/socket.io-client')); // Routing
 app.get('', function(request, response) {
     response.sendFile(__dirname + '/views/index.html');

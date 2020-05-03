@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,10 @@
     "cron": "^1.7.1",
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
+    "jasmine": "^3.5.0",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "open": "^7.0.3"
   }
 }

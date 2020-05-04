@@ -43,7 +43,7 @@ function detectChanges(game) {
         lastGameState.players.length !== game.players.length) {
         lastGameState = game;
         return true;
-    } 
+    }
         return false;
 }
 
@@ -130,7 +130,7 @@ function renderEndSplash() {
         rosterContent += standardRoles.includes(player.card.role)
                          ? "<img alt='' src='/assets/images/roles-small/" + player.card.role.replace(/\s/g, '') + ".png' />"
                          : "<img alt='' class='card-image-custom' src='/assets/images/custom.svg' />";
-        rosterContent += player.name + ": " + player.card.role + "</div>" 
+        rosterContent += player.name + ": " + player.card.role + "</div>"
     }
     rosterContainer.innerHTML = rosterContent;
     document.getElementById("end-container").appendChild(rosterContainer);
@@ -213,7 +213,7 @@ function renderDeadAndAliveInformation() {
     deadPlayers.sort((a, b) => { // sort players by the time they died
         return new Date(a.deadAt) > new Date(b.deadAt) ? -1 : 1;
     });
-    
+
     let killedContainer = document.createElement("div");
     killedContainer.setAttribute("id", "killed-container");
     let killedHeader = document.createElement("h2");
@@ -235,20 +235,32 @@ function renderDeadAndAliveInformation() {
     let aliveHeader = document.createElement("h2");
     aliveContainer.appendChild(aliveHeader);
     aliveHeader.innerText = "Roles Still Alive";
+    var rollCounter={}; //RTM
     alivePlayers.forEach((player) => {
         let alivePlayerClass = player.card.team === "good" ? "alive-player-village" : "alive-player-evil";
         if (player.card.isTypeOfWerewolf) {
             alivePlayerClass += " alive-player-wolf";
         }
-        const alivePlayer = document.createElement("div");
-        alivePlayer.setAttribute("class", "alive-player " + alivePlayerClass);
-        alivePlayer.innerHTML = "<p>" + player.card.role + "</p><img src='../assets/images/info.svg'/>";
-        //Add hidden description span - RTM 4/18/2020
-        let playerCardInfo=document.createElement("span");
-        playerCardInfo.setAttribute("class","tooltiptext");
-        playerCardInfo.innerText=player.card.description;
-        alivePlayer.appendChild(playerCardInfo);
-        aliveContainer.appendChild(alivePlayer);
+        //RTM
+        if (rollCounter.hasOwnProperty(player.card.role)) {
+          rollCounter[player.card.role]+=1;
+        }
+        else {
+          rollCounter[player.card.role]=1;
+          //RTM
+          const alivePlayer = document.createElement("div");
+          alivePlayer.setAttribute("class", "alive-player " + alivePlayerClass);
+          alivePlayer.innerHTML = "<p>" + player.card.role + "</p><img src='../assets/images/info.svg'/>";
+          let roleCount=document.createElement("span");//RTM
+          roleCount.setAttribute("class","rolecount");
+          //Add hidden description span - RTM 4/18/2020
+          let playerCardInfo=document.createElement("span");
+          playerCardInfo.setAttribute("class","tooltiptext");
+          playerCardInfo.innerText=player.card.description;
+          alivePlayer.appendChild(roleCount);
+          alivePlayer.appendChild(playerCardInfo);
+          aliveContainer.appendChild(alivePlayer);
+        }
     });
     if (infoContainer === null) {
         infoContainer = document.createElement("div");
@@ -256,14 +268,20 @@ function renderDeadAndAliveInformation() {
         infoContainer.appendChild(killedContainer);
         infoContainer.appendChild(aliveContainer);
         document.getElementById("game-container").appendChild(infoContainer);
+        //Has to be done AFTER the infoContainer is rendered in the DOM to insert the updated counts
+        for (let x of document.getElementsByClassName("alive-player")) {
+          x.getElementsByClassName("rolecount")[0].innerHTML=rollCounter[x.getElementsByTagName("P")[0].innerHTML];
+        }
     } else {
         document.getElementById("killed-container").remove();
         document.getElementById("alive-container").remove();
         document.getElementById("info-container").append(killedContainer);
         document.getElementById("info-container").append(aliveContainer);
+        //Has to be done AFTER the infoContainer is rendered in the DOM to insert the updated counts
+        for (let x of document.getElementsByClassName("alive-player")) {
+          x.getElementsByClassName("rolecount")[0].innerHTML=rollCounter[x.getElementsByTagName("P")[0].innerHTML];
+        }
     }
-    
-    
 }
 
 function renderPlayerCard(player) {

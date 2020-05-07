@@ -37,7 +37,7 @@ module.exports = class {
                 if (player.card.role === "Werewolf" && game.hasDreamWolf) {
                     this.activateDreamWolvesIfNeeded(game);
                 }
-                const winCheck = ServerHelper.teamWon(game);
+                const winCheck = module.exports.teamWon(game);
                 if (winCheck === "wolf") {
                     console.log("wolves won the game!");
                     game.winningTeam = "wolf";

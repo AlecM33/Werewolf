@@ -72,9 +72,6 @@ io.on('connection', function(socket) {
     socket.on('resumeGame', function(code) {
         serverHelper.resumeGame(code);
     });
-    socket.on("timerExpired", function(code) {
-        serverHelper.timerExpired(code);
-    });
     socket.on('killPlayer', function(id, code) {
         serverHelper.killPlayer(id, code);
     });

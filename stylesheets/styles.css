@@ -238,7 +238,7 @@
         width: 35em;
     }
 
-    #main-buttons a {
+    #main-buttons a, #main-buttons button {
         max-width: 15em;
     }
 
@@ -324,6 +324,7 @@
 
 html, body {
     margin: 0 auto;
+    height: 100%;
     color: #bfb8b8;
     font-family: 'sitewide-sans-serif', sans-serif;
     background-color: #23282b !important;
@@ -342,12 +343,24 @@ html, body {
 @keyframes slide-fade {
     from {
         opacity: 0;
-        transform: translateX(-80px)
+        transform: translateX(80px)
 
     }
     to {
         opacity: 1;
         transform: translateX(0);
+    }
+}
+
+@keyframes slide-fade-remove {
+    from {
+        opacity: 1;
+        transform: translateX(0px)
+
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-80px);
     }
 }
 
@@ -360,6 +373,7 @@ html, body {
 #landing-container {
     width: 100%;
     height: 100%;
+    position: relative;
     text-align: center;
     background: linear-gradient(0deg, rgba(35,40,43,0.7959558823529411) 18%, rgba(131,131,131,0.6222864145658263) 100%);
 }
@@ -766,29 +780,9 @@ button {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-#main-buttons a:nth-child(1) {
-    animation: fadein 0.3s ease-in;
-    animation-fill-mode: backwards;
-}
-
-#main-buttons a:nth-child(2) {
-    animation: fadein 0.3s ease-in;
-    animation-fill-mode: backwards;
-    animation-delay: 0.1s;
-}
-
-#main-buttons a:nth-child(3) {
-    animation: fadein 0.3s ease-in;
-    animation-fill-mode: backwards;
-    animation-delay: 0.2s;
-}
-
-#main-buttons a:nth-child(4) {
-    animation: fadein 0.3s ease-in;
-    animation-fill-mode: backwards;
-    animation-delay: 0.3s;
+    max-width: 18em;
+    margin: 0 auto;
+    overflow: hidden;
 }
 
 #main-buttons button {
@@ -801,7 +795,60 @@ button {
 }
 
 #main-buttons a {
-    width: 75%;
+    width: 100%;
+}
+
+#game-mode-select {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#landing-container .slide-in {
+    animation: slide-fade 0.25s;
+    animation-delay: 0.125s;
+    animation-fill-mode: both;
+}
+
+#landing-container .slide-out {
+    animation: slide-fade-remove 0.25s;
+}
+
+
+#game-mode-select .game-mode {
+    width: 7em;
+    background-color: transparent;
+    color: whitesmoke;
+    border: 1px solid whitesmoke;
+    font-size: 30px;
+    font-weight: bold;
+    padding: 5px;
+    margin-bottom: 0.5em;
+    border-radius: 5px;
+}
+
+#game-mode-select .game-mode:hover {
+    cursor: pointer;
+    background-color: #494f52;
+}
+
+#game-mode-select span {
+    font-size: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 0.2em;
+    text-align: left;
+    width: 100%;
+}
+
+#game-mode-select span:hover {
+    color: #333243;
 }
 
 #card-select-header {
@@ -813,9 +860,17 @@ button {
     flex-direction: column;
 }
 
-#card-select-header a {
+#card-select-header a, #landing-container #game-mode-select a:nth-child(2) {
     text-decoration: underline;
     color: #b8c4ff;
+}
+
+#landing-container #game-mode-select a:nth-child(2) {
+    text-decoration: underline;
+    color: #b8c4ff;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 1em;
 }
 
 #card-select-header span > div  {
@@ -1462,6 +1517,10 @@ label {
     font-size: 40px;
 }
 
+.faq-question {
+    max-width: 60em;
+}
+
 #learn-container button, #faq-container button {
     margin-top: 1em;
 }
@@ -1562,6 +1621,10 @@ label {
     color: #bd2a2a;
 }
 
+.dead-player-no-reveals {
+    color: whitesmoke !important;
+}
+
 .alive-player-wolf, .dead-player-wolf {
     border: 2px solid #bd2a2a;
 }
@@ -1594,6 +1657,10 @@ label {
 .killed-role-custom {
     width: 190px;
     padding: 95px;
+}
+
+.killed-role-hidden {
+    padding-top: 3em;
 }
 
 @keyframes slide-fade-in-top {

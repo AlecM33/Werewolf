@@ -13,9 +13,7 @@
                 <img src="../assets/images/Wolf_Logo.gif" alt="Where Are the Wolves?" />
             </div>
             <div id="main-buttons">
-                <a href="/create">
-                    <button class="app-btn">Create Game</button>
-                </a>
+                <button class="app-btn" id="create-game">Create Game</button>
                 <a href="/join">
                     <button class="app-btn">Join</button>
                 </a>
@@ -24,6 +22,16 @@
                 </a>
                 <a href="/faq">
                     <button class="app-btn">FAQ</button>
+                </a>
+            </div>
+            <div id="game-mode-select" style="display: none;">
+                <span id="game-mode-back">&#8249;</span>
+                <a href="/faq#reveals">What is this?</a>
+                <a href="/create?reveals=true">
+                    <div class="game-mode" id="game-mode-reveals">Reveal</div>
+                </a>
+                <a href="/create?reveals=false">
+                    <div class="game-mode" id="game-mode-no-reveals">No-Reveal</div>
                 </a>
             </div>
         </div>
@@ -40,5 +48,6 @@
                 <p>Werewolf created by Andrew Plotkin</p>
             </div>
         </footer>
+        <script type="module" src="/javascript/index.js"></script>
     </body>
 </html>

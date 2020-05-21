@@ -32,7 +32,9 @@ module.exports = class {
                 game.killedPlayer = player.name;
                 game.lastKilled = player.id;
                 game.killedRole = player.card.role;
-                game.message = player.name + ", a " + player.card.role + ", was killed!";
+                game.message = game.reveals
+                    ? player.name + ", a " + player.card.role + ", was killed!"
+                    : player.name + " has died!";
                 console.log(game.message);
                 if (player.card.role === "Werewolf" && game.hasDreamWolf) {
                     this.activateDreamWolvesIfNeeded(game);

@@ -5,8 +5,9 @@ import {CardManager} from './modules/card-manager.js'
 const socket = io();
 
 class Game {
-    constructor(accessCode, size, deck, time, hasDreamWolf) {
+    constructor(accessCode, reveals, size, deck, time, hasDreamWolf) {
         this.accessCode = accessCode;
+        this.reveals = reveals;
         this.size = size;
         this.deck = deck;
         this.time = time;
@@ -37,6 +38,10 @@ Array.from(document.getElementsByClassName("close")).forEach(function(element) {
 
 // render all of the available cards to the user
 window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    document.getElementById("create-game-header").innerText = urlParams.get('reveals') === "true"
+        ? "Create Reveal Game"
+        : "Create No-Reveal Game";
     readInUserCustomRoles();
     renderAvailableCards(false);
 };
@@ -411,6 +416,9 @@ function buildDeckFromQuantities() {
 
 function createGame() {
     if (document.getElementById("name").value.length > 0 && atLeastOnePlayer) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const revealParam = urlParams.get('reveals');
+
         // generate 6 digit access code
         let code = "";
         let charPool = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -430,6 +438,7 @@ function createGame() {
         let gameDeck = buildDeckFromQuantities();
         const game = new Game(
             code,
+            revealParam === "true",
             gameSize,
             gameDeck,
             Math.ceil(document.getElementById("time").value),

@@ -70,14 +70,19 @@ function triggerEntranceAnimation(selector, entranceClass, exitClass, image) {
         transitionEl.entranceClass = entranceClass;
         transitionEl.exitClass = exitClass;
         transitionEl.offsetWidth;
-        if (image && standardRoles.includes(currentGame.killedRole)) {
-            transitionEl.classList.remove("killed-role-custom");
-            transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole.replace(/\s/g, '') + ".png");
-        } else {
-            if (image) {
-                transitionEl.setAttribute("src", "../assets/images/custom.svg");
-                transitionEl.setAttribute("class", "killed-role-custom");
+        if (currentGame.reveals) {
+            if (image && standardRoles.includes(currentGame.killedRole)) {
+                transitionEl.classList.remove("killed-role-custom");
+                transitionEl.setAttribute("src", "../assets/images/roles/" + currentGame.killedRole.replace(/\s/g, '') + ".png");
+            } else {
+                if (image) {
+                    transitionEl.setAttribute("src", "../assets/images/custom.svg");
+                    transitionEl.setAttribute("class", "killed-role-custom");
+                }
             }
+        } else {
+            transitionEl.setAttribute("src", "../assets/images/question_mark.svg");
+            transitionEl.setAttribute("class", "killed-role-hidden");
         }
         transitionEl.classList.add(entranceClass);
 }
@@ -148,7 +153,9 @@ function renderGame() {
     document.querySelector("#message-box").style.display = 'block';
     if (currentGame.killedRole && currentGame.lastKilled !== lastKilled) { // a new player has been killed
         lastKilled = currentGame.lastKilled;
-        document.getElementById("killed-name").innerText = currentGame.killedPlayer + " was a " + currentGame.killedRole + "!";
+        document.getElementById("killed-name").innerText = currentGame.reveals
+        ? currentGame.killedPlayer + " was a " + currentGame.killedRole + "!"
+        : currentGame.killedPlayer + " has died!";
         playKilledAnimation();
         document.getElementById("message-box").innerText = currentGame.message;
     }
@@ -205,11 +212,12 @@ function renderGame() {
 
 function renderDeadAndAliveInformation() {
     // TODO: Refactor this function.
-    let infoContainer = document.getElementById("info-container");
-    let alivePlayers = currentGame.players.filter((player) => !player.dead).sort((a, b) =>
+    currentGame.players = currentGame.players.sort((a, b) =>
     {
         return a.card.role > b.card.role ? 1 : -1;
     });
+    let infoContainer = document.getElementById("info-container");
+    let alivePlayers = currentGame.players.filter((player) => !player.dead);
     let deadPlayers = currentGame.players.filter((player) => player.dead);
     deadPlayers.sort((a, b) => { // sort players by the time they died
         return new Date(a.deadAt) > new Date(b.deadAt) ? -1 : 1;
@@ -220,49 +228,24 @@ function renderDeadAndAliveInformation() {
     let killedHeader = document.createElement("h2");
     killedHeader.innerText = "Killed Players";
     killedContainer.appendChild(killedHeader);
-    deadPlayers.forEach((player) => {
-        let deadPlayerClass = player.card.team === "good" ? "dead-player-village" : "dead-player-evil";
-        if (player.card.isTypeOfWerewolf) {
-            deadPlayerClass += " dead-player-wolf";
-        }
-        const killedPlayer = document.createElement("div");
-        killedPlayer.setAttribute("class", "killed-player " + deadPlayerClass);
-        killedPlayer.innerText = player.name + ": " + player.card.role;
-        killedContainer.appendChild(killedPlayer);
-    });
+
+    addDeadPlayers(deadPlayers, killedContainer);
 
     let aliveContainer = document.createElement("div");
     aliveContainer.setAttribute("id", "alive-container");
     let aliveHeader = document.createElement("h2");
     aliveContainer.appendChild(aliveHeader);
-    aliveHeader.innerText = "Roles Still Alive";
+    aliveHeader.innerText = currentGame.reveals
+        ? "Roles Still Alive"
+        : "Roles in the Game";
     var rollCounter = {}; // RTM
-    alivePlayers.forEach((player) => {
-        let alivePlayerClass = player.card.team === "good" ? "alive-player-village" : "alive-player-evil";
-        if (player.card.isTypeOfWerewolf) {
-            alivePlayerClass += " alive-player-wolf";
-        }
-        //RTM
-        if (rollCounter.hasOwnProperty(player.card.role)) {
-          rollCounter[player.card.role] += 1;
-        }
-        else {
-          rollCounter[player.card.role] = 1;
-          //RTM
-          const alivePlayer = document.createElement("div");
-          alivePlayer.setAttribute("class", "alive-player " + alivePlayerClass);
-          alivePlayer.innerHTML = "<p>" + player.card.role + "</p><img src='../assets/images/info.svg'/>";
-          let roleCount = document.createElement("span"); // RTM
-          roleCount.setAttribute("class","rolecount");
-          //Add hidden description span - RTM 4/18/2020
-          let playerCardInfo=document.createElement("span");
-          playerCardInfo.setAttribute("class","tooltiptext");
-          playerCardInfo.innerText=player.card.description;
-          alivePlayer.prepend(roleCount);
-          alivePlayer.appendChild(playerCardInfo);
-          aliveContainer.appendChild(alivePlayer);
-        }
-    });
+
+    if (currentGame.reveals) {
+        addAlivePlayers(alivePlayers, aliveContainer, rollCounter);
+    } else {
+        addAlivePlayers(currentGame.players, aliveContainer, rollCounter);
+    }
+
     if (infoContainer === null) {
         infoContainer = document.createElement("div");
         infoContainer.setAttribute("id", "info-container");
@@ -271,7 +254,7 @@ function renderDeadAndAliveInformation() {
         document.getElementById("game-container").appendChild(infoContainer);
         // Has to be done AFTER the infoContainer is rendered in the DOM to insert the updated counts
         for (let x of document.getElementsByClassName("alive-player")) {
-          x.getElementsByClassName("rolecount")[0].innerText = rollCounter[x.getElementsByTagName("p")[0].innerText];
+            x.getElementsByClassName("rolecount")[0].innerText = rollCounter[x.getElementsByTagName("p")[0].innerText];
         }
     } else {
         document.getElementById("killed-container").remove();
@@ -280,9 +263,56 @@ function renderDeadAndAliveInformation() {
         document.getElementById("info-container").append(aliveContainer);
         // Has to be done AFTER the infoContainer is rendered in the DOM to insert the updated counts
         for (let x of document.getElementsByClassName("alive-player")) {
-          x.getElementsByClassName("rolecount")[0].innerText = rollCounter[x.getElementsByTagName("p")[0].innerText];
+            x.getElementsByClassName("rolecount")[0].innerText = rollCounter[x.getElementsByTagName("p")[0].innerText];
         }
     }
+}
+
+function addDeadPlayers(deadPlayers, killedContainer) {
+    deadPlayers.forEach((player) => {
+        let deadPlayerClass = player.card.team === "good" ? "dead-player-village" : "dead-player-evil";
+        if (player.card.isTypeOfWerewolf) {
+            deadPlayerClass += " dead-player-wolf";
+        }
+        const killedPlayer = document.createElement("div");
+        if (currentGame.reveals) {
+            killedPlayer.setAttribute("class", "killed-player " + deadPlayerClass);
+        } else {
+            killedPlayer.setAttribute("class", "killed-player dead-player-no-reveals");
+        }
+        killedPlayer.innerText = currentGame.reveals
+            ? player.name + ": " + player.card.role
+            : player.name;
+        killedContainer.appendChild(killedPlayer);
+    });
+}
+
+function addAlivePlayers(alivePlayers, aliveContainer, rollCounter) {
+    alivePlayers.forEach((player) => {
+        let alivePlayerClass = player.card.team === "good" ? "alive-player-village" : "alive-player-evil";
+        if (player.card.isTypeOfWerewolf) {
+            alivePlayerClass += " alive-player-wolf";
+        }
+        //RTM
+        if (rollCounter.hasOwnProperty(player.card.role)) {
+            rollCounter[player.card.role] += 1;
+        } else {
+            rollCounter[player.card.role] = 1;
+            //RTM
+            const alivePlayer = document.createElement("div");
+            alivePlayer.setAttribute("class", "alive-player " + alivePlayerClass);
+            alivePlayer.innerHTML = "<p>" + player.card.role + "</p><img src='../assets/images/info.svg'/>";
+            let roleCount = document.createElement("span"); // RTM
+            roleCount.setAttribute("class", "rolecount");
+            //Add hidden description span - RTM 4/18/2020
+            let playerCardInfo=document.createElement("span");
+            playerCardInfo.setAttribute("class","tooltiptext");
+            playerCardInfo.innerText=player.card.description;
+            alivePlayer.prepend(roleCount);
+            alivePlayer.appendChild(playerCardInfo);
+            aliveContainer.appendChild(alivePlayer);
+        }
+    });
 }
 
 function renderPlayerCard(player) {

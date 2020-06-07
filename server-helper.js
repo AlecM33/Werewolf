@@ -9,11 +9,12 @@ module.exports = class {
         this.timers = {};
     
         // cron job for periodically clearing finished games
+        const scope = this;
         this.job = new CronJob('0 0 */2 * * *', function() {
-            console.log(this.activeGames);
-            for (const key in this.activeGames) {
-                if (this.activeGames.hasOwnProperty(key) && (Math.abs((new Date()) - (new Date(this.activeGames[key].startTime))) / 36e5) >= 2) {
-                    delete this.activeGames[key];
+            console.log(scope.activeGames);
+            for (const key in scope.activeGames) {
+                if (scope.activeGames.hasOwnProperty(key) && (Math.abs((new Date()) - (new Date(scope.activeGames[key].startTime))) / 36e5) >= 2) {
+                    delete scope.activeGames[key];
                 }
             }
             console.log("Games pruned at: " + (new Date().toDateString()) + " " + (new Date()).toTimeString());
@@ -34,7 +35,7 @@ module.exports = class {
                 game.killedRole = player.card.role;
                 game.message = player.name + ", a " + player.card.role + ", was killed!";
                 console.log(game.message);
-                if (player.card.role === "Werewolf" && game.hasDreamWolf) {
+                if (player.card.isTypeOfWerewolf && game.hasDreamWolf) {
                     this.activateDreamWolvesIfNeeded(game);
                 }
                 const winCheck = module.exports.teamWon(game);

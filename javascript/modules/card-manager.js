@@ -4,7 +4,7 @@ export class CardManager {
     constructor() {}
 
     static createCard(card) {
-        return new Card(card.role, card.team, card.description, card.quantity=0, card.isTypeOfWerewolf, card.custom, card.saved);
+        return new Card(card.role, card.team, card.description, card.quantity, card.isTypeOfWerewolf, card.custom, card.saved);
     }
 
     // builds element for the informational role modal on the setup page
@@ -126,7 +126,7 @@ class Card {
         this.isTypeOfWerewolf = isTypeOfWerewolf;
         this.team = team;
         this.description = description;
-        this.quantity = quantity;
+        this.quantity = quantity || 0;
         this.custom = custom;
         this.saved = saved;
     }

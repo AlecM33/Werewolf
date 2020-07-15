@@ -18,7 +18,6 @@ class Game {
     }
 }
 
-const fullDeck = [];
 let gameSize = 0;
 let atLeastOnePlayer = false;
 
@@ -56,6 +55,7 @@ function renderAvailableCards(isCondensed) {
     document.getElementById("custom-roles").innerHTML = "";
 
     for (let i = 0; i < cards.length; i ++) {
+        if (!cards[i].quantity) cards[i].quantity = 0;
         cards[i].team === "good"
             ? renderGoodRole(cards[i], i, isCondensed)
             : renderEvilRole(cards[i], i, isCondensed);
@@ -82,7 +82,6 @@ function renderGoodRole(cardInfo, i, isCondensed) {
     if (card.custom) {
         renderCustomRoleInModal(card, i);
     }
-    fullDeck.push(card);
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
     if (isCondensed) {
@@ -116,7 +115,6 @@ function renderEvilRole(cardInfo, i, isCondensed) {
     if (card.custom) {
         renderCustomRoleInModal(card, i);
     }
-    fullDeck.push(card);
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
     if (isCondensed) {
@@ -350,6 +348,7 @@ function removeOrAddSavedRoleIfNeeded(card) {
 function incrementCardQuantity(e) {
     if(e.card.quantity < 25) {
         e.card.quantity += 1;
+        cards.find((card) => card.role === e.card.role).quantity += 1;
     }
     e.quantityEl.innerHTML = e.card.quantity;
     updateGameSize();
@@ -358,6 +357,7 @@ function incrementCardQuantity(e) {
 function decrementCardQuantity(e) {
     if(e.card.quantity > 0) {
         e.card.quantity -= 1;
+        cards.find((card) => card.role === e.card.role).quantity -= 1;
     }
     e.quantityEl.innerHTML = e.card.quantity;
     updateGameSize();
@@ -365,7 +365,7 @@ function decrementCardQuantity(e) {
 
 function updateGameSize() {
     gameSize = 0;
-    for (let card of fullDeck) {
+    for (let card of cards) {
         gameSize += card.quantity;
     }
     document.getElementById("game-size").innerText = gameSize + " Players";
@@ -374,7 +374,7 @@ function updateGameSize() {
 }
 
 function resetCardQuantities() {
-    for (let card of fullDeck) {
+    for (let card of cards) {
         card.quantity = 0;
     }
     updateGameSize();
@@ -405,7 +405,7 @@ function closeModal() {
 
 function buildDeckFromQuantities() {
     let playerDeck = [];
-    for (const card of fullDeck) {
+    for (const card of cards) {
         for (let i = 0; i < card.quantity; i++) {
             card.id = utility.generateID();
             playerDeck.push(card);

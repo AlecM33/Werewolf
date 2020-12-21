@@ -28,6 +28,12 @@ document.getElementById("role-view-changer-gallery").addEventListener("click", f
 document.getElementById("role-view-changer-list").addEventListener("click", function() { toggleViewChanger(true) });
 document.getElementById("role-btn").addEventListener("click", function() { displayModal("role-modal", undefined) });
 document.getElementById("edit-role-btn").addEventListener("click", function() { displayModal("edit-custom-roles-modal", undefined) });
+document.getElementById("import-role-btn").addEventListener("click", function() {
+    document.getElementById("import-file-input").click();
+});
+document.getElementById("import-file-input").addEventListener("change", function(e) {
+    selectRoleImportFile(e);
+});
 document.getElementById("custom-role-form").addEventListener("submit", function(e) {
     addCustomCardToRoles(e);
 });
@@ -80,7 +86,7 @@ function renderAvailableCards(isCondensed) {
 function renderGoodRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
     if (card.custom) {
-        renderCustomRoleInModal(card, i);
+        renderCustomRole(card, i, "custom-roles");
     }
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
@@ -113,7 +119,7 @@ function renderGoodRole(cardInfo, i, isCondensed) {
 function renderEvilRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
     if (card.custom) {
-        renderCustomRoleInModal(card, i);
+        renderCustomRole(card, i, "custom-roles");
     }
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
@@ -182,13 +188,97 @@ function addCustomCardToRoles(e) {
     }
 }
 
+function addImportFileToRoles (e) {
+    //parse roles from file
+    let match = /^data:(.*);base64,(.*)$/.exec(e.target.result);
+    if (match == null) {
+        throw 'Could not parse result'; // should not happen
+    }
+    let mimeType = match[1];
+    let content = match[2];
+    let newRoles;
+    try {
+        newRoles = JSON.parse(atob(content));
+    } catch(ex) {
+        console.error(ex.message);
+    }
+
+    //add roles
+    let succesfullyAddedRoleInfo = [];
+    let rolesThatFailedToImport = [];
+    let expectedKeys = ["role", "description", "team", "isTypeOfWerewolf"];
+    let roleIndex;
+    newRoles.forEach(newRole => {
+        newRole.custom = true;
+        newRole.saved = true;
+        let newRoleValidationResult = validateNewRole(newRole, expectedKeys);
+        if (newRoleValidationResult.isValid) {
+            roleIndex = cards.push(newRole) - 1;
+            succesfullyAddedRoleInfo.push({role: newRole, roleIndex: roleIndex});
+        }
+        else {
+            rolesThatFailedToImport.push(newRoleValidationResult);
+        }
+    });
+    renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
+    // always save imported roles
+    let succesfullyAddedRoles = succesfullyAddedRoleInfo.map(roleInfo => roleInfo.role);
+    let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
+    if (existingRoles !== null) {
+        let rolesArray;
+        try {
+            rolesArray = JSON.parse(existingRoles);
+        } catch (e) {
+            console.error(e.message);
+        }
+        if (rolesArray) {
+            rolesArray.push(...succesfullyAddedRoles);
+        }
+        localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(rolesArray));
+    } else {
+        localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(succesfullyAddedRoles));
+    }
+    updateCustomRoleModal();
+    updateImportRolesModal(succesfullyAddedRoleInfo, rolesThatFailedToImport);
+    displayModal("import-custom-roles-result-modal", undefined);
+}
+
+function validateNewRole(newCard,expectedKeys) {
+    let newRoleValidationResult = {};
+    newRoleValidationResult.role = newCard;
+    newRoleValidationResult.issues = [];
+    
+    //add warning if there already exists a loaded role with the same name
+    if (cards.find((card) => card.role === newCard.role)) {
+        newRoleValidationResult.issues.push({level: "warning", description: "duplicate entry"});
+    }
+    
+    //For each required field, add error if the role is missing it
+    let missingKeys = expectedKeys.filter(function(key){ return Object.keys(newCard).indexOf(key) < 0 });
+    missingKeys.forEach(missingKey => {
+        newRoleValidationResult.issues.push({level: "error", description: "Missing data: " + missingKey});
+    });
+
+    newRoleValidationResult.isValid = ( newRoleValidationResult.issues.length == 0 );
+
+    return newRoleValidationResult;
+}
+
 function updateCustomRoleModal() {
     document.getElementById("custom-roles").innerHTML = "";
     for (let i = 0; i < cards.length; i++){
         if (cards[i].custom) {
-            renderCustomRoleInModal(cards[i], i);
+            renderCustomRole(cards[i], i, "custom-roles");
         }
     }
+}
+
+function updateImportRolesModal(succesfullyAddedRoles, rolesThatFailedToImport) {
+    document.getElementById("import-successes-subheader").innerHTML = succesfullyAddedRoles.length + " roles sucessfully imported";
+    document.getElementById("import-successes-role-list").innerHTML = "";
+    succesfullyAddedRoles.forEach(roleInfo => {
+        renderCustomRole(roleInfo.role, roleInfo.roleIndex, "import-successes-role-list");
+    });
 }
 
 function readInUserCustomRoles() {
@@ -201,7 +291,7 @@ function readInUserCustomRoles() {
     }
 }
 
-function renderCustomRoleInModal(card, index) {
+function renderCustomRole(card, index, destinationId) {
     let roleElement = document.createElement("div");
     let editRemoveContainer = document.createElement("div");
     let roleLabel = document.createElement("div");
@@ -213,10 +303,12 @@ function renderCustomRoleInModal(card, index) {
     roleName.innerText = card.role;
     remove.setAttribute("src", "../assets/images/delete.svg");
     remove.setAttribute("title", "Delete");
+    remove.classList.add("custom-role-button");
     remove.addEventListener("click", function() { removeCustomRole(card.role) });
 
     edit.setAttribute("src", "../assets/images/pencil_green.svg");
     edit.setAttribute("title", "Edit");
+    edit.classList.add("custom-role-button");
     edit.addEventListener("click", function(e) { toggleEditForm(e, index) });
     roleElement.setAttribute("class", "custom-role-edit");
 
@@ -227,7 +319,7 @@ function renderCustomRoleInModal(card, index) {
     roleElement.appendChild(roleLabel);
     roleElement.appendChild(editForm);
 
-    document.getElementById("custom-roles").appendChild(roleElement);
+    document.getElementById(destinationId).appendChild(roleElement);
 
     document.getElementById("edit-form-" + index).addEventListener("submit", function(e) {
         updateCustomRole(e, index);
@@ -400,6 +492,7 @@ function closeModal() {
     document.getElementById("role-modal").classList.add("hidden");
     document.getElementById("custom-card-modal").classList.add("hidden");
     document.getElementById("edit-custom-roles-modal").classList.add("hidden");
+    document.getElementById("import-custom-roles-result-modal").classList.add("hidden");
     document.getElementById("app-content").classList.remove("hidden");
 }
 
@@ -459,4 +552,12 @@ function createGame() {
         document.getElementById("name").classList.add("error");
         document.getElementById("name-error").innerText = "Name is required.";
     }
+}
+function selectRoleImportFile(e) {
+    var files = e.target.files;
+    if (files.length < 1) { return; }
+    var file = files[0];
+    var reader = new FileReader();
+    reader.onload = addImportFileToRoles;
+    reader.readAsDataURL(file);
 }

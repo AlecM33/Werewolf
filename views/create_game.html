@@ -29,6 +29,24 @@
             </div>
         </div>
     </div>
+    <div class="modal hidden" id="import-custom-roles-result-modal">
+        <input type="file" id="import-file-input" />
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="import-successes">
+                    <h2 id="import-successes-subheader"></h2>
+                    <div id="import-successes-role-list"></div>
+                </div>
+                <div id="import-failures">
+                    <h2 id="import-failures-subheader"></h2>
+                    <div id="import-failures-issue-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal hidden" id="custom-card-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -84,6 +102,9 @@
                             <h3 id="game-size">0 Players</h3>
                             <button id="edit-role-btn" class="app-btn-secondary">Manage Custom Roles
                                 <img src="../assets/images/pencil.svg"/>
+                            </button>
+                            <button id="import-role-btn" class="app-btn-secondary">Import Custom Roles
+                                <img src="../assets/images/import.svg"/>
                             </button>
                         </div>
                         <div>

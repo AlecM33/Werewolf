@@ -523,11 +523,11 @@ button {
     width: 15px;
 }
 
-#custom-roles img {
+img.custom-role-button {
     width: 25px;
 }
 
-#custom-roles .custom-role-edit {
+.custom-role-edit {
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -574,6 +574,10 @@ button {
 
 #custom-roles .custom-role-edit div > img:hover {
     filter: brightness(70%);
+}
+
+#import-file-input {
+    display: none;
 }
 
 .card, .compact-card {

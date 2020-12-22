@@ -566,13 +566,13 @@ img.custom-role-button {
     max-width: 7em;
 }
 
-#custom-roles .custom-role-edit div > img {
+.custom-role-edit div > img {
     margin: 0 1em;
     cursor: pointer;
     user-select: none;
 }
 
-#custom-roles .custom-role-edit div > img:hover {
+.custom-role-edit div > img:hover {
     filter: brightness(70%);
 }
 
@@ -955,6 +955,10 @@ img.custom-role-button {
 }
 
 #edit-role-btn > img {
+    margin-left: 0.5em;
+}
+
+#import-role-btn > img {
     margin-left: 0.5em;
 }
 

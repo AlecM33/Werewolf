@@ -86,7 +86,7 @@ function renderAvailableCards(isCondensed) {
 function renderGoodRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
     if (card.custom) {
-        renderCustomRole(card, i, "custom-roles");
+        renderCustomRole(cardInfo, "custom-roles");
     }
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
@@ -119,7 +119,7 @@ function renderGoodRole(cardInfo, i, isCondensed) {
 function renderEvilRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
     if (card.custom) {
-        renderCustomRole(card, i, "custom-roles");
+        renderCustomRole(cardInfo, "custom-roles");
     }
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
@@ -268,7 +268,7 @@ function updateCustomRoleModal() {
     document.getElementById("custom-roles").innerHTML = "";
     for (let i = 0; i < cards.length; i++){
         if (cards[i].custom) {
-            renderCustomRole(cards[i], i, "custom-roles");
+            renderCustomRole(cards[i], "custom-roles");
         }
     }
 }
@@ -277,7 +277,7 @@ function updateImportRolesModal(succesfullyAddedRoles, rolesThatFailedToImport) 
     document.getElementById("import-successes-subheader").innerHTML = succesfullyAddedRoles.length + " roles sucessfully imported";
     document.getElementById("import-successes-role-list").innerHTML = "";
     succesfullyAddedRoles.forEach(roleInfo => {
-        renderCustomRole(roleInfo.role, roleInfo.roleIndex, "import-successes-role-list");
+        renderCustomRole(roleInfo.role, "import-successes-role-list");
     });
 }
 
@@ -291,14 +291,17 @@ function readInUserCustomRoles() {
     }
 }
 
-function renderCustomRole(card, index, destinationId) {
+function renderCustomRole(card, destinationId) {
     let roleElement = document.createElement("div");
     let editRemoveContainer = document.createElement("div");
+    let editFormDiv = document.createElement("div");
     let roleLabel = document.createElement("div");
     let roleName = document.createElement("p");
     let remove = document.createElement("img");
     let edit = document.createElement("img");
-    let editForm = buildRoleEditForm(index);
+    //let editForm = buildRoleEditForm(index);
+    let editRoleTemplate = document.getElementById("edit-custom-role-template");
+    let editForm = editRoleTemplate.content.cloneNode(true);
 
     roleName.innerText = card.role;
     remove.setAttribute("src", "../assets/images/delete.svg");
@@ -309,7 +312,7 @@ function renderCustomRole(card, index, destinationId) {
     edit.setAttribute("src", "../assets/images/pencil_green.svg");
     edit.setAttribute("title", "Edit");
     edit.classList.add("custom-role-button");
-    edit.addEventListener("click", function(e) { toggleEditForm(e, index) });
+    edit.addEventListener("click", function(e) { toggleEditForm(e, editFormDiv, card) });
     roleElement.setAttribute("class", "custom-role-edit");
 
     editRemoveContainer.appendChild(remove);
@@ -317,22 +320,27 @@ function renderCustomRole(card, index, destinationId) {
     roleLabel.appendChild(roleName);
     roleLabel.appendChild(editRemoveContainer);
     roleElement.appendChild(roleLabel);
-    roleElement.appendChild(editForm);
+    //roleElement.appendChild(editForm);
+    const shadowRoot = editFormDiv.attachShadow({mode: 'open'});
+    shadowRoot.appendChild(editForm);
+
+    editFormDiv.style.display = "none";
+    roleElement.appendChild(editFormDiv);
 
     document.getElementById(destinationId).appendChild(roleElement);
 
-    document.getElementById("edit-form-" + index).addEventListener("submit", function(e) {
-        updateCustomRole(e, index);
+    shadowRoot.getElementById("edit-role-form").addEventListener("submit", function(e) {
+        updateCustomRole(e, editFormDiv, card);
     });
 }
 
-function toggleEditForm(event, index) {
+function toggleEditForm(event, formDiv, card) {
     event.preventDefault();
-    let displayRule = document.getElementById("edit-form-" + index).style.display;
-    document.getElementById("edit-form-" + index).style.display = displayRule === "none" ? "block" : "none";
+    let displayRule = formDiv.style.display;
+    formDiv.style.display = displayRule === "none" ? "block" : "none";
 
-    if (document.getElementById("edit-form-" + index).style.display === "block") {
-        populateEditRoleForm(cards[index], index);
+    if (formDiv.style.display === "block") {
+        populateEditRoleForm(formDiv, card);
     }
 }
 
@@ -375,11 +383,11 @@ function buildRoleEditForm(index) {
     return infoForm;
 }
 
-function populateEditRoleForm(card, index) {
-    document.getElementById("edit-role-desc-" + index).value = card.description;
-    document.getElementById("edit-role-team-" + index).value = card.team;
-    document.getElementById("edit-role-wolf-" + index).checked = card.isTypeOfWerewolf;
-    document.getElementById("edit-role-remember-" + index).checked = card.saved;
+function populateEditRoleForm(formDiv, card) {
+    formDiv.shadowRoot.querySelector("#edit-role-desc").value = card.description;
+    formDiv.shadowRoot.querySelector("#edit-role-team").value = card.team;
+    formDiv.shadowRoot.querySelector("#edit-role-wolf").checked = card.isTypeOfWerewolf;
+    formDiv.shadowRoot.querySelector("#edit-role-remember").checked = card.saved;
 }
 
 function removeCustomRole(name) {
@@ -399,19 +407,16 @@ function removeCustomRole(name) {
     }
 }
 
-function updateCustomRole(event, index) {
+function updateCustomRole(event, formDiv, cardToUpdate) {
     event.preventDefault();
-    if (index >= 0 && index < cards.length) {
-        let cardToUpdate = cards[index];
-        cardToUpdate.team = document.getElementById("edit-role-team-" + index).value;
-        cardToUpdate.description = document.getElementById("edit-role-desc-" + index).value;
-        cardToUpdate.isTypeOfWerewolf = document.getElementById("edit-role-wolf-" + index).checked;
-        cardToUpdate.saved = document.getElementById("edit-role-remember-" + index).checked;
+    cardToUpdate.team = formDiv.shadowRoot.querySelector("#edit-role-team").value;
+    cardToUpdate.description = formDiv.shadowRoot.querySelector("#edit-role-desc").value;
+    cardToUpdate.isTypeOfWerewolf = formDiv.shadowRoot.querySelector("#edit-role-wolf").checked;
+    cardToUpdate.saved = formDiv.shadowRoot.querySelector("#edit-role-remember").checked;
 
-        removeOrAddSavedRoleIfNeeded(cardToUpdate);
-        toggleEditForm(event, index);
-        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
-    }
+    removeOrAddSavedRoleIfNeeded(cardToUpdate);
+    toggleEditForm(event, formDiv, cardToUpdate);
+    renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
 }
 
 function removeOrAddSavedRoleIfNeeded(card) {

@@ -1,0 +1,48 @@
+<html>
+<head>
+    <link rel='stylesheet' href="stylesheets/styles.css" />
+</head>
+<body>
+    <div class="modal" id="import-custom-roles-result-modal">
+        <input type="file" id="import-file-input">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">×</span>
+            </div>
+            <div class="modal-body">
+                <div id="import-successes">
+                    <h2 id="import-successes-subheader">0 roles successfully imported</h2>
+                    <div id="import-successes-role-list"></div>
+                </div>
+                <div id="import-failures">
+                    <h2 id="import-failures-subheader">2 roles failed to import</h2>
+                    <div id="import-failures-issue-list">
+                        <div class="import-failure warning">
+                            <div class="triangle"></div>
+                            <div class="import-failure-data">
+                                <p>Special Villager</p>
+                                <div>
+                                    <ul>
+                                        <li>duplicate entry</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="import-failure warning">
+                            <div class="triangle"></div>
+                            <div class="import-failure-data">
+                                <p>Special Werewolf</p>
+                                <div>
+                                    <ul>
+                                        <li>duplicate entry</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

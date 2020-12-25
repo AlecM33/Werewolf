@@ -1188,6 +1188,57 @@ label {
     padding: 0.5em;
 }
 
+.import-failure {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: black;
+    border-radius: 5px;
+    margin: 0.3em;
+}
+
+.import-failure-label {
+    display: flex;
+    flex-direction: row;
+    width: 33%;
+}
+
+.import-failure-label p {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
+    max-width: 20em;
+}
+
+.import-failure-data {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.import-failure-data ul {
+    max-width: 40em;
+}
+
+.triangle {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px;
+    float: left;
+    position: relative;
+    z-index: 1;
+  }
+
+div.import-failure.warning .triangle {
+    border-color: #dbec3b transparent transparent #dbec3b;
+}
+
+div.import-failure.error .triangle {
+    border-color: #c7360a transparent transparent #c7360a;
+}
 
 /* lobby */
 

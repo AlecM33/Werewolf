@@ -13,7 +13,7 @@
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
     "jasmine": "^3.5.0",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "open": "^7.0.3"

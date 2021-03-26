@@ -19,6 +19,28 @@
             </div>
         </div>
     </div>
+    <template id="edit-custom-role-template">
+        <link rel="stylesheet" href="/stylesheets/styles.css">
+        <form class="edit-role-form" id="edit-role-form">
+            <label for="edit-role-desc">Description</label>
+            <textarea rows="3" id="edit-role-desc" required></textarea>
+            <label for="edit-role-team">Team</label>
+            <select id="edit-role-team">
+                <option value="good">Good</option>
+                <option value="evil">Evil</option>
+            </select>
+            <div class="checkbox">
+                <input type="checkbox" id="edit-role-wolf">
+                <label for="edit-role-wolf">Werewolf role (counts for parity)</label>
+            </div>
+            <div class="checkbox">
+                <input type="checkbox" id="edit-role-remember">
+                <label for="edit-role-remember">Remember this role for later (uses cookies)</label>
+            </div>
+            <br><br>
+            <input type="submit" class="app-btn" value="Update">
+        </form>
+    </template>
     <div class="modal hidden" id="edit-custom-roles-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -26,6 +48,24 @@
             </div>
             <div class="modal-body">
                 <div id="custom-roles"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal hidden" id="import-custom-roles-result-modal">
+        <input type="file" id="import-file-input" />
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="import-successes">
+                    <h2 id="import-successes-subheader"></h2>
+                    <div id="import-successes-role-list"></div>
+                </div>
+                <div id="import-failures">
+                    <h2 id="import-failures-subheader"></h2>
+                    <div id="import-failures-issue-list"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -84,6 +124,9 @@
                             <h3 id="game-size">0 Players</h3>
                             <button id="edit-role-btn" class="app-btn-secondary">Manage Custom Roles
                                 <img src="../assets/images/pencil.svg"/>
+                            </button>
+                            <button id="import-role-btn" class="app-btn-secondary">Import Custom Roles
+                                <img src="../assets/images/import.svg"/>
                             </button>
                         </div>
                         <div>

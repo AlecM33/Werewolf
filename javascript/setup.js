@@ -28,6 +28,12 @@ document.getElementById("role-view-changer-gallery").addEventListener("click", f
 document.getElementById("role-view-changer-list").addEventListener("click", function() { toggleViewChanger(true) });
 document.getElementById("role-btn").addEventListener("click", function() { displayModal("role-modal", undefined) });
 document.getElementById("edit-role-btn").addEventListener("click", function() { displayModal("edit-custom-roles-modal", undefined) });
+document.getElementById("import-role-btn").addEventListener("click", function() {
+    document.getElementById("import-file-input").click();
+});
+document.getElementById("import-file-input").addEventListener("change", function(e) {
+    selectRoleImportFile(e);
+});
 document.getElementById("custom-role-form").addEventListener("submit", function(e) {
     addCustomCardToRoles(e);
 });
@@ -80,7 +86,7 @@ function renderAvailableCards(isCondensed) {
 function renderGoodRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
     if (card.custom) {
-        renderCustomRoleInModal(card, i);
+        document.getElementById("custom-roles").appendChild(renderCustomRole(cardInfo));
     }
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
@@ -113,7 +119,7 @@ function renderGoodRole(cardInfo, i, isCondensed) {
 function renderEvilRole(cardInfo, i, isCondensed) {
     const card = CardManager.createCard(cardInfo);
     if (card.custom) {
-        renderCustomRoleInModal(card, i);
+        document.getElementById("custom-roles").appendChild(renderCustomRole(cardInfo));
     }
 
     document.getElementById("roles").appendChild(CardManager.constructModalRoleElement(card));
@@ -182,13 +188,144 @@ function addCustomCardToRoles(e) {
     }
 }
 
+function addImportFileToRoles (e) {
+    //parse roles from file
+    let match = /^data:(.*);base64,(.*)$/.exec(e.target.result);
+    if (match == null) {
+        throw 'Could not parse result'; // should not happen
+    }
+    let mimeType = match[1];
+    let content = match[2];
+    let newRoles;
+    try {
+        newRoles = JSON.parse(atob(content));
+    } catch(ex) {
+        console.error(ex.message);
+    }
+
+    //add roles
+    let succesfullyAddedRoles = [];
+    let rolesThatFailedToImport = [];
+    let expectedKeys = ["role", "description", "team", "isTypeOfWerewolf"];
+    newRoles.forEach(newRole => {
+        newRole.custom = true;
+        newRole.saved = true;
+        let newRoleValidationResult = validateNewRole(newRole, expectedKeys);
+        if (newRoleValidationResult.isValid) {
+            succesfullyAddedRoles.push(newRole);
+        }
+        else {
+            rolesThatFailedToImport.push(newRoleValidationResult);
+        }
+    });
+    cards.push(...succesfullyAddedRoles);
+    renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
+    // always save imported roles
+    let existingRoles = localStorage.getItem("play-werewolf-custom-roles");
+    if (existingRoles !== null) {
+        let rolesArray;
+        try {
+            rolesArray = JSON.parse(existingRoles);
+        } catch (e) {
+            console.error(e.message);
+        }
+        if (rolesArray) {
+            rolesArray.push(...succesfullyAddedRoles);
+        }
+        localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(rolesArray));
+    } else {
+        localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(succesfullyAddedRoles));
+    }
+    updateCustomRoleModal();
+    updateImportRolesModal(succesfullyAddedRoles, rolesThatFailedToImport);
+    displayModal("import-custom-roles-result-modal", undefined);
+}
+
+function validateNewRole(newCard,expectedKeys) {
+    let newRoleValidationResult = {};
+    newRoleValidationResult.role = newCard;
+    newRoleValidationResult.issues = [];
+    
+    //add warning if there already exists a loaded role with the same name
+    if (cards.find((card) => card.role === newCard.role)) {
+        newRoleValidationResult.issues.push({level: "warning", description: "duplicate entry"});
+    }
+    
+    //For each required field, add error if the role is missing it
+    let missingKeys = expectedKeys.filter(function(key){ return Object.keys(newCard).indexOf(key) < 0 });
+    missingKeys.forEach(missingKey => {
+        newRoleValidationResult.issues.push({level: "error", description: "Missing data: " + missingKey});
+    });
+
+    newRoleValidationResult.isValid = ( newRoleValidationResult.issues.length == 0 );
+
+    return newRoleValidationResult;
+}
+
 function updateCustomRoleModal() {
-    document.getElementById("custom-roles").innerHTML = "";
+    const customRoles = document.getElementById("custom-roles");
+    customRoles.innerHTML = "";
     for (let i = 0; i < cards.length; i++){
         if (cards[i].custom) {
-            renderCustomRoleInModal(cards[i], i);
+            customRoles.appendChild(renderCustomRole(cards[i]));
         }
     }
+}
+
+function updateImportRolesModal(succesfullyAddedRoles, rolesThatFailedToImport) {
+    let numAddedRoles = succesfullyAddedRoles.length;
+    if (numAddedRoles > 0) {
+        let successSubheader = (numAddedRoles == 1) ? "role successfully imported" : "roles successfully imported";
+        document.getElementById("import-successes-subheader").innerHTML = numAddedRoles + " " + successSubheader;
+        const successfulRoleList = document.getElementById("import-successes-role-list");
+        successfulRoleList.innerHTML = "";
+        succesfullyAddedRoles.forEach(role => {
+            successfulRoleList.appendChild(renderCustomRole(role));
+        });
+    }
+
+    let numFailedRoles = rolesThatFailedToImport.length;
+    if (numFailedRoles > 0) {
+        let failureSubheader = (numFailedRoles == 1) ? "role failed to import" : "roles failed to import";
+        document.getElementById("import-failures-subheader").innerHTML = numFailedRoles + " " + failureSubheader;
+        document.getElementById("import-failures-issue-list").innerHTML = "";
+        rolesThatFailedToImport.forEach(failureInfo => {
+            document.getElementById("import-failures-issue-list").appendChild(renderImportFailure(failureInfo));
+        });
+    }
+}
+
+function renderImportFailure(failureInfo) {
+    let importFailure = document.createElement("div");
+    importFailure.classList.add("import-failure");
+    
+    let failureLabelContainer = document.createElement("div");
+    failureLabelContainer.classList.add("import-failure-label");
+    let triangle = document.createElement("div");
+    triangle.classList.add("triangle");
+    let roleName = document.createElement("p");
+    roleName.innerText = failureInfo.role.role;
+    failureLabelContainer.appendChild(triangle);
+    failureLabelContainer.appendChild(roleName);
+
+    let issueDescriptionContainer = document.createElement("div");
+    issueDescriptionContainer.classList.add("import-failure-data");
+    let levelSeverityOrder = ["warning", "error"];
+    let levelIdx = 0;
+    let issueDescriptionList = document.createElement("ul");
+    failureInfo.issues.forEach(issue => {
+        let description = document.createElement("li");
+        description.innerText = issue.description;
+        let thisIssueLevelIdx = levelSeverityOrder.indexOf(issue.level);
+        if (thisIssueLevelIdx > levelIdx) { levelIdx = thisIssueLevelIdx; }
+        issueDescriptionList.appendChild(description); 
+    });
+    issueDescriptionContainer.appendChild(issueDescriptionList);
+
+    importFailure.classList.add(levelSeverityOrder[levelIdx]);
+    importFailure.appendChild(failureLabelContainer);
+    importFailure.appendChild(issueDescriptionContainer);
+    return importFailure;
 }
 
 function readInUserCustomRoles() {
@@ -201,23 +338,27 @@ function readInUserCustomRoles() {
     }
 }
 
-function renderCustomRoleInModal(card, index) {
+function renderCustomRole(card) {
     let roleElement = document.createElement("div");
     let editRemoveContainer = document.createElement("div");
+    let editFormDiv = document.createElement("div");
     let roleLabel = document.createElement("div");
     let roleName = document.createElement("p");
     let remove = document.createElement("img");
     let edit = document.createElement("img");
-    let editForm = buildRoleEditForm(index);
+    let editRoleTemplate = document.getElementById("edit-custom-role-template");
+    let editForm = editRoleTemplate.content.cloneNode(true);
 
     roleName.innerText = card.role;
     remove.setAttribute("src", "../assets/images/delete.svg");
     remove.setAttribute("title", "Delete");
+    remove.classList.add("custom-role-button");
     remove.addEventListener("click", function() { removeCustomRole(card.role) });
 
     edit.setAttribute("src", "../assets/images/pencil_green.svg");
     edit.setAttribute("title", "Edit");
-    edit.addEventListener("click", function(e) { toggleEditForm(e, index) });
+    edit.classList.add("custom-role-button");
+    edit.addEventListener("click", function(e) { toggleEditForm(e, editFormDiv, card) });
     roleElement.setAttribute("class", "custom-role-edit");
 
     editRemoveContainer.appendChild(remove);
@@ -225,22 +366,25 @@ function renderCustomRoleInModal(card, index) {
     roleLabel.appendChild(roleName);
     roleLabel.appendChild(editRemoveContainer);
     roleElement.appendChild(roleLabel);
-    roleElement.appendChild(editForm);
-
-    document.getElementById("custom-roles").appendChild(roleElement);
-
-    document.getElementById("edit-form-" + index).addEventListener("submit", function(e) {
-        updateCustomRole(e, index);
+    const shadowRoot = editFormDiv.attachShadow({mode: 'open'});
+    shadowRoot.appendChild(editForm);
+    shadowRoot.getElementById("edit-role-form").addEventListener("submit", function(e) {
+        updateCustomRole(e, editFormDiv, card);
     });
+
+    editFormDiv.style.display = "none";
+    roleElement.appendChild(editFormDiv);
+
+    return roleElement;
 }
 
-function toggleEditForm(event, index) {
+function toggleEditForm(event, formDiv, card) {
     event.preventDefault();
-    let displayRule = document.getElementById("edit-form-" + index).style.display;
-    document.getElementById("edit-form-" + index).style.display = displayRule === "none" ? "block" : "none";
+    let displayRule = formDiv.style.display;
+    formDiv.style.display = displayRule === "none" ? "block" : "none";
 
-    if (document.getElementById("edit-form-" + index).style.display === "block") {
-        populateEditRoleForm(cards[index], index);
+    if (formDiv.style.display === "block") {
+        populateEditRoleForm(formDiv, card);
     }
 }
 
@@ -256,38 +400,11 @@ function toggleViewChanger(isCondensed) {
     renderAvailableCards(isCondensed);
 }
 
-function buildRoleEditForm(index) {
-    let infoForm = document.createElement("div");
-    infoForm.style.display = "none";
-    infoForm.setAttribute("id", "edit-form-" + index);
-    infoForm.innerHTML =
-        "<form class=\"edit-role-form\" id=\"edit-role-form-" + index + "\">" +
-            "<label for=\"edit-role-desc-" + index + "\">Description</label>" +
-            "<textarea rows=\"3\" id=\"edit-role-desc-" + index + "\" required></textarea>" +
-            "<label for=\"edit-role-team-" + index + "\">Team</label>" +
-            "<select id=\"edit-role-team-" + index + "\">" +
-                "<option value=\"good\">Good</option>" +
-                "<option value=\"evil\">Evil</option>" +
-            "</select>" +
-            "<div class=\"checkbox\">" +
-                "<input type=\"checkbox\" id=\"edit-role-wolf-" + index + "\">" +
-                "<label for=\"edit-role-wolf-" + index + "\">Werewolf role (counts for parity)</label>" +
-            "</div>" +
-            "<div class=\"checkbox\">" +
-                "<input type=\"checkbox\" id=\"edit-role-remember-" + index + "\">" +
-                "<label for=\"edit-role-remember-" + index + "\">Remember this role for later (uses cookies)</label>" +
-            "</div>" +
-            "<br><br>" +
-            "<input type=\"submit\" class=\"app-btn\" value=\"Update\">" +
-        "</form>";
-    return infoForm;
-}
-
-function populateEditRoleForm(card, index) {
-    document.getElementById("edit-role-desc-" + index).value = card.description;
-    document.getElementById("edit-role-team-" + index).value = card.team;
-    document.getElementById("edit-role-wolf-" + index).checked = card.isTypeOfWerewolf;
-    document.getElementById("edit-role-remember-" + index).checked = card.saved;
+function populateEditRoleForm(formDiv, card) {
+    formDiv.shadowRoot.querySelector("#edit-role-desc").value = card.description;
+    formDiv.shadowRoot.querySelector("#edit-role-team").value = card.team;
+    formDiv.shadowRoot.querySelector("#edit-role-wolf").checked = card.isTypeOfWerewolf;
+    formDiv.shadowRoot.querySelector("#edit-role-remember").checked = card.saved;
 }
 
 function removeCustomRole(name) {
@@ -307,19 +424,16 @@ function removeCustomRole(name) {
     }
 }
 
-function updateCustomRole(event, index) {
+function updateCustomRole(event, formDiv, cardToUpdate) {
     event.preventDefault();
-    if (index >= 0 && index < cards.length) {
-        let cardToUpdate = cards[index];
-        cardToUpdate.team = document.getElementById("edit-role-team-" + index).value;
-        cardToUpdate.description = document.getElementById("edit-role-desc-" + index).value;
-        cardToUpdate.isTypeOfWerewolf = document.getElementById("edit-role-wolf-" + index).checked;
-        cardToUpdate.saved = document.getElementById("edit-role-remember-" + index).checked;
+    cardToUpdate.team = formDiv.shadowRoot.querySelector("#edit-role-team").value;
+    cardToUpdate.description = formDiv.shadowRoot.querySelector("#edit-role-desc").value;
+    cardToUpdate.isTypeOfWerewolf = formDiv.shadowRoot.querySelector("#edit-role-wolf").checked;
+    cardToUpdate.saved = formDiv.shadowRoot.querySelector("#edit-role-remember").checked;
 
-        removeOrAddSavedRoleIfNeeded(cardToUpdate);
-        toggleEditForm(event, index);
-        renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
-    }
+    removeOrAddSavedRoleIfNeeded(cardToUpdate);
+    toggleEditForm(event, formDiv, cardToUpdate);
+    renderAvailableCards(document.getElementById("role-view-changer-list").classList.contains("selected"));
 }
 
 function removeOrAddSavedRoleIfNeeded(card) {
@@ -400,6 +514,7 @@ function closeModal() {
     document.getElementById("role-modal").classList.add("hidden");
     document.getElementById("custom-card-modal").classList.add("hidden");
     document.getElementById("edit-custom-roles-modal").classList.add("hidden");
+    document.getElementById("import-custom-roles-result-modal").classList.add("hidden");
     document.getElementById("app-content").classList.remove("hidden");
 }
 
@@ -459,4 +574,12 @@ function createGame() {
         document.getElementById("name").classList.add("error");
         document.getElementById("name-error").innerText = "Name is required.";
     }
+}
+function selectRoleImportFile(e) {
+    var files = e.target.files;
+    if (files.length < 1) { return; }
+    var file = files[0];
+    var reader = new FileReader();
+    reader.onload = addImportFileToRoles;
+    reader.readAsDataURL(file);
 }

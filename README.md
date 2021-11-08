@@ -4,7 +4,7 @@ This app is still in active development. The latest deployment can be found <a h
 
 A Werewolf utility that provides the tools to run games smoothly in the absence of a deck, or in any context in which traditional moderation is hindered. 
 
-This is a Javascript application running on a node express server. I am using the socket.io package as a wrapper for Javascript Websocket. This was built from scratch as a learning project; I do not claim it as a shining example of socket programming or web app design in general. I welcome collaboration and suggestions for improvements. 
+This is a Javascript application running on a node express main. I am using the socket.io package as a wrapper for Javascript Websocket. This was built from scratch as a learning project; I do not claim it as a shining example of socket programming or web app design in general. I welcome collaboration and suggestions for improvements. 
 
 All pixel art is my own (for better or for worse).
 
@@ -34,7 +34,7 @@ To learn more about this type of game, see the Wikipedia entry on the game's anc
 
 Run `npm install` from the root directory.
 
-Run `node server.js` from the root directory, navigate to **localhost:5000**
+Run `node main.js` from the root directory, navigate to **localhost:5000**
 
 # Testing/Debugging
 
@@ -42,7 +42,7 @@ Use `npm run test` to run unit tests using <a href='https://jasmine.github.io/'>
 <br><br>
 To turn on logging at the debug level, add the `debug` argument like so:
 
-`node server.js -- debug`
+`node main.js -- debug`
 
 # Contributing
 

@@ -51,11 +51,48 @@ staticRouter.use('/scripts/*', (req, res) => {
     });
 });
 
+staticRouter.use('/webfonts/*', (req, res) => {
+    let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
+    let extension = path.extname(filePath);
+    checkIfFileExists(filePath).then((fileExists) => {
+        if (fileExists && (extension === '.woff2')) {
+            res.sendFile(filePath);
+        } else {
+            res.sendStatus(404);
+        }
+    });
+});
+
 staticRouter.use('/views/*', (req, res) => {
     let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
     let extension = path.extname(filePath);
     checkIfFileExists(filePath).then((fileExists) => {
         if (fileExists && (extension === '.html')) {
+            res.sendFile(filePath);
+        } else {
+            res.sendFile('../views/404.html');
+        }
+    });
+});
+
+
+staticRouter.use('/config/*', (req, res) => {
+    let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
+    let extension = path.extname(filePath);
+    checkIfFileExists(filePath).then((fileExists) => {
+        if (fileExists && (extension === '.js')) {
+            res.sendFile(filePath);
+        } else {
+            res.sendFile('../views/404.html');
+        }
+    });
+});
+
+staticRouter.use('/modules/*', (req, res) => {
+    let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
+    let extension = path.extname(filePath);
+    checkIfFileExists(filePath).then((fileExists) => {
+        if (fileExists && (extension === '.js')) {
             res.sendFile(filePath);
         } else {
             res.sendFile('../views/404.html');

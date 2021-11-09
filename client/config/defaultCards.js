@@ -1,4 +1,4 @@
-export const cards = [
+export const defaultCards = [
     {
         role: "Villager",
         team: "good",
@@ -15,9 +15,14 @@ export const cards = [
         description: "If a Werewolf dies, you become a Werewolf. You do not wake up with the Werewolves until this happens. You count for parity only after converting to a wolf.",
     },
     {
-        role: "Minion",
+        role: "Knowing Minion",
         team: "evil",
         description: "You are an evil villager - you know who the wolves are, and you want them to win.",
+    },
+    {
+        role: "Double-Blind Minion",
+        team: "evil",
+        description: "You are an evil villager. You don't know who the wolves are, but you want them to win.",
     },
     {
         role: "Seer",

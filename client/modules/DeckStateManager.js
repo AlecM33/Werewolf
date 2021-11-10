@@ -5,8 +5,8 @@ export class DeckStateManager {
     }
 
     addToDeck(role) {
-        let option = this.customRoleOptions.find((option) => option.role === role)
-        let existingCard = this.deck.find((card) => card.role === role)
+        let option = this.customRoleOptions.find((option) => option.role === role);
+        let existingCard = this.deck.find((card) => card.role === role);
         if (option && !existingCard) {
             option.quantity = 0;
             this.deck.push(option);
@@ -32,11 +32,21 @@ export class DeckStateManager {
         }
     }
 
-    getCurrentDeck() { return this.deck }
+    getCurrentDeck() { return this.deck; }
 
-    getCard(role) { return this.deck.find((card) => card.role === role) }
+    getCard(role) {
+        return this.deck.find(
+            (card) => card.role.toLowerCase().trim() === role.toLowerCase().trim()
+        );
+    }
 
-    getCurrentCustomRoleOptions() { return this.customRoleOptions }
+    getCurrentCustomRoleOptions() { return this.customRoleOptions; }
+
+    getCustomRoleOption(role) {
+        return this.customRoleOptions.find(
+            (option) => option.role.toLowerCase().trim() === role.toLowerCase().trim()
+        )
+    };
 
     getDeckSize() {
         let total = 0;

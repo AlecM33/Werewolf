@@ -1,0 +1,52 @@
+body {
+    align-items: center;
+}
+
+button {
+    padding: 20px;
+    font-size: 25px;
+    margin-bottom: 1em;
+}
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 1em 0;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: #1f1f1f;
+}
+
+h3 {
+    max-width: 30em;
+    font-size: 16px;
+    margin-bottom: 2em;
+}
+
+img {
+    max-width: 650px;
+    width: 63vw;
+    min-width: 430px;
+}
+
+form > div {
+    margin: 1em;
+}
+
+input[type="text"] {
+    background-color: transparent;
+    border: 1px solid white;
+    border-radius: 3px;
+    color: #f7f7f7;
+}
+
+#join-container > label {
+    font-size: 35px;
+    font-family: 'diavlo', sans-serif;
+    color: #ab2626;
+    filter: drop-shadow(2px 2px 4px black);
+}
+
+label[for="room-code"], label[for="player-name"] {
+    margin-right: 0.5em;
+}

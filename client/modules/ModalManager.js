@@ -1,5 +1,6 @@
 export const ModalManager = {
-        displayModal: displayModal
+    displayModal: displayModal,
+    dispelModal: dispelModal
 }
 
 function displayModal(modalId, backgroundId, closeButtonId) {

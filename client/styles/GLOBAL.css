@@ -58,6 +58,11 @@ label {
     font-weight: normal;
 }
 
+textarea, input {
+    font-family: 'signika-negative', sans-serif;
+    font-size: 16px;
+}
+
 button, input[type="submit"] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
@@ -75,4 +80,66 @@ button:hover, input[type="submit"]:hover {
 
 input {
     padding: 10px;
+}
+
+.info-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1000;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: 'signika-negative', sans-serif;
+    font-weight: 100;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
+    left: 0;
+    right: 0;
+    width: fit-content;
+    max-width: 30em;
+    min-width: 15em;
+    font-size: 20px;
+    margin: 0 auto;
+    animation: fade-in-slide-down-then-exit 6s ease;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+}
+
+#navbar {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    margin-bottom: -2em;
+    width: 100%;
+}
+
+#navbar a {
+    color: #f7f7f7;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 25px;
+}
+
+#navbar a:hover {
+    color: gray;
+}
+
+
+@keyframes fade-in-slide-down-then-exit {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    5% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    95% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
 }

@@ -1,4 +1,5 @@
 .compact-card {
+    border: 2px solid transparent;
     text-align: center;
     cursor: pointer;
     position: relative;
@@ -28,6 +29,11 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 8em;
+    font-size: 16px;
+}
+
+.selected-card {
+    border: 2px solid #0075F2;
 }
 
 .compact-card-right p {
@@ -51,6 +57,7 @@
 .compact-card .card-quantity {
     text-align: center;
     margin: 0;
+    font-size: 20px;
 }
 
 .compact-card-header {
@@ -78,6 +85,8 @@
 #deck {
     display: flex;
     flex-wrap: wrap;
+    overflow: auto;
+    max-height: 20em;
 }
 
 form {
@@ -116,13 +125,20 @@ select {
 
 label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
     color: #0075F2;
-    font-size: 30px;
+    font-size: 20px;
     border-radius: 3px;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 
 #create-game{
     color: #45a445;
     font-size: 30px;
-    margin-top: 2em;
+    padding: 10px 50px;
+    margin: 1em auto 3em auto;
+    display: flex;
+}
+
+.dropdown {
+    margin: 0.5em;
 }

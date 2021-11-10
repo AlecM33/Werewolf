@@ -7,7 +7,7 @@ const socketIO = require('socket.io');
 const app = express();
 let main;
 const bodyParser = require('body-parser');
-// const GameManager = require('./modules/managers/GameManager.js');
+const GameManager = require('./modules/GameManager.js');
 // const QueueManager = require('./modules/managers/QueueManager');
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
@@ -55,17 +55,15 @@ const io = socketIO(main);
 app.set('port', port);
 
 /* Instantiate the singleton game manager */
-//const gameManager = new GameManager(logger).getInstance();
+const gameManager = new GameManager(logger).getInstance();
 
 /* Instantiate the singleton queue manager */
 //const queueManager = new QueueManager(matchmaking, logger).getInstance();
 
 
 /* api endpoints */
-// const games = require('./api/GamesAPI');
-// const words = require('./api/WordsAPI');
-// app.use('/api/games', games);
-// app.use('/api/words', words);
+const games = require('./api/GamesAPI');
+app.use('/api/games', games);
 
 /* serve all the app's pages */
 app.use('/manifest.json', (req, res) => {
@@ -88,7 +86,6 @@ app.use(function (req, res) {
     res.sendFile(path.join(__dirname, '../client/views/404.html'));
 });
 
-// Starts the main.
 main.listen(port, function () {
     logger.log(`Starting server on port ${port} http://localhost:${port}` );
 });

@@ -3,11 +3,11 @@ const staticRouter = express.Router();
 const path = require('path');
 const checkIfFileExists = require("./util");
 
-staticRouter.use('/styles/*', (req, res) => {
+staticRouter.use('/styles/**', (req, res) => {
     let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
     let extension = path.extname(filePath);
     checkIfFileExists(filePath).then((fileExists) => {
-        if (fileExists && (extension === '.css')) {
+        if (fileExists && (extension === '.css' || extension === '.min.css')) {
             res.sendFile(filePath);
         } else {
             res.sendStatus(404);
@@ -27,11 +27,11 @@ staticRouter.use('/client/webfonts/*', (req, res) => {
     });
 });
 
-staticRouter.use('/client/images/*', (req, res) => {
-    let filePath = path.join(__dirname, ('../' + req.baseUrl));
+staticRouter.use('/images/*', (req, res) => {
+    let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
     let extension = path.extname(filePath);
     checkIfFileExists(filePath).then((fileExists) => {
-        if (fileExists && (extension === '.svg' || extension === '.png' || extension === '.jpg')) {
+        if (fileExists && (extension === '.svg' || extension === '.png' || extension === '.jpg' || extension === '.gif')) {
             res.sendFile(filePath);
         } else {
             res.sendStatus(404);
@@ -88,7 +88,19 @@ staticRouter.use('/config/*', (req, res) => {
     });
 });
 
-staticRouter.use('/modules/*', (req, res) => {
+staticRouter.use('/modules/**', (req, res) => {
+    let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
+    let extension = path.extname(filePath);
+    checkIfFileExists(filePath).then((fileExists) => {
+        if (fileExists && (extension === '.js' || extension === '.min.js')) {
+            res.sendFile(filePath);
+        } else {
+            res.sendFile('../views/404.html');
+        }
+    });
+});
+
+staticRouter.use('/model/**', (req, res) => {
     let filePath = path.join(__dirname, ('../../client/' + req.baseUrl));
     let extension = path.extname(filePath);
     checkIfFileExists(filePath).then((fileExists) => {

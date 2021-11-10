@@ -16,21 +16,37 @@
     <link rel="stylesheet" href="../styles/GLOBAL.css">
     <link rel="stylesheet" href="../styles/create.css">
     <link rel="stylesheet" href="../styles/modal.css">
+    <link rel="stylesheet" href="../styles/third_party/dropdown.min.css">
+    <link rel="stylesheet" href="../styles/third_party/transition.min.css">
+    <link rel="stylesheet" href="../styles/third_party/search.min.css">
+    <script src="../modules/third_party/jQuery/jquery-3.6.0.min.js"></script>
+    <script src="../modules/third_party/semantic-ui/transition.min.js"></script>
+    <script src="../modules/third_party/semantic-ui/dropdown.min.js"></script>
+    <script src="../modules/third_party/semantic-ui/search.min.js"></script>
 </head>
 <body>
+<div id="navbar">
+    <a href="/">
+        <img alt="logo" src="../images/Werewolf_Small.png"/>
+    </a>
+    <a href="/">Home</a>
+</div>
 <div id="add-role-modal-background" class="modal-background" style="display: none"></div>
 <div id="add-role-modal" class="modal" style="display: none">
     <form id="add-role-form">
         <div>
             <label for="role-name">Role Name</label>
-            <input id="role-name" type="text" placeholder="Name your role..."/>
+            <input id="role-name" type="text" placeholder="Name your role..." required/>
         </div>
         <div>
             <label for="role-description">Description</label>
-            <textarea style="resize:none" id="role-description" rows="10" cols="30" placeholder="Describe your role..."></textarea>
+            <textarea style="resize:none" id="role-description" rows="10" cols="30" placeholder="Describe your role..." required></textarea>
+        </div>
+        <div id="modal-button-container">
+            <button id="close-modal-button">Close</button>
+            <input type="submit" id="create-role-button" value="Create Role"/>
         </div>
     </form>
-    <button id="close-modal-button">Close</button>
 </div>
 <h1>Create A Game</h1>
 <h3>
@@ -51,10 +67,10 @@
         <div id="game-time">
             <label for="game-hours">Hours (max 5)</label>
             <input type="number" id="game-hours" name="game-hours"
-                   min="0" max="5" placeholder="e.g. 1"/>
+                   min="0" max="5" />
             <label for="game-hours">Minutes</label>
             <input type="number" id="game-minutes" name="game-minutes"
-                   min="0" max="60" placeholder="e.g. 30"/>
+                   min="1" max="60" />
         </div>
     </div>
     <input id="create-game" type="submit" value="Create"/>

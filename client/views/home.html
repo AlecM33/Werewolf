@@ -20,9 +20,24 @@
         <link rel="stylesheet" href="../styles/home.css">
     </head>
     <body>
+    <img src="../images/logo.gif"/>
+    <h3>This is a tool to run games of Werewolf when not in-person, or when you don't possess a deck of cards. Create a game and moderate, or join one and have a role dealt to your device.</h3>
     <a href="/create">
         <button>Create A Game</button>
     </a>
+    <div id="join-container">
+        <label for="join-form">Join A Game</label>
+        <form id="join-form">
+            <div>
+                <label for="room-code">Room Code</label>
+                <input id="room-code" type="text" placeholder="six-character code..." required/>
+            </div>
+            <div>
+                <label for="player-name">Your Name</label>
+                <input id="player-name" type="text" required/>
+            </div>
+        </form>
+    </div>
     <script type="module">
         import { home } from "../scripts/home.js";
         home();

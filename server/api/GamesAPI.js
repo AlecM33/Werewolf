@@ -17,4 +17,20 @@ router.post('/create', function (req, res) {
     });
 });
 
+router.get('/availability/:code', function (req, res) {
+    const joinGamePromise = gameManager.joinGame(req.params.code);
+    joinGamePromise.then((result) => {
+        if (result === 404) {
+            res.status(404).send();
+        } else if (result instanceof Error) {
+            res.status(400).send(result.message);
+        } else if (typeof result === "string") {
+            logger.debug(result);
+            res.status(200).send(result);
+        } else {
+            res.status(500).send();
+        }
+    });
+});
+
 module.exports = router;

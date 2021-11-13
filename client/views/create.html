@@ -26,55 +26,58 @@
 </head>
 <body>
 <div id="navbar">
-    <a href="/">
-        <img alt="logo" src="../images/Werewolf_Small.png"/>
-    </a>
     <a href="/">Home</a>
 </div>
-<div id="add-role-modal-background" class="modal-background" style="display: none"></div>
-<div id="add-role-modal" class="modal" style="display: none">
-    <form id="add-role-form">
+<div class="container">
+    <div id="add-role-modal-background" class="modal-background" style="display: none"></div>
+    <div id="add-role-modal" class="modal" style="display: none">
+        <form id="add-role-form">
+            <div>
+                <label for="role-name">Role Name</label>
+                <input id="role-name" type="text" placeholder="Name your role..." required/>
+            </div>
+            <div>
+                <label for="role-description">Description</label>
+                <textarea style="resize:none" id="role-description" rows="10" cols="30" placeholder="Describe your role..." required></textarea>
+            </div>
+            <div id="modal-button-container">
+                <button id="close-modal-button">Close</button>
+                <input type="submit" id="create-role-button" value="Create Role"/>
+            </div>
+        </form>
+    </div>
+    <h1>Create A Game</h1>
+    <h3>
+        Creating a game gives you the moderator role with certain special permissions. You will not be dealt a card.
+    </h3>
+    <div id="custom-roles-container">
+        <label for="add-card-to-deck-form">Custom Roles</label>
+        <form id="add-card-to-deck-form"></form>
+        <button id="custom-role-btn">Create Custom Role</button>
+    </div>
+    <div id="deck-container">
+        <label for="deck">Game Deck: 0 Players</label>
+        <div id="deck"></div>
+    </div>
+    <form id="game-form">
         <div>
-            <label for="role-name">Role Name</label>
-            <input id="role-name" type="text" placeholder="Name your role..." required/>
+            <label for="game-time">Timer (Optional)</label>
+            <div id="game-time">
+                <label for="game-hours">Hours (max 5)</label>
+                <input type="number" id="game-hours" name="game-hours"
+                       min="0" max="5" />
+                <label for="game-hours">Minutes</label>
+                <input type="number" id="game-minutes" name="game-minutes"
+                       min="1" max="60" />
+            </div>
         </div>
         <div>
-            <label for="role-description">Description</label>
-            <textarea style="resize:none" id="role-description" rows="10" cols="30" placeholder="Describe your role..." required></textarea>
+            <label for="mod-name">Your Name</label>
+            <input id="mod-name" type="text" maxlength="30" required/>
         </div>
-        <div id="modal-button-container">
-            <button id="close-modal-button">Close</button>
-            <input type="submit" id="create-role-button" value="Create Role"/>
-        </div>
+        <input id="create-game" type="submit" value="Create"/>
     </form>
 </div>
-<h1>Create A Game</h1>
-<h3>
-    Creating a game gives you the moderator role with certain special permissions. You will not be dealt a card.
-</h3>
-<div id="custom-roles-container">
-    <label for="add-card-to-deck-form">Custom Roles</label>
-    <form id="add-card-to-deck-form"></form>
-    <button id="custom-role-btn">Create Custom Role</button>
-</div>
-<div id="deck-container">
-    <label for="deck">Game Deck: 0 Players</label>
-    <div id="deck"></div>
-</div>
-<form id="game-form">
-    <div>
-        <label for="game-time">Timer (Optional)</label>
-        <div id="game-time">
-            <label for="game-hours">Hours (max 5)</label>
-            <input type="number" id="game-hours" name="game-hours"
-                   min="0" max="5" />
-            <label for="game-hours">Minutes</label>
-            <input type="number" id="game-minutes" name="game-minutes"
-                   min="1" max="60" />
-        </div>
-    </div>
-    <input id="create-game" type="submit" value="Create"/>
-</form>
 <script type="module">
     import { create } from "../scripts/create.js";
     create();

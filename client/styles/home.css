@@ -15,6 +15,14 @@ form {
     padding: 10px;
     border-radius: 3px;
     background-color: #1f1f1f;
+    justify-content: center;
+    align-items: center;
+}
+
+#join-button {
+    min-width: 6em;
+    max-height: 3em;
+    color: #21ba45;
 }
 
 h3 {
@@ -31,13 +39,6 @@ img {
 
 form > div {
     margin: 1em;
-}
-
-input[type="text"] {
-    background-color: transparent;
-    border: 1px solid white;
-    border-radius: 3px;
-    color: #f7f7f7;
 }
 
 #join-container > label {

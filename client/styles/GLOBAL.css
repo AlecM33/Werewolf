@@ -32,7 +32,7 @@ body {
     align-items: flex-start;
     width: 95%;
     margin: 0 auto;
-    max-width: 75em;
+    max-width: 68em;
 }
 
 h1 {
@@ -58,6 +58,13 @@ label {
     font-weight: normal;
 }
 
+input, textarea {
+    background-color: transparent;
+    border: 1px solid white;
+    border-radius: 3px;
+    color: #f7f7f7;
+}
+
 textarea, input {
     font-family: 'signika-negative', sans-serif;
     font-size: 16px;
@@ -66,12 +73,24 @@ textarea, input {
 button, input[type="submit"] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
-    background-color: #1f1f1f;
-    border: none;
+    background-color: black;
     border-radius: 3px;
-    color: white;
+    color: whitesmoke;
     font-size: 18px;
     cursor: pointer;
+    border: 2px solid transparent;
+}
+
+button:active, input[type=submit]:active {
+    border: 2px solid #21ba45;
+}
+
+.container {
+    padding: 5px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 button:hover, input[type="submit"]:hover {
@@ -109,7 +128,6 @@ input {
     display: flex;
     align-items: center;
     padding: 5px;
-    margin-bottom: -2em;
     width: 100%;
 }
 

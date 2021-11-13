@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Active Game</title>
+    <meta name="description" content="Join or spectate this game of werewolf.">
+    <meta property="og:title" content="Werewolf Utility - Active Game">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://play-werewolf.herokuapp.com/create">
+    <meta property="og:description" content="Join or spectate this game of werewolf.">
+    <meta property="og:image" content="image.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="../styles/GLOBAL.css">
+    <link rel="stylesheet" href="../styles/game.css">
+    <link rel="stylesheet" href="../styles/modal.css">
+</head>
+<body>
+<script type="module">
+    import { game } from "../scripts/game.js";
+    game();
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io('/in-game');
+</script>
+</body>
+</html>
+

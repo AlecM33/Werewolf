@@ -3,54 +3,14 @@ import { ModalManager } from "../modules/ModalManager.js";
 import { defaultCards } from "../config/defaultCards.js";
 import { customCards } from "../config/customCards.js";
 import { DeckStateManager } from "../modules/DeckStateManager.js";
-import {XHRUtility} from "../modules/XHRUtility.js";
-import {Game} from "../model/Game.js";
+import { XHRUtility } from "../modules/XHRUtility.js";
+import { Game } from "../model/Game.js";
 
 export const create = () => {
     let deckManager = new DeckStateManager();
     loadDefaultCards(deckManager);
     loadCustomCards(deckManager);
-    document.getElementById("game-form").onsubmit = (e) => {
-        e.preventDefault();
-        let timerBool = hasTimer();
-        let timerParams = timerBool
-            ? {
-                hours: document.getElementById("game-hours").value,
-                minutes: document.getElementById("game-minutes").value
-            }
-            : null;
-        if (deckManager.getDeckSize() >= 5) {
-            createGameForHosting(
-                deckManager.getCurrentDeck().filter((card) => card.quantity > 0),
-                timerBool,
-                timerParams
-            );
-        } else {
-            toast("You must include enough cards for 5 players.", "error", true);
-        }
-    }
-    document.getElementById("add-role-form").onsubmit = (e) => {
-        e.preventDefault();
-        let name = document.getElementById("role-name").value.trim();
-        let description = document.getElementById("role-description").value.trim();
-        if (!deckManager.getCustomRoleOption(name)) { // confirm there is no existing custom role with the same name
-            deckManager.addToCustomRoleOptions({role: name, description: description});
-            updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"))
-            ModalManager.dispelModal("add-role-modal", "add-role-modal-background");
-            toast("Role Added", "success", true);
-        } else {
-            toast("There is already a custom role with this name.", "error", true);
-        }
-    }
-    document.getElementById("custom-role-btn").addEventListener(
-        "click", () => {
-            ModalManager.displayModal(
-                "add-role-modal",
-                "add-role-modal-background",
-                "close-modal-button"
-            )
-        }
-    )
+    initializeRemainingEventListeners(deckManager);
 }
 
 // Display a widget for each default card that allows copies of it to be added/removed. Set initial deck state.
@@ -83,7 +43,7 @@ function loadCustomCards(deckManager) {
     form.appendChild(selectEl);
     let submitBtn = document.createElement("input");
     submitBtn.setAttribute("type", "submit");
-    submitBtn.setAttribute("value", "Add Role");
+    submitBtn.setAttribute("value", "Include Role");
     submitBtn.addEventListener('click', (e) => {
         e.preventDefault();
         if (selectEl.value && selectEl.value.length > 0) {
@@ -98,6 +58,51 @@ function loadCustomCards(deckManager) {
     $('.ui.dropdown')
         .dropdown();
     deckManager.customRoleOptions = customCards;
+}
+
+function initializeRemainingEventListeners(deckManager) {
+    document.getElementById("game-form").onsubmit = (e) => {
+        e.preventDefault();
+        let timerBool = hasTimer();
+        let timerParams = timerBool
+            ? {
+                hours: document.getElementById("game-hours").value,
+                minutes: document.getElementById("game-minutes").value
+            }
+            : null;
+        if (deckManager.getDeckSize() >= 5) {
+            createGameForHosting(
+                deckManager.getCurrentDeck().filter((card) => card.quantity > 0),
+                timerBool,
+                document.getElementById("mod-name").value,
+                timerParams
+            );
+        } else {
+            toast("You must include enough cards for 5 players.", "error", true);
+        }
+    }
+    document.getElementById("add-role-form").onsubmit = (e) => {
+        e.preventDefault();
+        let name = document.getElementById("role-name").value.trim();
+        let description = document.getElementById("role-description").value.trim();
+        if (!deckManager.getCustomRoleOption(name)) { // confirm there is no existing custom role with the same name
+            deckManager.addToCustomRoleOptions({role: name, description: description});
+            updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"))
+            ModalManager.dispelModal("add-role-modal", "add-role-modal-background");
+            toast("Role Added", "success", true);
+        } else {
+            toast("There is already a custom role with this name.", "error", true);
+        }
+    }
+    document.getElementById("custom-role-btn").addEventListener(
+        "click", () => {
+            ModalManager.displayModal(
+                "add-role-modal",
+                "add-role-modal-background",
+                "close-modal-button"
+            )
+        }
+    )
 }
 
 function updateCustomRoleOptionsList(deckManager, selectEl) {
@@ -158,13 +163,13 @@ function hasTimer() {
     return document.getElementById("game-hours").value.length > 0 || document.getElementById("game-minutes").value.length > 0
 }
 
-function createGameForHosting(deck, hasTimer, timerParams) {
+function createGameForHosting(deck, hasTimer, modName, timerParams) {
     XHRUtility.xhr(
         '/api/games/create',
         'POST',
         null,
         JSON.stringify(
-            new Game(deck, hasTimer, timerParams)
+            new Game(deck, hasTimer, modName, timerParams)
         )
     )
     .then((res) => {
@@ -173,7 +178,7 @@ function createGameForHosting(deck, hasTimer, timerParams) {
             && Object.prototype.hasOwnProperty.call(res, 'content')
             && typeof res.content === 'string'
         ) {
-            window.location = ('/games/' + res.content);
+            window.location = ('/game/' + res.content);
         }
     });
 }

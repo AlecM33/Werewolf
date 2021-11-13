@@ -36,6 +36,10 @@
     border: 2px solid #0075F2;
 }
 
+.search {
+    color: black;
+}
+
 .compact-card-right p {
     font-size: 40px;
     margin: 0 10px 0 0;
@@ -80,6 +84,9 @@
 
 #deck-container, #custom-roles-container {
     margin: 0.5em 0;
+    background-color: #1f1f1f;
+    padding: 10px;
+    border-radius: 3px;
 }
 
 #deck {
@@ -91,7 +98,6 @@
 
 form {
     width: 100%;
-    margin: 1em 0;
 }
 
 select {
@@ -100,19 +106,14 @@ select {
     font-family: 'signika-negative', sans-serif;
 }
 
-#deck-container, #custom-roles-container {
-    border: 1px solid #3d4448;
-    padding: 10px;
-    border-radius: 3px;
-}
-
 #game-form > div {
+    background-color: #1f1f1f;
     display: flex;
     flex-direction: column;
-    border: 1px solid #3d4448;
     padding: 10px;
     border-radius: 3px;
     width: fit-content;
+    margin: 1em 0;
 }
 
 #game-form > div > label {
@@ -129,6 +130,14 @@ label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
     border-radius: 3px;
     margin-bottom: 10px;
     font-weight: bold;
+}
+
+input[type="number"] {
+    min-width: 3em;
+}
+
+#add-card-to-deck-form {
+    margin-bottom: 1em;
 }
 
 #create-game{

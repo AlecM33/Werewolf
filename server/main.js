@@ -54,6 +54,9 @@ const io = socketIO(main);
 
 app.set('port', port);
 
+const inGame = io.of('/in-game');
+
+
 /* Instantiate the singleton game manager */
 const gameManager = new GameManager(logger).getInstance();
 
@@ -84,6 +87,10 @@ app.use('', faviconRouter);
 
 app.use(function (req, res) {
     res.sendFile(path.join(__dirname, '../client/views/404.html'));
+});
+
+inGame.on('connection', function (socket) {
+    gameManager.addGameSocketHandlers(inGame, socket);
 });
 
 main.listen(port, function () {

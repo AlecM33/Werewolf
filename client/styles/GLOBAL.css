@@ -43,6 +43,12 @@ h1 {
     margin: 0.5em 0;
 }
 
+h2 {
+    color: whitesmoke;
+    font-size: 25px;
+    font-weight: bold;
+}
+
 h3 {
     color: #d7d7d7;
     font-family: 'signika-negative', sans-serif;
@@ -91,6 +97,7 @@ button:active, input[type=submit]:active {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%;
 }
 
 button:hover, input[type="submit"]:hover {
@@ -140,6 +147,83 @@ input {
 
 #navbar a:hover {
     color: gray;
+}
+
+.flex-row-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-row-container-left-align {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.animated-placeholder {
+    animation-fill-mode: forwards;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-name: pulse-background;
+    animation-timing-function: ease-in;
+    animation-direction: alternate;
+    background: rgb(238,238,238);
+    position: relative;
+    overflow: hidden;
+    height: 20px;
+    border-radius: 3px;
+    opacity: 0.15;
+    margin: 0.5em 0;
+}
+
+.animated-placeholder-short {
+    width: 100%;
+    max-width: 15em;
+    height: 2em;
+    margin: 0 auto;
+}
+
+.animated-placeholder-long {
+    width: 100%;
+    max-width: 30em;
+    height: 8em;
+    margin: 0 auto 0.5em auto;
+}
+
+.animated-placeholder-invisible {
+    background-color: transparent;
+    animation: none;
+}
+
+.placeholder-row {
+    display: flex;
+    margin: 0;
+    justify-content: center;
+}
+
+.placeholder-row .animated-placeholder-short {
+    margin: 0 0 0.5em 0;
+}
+
+@keyframes placeholder {
+    0%{
+        background-position: 50% 0
+    }
+    100%{
+        background-position: -50% 0
+    }
+}
+
+@keyframes pulse-background {
+    from {
+        background-color: rgb(120 120 120);
+    } to {
+        background-color: rgb(255 255 255);
+    }
 }
 
 

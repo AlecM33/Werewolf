@@ -47,36 +47,44 @@
         </form>
     </div>
     <h1>Create A Game</h1>
-    <h3>
-        Creating a game gives you the moderator role with certain special permissions. You will not be dealt a card.
-    </h3>
-    <div id="custom-roles-container">
-        <label for="add-card-to-deck-form">Custom Roles</label>
-        <form id="add-card-to-deck-form"></form>
-        <button id="custom-role-btn">Create Custom Role</button>
+    <div id="creation-step-tracker">
+        <div id="tracker-step-1" class="creation-step creation-step-filled"></div>
+        <div id="tracker-step-2" class="creation-step"></div>
+        <div id="tracker-step-3" class="creation-step"></div>
+        <div id="tracker-step-4" class="creation-step"></div>
     </div>
-    <div id="deck-container">
-        <label for="deck">Game Deck: 0 Players</label>
-        <div id="deck"></div>
+    <div id="creation-step-container">
+        <h2 id="step-title">Select your method of moderation:</h2>
+        <div class="placeholder-row">
+            <div class="animated-placeholder animated-placeholder-short"></div>
+            <div class="animated-placeholder animated-placeholder-short animated-placeholder-invisible"></div>
+        </div>
+        <div class="animated-placeholder animated-placeholder-long"></div>
+        <div class="animated-placeholder animated-placeholder-long"></div>
     </div>
-    <form id="game-form">
-        <div>
-            <label for="game-time">Timer (Optional)</label>
-            <div id="game-time">
-                <label for="game-hours">Hours (max 5)</label>
-                <input type="number" id="game-hours" name="game-hours"
-                       min="0" max="5" />
-                <label for="game-hours">Minutes</label>
-                <input type="number" id="game-minutes" name="game-minutes"
-                       min="1" max="60" />
-            </div>
-        </div>
-        <div>
-            <label for="mod-name">Your Name</label>
-            <input id="mod-name" type="text" maxlength="30" required/>
-        </div>
-        <input id="create-game" type="submit" value="Create"/>
-    </form>
+    <div id="creation-step-buttons"></div>
+<!--    <div id="deck-container">-->
+<!--        <label for="deck">Game Deck: 0 Players</label>-->
+<!--        <div id="deck"></div>-->
+<!--    </div>-->
+<!--    <form id="game-form">-->
+<!--        <div>-->
+<!--            <label for="game-time">Timer (Optional)</label>-->
+<!--            <div id="game-time">-->
+<!--                <label for="game-hours">Hours (max 5)</label>-->
+<!--                <input type="number" id="game-hours" name="game-hours"-->
+<!--                       min="0" max="5" />-->
+<!--                <label for="game-hours">Minutes</label>-->
+<!--                <input type="number" id="game-minutes" name="game-minutes"-->
+<!--                       min="1" max="60" />-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <label for="mod-name">Your Name</label>-->
+<!--            <input id="mod-name" type="text" maxlength="30" required/>-->
+<!--        </div>-->
+<!--        <input id="create-game" type="submit" value="Create"/>-->
+<!--    </form>-->
 </div>
 <script type="module">
     import { create } from "../scripts/create.js";

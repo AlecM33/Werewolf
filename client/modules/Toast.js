@@ -5,7 +5,7 @@ export const toast = (message, type, positionAtTop = true) => {
 };
 
 function buildAndInsertMessageElement (message, type, positionAtTop) {
-    cancelCurrentMessage();
+    cancelCurrentToast();
     let backgroundColor;
     const position = positionAtTop ? 'top:4rem;' : 'bottom: 15px;';
     switch (type) {
@@ -27,7 +27,7 @@ function buildAndInsertMessageElement (message, type, positionAtTop) {
     document.body.prepend(messageEl);
 }
 
-function cancelCurrentMessage () {
+export function cancelCurrentToast () {
     const currentMessage = document.getElementById('current-info-message');
     if (currentMessage !== null) {
         currentMessage.remove();

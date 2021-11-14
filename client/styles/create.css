@@ -82,11 +82,17 @@
     width: fit-content;
 }
 
-#deck-container, #custom-roles-container {
-    margin: 0.5em 0;
+#deck-container, #custom-roles-container, #step-3 {
+    margin: 1em 0;
     background-color: #1f1f1f;
     padding: 10px;
     border-radius: 3px;
+}
+
+#step-3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #deck {
@@ -150,4 +156,100 @@ input[type="number"] {
 
 .dropdown {
     margin: 0.5em;
+}
+
+.creation-step {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-radius: 50%;
+    border: 2px solid whitesmoke;
+    margin: 0 0.5em;
+}
+
+.creation-step-filled {
+    background-color: whitesmoke;
+}
+
+#creation-step-container {
+    margin-top: 2em;
+    width: 100%;
+    min-height: 16em;
+}
+
+#creation-step-container > div:nth-child(2) {
+    animation: fade-in 0.5s ease-out;
+}
+
+#step-title {
+    margin: 0 auto 1em auto;
+    text-align: center;
+}
+
+#creation-step-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2em;
+    position: relative;
+}
+
+#creation-step-tracker {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+#step-forward-button, #step-back-button {
+    position: absolute;
+}
+
+#step-forward-button {
+    right: 15%;
+}
+
+#step-back-button {
+    left: 15%;
+}
+
+#step-1 div {
+    background-color: black;
+    color: whitesmoke;
+    padding: 1em;
+    max-width: 20em;
+    margin: 0.5em;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 3px;
+    font-size: 25px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+#step-1 div.option-selected {
+    border: 2px solid #0075F2;
+    background-color: #252730;
+}
+
+#step-1 div > strong {
+    color: #0075F2;
+}
+
+#step-1 div:hover {
+    border: 2px solid #0075F2;
+}
+
+.review-option {
+    background-color: #1f1f1f;
+    color: whitesmoke;
+    padding: 10px;
+    width: fit-content;
+    border-radius: 3px;
+    margin: 0.5em 0;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
 }

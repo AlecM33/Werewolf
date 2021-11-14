@@ -25,7 +25,9 @@ function attemptToJoinGame(code) {
     .then((res) => {
         if (res.status === 200) {
             window.location = '/game/' + res.content;
-        } else if (res.status === 404) {
+        }
+    }).catch((res) => {
+        if (res.status === 404) {
             toast("Game not found", "error", true);
         } else if (res.status === 400) {
             toast(res.content, "error", true);

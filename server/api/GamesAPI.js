@@ -7,6 +7,7 @@ const GameManager = require('../modules/GameManager.js');
 const gameManager = new GameManager().getInstance();
 
 router.post('/create', function (req, res) {
+    logger.debug('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
     const gameCreationPromise = gameManager.createGame(req.body, false);
     gameCreationPromise.then((result) => {
         if (result instanceof Error) {

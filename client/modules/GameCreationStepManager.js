@@ -2,6 +2,7 @@ import { Game } from "../model/Game.js";
 import { cancelCurrentToast, toast } from "./Toast.js";
 import { customCards } from "../config/customCards.js";
 import { ModalManager } from "./ModalManager.js";
+import {XHRUtility} from "./XHRUtility.js";
 
 export class GameCreationStepManager {
     constructor(deckManager) {
@@ -82,7 +83,26 @@ export class GameCreationStepManager {
             },
             4: {
                 title: "Review and submit:",
-                backHandler: this.defaultBackHandler
+                backHandler: this.defaultBackHandler,
+                forwardHandler: (deck, hasTimer, hasDedicatedModerator, modName, timerParams) => {
+                    XHRUtility.xhr(
+                        '/api/games/create',
+                        'POST',
+                        null,
+                        JSON.stringify(
+                            new Game(deck, hasTimer, hasDedicatedModerator, modName, timerParams)
+                        )
+                    )
+                    .then((res) => {
+                        if (res
+                            && typeof res === 'object'
+                            && Object.prototype.hasOwnProperty.call(res, 'content')
+                            && typeof res.content === 'string'
+                        ) {
+                            window.location = ('/game/' + res.content);
+                        }
+                    });
+                }
             }
         }
     }
@@ -118,7 +138,7 @@ export class GameCreationStepManager {
                 break;
             case 4:
                 renderReviewAndCreateStep(containerId, step, this.currentGame);
-                showButtons(true, false, null, this.steps[step].backHandler);
+                showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler, this.currentGame);
                 break;
             default:
                 break;
@@ -137,7 +157,7 @@ function renderModerationTypeStep(game, containerId, stepNumber) {
 
     stepContainer.innerHTML =
         "<div id='moderation-dedicated'>I will be the <strong>dedicated mod.</strong> Don't deal me a card.</div>" +
-        "<div id='moderation-self'>The <strong>first person out</strong> will mod. Deal me into the game.</div>";
+        "<div id='moderation-self'>The <strong>first person out</strong> will mod. Deal me into the game <span>(mod will be assigned automatically).</span></div>";
 
     let dedicatedOption = stepContainer.querySelector('#moderation-dedicated');
     if (game.hasDedicatedModerator) {
@@ -257,6 +277,12 @@ function renderReviewAndCreateStep(containerId, stepNumber, game) {
         div.querySelector('#roles-option').appendChild(roleEl);
     }
 
+    let nameDiv = document.createElement("div");
+    nameDiv.innerHTML =
+        "<label for='mod-name'>Your Name</label>" +
+        "<input id='mod-name' type='text' maxLength='30' required/>"
+
+    div.appendChild(nameDiv);
     document.getElementById(containerId).appendChild(div);
 }
 
@@ -276,23 +302,41 @@ function updateTracker(step) {
     })
 }
 
-function showButtons(back, forward, forwardHandler, backHandler) {
+function showButtons(back, forward, forwardHandler, backHandler, builtGame=null) {
     document.querySelector("#step-back-button")?.remove();
     document.querySelector("#step-forward-button")?.remove();
     if (back) {
         let backButton = document.createElement("button");
-        backButton.innerText = "Back";
+        backButton.innerText = "\u2bc7 Back";
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute("id", "step-back-button");
         document.getElementById("creation-step-buttons").appendChild(backButton);
     }
 
-    if (forward) {
+    if (forward && builtGame === null) {
         let fwdButton = document.createElement("button");
-        fwdButton.innerText = "Next";
+        fwdButton.innerHTML = "Next \u25b6";
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute("id", "step-forward-button");
         document.getElementById("creation-step-buttons").appendChild(fwdButton);
+    } else if (forward && builtGame !== null) {
+        let createButton = document.createElement("button");
+        createButton.innerText = "Create";
+        createButton.setAttribute("id", "create-game");
+        createButton.addEventListener("click", () => {
+            if (document.getElementById("mod-name").value.length > 0) {
+                forwardHandler(
+                    builtGame.deck.filter((card) => card.quantity > 0),
+                    builtGame.hasTimer,
+                    builtGame.hasDedicatedModerator,
+                    document.getElementById("mod-name").value,
+                    builtGame.timerParams
+                );
+            } else {
+                toast("You must provide your name.", "error", true);
+            }
+        });
+        document.getElementById("creation-step-buttons").appendChild(createButton);
     }
 }
 
@@ -401,26 +445,6 @@ function constructCompactDeckBuilderElement(card, deckManager) {
 }
 
 function initializeRemainingEventListeners(deckManager) {
-    // document.getElementById("game-form").onsubmit = (e) => {
-    //     e.preventDefault();
-    //     let timerBool = hasTimer();
-    //     let timerParams = timerBool
-    //         ? {
-    //             hours: document.getElementById("game-hours").value,
-    //             minutes: document.getElementById("game-minutes").value
-    //         }
-    //         : null;
-    //     if (deckManager.getDeckSize() >= 5) {
-    //         createGameForHosting(
-    //             deckManager.getCurrentDeck().filter((card) => card.quantity > 0),
-    //             timerBool,
-    //             document.getElementById("mod-name").value,
-    //             timerParams
-    //         );
-    //     } else {
-    //         toast("You must include enough cards for 5 players.", "error", true);
-    //     }
-    // }
     document.getElementById("add-role-form").onsubmit = (e) => {
         e.preventDefault();
         let name = document.getElementById("role-name").value.trim();

@@ -2,10 +2,13 @@ const globals = require('../config/globals');
 const ActiveGameRunner = require('./ActiveGameRunner');
 const Game = require('../model/Game');
 const Person = require('../model/Person');
+const GameStateCurator = require('./GameStateCurator');
+const UsernameGenerator = require('./UsernameGenerator');
 
 class GameManager {
-    constructor (logger) {
+    constructor (logger, environment) {
         this.logger = logger;
+        this.environment = environment;
         this.activeGameRunner = new ActiveGameRunner().getInstance();
         this.namespace = null;
         //this.gameSocketUtility = GameSocketUtility;
@@ -14,8 +17,20 @@ class GameManager {
     addGameSocketHandlers = (namespace, socket) => {
         this.namespace = namespace;
         socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, (accessCode, personId, ackFn) => {
-            handleRequestForGameState(this.namespace, this.logger, this.activeGameRunner, accessCode, personId, ackFn, socket);
+            handleRequestForGameState(
+                this.namespace,
+                this.logger,
+                this.activeGameRunner,
+                accessCode,
+                personId,
+                ackFn,
+                socket
+            );
         });
+
+        socket.on(globals.CLIENT_COMMANDS.GET_ENVIRONMENT, (ackFn) => {
+            ackFn(this.environment);
+        })
     }
 
 
@@ -26,13 +41,18 @@ class GameManager {
             return Promise.reject('Tried to create game with invalid options: ' + gameParams);
         } else {
             const newAccessCode = this.generateAccessCode();
+            let moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
             this.activeGameRunner.activeGames[newAccessCode] = new Game(
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(gameParams.moderatorName, gameParams.deck),
+                initializePeopleForGame(gameParams.deck),
                 gameParams.deck,
                 gameParams.hasTimer,
+                moderator,
                 gameParams.timerParams
             );
+            if (!gameParams.hasDedicatedModerator) {
+                this.activeGameRunner.activeGames[newAccessCode].people.push(moderator);
+            }
             return Promise.resolve(newAccessCode);
         }
     }
@@ -69,14 +89,16 @@ function getRandomInt (max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-function initializeModerator(name) {
-    return new Person(createRandomUserId(), name, globals.USER_TYPES.MODERATOR)
+function initializeModerator(name, hasDedicatedModerator) {
+    const userType = hasDedicatedModerator
+        ? globals.USER_TYPES.MODERATOR
+        : globals.USER_TYPES.TEMPORARY_MODERATOR;
+    return new Person(createRandomUserId(), name, userType)
 }
 
-function initializePeopleForGame(modName, uniqueCards) {
+function initializePeopleForGame(uniqueCards) {
     let people = [];
     let cards = []; // this will contain copies of each card equal to the quantity.
-    people.push(initializeModerator(modName));
     let numberOfRoles = 0;
     for (let card of uniqueCards) {
         for (let i = 0; i < card.quantity; i ++) {
@@ -88,7 +110,7 @@ function initializePeopleForGame(modName, uniqueCards) {
     cards = shuffleArray(cards); // The deck should probably be shuffled, ey?.
 
     for(let j = 0; j < numberOfRoles; j ++) {
-        people.push(new Person(createRandomUserId(), null, globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description))
+        people.push(new Person(createRandomUserId(), UsernameGenerator.generate(), globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description))
     }
 
     return people;
@@ -113,10 +135,10 @@ function createRandomUserId () {
 }
 
 class Singleton {
-    constructor (logger) {
+    constructor (logger, environment) {
         if (!Singleton.instance) {
             logger.log('CREATING SINGLETON GAME MANAGER');
-            Singleton.instance = new GameManager(logger);
+            Singleton.instance = new GameManager(logger, environment);
         }
     }
 
@@ -137,16 +159,19 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
     const game = gameRunner.activeGames[accessCode];
     if (game) {
         let matchingPerson = game.people.find((person) => person.id === personId);
+        if (!matchingPerson && game.moderator.id === personId)  {
+            matchingPerson = game.moderator;
+        }
         if (matchingPerson) {
             if (matchingPerson.socketId === socket.id) {
                 logger.debug("matching person found with an established connection to the room: " + matchingPerson.name);
-                ackFn(getGameStateFromPerspectiveOfPerson(game, matchingPerson));
+                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
             } else {
                 if (!roomContainsSocketOfMatchingPerson(namespace, matchingPerson, logger, accessCode)) {
                     logger.debug("matching person found with a new connection to the room: " + matchingPerson.name);
                     socket.join(accessCode);
                     matchingPerson.socketId = socket.id;
-                    ackFn(getGameStateFromPerspectiveOfPerson(game, matchingPerson));
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
                 } else {
                     rejectClientRequestForGameState(ackFn);
                 }
@@ -155,15 +180,21 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
             let personWithMatchingSocketId = findPersonWithMatchingSocketId(game.people, socket.id);
             if (personWithMatchingSocketId) {
                 logger.debug("matching person found whose cookie got cleared after establishing a connection to the room: " + personWithMatchingSocketId.name);
-                ackFn(getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId));
+                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId));
             } else {
-                let unassignedPerson = game.people.find((person) => person.assigned === false);
+                let unassignedPerson = game.moderator.assigned === false
+                    ? game.moderator
+                    : game.people.find((person) => person.assigned === false);
                 if (unassignedPerson) {
                     logger.debug("completely new person with a first connection to the room: " + unassignedPerson.name);
                     socket.join(accessCode);
                     unassignedPerson.assigned = true;
                     unassignedPerson.socketId = socket.id;
-                    ackFn(getGameStateFromPerspectiveOfPerson(game, unassignedPerson));
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, unassignedPerson));
+                    socket.to(accessCode).emit(
+                        globals.EVENTS.PLAYER_JOINED,
+                        { name: unassignedPerson.name }
+                    );
                 } else {
                     rejectClientRequestForGameState(ackFn);
                 }
@@ -172,10 +203,6 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
     } else {
         rejectClientRequestForGameState(ackFn);
     }
-}
-
-function getGameStateFromPerspectiveOfPerson(game, person) {
-    return person;
 }
 
 // in socket.io 2.x , the rooms property is an object. in 3.x and 4.x, it is a javascript Set.

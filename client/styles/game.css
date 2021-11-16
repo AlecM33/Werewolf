@@ -1,0 +1,82 @@
+.lobby-player, #moderator {
+    background-color: black;
+    color: whitesmoke;
+    padding: 10px;
+    border-radius: 3px;
+    font-size: 17px;
+    width: fit-content;
+    min-width: 15em;
+    border: 2px solid transparent;
+    margin: 0.5em 0;
+}
+
+.lobby-player-client {
+    border: 2px solid #21ba45;
+}
+
+#moderator.moderator-client {
+    border: 2px solid lightgray;
+}
+
+#game-state-container {
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#lobby-header {
+    margin-bottom: 1em;
+}
+
+h1 {
+    text-align: center;
+    margin: 0.5em auto;
+}
+
+#game-state-container > div {
+    margin: 1em;
+}
+
+#game-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 2px solid transparent;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: #1f1f1f;
+    color: whitesmoke;
+    align-items: center;
+    display: flex;
+}
+
+#game-player-count {
+    color: whitesmoke;
+    margin: 0.5em 0;
+    font-size: 25px;
+}
+
+#game-link img {
+    width: 20px;
+    margin-left: 0.5em;
+}
+
+#game-link:hover {
+    border: 2px solid #0075F2;
+}
+
+label[for='moderator'] {
+    font-family: 'diavlo', sans-serif;
+    color: lightgray;
+    filter: drop-shadow(2px 2px 4px black);
+    font-size: 30px;
+}
+
+label[for='lobby-players'] {
+    font-family: 'diavlo', sans-serif;
+    color: #21ba45;
+    filter: drop-shadow(2px 2px 4px black);
+    font-size: 30px;
+}

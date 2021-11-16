@@ -1,6 +1,7 @@
 class Game {
-    constructor(status, people, deck, hasTimer, timerParams=null) {
+    constructor(status, people, deck, hasTimer, moderator, timerParams=null) {
         this.status = status;
+        this.moderator = moderator;
         this.people = people;
         this.deck = deck;
         this.hasTimer = hasTimer;

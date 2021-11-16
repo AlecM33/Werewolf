@@ -33,11 +33,15 @@
 }
 
 .selected-card {
-    border: 2px solid #0075F2;
+    border: 2px solid #c5c5c5;
 }
 
 .search {
     color: black;
+}
+
+.card-role {
+    font-weight: bold;
 }
 
 .compact-card-right p {
@@ -93,6 +97,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 #deck {
@@ -133,10 +139,11 @@ select {
 
 #game-time label, #game-time input {
     margin-right: 10px;
+    font-size: 25px;
 }
 
 label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
-    color: #0075F2;
+    color: whitesmoke;
     font-size: 20px;
     border-radius: 3px;
     margin-bottom: 10px;
@@ -145,6 +152,7 @@ label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
 
 input[type="number"] {
     min-width: 3em;
+    font-size: 40px;
 }
 
 #add-card-to-deck-form {
@@ -232,16 +240,16 @@ input[type="number"] {
 }
 
 #step-1 div.option-selected {
-    border: 2px solid #0075F2;
-    background-color: #252730;
+    border: 2px solid whitesmoke;
+    background-color: #3a3c46;
 }
 
 #step-1 div > strong {
-    color: #0075F2;
+    color: #00a718;
 }
 
 #step-1 div:hover {
-    border: 2px solid #0075F2;
+    border: 2px solid whitesmoke;
 }
 
 .review-option {

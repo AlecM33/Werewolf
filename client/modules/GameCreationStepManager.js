@@ -3,6 +3,7 @@ import { cancelCurrentToast, toast } from "./Toast.js";
 import { customCards } from "../config/customCards.js";
 import { ModalManager } from "./ModalManager.js";
 import {XHRUtility} from "./XHRUtility.js";
+import {globals} from "../config/globals.js";
 
 export class GameCreationStepManager {
     constructor(deckManager) {
@@ -401,8 +402,9 @@ function loadCustomRoles(deckManager) {
 
 function constructCompactDeckBuilderElement(card, deckManager) {
     const cardContainer = document.createElement("div");
+    let alignmentClass = card.team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL
 
-    cardContainer.setAttribute("class", "compact-card");
+    cardContainer.setAttribute("class", "compact-card " + alignmentClass);
 
     cardContainer.setAttribute("id", "card-" + card.role.replaceAll(' ', '-'));
 
@@ -419,6 +421,7 @@ function constructCompactDeckBuilderElement(card, deckManager) {
         "</div>";
 
     cardContainer.querySelector('.card-role').innerText = card.role;
+    cardContainer.title = card.role;
     cardContainer.querySelector('.card-quantity').innerText = card.quantity;
 
     if (card.quantity > 0) {
@@ -477,6 +480,8 @@ function updateCustomRoleOptionsList(deckManager, selectEl) {
 function addOptionsToList(options, selectEl) {
     for (let i = 0; i < options.length; i ++) {
         let optionEl = document.createElement("option");
+        let alignmentClass = customCards[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL
+        optionEl.classList.add(alignmentClass);
         optionEl.setAttribute("value", customCards[i].role);
         optionEl.innerText = customCards[i].role;
         selectEl.appendChild(optionEl);

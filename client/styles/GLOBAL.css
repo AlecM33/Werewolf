@@ -39,7 +39,7 @@ h1 {
     font-family: 'diavlo', sans-serif;
     color: #ab2626;
     filter: drop-shadow(2px 2px 4px black);
-    font-size: 40px;
+    font-size: 50px;
     margin: 0.5em 0;
 }
 
@@ -207,6 +207,14 @@ input {
 
 .placeholder-row .animated-placeholder-short {
     margin: 0 0 0.5em 0;
+}
+
+.good, .compact-card.good .card-role {
+    color: #4b6bfa !important;
+}
+
+.evil, .compact-card.evil .card-role {
+    color: #e73333 !important
 }
 
 @keyframes placeholder {

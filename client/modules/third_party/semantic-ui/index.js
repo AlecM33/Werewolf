@@ -2109,7 +2109,7 @@
                                 module.error(error.noStorage);
                                 return;
                             }
-                            name = sessionStorage.getItem(value);
+                            name = localStorage.getItem(value);
                             return (name !== undefined)
                                 ? name
                                 : false
@@ -2153,7 +2153,7 @@
                                 return;
                             }
                             module.verbose('Saving remote data to session storage', value, name);
-                            sessionStorage.setItem(value, name);
+                            localStorage.setItem(value, name);
                         }
                     },
 
@@ -3714,7 +3714,7 @@
         minCharacters          : 0,          // Minimum characters required to trigger API call
 
         filterRemoteData       : false,      // Whether API results should be filtered after being returned for query term
-        saveRemoteData         : true,       // Whether remote name/value pairs should be stored in sessionStorage to allow remote data to be restored on page refresh
+        saveRemoteData         : true,       // Whether remote name/value pairs should be stored in localStorage to allow remote data to be restored on page refresh
 
         throttle               : 200,        // How long to wait after last user input to search remotely
 

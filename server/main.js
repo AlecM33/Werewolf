@@ -5,15 +5,18 @@ const path = require('path');
 const fs = require('fs');
 const socketIO = require('socket.io');
 const app = express();
-let main;
 const bodyParser = require('body-parser');
 const GameManager = require('./modules/GameManager.js');
+const globals = require('./config/globals');
 // const QueueManager = require('./modules/managers/QueueManager');
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
+
+
+let main, environment;
 
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const localServer = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('local');
@@ -31,6 +34,7 @@ const port = process.env.PORT || Array
 const logger = require('./modules/Logger')(debugMode);
 
 if (localServer) {
+    environment = globals.ENVIRONMENT.LOCAL;
     logger.log('starting main in LOCAL mode.');
     if (useHttps && fs.existsSync(path.join(__dirname, './certs/localhost-key.pem')) && fs.existsSync(path.join(__dirname, './certs/localhost.pem'))) {
         const key = fs.readFileSync(path.join(__dirname, './certs/localhost-key.pem'), 'utf-8');
@@ -44,7 +48,8 @@ if (localServer) {
         logger.log(`navigate to http://localhost:${port}`);
     }
 } else {
-    logger.log('starting main in PRODUCTION mode. WARNING: This should not be used for local development.');
+    environment = globals.ENVIRONMENT.PRODUCTION;
+    logger.warn('starting main in PRODUCTION mode. This should not be used for local development.');
     main = http.createServer(app);
     const secure = require('express-force-https');
     app.use(secure);
@@ -58,7 +63,7 @@ const inGame = io.of('/in-game');
 
 
 /* Instantiate the singleton game manager */
-const gameManager = new GameManager(logger).getInstance();
+const gameManager = new GameManager(logger, environment).getInstance();
 
 /* Instantiate the singleton queue manager */
 //const queueManager = new QueueManager(matchmaking, logger).getInstance();

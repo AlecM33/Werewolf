@@ -35,23 +35,3 @@ function loadCustomRoles(deckManager) {
     });
     deckManager.customRoleOptions = customCards;
 }
-
-function createGameForHosting(deck, hasTimer, modName, timerParams) {
-    XHRUtility.xhr(
-        '/api/games/create',
-        'POST',
-        null,
-        JSON.stringify(
-            new Game(deck, hasTimer, modName, timerParams)
-        )
-    )
-    .then((res) => {
-        if (res
-            && typeof res === 'object'
-            && Object.prototype.hasOwnProperty.call(res, 'content')
-            && typeof res.content === 'string'
-        ) {
-            window.location = ('/game/' + res.content);
-        }
-    });
-}

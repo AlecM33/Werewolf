@@ -15,6 +15,12 @@ module.exports = function (debugMode = false) {
             if (!debugMode) return;
             const now = new Date();
             console.error('ERROR ', now.toGMTString(), ': ', message);
+        },
+
+        warn (message = '') {
+            if (!debugMode) return;
+            const now = new Date();
+            console.error('WARNING ', now.toGMTString(), ': ', message);
         }
     };
 };

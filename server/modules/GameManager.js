@@ -191,9 +191,12 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     unassignedPerson.assigned = true;
                     unassignedPerson.socketId = socket.id;
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, unassignedPerson));
+                    let isFull = isGameFull(game);
+                    game.isFull = isFull;
                     socket.to(accessCode).emit(
                         globals.EVENTS.PLAYER_JOINED,
-                        { name: unassignedPerson.name }
+                        {name: unassignedPerson.name},
+                        isFull
                     );
                 } else {
                     rejectClientRequestForGameState(ackFn);
@@ -218,6 +221,10 @@ function rejectClientRequestForGameState(acknowledgementFunction) {
 
 function findPersonWithMatchingSocketId(people, socketId) {
     return people.find((person) => person.socketId === socketId);
+}
+
+function isGameFull(game) {
+    return game.moderator.assigned === true && !game.people.find((person) => person.assigned === false);
 }
 
 module.exports = Singleton;

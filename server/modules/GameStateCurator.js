@@ -28,7 +28,8 @@ function getGameStateBasedOnPermissions(game, person) {
                         return person.assigned === true && person.id !== client.id && person.userType !== globals.USER_TYPES.MODERATOR
                     })
                     .map((filteredPerson) => ({ name: filteredPerson.name, userType: filteredPerson.userType })),
-                timerParams: game.timerParams
+                timerParams: game.timerParams,
+                isFull: game.isFull
             }
         case globals.USER_TYPES.MODERATOR:
             return {
@@ -38,7 +39,8 @@ function getGameStateBasedOnPermissions(game, person) {
                 client: client,
                 deck: game.deck,
                 people: mapPeopleForModerator(game.people, client),
-                timerParams: game.timerParams
+                timerParams: game.timerParams,
+                isFull: game.isFull
             }
         case globals.USER_TYPES.TEMPORARY_MODERATOR:
             return {
@@ -48,7 +50,8 @@ function getGameStateBasedOnPermissions(game, person) {
                 client: client,
                 deck: game.deck,
                 people: mapPeopleForTempModerator(game.people, client),
-                timerParams: game.timerParams
+                timerParams: game.timerParams,
+                isFull: game.isFull
             }
         default:
             break;

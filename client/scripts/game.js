@@ -32,8 +32,17 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
     switch (gameState.status) {
         case globals.GAME_STATE.LOBBY:
             document.getElementById("game-state-container").innerHTML = templates.LOBBY;
-            gameStateRenderer.renderLobbyPlayers();
             gameStateRenderer.renderLobbyHeader();
+            gameStateRenderer.renderLobbyPlayers();
+            if (
+                gameState.isFull
+                && (
+                    gameState.userType === globals.USER_TYPES.MODERATOR
+                    || gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                )
+            ) {
+               displayStartGamePromptForModerators();
+            }
             break;
         default:
             break;
@@ -41,9 +50,25 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
 }
 
 function setClientSocketHandlers(gameStateRenderer, socket) {
-    socket.on(globals.EVENTS.PLAYER_JOINED, (player) => {
+    socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
         toast(player.name + " joined!", "success", false);
         gameStateRenderer.gameState.people.push(player);
         gameStateRenderer.renderLobbyPlayers();
+        if (
+            gameIsFull
+            && (
+                gameStateRenderer.gameState.userType === globals.USER_TYPES.MODERATOR
+                || gameStateRenderer.gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            )
+        ) {
+           displayStartGamePromptForModerators();
+        }
     })
+}
+
+function displayStartGamePromptForModerators() {
+    document.getElementById("lobby-players").setAttribute("style", 'margin-bottom: 130px');
+    let div = document.createElement("div");
+    div.innerHTML = templates.START_GAME_PROMPT;
+    document.body.appendChild(div);
 }

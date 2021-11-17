@@ -86,7 +86,7 @@
     width: fit-content;
 }
 
-#deck-container, #custom-roles-container, #step-3 {
+#deck-container, #custom-roles-container {
     margin: 1em 0;
     background-color: #1f1f1f;
     padding: 10px;
@@ -95,10 +95,27 @@
 
 #step-3 {
     display: flex;
+    padding: 10px;
     justify-content: center;
     align-items: center;
     width: fit-content;
+    border-radius: 3px;
     margin: 0 auto;
+}
+
+#step-4 > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    justify-content: center;
+    margin: 0 auto;
+    width: 25em;
+    max-width: 95%;
+}
+
+#step-4 > div label {
+    width: 100%;
 }
 
 #deck {
@@ -235,7 +252,6 @@ input[type="number"] {
     cursor: pointer;
     border: 2px solid transparent;
     border-radius: 3px;
-    font-size: 25px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
 
@@ -259,6 +275,7 @@ input[type="number"] {
     width: fit-content;
     border-radius: 3px;
     margin: 0.5em 0;
+    align-self: flex-start;
 }
 
 @keyframes fade-in {
@@ -266,5 +283,25 @@ input[type="number"] {
         opacity: 0;
     } to {
         opacity: 1;
+    }
+}
+
+@media(max-width: 550px) {
+    h1 {
+        font-size: 35px;
+    }
+
+    #step-1 div {
+        font-size: 20px;
+    }
+}
+
+@media(min-width: 551px) {
+    h1 {
+        font-size: 50px;
+    }
+
+    #step-1 div {
+        font-size: 25px;
     }
 }

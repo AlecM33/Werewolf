@@ -1,4 +1,5 @@
-import {globals} from "../config/globals.js";
+import { globals } from "../config/globals.js";
+import { toast } from "./Toast.js";
 
 export class GameStateRenderer {
     constructor(gameState) {
@@ -30,9 +31,14 @@ export class GameStateRenderer {
     renderLobbyHeader() {
         let title = document.createElement("h1");
         title.innerText = "Lobby";
-        document.body.prepend(title);
+        document.getElementById("game-title").appendChild(title);
         let gameLinkContainer = document.getElementById("game-link");
         gameLinkContainer.innerText = window.location;
+        gameLinkContainer.addEventListener('click', () => {
+            navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
+                toast('Link copied!', 'success', true);
+            });
+        });
         let copyImg = document.createElement("img");
         copyImg.setAttribute("src", "../images/copy.svg");
         gameLinkContainer.appendChild(copyImg);

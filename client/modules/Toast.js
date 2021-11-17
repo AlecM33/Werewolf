@@ -7,7 +7,7 @@ export const toast = (message, type, positionAtTop = true) => {
 function buildAndInsertMessageElement (message, type, positionAtTop) {
     cancelCurrentToast();
     let backgroundColor;
-    const position = positionAtTop ? 'top:4rem;' : 'bottom: 35px;';
+    const position = positionAtTop ? 'top:3rem;' : 'bottom: 35px;';
     switch (type) {
         case 'warning':
             backgroundColor = '#fff5b1';

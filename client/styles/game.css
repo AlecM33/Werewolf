@@ -41,15 +41,15 @@ h1 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border: 2px solid transparent;
     cursor: pointer;
     margin-top: 10px;
-    padding: 5px;
+    padding: 7px;
     border-radius: 3px;
-    background-color: #1f1f1f;
+    background-color: #722c2c;
     color: whitesmoke;
     align-items: center;
     display: flex;
+    transition: background-color 0.2s;
 }
 
 #game-player-count {
@@ -63,8 +63,8 @@ h1 {
     margin-left: 0.5em;
 }
 
-#game-link:hover {
-    border: 2px solid #0075F2;
+#game-title {
+    margin: 0 auto;
 }
 
 label[for='moderator'] {
@@ -79,4 +79,61 @@ label[for='lobby-players'] {
     color: #21ba45;
     filter: drop-shadow(2px 2px 4px black);
     font-size: 30px;
+}
+
+#start-game-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 1000;
+    border-radius: 3px;
+    font-family: 'signika-negative', sans-serif;
+    font-weight: 100;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* width: fit-content; */
+    font-size: 20px;
+    height: 120px;
+    margin: 0 auto;
+    animation: fade-in-slide-up 10s ease;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+    width: 100%;
+    background-color: #333243;
+}
+
+#start-game-button {
+    font-family: 'signika-negative', sans-serif !important;
+    padding: 10px;
+    background-color: #1c8a36;
+    border-radius: 3px;
+    color: whitesmoke;
+    font-size: 30px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background-color, border 0.3s ease-out;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
+}
+
+#start-game-button:hover {
+    background-color: #326243;
+    border: 2px solid #1c8a36;
+}
+
+@keyframes fade-in-slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    5% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
 }

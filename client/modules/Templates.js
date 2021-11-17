@@ -20,5 +20,9 @@ export const templates = {
         "<div id='lobby-footer'>" +
             "<div id='game-deck'></div>" +
         "</div>" +
+    "</div>",
+    START_GAME_PROMPT:
+    "<div id='start-game-prompt'>" +
+        "<button id='start-game-button'>Start Game</button>" +
     "</div>"
 }

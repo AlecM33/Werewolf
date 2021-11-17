@@ -1,10 +1,15 @@
+html {
+    height: 100%;
+}
+
 body {
     align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 button {
     padding: 20px;
-    font-size: 25px;
     margin-bottom: 1em;
 }
 
@@ -19,6 +24,10 @@ form {
     align-items: center;
 }
 
+a button {
+    text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
+}
+
 #join-button {
     min-width: 6em;
     max-height: 3em;
@@ -26,19 +35,26 @@ form {
 }
 
 h3 {
-    max-width: 30em;
-    font-size: 16px;
+    font-size: 20px;
     margin-bottom: 2em;
+    padding: 1em;
+    max-width: 23em;
+    font-family: 'diavlo', sans-serif;
 }
 
 img {
-    max-width: 650px;
+    max-width: 400px;
     width: 63vw;
-    min-width: 430px;
+    min-width: 250px;
+    margin: 1em 0;
 }
 
 form > div {
-    margin: 1em;
+    margin: 1em 0;
+}
+
+#join-container {
+    max-width: 90%;
 }
 
 #join-container > label {
@@ -50,4 +66,16 @@ form > div {
 
 label[for="room-code"], label[for="player-name"] {
     margin-right: 0.5em;
+}
+
+@media (min-width: 700px) {
+    button {
+        font-size: 35px;
+    }
+}
+
+@media (max-width: 701px) {
+    button {
+        font-size: 5vw;
+    }
 }

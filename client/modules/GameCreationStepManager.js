@@ -247,12 +247,19 @@ function renderReviewAndCreateStep(containerId, stepNumber, game) {
     div.setAttribute("id", "step-" + stepNumber);
 
     div.innerHTML =
-        "<label for='mod-option'>Moderation</label>" +
-        "<div id='mod-option' class='review-option'></div>" +
-        "<label for='timer-option'>Timer</label>" +
-        "<div id='timer-option' class='review-option'></div>" +
-        "<label for='roles-option'>Game Deck</label>" +
-        "<div id='roles-option' class='review-option'></div>";
+        "<div>" +
+            "<label for='mod-option'>Moderation</label>" +
+            "<div id='mod-option' class='review-option'></div>" +
+        "</div>" +
+        "<div>" +
+            "<label for='timer-option'>Timer</label>" +
+            "<div id='timer-option' class='review-option'></div>" +
+        "</div>" +
+        "<div>" +
+            "<label for='roles-option'>Game Deck</label>" +
+            "<div id='roles-option' class='review-option'></div>" +
+        "</div>";
+
 
     div.querySelector('#mod-option').innerText = game.hasDedicatedModerator
             ? "I will be the dedicated mod. Don't deal me a card."

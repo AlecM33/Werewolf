@@ -6,6 +6,7 @@ class Game {
         this.deck = deck;
         this.hasTimer = hasTimer;
         this.timerParams = timerParams;
+        this.isFull = false;
     }
 }
 

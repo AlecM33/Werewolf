@@ -164,11 +164,11 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
         }
         if (matchingPerson) {
             if (matchingPerson.socketId === socket.id) {
-                logger.debug("matching person found with an established connection to the room: " + matchingPerson.name);
+                logger.trace("matching person found with an established connection to the room: " + matchingPerson.name);
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
             } else {
                 if (!roomContainsSocketOfMatchingPerson(namespace, matchingPerson, logger, accessCode)) {
-                    logger.debug("matching person found with a new connection to the room: " + matchingPerson.name);
+                    logger.trace("matching person found with a new connection to the room: " + matchingPerson.name);
                     socket.join(accessCode);
                     matchingPerson.socketId = socket.id;
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
@@ -179,14 +179,14 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
         } else {
             let personWithMatchingSocketId = findPersonWithMatchingSocketId(game.people, socket.id);
             if (personWithMatchingSocketId) {
-                logger.debug("matching person found whose cookie got cleared after establishing a connection to the room: " + personWithMatchingSocketId.name);
+                logger.trace("matching person found whose cookie got cleared after establishing a connection to the room: " + personWithMatchingSocketId.name);
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId));
             } else {
                 let unassignedPerson = game.moderator.assigned === false
                     ? game.moderator
                     : game.people.find((person) => person.assigned === false);
                 if (unassignedPerson) {
-                    logger.debug("completely new person with a first connection to the room: " + unassignedPerson.name);
+                    logger.trace("completely new person with a first connection to the room: " + unassignedPerson.name);
                     socket.join(accessCode);
                     unassignedPerson.assigned = true;
                     unassignedPerson.socketId = socket.id;

@@ -24,6 +24,13 @@ const globals = {
     ENVIRONMENT: {
         LOCAL: "local",
         PRODUCTION: "production"
+    },
+    LOG_LEVEL: {
+        INFO: "info",
+        DEBUG: "debug",
+        ERROR: "error",
+        WARN: "warn",
+        TRACE: "trace"
     }
 };
 

@@ -7,6 +7,7 @@ class Person {
         this.gameRole = gameRole;
         this.gameRoleDescription = gameRoleDescription;
         this.assigned = assigned;
+        this.out = false;
     }
 }
 

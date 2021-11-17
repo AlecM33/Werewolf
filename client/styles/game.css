@@ -38,6 +38,10 @@ h1 {
 }
 
 #game-link {
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

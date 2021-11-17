@@ -15,23 +15,30 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
-
 let main, environment;
 
-const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
-const localServer = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('local');
-const useHttps = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('https');
-const port = process.env.PORT || Array
-    .from(process.argv.map((arg) => {
-        return arg.trim().toLowerCase();
-    }))
+let args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));
+
+const localServer = args.includes('local');
+const useHttps = args.includes('https');
+const port = process.env.PORT || args
     .filter((arg) => {
         return /port=\d+/.test(arg);
     })
     .map((arg) => {
         return /port=(\d+)/.exec(arg)[1];
     })[0] || 5000;
-const logger = require('./modules/Logger')(debugMode);
+const logLevel = process.env.LOG_LEVEL || args
+    .filter((arg) => {
+        return /loglevel=[a-zA-Z]+/.test(arg);
+    })
+    .map((arg) => {
+        return /loglevel=([a-zA-Z]+)/.exec(arg)[1];
+    })[0] || globals.LOG_LEVEL.INFO;
+
+const logger = require('./modules/Logger')(logLevel);
+
+logger.log('LOG LEVEL IS: ' + logLevel)
 
 if (localServer) {
     environment = globals.ENVIRONMENT.LOCAL;
@@ -99,5 +106,5 @@ inGame.on('connection', function (socket) {
 });
 
 main.listen(port, function () {
-    logger.log(`Starting server on port ${port} http://localhost:${port}` );
+    logger.log(`Starting server on port ${port}` );
 });

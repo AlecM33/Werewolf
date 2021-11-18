@@ -61,6 +61,25 @@ export class GameStateRenderer {
             cardEl.classList.add('lobby-card')
         }
     }
+
+    renderGameHeader() {
+        let title = document.createElement("h1");
+        title.innerText = "Game";
+        document.querySelector('#game-title h1')?.remove();
+        document.getElementById("game-title").appendChild(title);
+    }
+
+    renderPlayerRole() {
+        let name = document.querySelector('#role-name');
+        name.innerText = this.gameState.client.gameRole;
+        if (this.gameState.client.alignment === globals.ALIGNMENT.GOOD) {
+            name.classList.add('good');
+        } else {
+            name.classList.add('evil');
+        }
+        name.setAttribute("title", this.gameState.client.gameRole);
+        document.querySelector('#role-description').innerText = this.gameState.client.gameRoleDescription;
+    }
 }
 
 function renderClient(client, container) {

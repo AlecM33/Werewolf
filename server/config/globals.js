@@ -3,7 +3,8 @@ const globals = {
     ACCESS_CODE_LENGTH: 6,
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
-        GET_ENVIRONMENT: 'getEnvironment'
+        GET_ENVIRONMENT: 'getEnvironment',
+        START_GAME: 'startGame'
     },
     STATUS: {
         LOBBY: "lobby",
@@ -19,7 +20,8 @@ const globals = {
         GAME_IS_FULL: "This game is full"
     },
     EVENTS: {
-        PLAYER_JOINED: "playerJoined"
+        PLAYER_JOINED: "playerJoined",
+        SYNC_GAME_STATE: "syncGameState"
     },
     ENVIRONMENT: {
         LOCAL: "local",

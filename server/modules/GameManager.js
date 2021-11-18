@@ -30,7 +30,15 @@ class GameManager {
 
         socket.on(globals.CLIENT_COMMANDS.GET_ENVIRONMENT, (ackFn) => {
             ackFn(this.environment);
-        })
+        });
+
+        socket.on(globals.CLIENT_COMMANDS.START_GAME, (accessCode, personId) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                game.status = globals.STATUS.IN_PROGRESS;
+                namespace.in(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
+            }
+        });
     }
 
 
@@ -44,15 +52,12 @@ class GameManager {
             let moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
             this.activeGameRunner.activeGames[newAccessCode] = new Game(
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(gameParams.deck),
+                initializePeopleForGame(gameParams.deck, moderator),
                 gameParams.deck,
                 gameParams.hasTimer,
                 moderator,
                 gameParams.timerParams
             );
-            if (!gameParams.hasDedicatedModerator) {
-                this.activeGameRunner.activeGames[newAccessCode].people.push(moderator);
-            }
             return Promise.resolve(newAccessCode);
         }
     }
@@ -96,7 +101,7 @@ function initializeModerator(name, hasDedicatedModerator) {
     return new Person(createRandomUserId(), name, userType)
 }
 
-function initializePeopleForGame(uniqueCards) {
+function initializePeopleForGame(uniqueCards, moderator) {
     let people = [];
     let cards = []; // this will contain copies of each card equal to the quantity.
     let numberOfRoles = 0;
@@ -109,8 +114,18 @@ function initializePeopleForGame(uniqueCards) {
 
     cards = shuffleArray(cards); // The deck should probably be shuffled, ey?.
 
-    for(let j = 0; j < numberOfRoles; j ++) {
-        people.push(new Person(createRandomUserId(), UsernameGenerator.generate(), globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description))
+    let j = 0;
+    if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.
+        moderator.gameRole = cards[j].role;
+        moderator.gameRoleDescription = cards[j].description;
+        moderator.alignment = cards[j].team;
+        people.push(moderator);
+        j ++;
+    }
+
+    while (j < numberOfRoles) {
+        people.push(new Person(createRandomUserId(), UsernameGenerator.generate(), globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description, cards[j].team))
+        j ++;
     }
 
     return people;

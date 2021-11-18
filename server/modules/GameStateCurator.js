@@ -13,7 +13,8 @@ function getGameStateBasedOnPermissions(game, person) {
             name: person.name,
             id: person.id,
             gameRole: person.gameRole,
-            roleDescription: person.roleDescription
+            gameRoleDescription: person.gameRoleDescription,
+            alignment: person.alignment
         }
     switch (person.userType) {
         case globals.USER_TYPES.PLAYER:
@@ -66,7 +67,8 @@ function mapPeopleForModerator(people, client) {
         .map((person) => ({
         name: person.name,
         gameRole: person.gameRole,
-        gameRoleDescription: person.gameRoleDescription
+        gameRoleDescription: person.gameRoleDescription,
+        alignment: person.alignment
     }));
 }
 

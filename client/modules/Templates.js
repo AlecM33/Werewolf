@@ -24,5 +24,22 @@ export const templates = {
     START_GAME_PROMPT:
     "<div id='start-game-prompt'>" +
         "<button id='start-game-button'>Start Game</button>" +
+    "</div>",
+    GAME:
+    "<div id='person-name'></div>" +
+    "<div id='game-header'>" +
+        "<div>" +
+            "<label for='game-timer'>Timer</label>" +
+            "<div id='game-timer'></div>" +
+        "</div>" +
+        "<div>" +
+            "<label for='alive-count'>Players Left</label>" +
+            "<div id='alive-count'></div>" +
+        "</div>" +
+    "</div>" +
+    "<div id='game-role'>" +
+        "<h4 id='role-name'></h4>" +
+        "<img alt='role' id='role-image'/>" +
+        "<p id='role-description'></p>" +
     "</div>"
 }

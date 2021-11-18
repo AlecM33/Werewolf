@@ -5,17 +5,20 @@ export const globals = {
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
-        GET_ENVIRONMENT: 'getEnvironment'
+        GET_ENVIRONMENT: 'getEnvironment',
+        START_GAME: 'startGame'
     },
-    GAME_STATE: {
-        LOBBY: 'lobby'
+    STATUS: {
+        LOBBY: "lobby",
+        IN_PROGRESS: "in progress"
     },
     ALIGNMENT: {
         GOOD: "good",
         EVIL: "evil"
     },
     EVENTS: {
-        PLAYER_JOINED: "playerJoined"
+        PLAYER_JOINED: "playerJoined",
+        SYNC_GAME_STATE: "syncGameState"
     },
     USER_TYPES: {
         MODERATOR: "moderator",

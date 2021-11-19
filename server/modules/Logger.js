@@ -2,6 +2,7 @@ const globals = require('../config/globals');
 
 module.exports = function (logLevel = globals.LOG_LEVEL.INFO) {
     return {
+        logLevel: logLevel,
         log (message = '') {
             const now = new Date();
             console.log('LOG   ', now.toGMTString(), ': ', message);

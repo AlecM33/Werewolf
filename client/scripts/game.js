@@ -19,8 +19,9 @@ export const game = () => {
                     userId = gameState.client.id;
                     UserUtility.setAnonymousUserId(userId, environment);
                     let gameStateRenderer = new GameStateRenderer(gameState);
-                    processGameState(gameState, userId, socket, gameStateRenderer); // this socket is initialized via a script tag in the game page HTML.
-                    setClientSocketHandlers(gameStateRenderer, socket);
+                    const timerWorker = new Worker('../modules/Timer.js');
+                    processGameState(gameState, userId, socket, gameStateRenderer, timerWorker); // this socket is initialized via a script tag in the game page HTML.
+                    setClientSocketHandlers(gameStateRenderer, socket, timerWorker);
                 }
             });
         } else {
@@ -29,7 +30,7 @@ export const game = () => {
     });
 };
 
-function processGameState (gameState, userId, socket, gameStateRenderer) {
+function processGameState (gameState, userId, socket, gameStateRenderer, timerWorker) {
     cancelCurrentToast();
     switch (gameState.status) {
         case globals.STATUS.LOBBY:
@@ -58,7 +59,7 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
     }
 }
 
-function setClientSocketHandlers(gameStateRenderer, socket) {
+function setClientSocketHandlers(gameStateRenderer, socket, timerWorker) {
     socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
         toast(player.name + " joined!", "success", false);
         gameStateRenderer.gameState.people.push(player);
@@ -84,6 +85,16 @@ function setClientSocketHandlers(gameStateRenderer, socket) {
             }
         );
     })
+
+    socket.on(globals.EVENTS.START_TIMER, () => {
+        runGameTimer(
+            gameStateRenderer.gameState.timerParams.hours,
+            gameStateRenderer.gameState.timerParams.minutes,
+            globals.CLOCK_TICK_INTERVAL_MILLIS,
+            null,
+            timerWorker
+        )
+    })
 }
 
 function displayStartGamePromptForModerators(gameStateRenderer) {
@@ -98,4 +109,15 @@ function displayStartGamePromptForModerators(gameStateRenderer) {
         }
 
     });
+}
+
+function runGameTimer (hours, minutes, tickRate, soundManager, timerWorker) {
+    if (window.Worker) {
+        timerWorker.onmessage = function (e) {
+            if (e.data.hasOwnProperty('timeRemainingInMilliseconds') && e.data.timeRemainingInMilliseconds > 0) {
+                document.getElementById('game-timer').innerText = e.data.displayTime;
+            }
+        };
+        timerWorker.postMessage({ hours: hours, minutes: minutes, tickInterval: tickRate });
+    }
 }

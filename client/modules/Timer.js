@@ -9,16 +9,18 @@ See: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
 
 const messageParameters = {
     STOP: 'stop',
-    TOTAL_TIME: 'totalTime',
-    TICK_INTERVAL: 'tickInterval'
+    TICK_INTERVAL: 'tickInterval',
+    HOURS: 'hours',
+    MINUTES: 'minutes'
 };
 
 onmessage = function (e) {
     if (typeof e.data === 'object'
-        && e.data.hasOwnProperty(messageParameters.TOTAL_TIME)
+        && e.data.hasOwnProperty(messageParameters.HOURS)
+        && e.data.hasOwnProperty(messageParameters.MINUTES)
         && e.data.hasOwnProperty(messageParameters.TICK_INTERVAL)
     ) {
-        const timer = new Singleton(e.data.totalTime, e.data.tickInterval);
+        const timer = new Singleton(e.data.hours, e.data.minutes, e.data.tickInterval);
         timer.startTimer();
     }
 };
@@ -30,7 +32,10 @@ function stepFn (expected, interval, start, totalTime) {
     }
     const delta = now - expected;
     expected += interval;
-    postMessage({ timeRemaining: (totalTime - (expected - start)) / 1000 });
+    postMessage({
+        timeRemainingInMilliseconds: totalTime - (expected - start),
+        displayTime: returnHumanReadableTime(totalTime - (expected - start))
+    });
     Singleton.setNewTimeoutReference(setTimeout(() => {
             stepFn(expected, interval, start, totalTime);
         }, Math.max(0, interval - delta)
@@ -38,16 +43,17 @@ function stepFn (expected, interval, start, totalTime) {
 }
 
 class Timer {
-    constructor (totalTime, tickInterval) {
+    constructor (hours, minutes, tickInterval) {
         this.timeoutId = undefined;
-        this.totalTime = totalTime;
+        this.hours = hours;
+        this.minutes = minutes;
         this.tickInterval = tickInterval;
     }
 
     startTimer () {
-        if (!isNaN(this.totalTime) && !isNaN(this.tickInterval)) {
+        if (!isNaN(this.hours) && !isNaN(this.minutes) && !isNaN(this.tickInterval)) {
             const interval = this.tickInterval;
-            const totalTime = this.totalTime;
+            const totalTime = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
             const start = Date.now();
             const expected = Date.now() + this.tickInterval;
             if (this.timeoutId) {
@@ -61,19 +67,20 @@ class Timer {
 }
 
 class Singleton {
-    constructor (totalTime, tickInterval) {
+    constructor (hours, minutes, tickInterval) {
         if (!Singleton.instance) {
-            Singleton.instance = new Timer(totalTime, tickInterval);
+            Singleton.instance = new Timer(hours, minutes, tickInterval);
         } else {
             // This allows the same timer to be configured to run for different intervals / at a different granularity.
-            Singleton.setNewTimerParameters(totalTime, tickInterval);
+            Singleton.setNewTimerParameters(hours, minutes, tickInterval);
         }
         return Singleton.instance;
     }
 
-    static setNewTimerParameters (totalTime, tickInterval) {
+    static setNewTimerParameters (hours, minutes, tickInterval) {
         if (Singleton.instance) {
-            Singleton.instance.totalTime = totalTime;
+            Singleton.instance.hours = hours;
+            Singleton.instance.minutes = minutes;
             Singleton.instance.tickInterval = tickInterval;
         }
     }
@@ -83,4 +90,25 @@ class Singleton {
             Singleton.instance.timeoutId = timeoutId;
         }
     }
+}
+
+function convertFromMinutesToMilliseconds(minutes) {
+    return minutes * 60 * 1000;
+}
+
+function convertFromHoursToMilliseconds(hours) {
+    return hours * 60 * 60 * 1000;
+}
+
+function returnHumanReadableTime(milliseconds) {
+
+    let seconds = Math.floor((milliseconds / 1000) % 60);
+    let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+    let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    return hours + ":" + minutes + ":" + seconds;
 }

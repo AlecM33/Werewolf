@@ -4,6 +4,7 @@ import { toast } from "./Toast.js";
 export class GameStateRenderer {
     constructor(gameState) {
         this.gameState = gameState;
+        this.cardFlipped = false;
     }
 
     renderLobbyPlayers() {
@@ -79,6 +80,20 @@ export class GameStateRenderer {
         }
         name.setAttribute("title", this.gameState.client.gameRole);
         document.querySelector('#role-description').innerText = this.gameState.client.gameRoleDescription;
+        document.getElementById("role-image").setAttribute(
+            'src',
+            '../images/roles/' + this.gameState.client.gameRole.replaceAll(' ', '') + '.png'
+        );
+
+        document.getElementById("game-role-back").addEventListener('click', () => {
+            document.getElementById("game-role").style.display = 'flex';
+            document.getElementById("game-role-back").style.display = 'none';
+        });
+
+        document.getElementById("game-role").addEventListener('click', () => {
+            document.getElementById("game-role-back").style.display = 'flex';
+            document.getElementById("game-role").style.display = 'none';
+        });
     }
 }
 

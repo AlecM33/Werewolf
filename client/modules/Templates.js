@@ -29,7 +29,7 @@ export const templates = {
     "<div id='person-name'></div>" +
     "<div id='game-header'>" +
         "<div>" +
-            "<label for='game-timer'>Timer</label>" +
+            "<label for='game-timer'>Time Remaining</label>" +
             "<div id='game-timer'></div>" +
         "</div>" +
         "<div>" +
@@ -37,9 +37,13 @@ export const templates = {
             "<div id='alive-count'></div>" +
         "</div>" +
     "</div>" +
-    "<div id='game-role'>" +
+    "<div id='game-role' style='display:none'>" +
         "<h4 id='role-name'></h4>" +
         "<img alt='role' id='role-image'/>" +
         "<p id='role-description'></p>" +
+    "</div>" +
+    "<div id='game-role-back'>" +
+        "<h4>Click to reveal your role</h4>" +
+        "<p>(click again to hide)</p>" +
     "</div>"
 }

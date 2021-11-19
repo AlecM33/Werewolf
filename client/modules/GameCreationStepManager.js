@@ -485,6 +485,9 @@ function updateCustomRoleOptionsList(deckManager, selectEl) {
 }
 
 function addOptionsToList(options, selectEl) {
+    options.sort((a, b) => {
+        return a.role.localeCompare(b.role);
+    });
     for (let i = 0; i < options.length; i ++) {
         let optionEl = document.createElement("option");
         let alignmentClass = customCards[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL

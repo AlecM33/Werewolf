@@ -9,7 +9,7 @@ class GameManager {
     constructor (logger, environment) {
         this.logger = logger;
         this.environment = environment;
-        this.activeGameRunner = new ActiveGameRunner().getInstance();
+        this.activeGameRunner = new ActiveGameRunner(logger).getInstance();
         this.namespace = null;
         //this.gameSocketUtility = GameSocketUtility;
     }
@@ -37,6 +37,9 @@ class GameManager {
             if (game) {
                 game.status = globals.STATUS.IN_PROGRESS;
                 namespace.in(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
+                if (game.hasTimer) {
+                    this.activeGameRunner.runGame(game, namespace);
+                }
             }
         });
     }
@@ -51,6 +54,7 @@ class GameManager {
             const newAccessCode = this.generateAccessCode();
             let moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
             this.activeGameRunner.activeGames[newAccessCode] = new Game(
+                newAccessCode,
                 globals.STATUS.LOBBY,
                 initializePeopleForGame(gameParams.deck, moderator),
                 gameParams.deck,

@@ -1,6 +1,7 @@
 const globals = {
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     ACCESS_CODE_LENGTH: 6,
+    CLOCK_TICK_INTERVAL_MILLIS: 100,
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         GET_ENVIRONMENT: 'getEnvironment',
@@ -8,7 +9,8 @@ const globals = {
     },
     STATUS: {
         LOBBY: "lobby",
-        IN_PROGRESS: "in progress"
+        IN_PROGRESS: "in progress",
+        ENDED: "ended"
     },
     USER_SIGNATURE_LENGTH: 25,
     USER_TYPES: {
@@ -33,6 +35,11 @@ const globals = {
         ERROR: "error",
         WARN: "warn",
         TRACE: "trace"
+    },
+    GAME_PROCESS_COMMANDS: {
+        END_GAME: "endGame",
+        START_GAME: "startGame",
+        START_TIMER: "startTimer"
     }
 };
 

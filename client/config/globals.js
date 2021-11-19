@@ -1,5 +1,6 @@
 export const globals = {
     USER_SIGNATURE_LENGTH: 25,
+    CLOCK_TICK_INTERVAL_MILLIS: 100,
     ACCESS_CODE_LENGTH: 6,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id',
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
@@ -18,7 +19,8 @@ export const globals = {
     },
     EVENTS: {
         PLAYER_JOINED: "playerJoined",
-        SYNC_GAME_STATE: "syncGameState"
+        SYNC_GAME_STATE: "syncGameState",
+        START_TIMER: "startTimer"
     },
     USER_TYPES: {
         MODERATOR: "moderator",

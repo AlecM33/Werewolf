@@ -17,6 +17,7 @@ class GameManager {
     addGameSocketHandlers = (namespace, socket) => {
         this.namespace = namespace;
         socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, (accessCode, personId, ackFn) => {
+            this.logger.trace('request for game state for accessCode ' + accessCode + ', person ' + personId);
             handleRequestForGameState(
                 this.namespace,
                 this.logger,

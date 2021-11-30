@@ -126,9 +126,6 @@ input {
     min-width: 15em;
     font-size: 20px;
     margin: 0 auto;
-    animation: fade-in-slide-down-then-exit 6s ease;
-    animation-fill-mode: forwards;
-    animation-direction: normal;
 }
 
 #navbar {
@@ -258,6 +255,25 @@ input {
     100% {
         opacity: 0;
         transform: translateY(-20px);
+    }
+}
+
+@keyframes fade-in-slide-down {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    5% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    95% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
     }
 }
 

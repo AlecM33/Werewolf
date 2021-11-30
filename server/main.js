@@ -43,9 +43,9 @@ logger.log('LOG LEVEL IS: ' + logLevel)
 if (localServer) {
     environment = globals.ENVIRONMENT.LOCAL;
     logger.log('starting main in LOCAL mode.');
-    if (useHttps && fs.existsSync(path.join(__dirname, './certs/localhost-key.pem')) && fs.existsSync(path.join(__dirname, './certs/localhost.pem'))) {
-        const key = fs.readFileSync(path.join(__dirname, './certs/localhost-key.pem'), 'utf-8');
-        const cert = fs.readFileSync(path.join(__dirname, './certs/localhost.pem'), 'utf-8');
+    if (useHttps && fs.existsSync(path.join(__dirname, '../client/certs/localhost-key.pem')) && fs.existsSync(path.join(__dirname, '../client/certs/localhost.pem'))) {
+        const key = fs.readFileSync(path.join(__dirname, '../client/certs/localhost-key.pem'), 'utf-8');
+        const cert = fs.readFileSync(path.join(__dirname, '../client/certs/localhost.pem'), 'utf-8');
         logger.log('local certs detected. Using HTTPS.');
         main = https.createServer({ key, cert }, app);
         logger.log(`navigate to https://localhost:${port}`);

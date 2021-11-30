@@ -30,6 +30,10 @@ export class GameStateRenderer {
     }
 
     renderLobbyHeader() {
+        let existingTitle = document.querySelector('#game-link h1');
+        if (existingTitle) {
+            existingTitle.remove();
+        }
         let title = document.createElement("h1");
         title.innerText = "Lobby";
         document.getElementById("game-title").appendChild(title);

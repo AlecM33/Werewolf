@@ -1,10 +1,10 @@
-export const toast = (message, type, positionAtTop = true) => {
+export const toast = (message, type, positionAtTop = true, dispelAutomatically=true) => {
     if (message && type) {
-        buildAndInsertMessageElement(message, type, positionAtTop);
+        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically);
     }
 };
 
-function buildAndInsertMessageElement (message, type, positionAtTop) {
+function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically) {
     cancelCurrentToast();
     let backgroundColor;
     const position = positionAtTop ? 'top:3rem;' : 'bottom: 35px;';
@@ -19,9 +19,16 @@ function buildAndInsertMessageElement (message, type, positionAtTop) {
             backgroundColor = '#bef5cb';
             break;
     }
+
+    let animation = '';
+    if (dispelAutomatically) {
+        animation = 'animation:fade-in-slide-down-then-exit 6s ease normal forwards';
+    } else {
+        animation = 'animation:fade-in-slide-down 6s ease normal forwards';
+    }
     const messageEl = document.createElement("div");
     messageEl.setAttribute("id", "current-info-message");
-    messageEl.setAttribute("style", 'background-color:' + backgroundColor + ';' + position)
+    messageEl.setAttribute("style", 'background-color:' + backgroundColor + ';' + position + animation);
     messageEl.setAttribute("class", 'info-message');
     messageEl.innerText = message;
     document.body.prepend(messageEl);

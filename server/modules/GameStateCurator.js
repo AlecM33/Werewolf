@@ -19,6 +19,7 @@ function getGameStateBasedOnPermissions(game, person) {
     switch (person.userType) {
         case globals.USER_TYPES.PLAYER:
             return {
+                accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
                 userType: globals.USER_TYPES.PLAYER,
@@ -30,10 +31,11 @@ function getGameStateBasedOnPermissions(game, person) {
                     })
                     .map((filteredPerson) => ({ name: filteredPerson.name, userType: filteredPerson.userType })),
                 timerParams: game.timerParams,
-                isFull: game.isFull
+                isFull: game.isFull,
             }
         case globals.USER_TYPES.MODERATOR:
             return {
+                accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
                 userType: globals.USER_TYPES.MODERATOR,
@@ -45,6 +47,7 @@ function getGameStateBasedOnPermissions(game, person) {
             }
         case globals.USER_TYPES.TEMPORARY_MODERATOR:
             return {
+                accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
                 userType: globals.USER_TYPES.TEMPORARY_MODERATOR,

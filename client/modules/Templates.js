@@ -45,5 +45,24 @@ export const templates = {
     "<div id='game-role-back'>" +
         "<h4>Click to reveal your role</h4>" +
         "<p>(click again to hide)</p>" +
-    "</div>"
+    "</div>",
+    MODERATOR_GAME_VIEW:
+    "<div id='person-name'></div>" +
+    "<h2 class='user-type user-type-moderator'>Moderator</h2>" +
+    "<div id='game-header'>" +
+        "<div class='timer-container-moderator'>" +
+            "<label for='game-timer'>Time Remaining</label>" +
+            "<div id='game-timer'></div>" +
+        "</div>" +
+        "<div id='play-pause'>" +
+            "<button id='pause-button'>Pause</button>" +
+            "<button id='play-button'>Play</button>" +
+        "</div>" +
+        "<div>" +
+            "<label for='alive-count'>Players Left</label>" +
+            "<div id='alive-count'></div>" +
+        "</div>" +
+    "</div>" +
+    "<div id='player-list-moderator'></div>" +
+    "<button id='end-game-button'>End Game</button>"
 }

@@ -1,60 +1,83 @@
-/* ALL TIMES ARE IN MILLIS */
 
-function stepFn (expected, interval, start, totalTime, ticking, timesUpResolver, logger) {
+function stepFn (serverTimerInstance, expected) {
     const now = Date.now();
-    if (now - start >= totalTime) {
-        clearTimeout(ticking);
-        logger.debug('ELAPSED: ' + (now - start) + 'ms (~' + (Math.abs(totalTime - (now - start)) / totalTime).toFixed(3) + '% error).');
-        timesUpResolver(); // this is a reference to the callback defined in the construction of the promise in runTimer()
+    serverTimerInstance.currentTimeInMillis = serverTimerInstance.totalTime - (now - serverTimerInstance.start);
+    if (now - serverTimerInstance.start >= serverTimerInstance.totalTime) {
+        clearTimeout(serverTimerInstance.ticking);
+        serverTimerInstance.logger.debug(
+            'ELAPSED: ' + (now - serverTimerInstance.start) + 'ms (~'
+            + (Math.abs(serverTimerInstance.totalTime - (now - serverTimerInstance.start)) / serverTimerInstance.totalTime).toFixed(3) + '% error).'
+        );
+        serverTimerInstance.timesUpResolver(); // this is a reference to the callback defined in the construction of the promise in runTimer()
         return;
     }
     const delta = now - expected;
-    expected += interval;
-    ticking = setTimeout(function () {
+    expected += serverTimerInstance.interval;
+    serverTimerInstance.ticking = setTimeout(function () {
         stepFn(
-            expected,
-            interval,
-            start,
-            totalTime,
-            ticking,
-            timesUpResolver,
-            logger
+            serverTimerInstance,
+            expected
         );
-    }, Math.max(0, interval - delta)); // take into account drift
+    }, Math.max(0, serverTimerInstance.interval - delta)); // take into account drift
 }
 
 class ServerTimer {
+
     constructor (hours, minutes, tickInterval, logger) {
         this.hours = hours;
         this.minutes = minutes;
         this.tickInterval = tickInterval;
         this.logger = logger;
+        this.currentTimeInMillis = null;
+        this.ticking = null;
+        this.timesUpPromise = null;
+        this.timesUpResolver = null;
+        this.start = null;
+        this.totalTime = null;
     }
 
     runTimer () {
-        const interval = this.tickInterval;
-        const totalTime = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
-        const logger = this.logger;
-        logger.debug('STARTING TIMER FOR ' + totalTime + 'ms');
-        const start = Date.now();
+        this.totalTime = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
+        this.logger.debug('STARTING TIMER FOR ' + this.totalTime + 'ms');
+        this.start = Date.now();
         const expected = Date.now() + this.tickInterval;
-        let timesUpResolver;
-        const timesUpPromise = new Promise((resolve) => {
-            timesUpResolver = resolve;
+        this.timesUpPromise = new Promise((resolve) => {
+            this.timesUpResolver = resolve;
         });
-        const ticking = setTimeout(function () {
+        const instance = this;
+        this.ticking = setTimeout(function () {
             stepFn(
-                expected,
-                interval,
-                start,
-                totalTime,
-                ticking,
-                timesUpResolver,
-                logger
+                instance,
+                expected
             );
         }, this.tickInterval);
 
-        return timesUpPromise;
+        return this.timesUpPromise;
+    }
+
+    stopTimer() {
+        clearTimeout(this.ticking);
+        let now = Date.now();
+        this.logger.debug(
+            'ELAPSED (PAUSE): ' + (now - this.start) + 'ms (~'
+            + (Math.abs(this.totalTime - (now - this.start)) / this.totalTime).toFixed(3) + '% error).'
+        );
+    }
+
+    resumeTimer() {
+        this.logger.debug('RESUMING TIMER FOR ' + this.currentTimeInMillis + 'ms');
+        this.start = Date.now();
+        this.totalTime = this.currentTimeInMillis;
+        const expected = Date.now() + this.tickInterval;
+        const instance = this;
+        this.ticking = setTimeout(function () {
+            stepFn(
+                instance,
+                expected
+            );
+        }, this.tickInterval);
+
+        return this.timesUpPromise;
     }
 }
 

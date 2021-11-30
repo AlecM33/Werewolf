@@ -43,6 +43,38 @@ class GameManager {
                 }
             }
         });
+
+        socket.on(globals.CLIENT_COMMANDS.PAUSE_TIMER, (accessCode) => {
+            this.logger.trace(accessCode);
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let thread = this.activeGameRunner.timerThreads[accessCode];
+                if (thread) {
+                    this.logger.debug('Timer thread found for game ' + accessCode);
+                    thread.send({
+                        command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                        accessCode: game.accessCode,
+                        logLevel: this.logger.logLevel
+                    });
+                }
+            }
+        })
+
+        socket.on(globals.CLIENT_COMMANDS.RESUME_TIMER, (accessCode) => {
+            this.logger.trace(accessCode);
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let thread = this.activeGameRunner.timerThreads[accessCode];
+                if (thread) {
+                    this.logger.debug('Timer thread found for game ' + accessCode);
+                    thread.send({
+                        command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER,
+                        accessCode: game.accessCode,
+                        logLevel: this.logger.logLevel
+                    });
+                }
+            }
+        })
     }
 
 
@@ -54,6 +86,9 @@ class GameManager {
         } else {
             const newAccessCode = this.generateAccessCode();
             let moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
+            if (gameParams.timerParams !== null) {
+                gameParams.timerParams.paused = false;
+            }
             this.activeGameRunner.activeGames[newAccessCode] = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,

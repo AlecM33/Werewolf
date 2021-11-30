@@ -27,13 +27,12 @@ function prepareGamePage(environment, socket, reconnect=false) {
             } else {
                 toast('You are connected.', 'success', true);
                 console.log(gameState);
-                gameState.accessCode = accessCode;
                 userId = gameState.client.id;
                 UserUtility.setAnonymousUserId(userId, environment);
                 let gameStateRenderer = new GameStateRenderer(gameState);
                 const timerWorker = new Worker('../modules/Timer.js');
                 setClientSocketHandlers(gameStateRenderer, socket, timerWorker);
-                processGameState(gameState, userId, socket, gameStateRenderer, timerWorker, reconnect); // this socket is initialized via a script tag in the game page HTML.
+                processGameState(gameState, userId, socket, gameStateRenderer, timerWorker);
             }
         });
     } else {
@@ -54,15 +53,28 @@ function processGameState (gameState, userId, socket, gameStateRenderer, timerWo
                     || gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
             ) {
-               displayStartGamePromptForModerators(gameStateRenderer);
+               displayStartGamePromptForModerators(gameStateRenderer, socket);
             }
             break;
         case globals.STATUS.IN_PROGRESS:
             document.querySelector("#start-game-prompt")?.remove();
             gameStateRenderer.gameState = gameState;
-            document.getElementById("game-state-container").innerHTML = templates.GAME;
             gameStateRenderer.renderGameHeader();
-            gameStateRenderer.renderPlayerRole();
+            if (gameState.userType === globals.USER_TYPES.PLAYER || gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                document.getElementById("game-state-container").innerHTML = templates.GAME;
+                gameStateRenderer.renderPlayerRole();
+            } else if (gameState.userType === globals.USER_TYPES.MODERATOR) {
+                document.getElementById("game-state-container").innerHTML = templates.MODERATOR_GAME_VIEW;
+                gameStateRenderer.renderModeratorView();
+                console.log(gameState);
+                console.log(gameState.accessCode);
+                document.getElementById("pause-button").addEventListener('click', () => {
+                    socket.emit(globals.COMMANDS.PAUSE_TIMER, gameState.accessCode);
+                });
+                document.getElementById("play-button").addEventListener('click', () => {
+                    socket.emit(globals.COMMANDS.RESUME_TIMER, gameState.accessCode);
+                })
+            }
             break;
         default:
             break;
@@ -108,6 +120,18 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker) {
                 null,
                 timerWorker
             )
+        });
+    }
+
+    if(!socket.hasListeners(globals.COMMANDS.PAUSE_TIMER)) {
+        socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
+            console.log(timeRemaining);
+        });
+    }
+
+    if(!socket.hasListeners(globals.COMMANDS.RESUME_TIMER)) {
+        socket.on(globals.COMMANDS.RESUME_TIMER, (timeRemaining) => {
+            console.log(timeRemaining);
         });
     }
 }

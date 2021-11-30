@@ -5,6 +5,7 @@ const globals = require('../config/globals');
 class ActiveGameRunner {
     constructor (logger) {
         this.activeGames = {};
+        this.timerThreads = {};
         this.logger = logger;
     }
 
@@ -14,6 +15,7 @@ class ActiveGameRunner {
     runGame = (game, namespace) => {
         this.logger.debug('running game ' + game.accessCode);
         const gameProcess = fork(path.join(__dirname, '/GameProcess.js'));
+        this.timerThreads[game.accessCode] = gameProcess;
         gameProcess.on('message', (msg) => {
             switch (msg.command) {
                 case globals.GAME_PROCESS_COMMANDS.END_GAME:
@@ -21,11 +23,26 @@ class ActiveGameRunner {
                     this.logger.debug('PARENT: END GAME');
                     namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_GAME, game.accessCode);
                     break;
+                case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
+                    game.timerParams.paused = true;
+                    this.logger.trace(msg);
+                    game.timeRemaining = msg.timeRemaining;
+                    this.logger.debug('PARENT: PAUSE TIMER');
+                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, game.timeRemaining);
+                    break;
+                case globals.GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                    game.timerParams.paused = false;
+                    this.logger.trace(msg);
+                    game.timeRemaining = msg.timeRemaining;
+                    this.logger.debug('PARENT: RESUME TIMER');
+                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, game.timeRemaining);
+                    break;
             }
         });
 
         gameProcess.on('exit', () => {
-            this.logger.debug('Game ' + game.accessCode + ' has ended. Elapsed: ' + (new Date() - game.startTime) + 'ms');
+            this.logger.debug('Game ' + game.accessCode + ' has ended.');
+            delete this.timerThreads[game.accessCode];
         });
         gameProcess.send({
             command: globals.GAME_PROCESS_COMMANDS.START_TIMER,

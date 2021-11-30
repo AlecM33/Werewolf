@@ -5,7 +5,9 @@ const globals = {
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         GET_ENVIRONMENT: 'getEnvironment',
-        START_GAME: 'startGame'
+        START_GAME: 'startGame',
+        PAUSE_TIMER: 'pauseTimer',
+        RESUME_TIMER: 'resumeTimer'
     },
     STATUS: {
         LOBBY: "lobby",
@@ -39,7 +41,9 @@ const globals = {
     GAME_PROCESS_COMMANDS: {
         END_GAME: "endGame",
         START_GAME: "startGame",
-        START_TIMER: "startTimer"
+        START_TIMER: "startTimer",
+        PAUSE_TIMER: "pauseTimer",
+        RESUME_TIMER: "resumeTimer"
     }
 };
 

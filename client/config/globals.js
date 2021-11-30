@@ -7,7 +7,9 @@ export const globals = {
     COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         GET_ENVIRONMENT: 'getEnvironment',
-        START_GAME: 'startGame'
+        START_GAME: 'startGame',
+        PAUSE_TIMER: 'pauseTimer',
+        RESUME_TIMER: 'resumeTimer'
     },
     STATUS: {
         LOBBY: "lobby",

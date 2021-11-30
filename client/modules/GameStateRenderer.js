@@ -68,10 +68,10 @@ export class GameStateRenderer {
     }
 
     renderGameHeader() {
-        let title = document.createElement("h1");
-        title.innerText = "Game";
-        document.querySelector('#game-title h1')?.remove();
-        document.getElementById("game-title").appendChild(title);
+        // let title = document.createElement("h1");
+        // title.innerText = "Game";
+        // document.querySelector('#game-title h1')?.remove();
+        // document.getElementById("game-title").appendChild(title);
     }
 
     renderPlayerRole() {
@@ -98,6 +98,10 @@ export class GameStateRenderer {
             document.getElementById("game-role-back").style.display = 'flex';
             document.getElementById("game-role").style.display = 'none';
         });
+    }
+
+    renderModeratorView() {
+
     }
 }
 

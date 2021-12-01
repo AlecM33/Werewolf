@@ -11,7 +11,10 @@ export class GameStateRenderer {
         document.querySelectorAll('.lobby-player').forEach((el) => el.remove())
         let lobbyPlayersContainer = document.getElementById("lobby-players");
         if (this.gameState.userType !== globals.USER_TYPES.MODERATOR) {
-            renderClient(this.gameState.client, lobbyPlayersContainer);
+            let modEl = document.createElement("div");
+            modEl.innerText = this.gameState.moderator.name;
+            modEl.classList.add('lobby-player');
+            lobbyPlayersContainer.appendChild(modEl);
         }
         for (let person of this.gameState.people) {
             let personEl = document.createElement("div");
@@ -26,7 +29,7 @@ export class GameStateRenderer {
             playerCount = 1 + this.gameState.people.length;
         }
         document.querySelector("label[for='lobby-players']").innerText =
-            "Players ( " + playerCount + " / " + getGameSize(this.gameState.deck) + " )";
+            "Other People ( " + playerCount + " )";
     }
 
     renderLobbyHeader() {
@@ -47,15 +50,6 @@ export class GameStateRenderer {
         let copyImg = document.createElement("img");
         copyImg.setAttribute("src", "../images/copy.svg");
         gameLinkContainer.appendChild(copyImg);
-
-        let moderatorContainer = document.getElementById("moderator");
-        let text, modClass;
-        if (this.gameState.userType === globals.USER_TYPES.MODERATOR || this.gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-            moderatorContainer.innerText = this.gameState.moderator.name + " (you)";
-            moderatorContainer.classList.add('moderator-client');
-        } else {
-            moderatorContainer.innerText = this.gameState.moderator.name;
-        }
     }
 
     renderLobbyFooter() {
@@ -105,8 +99,9 @@ export class GameStateRenderer {
     }
 }
 
-function renderClient(client, container) {
-    let clientEl = document.createElement("div");
+function renderLobbyPlayer(name, userType) {
+    let el = document.createElement("div");
+    el.innerHTML = ""
     clientEl.innerText = client.name + ' (you)';
     clientEl.classList.add('lobby-player');
     clientEl.classList.add('lobby-player-client');

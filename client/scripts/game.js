@@ -38,6 +38,7 @@ function prepareGamePage(environment, socket, timerWorker) {
                     gameTimerManager = new GameTimerManager();
                 }
                 setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTimerManager);
+                displayClientInfo(gameState.client.name, gameState.userType);
                 processGameState(gameState, userId, socket, gameStateRenderer);
             }
         });
@@ -84,6 +85,19 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
             break;
         default:
             break;
+    }
+}
+
+function displayClientInfo(name, userType) {
+    document.getElementById("client-name").innerText = name;
+    document.getElementById("client-user-type").innerText = userType;
+
+    if (userType === globals.USER_TYPES.MODERATOR) {
+        document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS.MODERATOR;
+    } else if (userType === globals.USER_TYPES.PLAYER) {
+        document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS.PLAYER;
+    } else if (userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+        document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS.TEMP_MOD;
     }
 }
 

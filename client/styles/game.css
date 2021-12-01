@@ -181,6 +181,37 @@ h1 {
     margin: 0 auto;
 }
 
+#client-container {
+    max-width: 30em;
+}
+
+#client {
+    padding: 5px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #333243;
+    border-radius: 3px;
+}
+
+#client-name {
+    color: whitesmoke;
+    font-family: 'diavlo', sans-serif;
+    font-size: 37px;
+}
+
+#client-user-type {
+    color: #21ba45;
+    font-family: 'signika-negative', sans-serif;
+    font-size: 25px;
+    background-color: black;
+    border-radius: 3px;
+    display: block;
+    padding: 0 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+
 label[for='moderator'] {
     font-family: 'diavlo', sans-serif;
     color: lightgray;

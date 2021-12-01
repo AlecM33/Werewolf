@@ -18,7 +18,7 @@ const globals = {
     USER_TYPES: {
         MODERATOR: "moderator",
         PLAYER: "player",
-        TEMPORARY_MODERATOR: "temporary moderator"
+        TEMPORARY_MODERATOR: "player / temp mod"
     },
     ERROR_MESSAGE: {
         GAME_IS_FULL: "This game is full"

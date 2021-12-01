@@ -28,10 +28,15 @@ export const globals = {
     USER_TYPES: {
         MODERATOR: "moderator",
         PLAYER: "player",
-        TEMPORARY_MODERATOR: "temporary moderator"
+        TEMPORARY_MODERATOR: "player / temp mod"
     },
     ENVIRONMENT: {
         LOCAL: "local",
         PRODUCTION: "production"
+    },
+    USER_TYPE_ICONS: {
+        PLAYER: ' \uD83C\uDFAE',
+        MODERATOR: ' \uD83D\uDC51',
+        TEMP_MOD: ' \uD83C\uDFAE\uD83D\uDC51'
     }
 };

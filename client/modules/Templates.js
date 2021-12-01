@@ -7,14 +7,10 @@ export const templates = {
         "</div>" +
         "<div id='game-time'></div>" +
         "<div id='game-player-count'></div>" +
-        "<div>" +
-            "<label for='moderator'>Moderator</label>" +
-            "<div id='moderator'></div>" +
-        "</div>" +
     "</div>" +
     "<div>" +
         "<div>" +
-            "<label for='lobby-players'>Players</label>" +
+            "<label for='lobby-players'>Other People</label>" +
             "<div id='lobby-players'></div>" +
         "</div>" +
         "<div id='lobby-footer'>" +

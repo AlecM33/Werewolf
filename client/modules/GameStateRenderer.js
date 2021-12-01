@@ -10,33 +10,25 @@ export class GameStateRenderer {
     renderLobbyPlayers() {
         document.querySelectorAll('.lobby-player').forEach((el) => el.remove())
         let lobbyPlayersContainer = document.getElementById("lobby-players");
-        if (this.gameState.userType !== globals.USER_TYPES.MODERATOR) {
-            let modEl = document.createElement("div");
-            modEl.innerText = this.gameState.moderator.name;
-            modEl.classList.add('lobby-player');
-            lobbyPlayersContainer.appendChild(modEl);
+        if (this.gameState.client.userType === globals.USER_TYPES.PLAYER) {
+            lobbyPlayersContainer.appendChild(renderLobbyPerson(this.gameState.moderator.name, this.gameState.moderator.userType))
         }
         for (let person of this.gameState.people) {
-            let personEl = document.createElement("div");
-            personEl.innerText = person.name;
-            personEl.classList.add('lobby-player');
-            lobbyPlayersContainer.appendChild(personEl);
+            lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name,person.userType))
         }
-        let playerCount;
-        if (this.gameState.userType === globals.USER_TYPES.MODERATOR) {
-            playerCount = this.gameState.people.length;
-        } else {
-            playerCount = 1 + this.gameState.people.length;
+        let playerCount = this.gameState.people.filter((person) => person.userType === globals.USER_TYPES.PLAYER).length;
+        if (this.gameState.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+            playerCount += 1;
+        }
+        if (this.gameState.client.userType === globals.USER_TYPES.PLAYER) {
+            playerCount += 1;
         }
         document.querySelector("label[for='lobby-players']").innerText =
-            "Other People ( " + playerCount + " )";
+            "Other People (" + playerCount + "/" + getGameSize(this.gameState.deck) + " Players)";
     }
 
     renderLobbyHeader() {
-        let existingTitle = document.querySelector('#game-link h1');
-        if (existingTitle) {
-            existingTitle.remove();
-        }
+        removeExistingTitle();
         let title = document.createElement("h1");
         title.innerText = "Lobby";
         document.getElementById("game-title").appendChild(title);
@@ -62,9 +54,9 @@ export class GameStateRenderer {
     }
 
     renderGameHeader() {
+        removeExistingTitle();
         // let title = document.createElement("h1");
         // title.innerText = "Game";
-        // document.querySelector('#game-title h1')?.remove();
         // document.getElementById("game-title").appendChild(title);
     }
 
@@ -99,13 +91,18 @@ export class GameStateRenderer {
     }
 }
 
-function renderLobbyPlayer(name, userType) {
+function renderLobbyPerson(name, userType) {
     let el = document.createElement("div");
-    el.innerHTML = ""
-    clientEl.innerText = client.name + ' (you)';
-    clientEl.classList.add('lobby-player');
-    clientEl.classList.add('lobby-player-client');
-    container.prepend(clientEl);
+    let personNameEl = document.createElement("div");
+    let personTypeEl = document.createElement("div");
+    personNameEl.innerText = name;
+    personTypeEl.innerText = userType + globals.USER_TYPE_ICONS[userType];
+    el.classList.add('lobby-player');
+
+    el.appendChild(personNameEl);
+    el.appendChild(personTypeEl);
+
+    return el;
 }
 
 function getGameSize(cards) {
@@ -115,4 +112,11 @@ function getGameSize(cards) {
     }
 
     return quantity;
+}
+
+function removeExistingTitle() {
+    let existingTitle = document.querySelector('#game-title h1');
+    if (existingTitle) {
+        existingTitle.remove();
+    }
 }

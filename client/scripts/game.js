@@ -35,10 +35,10 @@ function prepareGamePage(environment, socket, timerWorker) {
                 let gameStateRenderer = new GameStateRenderer(gameState);
                 let gameTimerManager;
                 if (gameState.timerParams) {
-                    gameTimerManager = new GameTimerManager();
+                    gameTimerManager = new GameTimerManager(gameState, socket);
                 }
                 setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTimerManager);
-                displayClientInfo(gameState.client.name, gameState.userType);
+                displayClientInfo(gameState.client.name, gameState.client.userType);
                 processGameState(gameState, userId, socket, gameStateRenderer);
             }
         });
@@ -56,8 +56,8 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
             if (
                 gameState.isFull
                 && (
-                    gameState.userType === globals.USER_TYPES.MODERATOR
-                    || gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                    gameState.client.userType === globals.USER_TYPES.MODERATOR
+                    || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
             ) {
                displayStartGamePromptForModerators(gameStateRenderer, socket);
@@ -67,21 +67,14 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
             document.querySelector("#start-game-prompt")?.remove();
             gameStateRenderer.gameState = gameState;
             gameStateRenderer.renderGameHeader();
-            if (gameState.userType === globals.USER_TYPES.PLAYER || gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+            if (gameState.client.userType === globals.USER_TYPES.PLAYER || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                 document.getElementById("game-state-container").innerHTML = templates.GAME;
                 gameStateRenderer.renderPlayerRole();
-            } else if (gameState.userType === globals.USER_TYPES.MODERATOR) {
+            } else if (gameState.client.userType === globals.USER_TYPES.MODERATOR) {
                 document.getElementById("game-state-container").innerHTML = templates.MODERATOR_GAME_VIEW;
                 gameStateRenderer.renderModeratorView();
-                console.log(gameState);
-                console.log(gameState.accessCode);
-                document.getElementById("pause-button").addEventListener('click', () => {
-                    socket.emit(globals.COMMANDS.PAUSE_TIMER, gameState.accessCode);
-                });
-                document.getElementById("play-button").addEventListener('click', () => {
-                    socket.emit(globals.COMMANDS.RESUME_TIMER, gameState.accessCode);
-                })
             }
+            socket.emit(globals.COMMANDS.GET_TIME_REMAINING, gameState.accessCode);
             break;
         default:
             break;
@@ -91,14 +84,7 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
 function displayClientInfo(name, userType) {
     document.getElementById("client-name").innerText = name;
     document.getElementById("client-user-type").innerText = userType;
-
-    if (userType === globals.USER_TYPES.MODERATOR) {
-        document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS.MODERATOR;
-    } else if (userType === globals.USER_TYPES.PLAYER) {
-        document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS.PLAYER;
-    } else if (userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-        document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS.TEMP_MOD;
-    }
+    document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS[userType];
 }
 
 function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTimerManager) {
@@ -110,8 +96,8 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
             if (
                 gameIsFull
                 && (
-                    gameStateRenderer.gameState.userType === globals.USER_TYPES.MODERATOR
-                    || gameStateRenderer.gameState.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                    gameStateRenderer.gameState.client.userType === globals.USER_TYPES.MODERATOR
+                    || gameStateRenderer.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
             ) {
                 displayStartGamePromptForModerators(gameStateRenderer, socket);

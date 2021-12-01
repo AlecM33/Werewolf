@@ -7,7 +7,8 @@ const globals = {
         GET_ENVIRONMENT: 'getEnvironment',
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',
-        RESUME_TIMER: 'resumeTimer'
+        RESUME_TIMER: 'resumeTimer',
+        GET_TIME_REMAINING: 'getTimeRemaining'
     },
     STATUS: {
         LOBBY: "lobby",

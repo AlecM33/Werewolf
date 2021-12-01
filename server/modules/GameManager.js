@@ -39,6 +39,7 @@ class GameManager {
                 game.status = globals.STATUS.IN_PROGRESS;
                 namespace.in(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
                 if (game.hasTimer) {
+                    game.timerParams.paused = true;
                     this.activeGameRunner.runGame(game, namespace);
                 }
             }
@@ -58,7 +59,7 @@ class GameManager {
                     });
                 }
             }
-        })
+        });
 
         socket.on(globals.CLIENT_COMMANDS.RESUME_TIMER, (accessCode) => {
             this.logger.trace(accessCode);
@@ -74,7 +75,22 @@ class GameManager {
                     });
                 }
             }
-        })
+        });
+
+        socket.on(globals.CLIENT_COMMANDS.GET_TIME_REMAINING, (accessCode) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let thread = this.activeGameRunner.timerThreads[accessCode];
+                if (thread) {
+                    thread.send({
+                        command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                        accessCode: accessCode,
+                        socketId: socket.id,
+                        logLevel: this.logger.logLevel
+                    });
+                }
+            }
+        });
     }
 
 
@@ -250,7 +266,7 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     game.isFull = isFull;
                     socket.to(accessCode).emit(
                         globals.EVENTS.PLAYER_JOINED,
-                        {name: unassignedPerson.name},
+                        {name: unassignedPerson.name, userType: unassignedPerson.userType},
                         isFull
                     );
                 } else {

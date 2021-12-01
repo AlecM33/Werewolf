@@ -36,7 +36,7 @@ class ServerTimer {
         this.totalTime = null;
     }
 
-    runTimer () {
+    runTimer (pausedInitially=true) {
         let total = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
         this.totalTime = total;
         this.currentTimeInMillis = total;
@@ -47,18 +47,22 @@ class ServerTimer {
             this.timesUpResolver = resolve;
         });
         const instance = this;
-        this.ticking = setTimeout(function () {
-            stepFn(
-                instance,
-                expected
-            );
-        }, this.tickInterval);
+        if (!pausedInitially) {
+            this.ticking = setTimeout(function () {
+                stepFn(
+                    instance,
+                    expected
+                );
+            }, this.tickInterval);
+        }
 
         return this.timesUpPromise;
     }
 
     stopTimer() {
-        clearTimeout(this.ticking);
+        if (this.ticking) {
+            clearTimeout(this.ticking);
+        }
         let now = Date.now();
         this.logger.debug(
             'ELAPSED (PAUSE): ' + (now - this.start) + 'ms (~'

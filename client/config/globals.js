@@ -35,8 +35,8 @@ export const globals = {
         PRODUCTION: "production"
     },
     USER_TYPE_ICONS: {
-        PLAYER: ' \uD83C\uDFAE',
-        MODERATOR: ' \uD83D\uDC51',
-        TEMP_MOD: ' \uD83C\uDFAE\uD83D\uDC51'
+        player: ' \uD83C\uDFAE',
+        moderator: ' \uD83D\uDC51',
+        'player / temp mod': ' \uD83C\uDFAE\uD83D\uDC51'
     }
 };

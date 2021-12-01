@@ -22,7 +22,6 @@ export const templates = {
         "<button id='start-game-button'>Start Game</button>" +
     "</div>",
     GAME:
-    "<div id='person-name'></div>" +
     "<div id='game-header'>" +
         "<div>" +
             "<label for='game-timer'>Time Remaining</label>" +
@@ -43,16 +42,15 @@ export const templates = {
         "<p>(click again to hide)</p>" +
     "</div>",
     MODERATOR_GAME_VIEW:
-    "<div id='person-name'></div>" +
-    "<h2 class='user-type user-type-moderator'>Moderator</h2>" +
     "<div id='game-header'>" +
         "<div class='timer-container-moderator'>" +
-            "<label for='game-timer'>Time Remaining</label>" +
-            "<div id='game-timer'></div>" +
-        "</div>" +
-        "<div id='play-pause'>" +
-            "<button id='pause-button'>Pause</button>" +
-            "<button id='play-button'>Play</button>" +
+            "<div>" +
+                "<label for='game-timer'>Time Remaining</label>" +
+                "<div id='game-timer'></div>" +
+            "</div>" +
+            "<div id='play-pause'>" +
+
+            "</div>" +
         "</div>" +
         "<div>" +
             "<label for='alive-count'>Players Left</label>" +

@@ -2,19 +2,17 @@ const globals = require("../config/globals")
 
 const GameStateCurator = {
     getGameStateFromPerspectiveOfPerson: (game, person, gameRunner, socket, logger) => {
-        if (game.timerParams && game.status === globals.STATUS.IN_PROGRESS) {
-            getTimeRemaining(game.accessCode, gameRunner, socket, logger)
-        }
         return getGameStateBasedOnPermissions(game, person, gameRunner);
     }
 }
 
 function getGameStateBasedOnPermissions(game, person, gameRunner) {
     let client = game.status === globals.STATUS.LOBBY // people won't be able to know their role until past the lobby stage.
-        ? { name: person.name, id: person.id }
+        ? { name: person.name, id: person.id, userType: person.userType }
         : {
             name: person.name,
             id: person.id,
+            userType: person.userType,
             gameRole: person.gameRole,
             gameRoleDescription: person.gameRoleDescription,
             alignment: person.alignment
@@ -25,12 +23,12 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
-                userType: globals.USER_TYPES.PLAYER,
                 client: client,
                 deck: game.deck,
                 people: game.people
                     .filter((person) => {
-                        return person.assigned === true && person.id !== client.id && person.userType !== globals.USER_TYPES.MODERATOR
+                        return person.assigned === true && person.id !== client.id
+                            && (person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR)
                     })
                     .map((filteredPerson) => ({ name: filteredPerson.name, userType: filteredPerson.userType })),
                 timerParams: game.timerParams,
@@ -41,7 +39,6 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
-                userType: globals.USER_TYPES.MODERATOR,
                 client: client,
                 deck: game.deck,
                 people: mapPeopleForModerator(game.people, client),
@@ -53,7 +50,6 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
-                userType: globals.USER_TYPES.TEMPORARY_MODERATOR,
                 client: client,
                 deck: game.deck,
                 people: mapPeopleForTempModerator(game.people, client),
@@ -72,6 +68,7 @@ function mapPeopleForModerator(people, client) {
         })
         .map((person) => ({
         name: person.name,
+        userType: person.userType,
         gameRole: person.gameRole,
         gameRoleDescription: person.gameRoleDescription,
         alignment: person.alignment
@@ -85,23 +82,12 @@ function mapPeopleForTempModerator(people, client) {
         })
         .map((person) => ({
             name: person.name,
+            userType: person.userType
         }));
 }
 
 function mapPerson(person) {
-    return { name: person.name };
-}
-
-function getTimeRemaining(accessCode, gameRunner, socket, logger) {
-    let thread  = gameRunner.timerThreads[accessCode];
-    if (thread) {
-        thread.send({
-            command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-            accessCode: accessCode,
-            socketId: socket.id,
-            logLevel: logger.logLevel
-        });
-    }
+    return { name: person.name, userType: person.userType };
 }
 
 module.exports = GameStateCurator;

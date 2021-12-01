@@ -1,4 +1,8 @@
 .lobby-player, #moderator {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     background-color: black;
     color: whitesmoke;
     padding: 10px;
@@ -12,6 +16,10 @@
 
 .lobby-player-client {
     border: 2px solid #21ba45;
+}
+
+.lobby-player div:nth-child(2) {
+    color: #21ba45;
 }
 
 #moderator.moderator-client {
@@ -182,7 +190,8 @@ h1 {
 }
 
 #client-container {
-    max-width: 30em;
+    max-width: 35em;
+    margin-top: 2em;
 }
 
 #client {
@@ -198,7 +207,7 @@ h1 {
 #client-name {
     color: whitesmoke;
     font-family: 'diavlo', sans-serif;
-    font-size: 37px;
+    font-size: 30px;
 }
 
 #client-user-type {
@@ -215,13 +224,6 @@ h1 {
 label[for='moderator'] {
     font-family: 'diavlo', sans-serif;
     color: lightgray;
-    filter: drop-shadow(2px 2px 4px black);
-    font-size: 30px;
-}
-
-label[for='lobby-players'] {
-    font-family: 'diavlo', sans-serif;
-    color: #21ba45;
     filter: drop-shadow(2px 2px 4px black);
     font-size: 30px;
 }
@@ -268,8 +270,44 @@ label[for='lobby-players'] {
     border: 2px solid #1c8a36;
 }
 
+#play-pause {
+    display: flex;
+    align-items: center;
+}
+
+#play-pause img {
+    cursor: pointer;
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    width: 60px;
+}
+
+#play-pause img:hover {
+    filter: brightness(0.5);
+}
+
+#play-pause img:active {
+    transform: scale(0.95);
+}
+
 .paused {
     animation: pulse 0.75s linear infinite alternate;
+}
+
+#game-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.timer-container-moderator {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 
 @keyframes pulse {

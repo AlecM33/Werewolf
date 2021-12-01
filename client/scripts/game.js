@@ -10,7 +10,7 @@ export const game = () => {
     const socket = io('/in-game');
     socket.on('disconnect', () => {
         timerWorker.terminate();
-        toast('You are disconnected.', 'error', true);
+        toast('Disconnected. Attempting reconnect...', 'error', true, false);
     });
     socket.on('connect', () => {
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function(returnedEnvironment) {

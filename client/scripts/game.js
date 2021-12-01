@@ -3,20 +3,23 @@ import { globals } from "../config/globals.js";
 import {templates} from "../modules/Templates.js";
 import {GameStateRenderer} from "../modules/GameStateRenderer.js";
 import {cancelCurrentToast, toast} from "../modules/Toast.js";
+import {GameTimerManager} from "../modules/GameTimerManager.js";
 
 export const game = () => {
+    let timerWorker = new Worker('../modules/Timer.js');
     const socket = io('/in-game');
     socket.on('disconnect', () => {
+        timerWorker.terminate();
         toast('You are disconnected.', 'error', true);
     });
     socket.on('connect', () => {
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function(returnedEnvironment) {
-            prepareGamePage(returnedEnvironment, socket);
+            prepareGamePage(returnedEnvironment, socket, timerWorker);
         });
     })
 };
 
-function prepareGamePage(environment, socket, reconnect=false) {
+function prepareGamePage(environment, socket, timerWorker) {
     let userId = UserUtility.validateAnonUserSignature(environment);
     const splitUrl = window.location.href.split('/game/');
     const accessCode = splitUrl[1];
@@ -30,9 +33,12 @@ function prepareGamePage(environment, socket, reconnect=false) {
                 userId = gameState.client.id;
                 UserUtility.setAnonymousUserId(userId, environment);
                 let gameStateRenderer = new GameStateRenderer(gameState);
-                const timerWorker = new Worker('../modules/Timer.js');
-                setClientSocketHandlers(gameStateRenderer, socket, timerWorker);
-                processGameState(gameState, userId, socket, gameStateRenderer, timerWorker);
+                let gameTimerManager;
+                if (gameState.timerParams) {
+                    gameTimerManager = new GameTimerManager();
+                }
+                setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTimerManager);
+                processGameState(gameState, userId, socket, gameStateRenderer);
             }
         });
     } else {
@@ -40,7 +46,7 @@ function prepareGamePage(environment, socket, reconnect=false) {
     }
 }
 
-function processGameState (gameState, userId, socket, gameStateRenderer, timerWorker) {
+function processGameState (gameState, userId, socket, gameStateRenderer) {
     switch (gameState.status) {
         case globals.STATUS.LOBBY:
             document.getElementById("game-state-container").innerHTML = templates.LOBBY;
@@ -81,7 +87,7 @@ function processGameState (gameState, userId, socket, gameStateRenderer, timerWo
     }
 }
 
-function setClientSocketHandlers(gameStateRenderer, socket, timerWorker) {
+function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTimerManager) {
     if (!socket.hasListeners(globals.EVENTS.PLAYER_JOINED)) {
         socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
             toast(player.name + " joined!", "success", false);
@@ -111,28 +117,8 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker) {
         });
     }
 
-    if (!socket.hasListeners(globals.EVENTS.START_TIMER)) {
-        socket.on(globals.EVENTS.START_TIMER, () => {
-            runGameTimer(
-                gameStateRenderer.gameState.timerParams.hours,
-                gameStateRenderer.gameState.timerParams.minutes,
-                globals.CLOCK_TICK_INTERVAL_MILLIS,
-                null,
-                timerWorker
-            )
-        });
-    }
-
-    if(!socket.hasListeners(globals.COMMANDS.PAUSE_TIMER)) {
-        socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
-            console.log(timeRemaining);
-        });
-    }
-
-    if(!socket.hasListeners(globals.COMMANDS.RESUME_TIMER)) {
-        socket.on(globals.COMMANDS.RESUME_TIMER, (timeRemaining) => {
-            console.log(timeRemaining);
-        });
+    if (timerWorker && gameTimerManager) {
+        gameTimerManager.attachTimerSocketListeners(socket, timerWorker, gameStateRenderer);
     }
 }
 

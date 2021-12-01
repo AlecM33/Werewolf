@@ -19,23 +19,31 @@ class ActiveGameRunner {
         gameProcess.on('message', (msg) => {
             switch (msg.command) {
                 case globals.GAME_PROCESS_COMMANDS.END_GAME:
-                    game.status = globals.STATUS.ENDED;
+                    //game.status = globals.STATUS.ENDED;
+                    game.timerParams.paused = false;
+                    game.timerParams.timeRemaining = 0;
                     this.logger.debug('PARENT: END GAME');
                     namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_GAME, game.accessCode);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                     game.timerParams.paused = true;
                     this.logger.trace(msg);
-                    game.timeRemaining = msg.timeRemaining;
+                    game.timerParams.timeRemaining = msg.timeRemaining;
                     this.logger.debug('PARENT: PAUSE TIMER');
-                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, game.timeRemaining);
+                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, game.timerParams.timeRemaining);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.RESUME_TIMER:
                     game.timerParams.paused = false;
                     this.logger.trace(msg);
-                    game.timeRemaining = msg.timeRemaining;
+                    game.timerParams.timeRemaining = msg.timeRemaining;
                     this.logger.debug('PARENT: RESUME TIMER');
-                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, game.timeRemaining);
+                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, game.timerParams.timeRemaining);
+                    break;
+                case globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+                    this.logger.trace(msg);
+                    game.timerParams.timeRemaining = msg.timeRemaining;
+                    this.logger.debug('PARENT: GET TIME REMAINING');
+                    namespace.to(msg.socketId).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
                     break;
             }
         });

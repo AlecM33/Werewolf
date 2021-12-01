@@ -1,12 +1,15 @@
 const globals = require("../config/globals")
 
 const GameStateCurator = {
-    getGameStateFromPerspectiveOfPerson: (game, person) => {
-        return getGameStateBasedOnPermissions(game, person);
+    getGameStateFromPerspectiveOfPerson: (game, person, gameRunner, socket, logger) => {
+        if (game.timerParams && game.status === globals.STATUS.IN_PROGRESS) {
+            getTimeRemaining(game.accessCode, gameRunner, socket, logger)
+        }
+        return getGameStateBasedOnPermissions(game, person, gameRunner);
     }
 }
 
-function getGameStateBasedOnPermissions(game, person) {
+function getGameStateBasedOnPermissions(game, person, gameRunner) {
     let client = game.status === globals.STATUS.LOBBY // people won't be able to know their role until past the lobby stage.
         ? { name: person.name, id: person.id }
         : {
@@ -87,6 +90,18 @@ function mapPeopleForTempModerator(people, client) {
 
 function mapPerson(person) {
     return { name: person.name };
+}
+
+function getTimeRemaining(accessCode, gameRunner, socket, logger) {
+    let thread  = gameRunner.timerThreads[accessCode];
+    if (thread) {
+        thread.send({
+            command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+            accessCode: accessCode,
+            socketId: socket.id,
+            logLevel: logger.logLevel
+        });
+    }
 }
 
 module.exports = GameStateCurator;

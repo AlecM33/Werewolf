@@ -13,13 +13,12 @@ export const create = () => {
     gameCreationStepManager.renderStep("creation-step-container", 1);
 }
 
-// Display a widget for each default card that allows copies of it to be added/removed. Set initial deck state.
 function loadDefaultCards(deckManager) {
     defaultCards.sort((a, b) => {
         return a.role.localeCompare(b.role);
     });
     let deck = [];
-    for (let i = 0; i < defaultCards.length; i ++) { // each dropdown should include every
+    for (let i = 0; i < defaultCards.length; i ++) {
         let card = defaultCards[i];
         card.quantity = 0;
         deck.push(card);
@@ -27,8 +26,6 @@ function loadDefaultCards(deckManager) {
     deckManager.deck = deck;
 }
 
-/* Display a dropdown containing all the custom roles. Adding one will add it to the game deck and
-create a widget for it */
 function loadCustomRoles(deckManager) {
     customCards.sort((a, b) => {
         return a.role.localeCompare(b.role);

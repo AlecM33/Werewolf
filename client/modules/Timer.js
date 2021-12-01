@@ -10,18 +10,20 @@ See: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
 const messageParameters = {
     STOP: 'stop',
     TICK_INTERVAL: 'tickInterval',
-    HOURS: 'hours',
-    MINUTES: 'minutes'
+    TOTAL_TIME: 'totalTime'
 };
+
+let timer;
 
 onmessage = function (e) {
     if (typeof e.data === 'object'
-        && e.data.hasOwnProperty(messageParameters.HOURS)
-        && e.data.hasOwnProperty(messageParameters.MINUTES)
+        && e.data.hasOwnProperty(messageParameters.TOTAL_TIME)
         && e.data.hasOwnProperty(messageParameters.TICK_INTERVAL)
     ) {
-        const timer = new Singleton(e.data.hours, e.data.minutes, e.data.tickInterval);
+        timer = new Singleton(e.data.totalTime, e.data.tickInterval);
         timer.startTimer();
+    } else if (e.data === 'stop') {
+        timer.stopTimer();
     }
 };
 
@@ -32,9 +34,12 @@ function stepFn (expected, interval, start, totalTime) {
     }
     const delta = now - expected;
     expected += interval;
+    let displayTime = (totalTime - (expected - start)) < 60000
+        ? returnHumanReadableTime(totalTime - (expected - start), true)
+        : returnHumanReadableTime(totalTime - (expected - start));
     postMessage({
         timeRemainingInMilliseconds: totalTime - (expected - start),
-        displayTime: returnHumanReadableTime(totalTime - (expected - start))
+        displayTime: displayTime
     });
     Singleton.setNewTimeoutReference(setTimeout(() => {
             stepFn(expected, interval, start, totalTime);
@@ -43,19 +48,18 @@ function stepFn (expected, interval, start, totalTime) {
 }
 
 class Timer {
-    constructor (hours, minutes, tickInterval) {
+    constructor (totalTime, tickInterval) {
         this.timeoutId = undefined;
-        this.hours = hours;
-        this.minutes = minutes;
+        this.totalTime = totalTime;
         this.tickInterval = tickInterval;
     }
 
     startTimer () {
-        if (!isNaN(this.hours) && !isNaN(this.minutes) && !isNaN(this.tickInterval)) {
+        if (!isNaN(this.tickInterval)) {
             const interval = this.tickInterval;
-            const totalTime = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
             const start = Date.now();
             const expected = Date.now() + this.tickInterval;
+            const totalTime = this.totalTime;
             if (this.timeoutId) {
                 clearTimeout(this.timeoutId);
             }
@@ -64,23 +68,28 @@ class Timer {
             }, this.tickInterval);
         }
     }
+
+    stopTimer() {
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+        }
+    }
 }
 
 class Singleton {
-    constructor (hours, minutes, tickInterval) {
+    constructor (totalTime, tickInterval) {
         if (!Singleton.instance) {
-            Singleton.instance = new Timer(hours, minutes, tickInterval);
+            Singleton.instance = new Timer(totalTime, tickInterval);
         } else {
             // This allows the same timer to be configured to run for different intervals / at a different granularity.
-            Singleton.setNewTimerParameters(hours, minutes, tickInterval);
+            Singleton.setNewTimerParameters(totalTime, tickInterval);
         }
         return Singleton.instance;
     }
 
-    static setNewTimerParameters (hours, minutes, tickInterval) {
+    static setNewTimerParameters (totalTime, tickInterval) {
         if (Singleton.instance) {
-            Singleton.instance.hours = hours;
-            Singleton.instance.minutes = minutes;
+            Singleton.instance.totalTime = totalTime;
             Singleton.instance.tickInterval = tickInterval;
         }
     }
@@ -92,16 +101,9 @@ class Singleton {
     }
 }
 
-function convertFromMinutesToMilliseconds(minutes) {
-    return minutes * 60 * 1000;
-}
+function returnHumanReadableTime(milliseconds, tenthsOfSeconds=false) {
 
-function convertFromHoursToMilliseconds(hours) {
-    return hours * 60 * 60 * 1000;
-}
-
-function returnHumanReadableTime(milliseconds) {
-
+    let tenths = Math.floor((milliseconds / 100) % 10);
     let seconds = Math.floor((milliseconds / 1000) % 60);
     let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
     let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
@@ -110,5 +112,7 @@ function returnHumanReadableTime(milliseconds) {
     minutes = minutes < 10 ? "0" + minutes : minutes;
     seconds = seconds < 10 ? "0" + seconds : seconds;
 
-    return hours + ":" + minutes + ":" + seconds;
+    return tenthsOfSeconds
+        ? hours + ":" + minutes + ":" + seconds + '.' + tenths
+        : hours + ":" + minutes + ":" + seconds;
 }

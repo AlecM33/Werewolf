@@ -237,6 +237,18 @@ label[for='lobby-players'] {
     border: 2px solid #1c8a36;
 }
 
+.paused {
+    animation: pulse 0.75s linear infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        color: rgba(255, 255, 255, 0.1);
+    } to {
+        color: rgba(255, 255, 255, 1);
+    }
+}
+
 @keyframes fade-in-slide-up {
     0% {
         opacity: 0;

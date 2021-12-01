@@ -38,6 +38,16 @@ process.on('message', (msg) => {
             process.send({ command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, timeRemaining: timer.currentTimeInMillis});
 
             break;
+
+        case globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+            logger.debug('CHILD PROCESS ' + msg.accessCode + ': GET TIME REMAINING');
+            process.send({
+                command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                timeRemaining: timer.currentTimeInMillis,
+                socketId: msg.socketId
+            });
+
+            break;
     }
 });
 

@@ -1,6 +1,6 @@
 export const globals = {
     USER_SIGNATURE_LENGTH: 25,
-    CLOCK_TICK_INTERVAL_MILLIS: 100,
+    CLOCK_TICK_INTERVAL_MILLIS: 10,
     ACCESS_CODE_LENGTH: 6,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id',
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
@@ -9,7 +9,8 @@ export const globals = {
         GET_ENVIRONMENT: 'getEnvironment',
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',
-        RESUME_TIMER: 'resumeTimer'
+        RESUME_TIMER: 'resumeTimer',
+        GET_TIME_REMAINING: 'getTimeRemaining'
     },
     STATUS: {
         LOBBY: "lobby",

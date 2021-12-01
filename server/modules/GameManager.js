@@ -220,13 +220,13 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
         if (matchingPerson) {
             if (matchingPerson.socketId === socket.id) {
                 logger.trace("matching person found with an established connection to the room: " + matchingPerson.name);
-                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
+                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
             } else {
                 if (!roomContainsSocketOfMatchingPerson(namespace, matchingPerson, logger, accessCode)) {
                     logger.trace("matching person found with a new connection to the room: " + matchingPerson.name);
                     socket.join(accessCode);
                     matchingPerson.socketId = socket.id;
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                 } else {
                     rejectClientRequestForGameState(ackFn);
                 }
@@ -235,7 +235,7 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
             let personWithMatchingSocketId = findPersonWithMatchingSocketId(game.people, socket.id);
             if (personWithMatchingSocketId) {
                 logger.trace("matching person found whose cookie got cleared after establishing a connection to the room: " + personWithMatchingSocketId.name);
-                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId));
+                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId, gameRunner, socket, logger));
             } else {
                 let unassignedPerson = game.moderator.assigned === false
                     ? game.moderator
@@ -245,7 +245,7 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     socket.join(accessCode);
                     unassignedPerson.assigned = true;
                     unassignedPerson.socketId = socket.id;
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, unassignedPerson));
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, unassignedPerson, gameRunner, socket, logger));
                     let isFull = isGameFull(game);
                     game.isFull = isFull;
                     socket.to(accessCode).emit(

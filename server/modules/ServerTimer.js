@@ -37,7 +37,9 @@ class ServerTimer {
     }
 
     runTimer () {
-        this.totalTime = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
+        let total = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
+        this.totalTime = total;
+        this.currentTimeInMillis = total;
         this.logger.debug('STARTING TIMER FOR ' + this.totalTime + 'ms');
         this.start = Date.now();
         const expected = Date.now() + this.tickInterval;

@@ -90,12 +90,17 @@ app.use('/favicon.ico', (req, res) => {
 });
 
 const router = require('./routes/router');
-const faviconRouter = require('./routes/favicon-router');
-const staticRouter = require('./routes/static-router');
-
 app.use('', router);
-app.use('', staticRouter);
-app.use('', faviconRouter);
+
+app.use('/images', express.static(path.join(__dirname, '../client/images')));
+app.use('/scripts', express.static(path.join(__dirname, '../client/scripts')));
+app.use('/styles', express.static(path.join(__dirname, '../client/styles')));
+app.use('/styles/third-party', express.static(path.join(__dirname, '../client/styles/third_party')));
+app.use('/modules/third-party', express.static(path.join(__dirname, '../client/modules/third_party')))
+app.use('/modules', express.static(path.join(__dirname, '../client/modules')))
+app.use('/model', express.static(path.join(__dirname, '../client/model')))
+app.use('/config', express.static(path.join(__dirname, '../client/config')))
+app.use('/webfonts', express.static(path.join(__dirname, '../client/webfonts')));
 
 app.use(function (req, res) {
     res.sendFile(path.join(__dirname, '../client/views/404.html'));

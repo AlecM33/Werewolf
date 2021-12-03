@@ -1,14 +1,14 @@
 
 function stepFn (serverTimerInstance, expected) {
-    const now = Date.now();
+    const now = Date.now(); //
     serverTimerInstance.currentTimeInMillis = serverTimerInstance.totalTime - (now - serverTimerInstance.start);
-    if (now - serverTimerInstance.start >= serverTimerInstance.totalTime) {
-        clearTimeout(serverTimerInstance.ticking);
+    if (now - serverTimerInstance.start >= serverTimerInstance.totalTime) { // check if the time has elapsed
         serverTimerInstance.logger.debug(
             'ELAPSED: ' + (now - serverTimerInstance.start) + 'ms (~'
             + (Math.abs(serverTimerInstance.totalTime - (now - serverTimerInstance.start)) / serverTimerInstance.totalTime).toFixed(3) + '% error).'
         );
         serverTimerInstance.timesUpResolver(); // this is a reference to the callback defined in the construction of the promise in runTimer()
+        clearTimeout(serverTimerInstance.ticking);
         return;
     }
     const delta = now - expected;
@@ -64,10 +64,6 @@ class ServerTimer {
             clearTimeout(this.ticking);
         }
         let now = Date.now();
-        this.logger.debug(
-            'ELAPSED (PAUSE): ' + (now - this.start) + 'ms (~'
-            + (Math.abs(this.totalTime - (now - this.start)) / this.totalTime).toFixed(3) + '% error).'
-        );
     }
 
     resumeTimer() {

@@ -1,6 +1,7 @@
 export const globals = {
     USER_SIGNATURE_LENGTH: 25,
     CLOCK_TICK_INTERVAL_MILLIS: 10,
+    TOAST_DURATION_DEFAULT: 6,
     ACCESS_CODE_LENGTH: 6,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id',
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',

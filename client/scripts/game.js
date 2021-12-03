@@ -6,14 +6,17 @@ import {cancelCurrentToast, toast} from "../modules/Toast.js";
 import {GameTimerManager} from "../modules/GameTimerManager.js";
 
 export const game = () => {
-    let timerWorker = new Worker('../modules/Timer.js');
+    let timerWorker;
     const socket = io('/in-game');
     socket.on('disconnect', () => {
-        timerWorker.terminate();
+        if (timerWorker) {
+            timerWorker.terminate();
+        }
         toast('Disconnected. Attempting reconnect...', 'error', true, false);
     });
     socket.on('connect', () => {
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function(returnedEnvironment) {
+            timerWorker = new Worker('../modules/Timer.js');
             prepareGamePage(returnedEnvironment, socket, timerWorker);
         });
     })
@@ -26,9 +29,9 @@ function prepareGamePage(environment, socket, timerWorker) {
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
         socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, userId, function (gameState) {
             if (gameState === null) {
-                window.location = '/not-found'
+                window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
             } else {
-                toast('You are connected.', 'success', true);
+                toast('You are connected.', 'success', true, true, 3);
                 console.log(gameState);
                 userId = gameState.client.id;
                 UserUtility.setAnonymousUserId(userId, environment);
@@ -43,7 +46,7 @@ function prepareGamePage(environment, socket, timerWorker) {
             }
         });
     } else {
-        window.location = '/not-found';
+        window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
     }
 }
 
@@ -64,16 +67,25 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
             }
             break;
         case globals.STATUS.IN_PROGRESS:
-            document.querySelector("#start-game-prompt")?.remove();
             gameStateRenderer.gameState = gameState;
             gameStateRenderer.renderGameHeader();
-            if (gameState.client.userType === globals.USER_TYPES.PLAYER || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                document.getElementById("game-state-container").innerHTML = templates.GAME;
-                gameStateRenderer.renderPlayerRole();
-            } else if (gameState.client.userType === globals.USER_TYPES.MODERATOR) {
-                document.getElementById("game-state-container").innerHTML = templates.MODERATOR_GAME_VIEW;
-                gameStateRenderer.renderModeratorView();
+            switch (gameState.client.userType) {
+                case globals.USER_TYPES.PLAYER:
+                    document.getElementById("game-state-container").innerHTML = templates.GAME;
+                    gameStateRenderer.renderPlayerRole();
+                    break;
+                case globals.USER_TYPES.MODERATOR:
+                    document.querySelector("#start-game-prompt")?.remove();
+                    document.getElementById("game-state-container").innerHTML = templates.MODERATOR_GAME_VIEW;
+                    gameStateRenderer.renderModeratorView();
+                    break;
+                case globals.USER_TYPES.TEMPORARY_MODERATOR:
+                    document.querySelector("#start-game-prompt")?.remove();
+                    break;
+                default:
+                    break;
             }
+
             socket.emit(globals.COMMANDS.GET_TIME_REMAINING, gameState.accessCode);
             break;
         default:

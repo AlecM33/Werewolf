@@ -244,7 +244,16 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     matchingPerson.socketId = socket.id;
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                 } else {
-                    rejectClientRequestForGameState(ackFn);
+                    logger.trace('this person is already associated with a socket connection');
+                    let alreadyConnectedSocket = namespace.connected[matchingPerson.socketId];
+                    if (alreadyConnectedSocket && alreadyConnectedSocket.leave) {
+                        alreadyConnectedSocket.leave(accessCode, ()=> {
+                            logger.trace('kicked existing connection out of room ' + accessCode);
+                            socket.join(accessCode);
+                            matchingPerson.socketId = socket.id;
+                            ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
+                        })
+                    }
                 }
             }
         } else {
@@ -271,11 +280,13 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     );
                 } else {
                     rejectClientRequestForGameState(ackFn);
+                    logger.trace('this game is full');
                 }
             }
         }
     } else {
         rejectClientRequestForGameState(ackFn);
+        logger.trace('the game' + accessCode + ' was not found');
     }
 }
 

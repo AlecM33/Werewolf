@@ -1,5 +1,6 @@
 import { globals } from "../config/globals.js";
 import { toast } from "./Toast.js";
+import {templates} from "./Templates.js";
 
 export class GameStateRenderer {
     constructor(gameState) {
@@ -87,7 +88,10 @@ export class GameStateRenderer {
     }
 
     renderModeratorView() {
-
+        let div = document.createElement("div");
+        div.innerHTML = templates.END_GAME_PROMPT;
+        document.body.appendChild(div);
+        renderModeratorPlayers(this.gameState.people);
     }
 }
 
@@ -118,5 +122,30 @@ function removeExistingTitle() {
     let existingTitle = document.querySelector('#game-title h1');
     if (existingTitle) {
         existingTitle.remove();
+    }
+}
+
+function renderModeratorPlayers(people) {
+    people.sort();
+    let teamGood = people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
+    let teamEvil = people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
+    renderGroupOfPlayersFromTeam(teamEvil, globals.ALIGNMENT.EVIL);
+    renderGroupOfPlayersFromTeam(teamGood, globals.ALIGNMENT.GOOD);
+    document.getElementById("players-alive-label").innerText =
+        'Players: ' + people.filter((person) => !person.out).length + ' / ' + people.length + ' Alive';
+
+}
+
+function renderGroupOfPlayersFromTeam(players, alignment) {
+    for (let player of players) {
+        let container = document.createElement("div");
+        container.classList.add('moderator-player');
+        container.innerHTML = templates.MODERATOR_PLAYER;
+        container.querySelector('.moderator-player-name').innerText = player.name;
+        let roleElement = container.querySelector('.moderator-player-role')
+        roleElement.innerText = player.gameRole;
+        roleElement.classList.add(alignment);
+
+        document.getElementById("player-list-moderator-team-" + alignment).appendChild(container);
     }
 }

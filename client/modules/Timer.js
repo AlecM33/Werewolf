@@ -34,11 +34,11 @@ function stepFn (expected, interval, start, totalTime) {
     }
     const delta = now - expected;
     expected += interval;
-    let displayTime = (totalTime - (expected - start)) < 60000
-        ? returnHumanReadableTime(totalTime - (expected - start), true)
-        : returnHumanReadableTime(totalTime - (expected - start));
+    let displayTime = (totalTime - (now - start)) < 60000
+        ? returnHumanReadableTime(totalTime - (now - start), true)
+        : returnHumanReadableTime(totalTime - (now - start));
     postMessage({
-        timeRemainingInMilliseconds: totalTime - (expected - start),
+        timeRemainingInMilliseconds: totalTime - (now - start),
         displayTime: displayTime
     });
     Singleton.setNewTimeoutReference(setTimeout(() => {

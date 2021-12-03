@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ strict: true });
 const path = require('path');
 
 router.get('/', function (request, response) {

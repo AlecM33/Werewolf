@@ -71,7 +71,8 @@ function mapPeopleForModerator(people, client) {
         userType: person.userType,
         gameRole: person.gameRole,
         gameRoleDescription: person.gameRoleDescription,
-        alignment: person.alignment
+        alignment: person.alignment,
+        out: person.out
     }));
 }
 
@@ -82,12 +83,13 @@ function mapPeopleForTempModerator(people, client) {
         })
         .map((person) => ({
             name: person.name,
-            userType: person.userType
+            userType: person.userType,
+            out: person.out
         }));
 }
 
 function mapPerson(person) {
-    return { name: person.name, userType: person.userType };
+    return { name: person.name, userType: person.userType, out: person.out };
 }
 
 module.exports = GameStateCurator;

@@ -91,6 +91,18 @@ class GameManager {
                 }
             }
         });
+
+        socket.on(globals.CLIENT_COMMANDS.KILL_PLAYER, (accessCode, personId) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let person = game.people.find((person) => person.id === personId)
+                if (person) {
+                    this.logger.debug('game ' + accessCode + ': killing player ' + person.name);
+                    person.out = true;
+                    namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, )
+                }
+            }
+        })
     }
 
 
@@ -154,7 +166,7 @@ function initializeModerator(name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
-    return new Person(createRandomUserId(), name, userType)
+    return new Person(createRandomId(), createRandomId(), name, userType)
 }
 
 function initializePeopleForGame(uniqueCards, moderator) {
@@ -180,7 +192,7 @@ function initializePeopleForGame(uniqueCards, moderator) {
     }
 
     while (j < numberOfRoles) {
-        people.push(new Person(createRandomUserId(), UsernameGenerator.generate(), globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description, cards[j].team))
+        people.push(new Person(createRandomId(), createRandomId(), UsernameGenerator.generate(), globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description, cards[j].team))
         j ++;
     }
 
@@ -197,7 +209,7 @@ function shuffleArray (array) {
     return array;
 }
 
-function createRandomUserId () {
+function createRandomId () {
     let id = '';
     for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i++) {
         id += globals.ACCESS_CODE_CHAR_POOL[Math.floor(Math.random() * globals.ACCESS_CODE_CHAR_POOL.length)];
@@ -226,11 +238,11 @@ class Singleton {
     cookie. Though if a client wants to clear their cookie and reset their connection, there's not much we can do.
     The best thing in my opinion is to make it hard for clients to _accidentally_ break their experience.
  */
-function handleRequestForGameState(namespace, logger, gameRunner, accessCode, personId, ackFn, socket) {
+function handleRequestForGameState(namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) {
     const game = gameRunner.activeGames[accessCode];
     if (game) {
-        let matchingPerson = game.people.find((person) => person.id === personId);
-        if (!matchingPerson && game.moderator.id === personId)  {
+        let matchingPerson = game.people.find((person) => person.cookie === personCookie);
+        if (!matchingPerson && game.moderator.cookie === personCookie)  {
             matchingPerson = game.moderator;
         }
         if (matchingPerson) {

@@ -1,7 +1,8 @@
 // noinspection DuplicatedCode
 class Person {
-    constructor(id, name, userType, gameRole=null, gameRoleDescription=null, alignment=null, assigned=false) {
+    constructor(id, cookie, name, userType, gameRole=null, gameRoleDescription=null, alignment=null, assigned=false) {
         this.id = id;
+        this.cookie = cookie
         this.socketId = null;
         this.name = name;
         this.userType = userType;

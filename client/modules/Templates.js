@@ -25,15 +25,11 @@ export const templates = {
     "<div id='end-game-prompt'>" +
         "<button id='end-game-button'>End Game</button>" +
     "</div>",
-    GAME:
+    PLAYER_GAME_VIEW:
     "<div id='game-header'>" +
         "<div>" +
             "<label for='game-timer'>Time Remaining</label>" +
             "<div id='game-timer'></div>" +
-        "</div>" +
-        "<div>" +
-            "<label for='alive-count'>Players Left</label>" +
-            "<div id='alive-count'></div>" +
         "</div>" +
     "</div>" +
     "<div id='game-role' style='display:none'>" +
@@ -44,6 +40,10 @@ export const templates = {
     "<div id='game-role-back'>" +
         "<h4>Click to reveal your role</h4>" +
         "<p>(click again to hide)</p>" +
+    "</div>" +
+    "<div>" +
+        "<label id='players-alive-label'></label>" +
+        "<div id='game-player-list'></div>" +
     "</div>",
     MODERATOR_GAME_VIEW:
     "<div id='game-header'>" +
@@ -58,7 +58,7 @@ export const templates = {
     "</div>" +
     "<div>" +
         "<label id='players-alive-label'></label>" +
-        "<div id='player-list-moderator'>" +
+        "<div id='game-player-list'>" +
             "<div class='evil-players'>" +
                 "<label class='evil'>Team Evil</label>" +
                 "<div id='player-list-moderator-team-evil'></div>" +
@@ -71,10 +71,15 @@ export const templates = {
     "</div>",
     MODERATOR_PLAYER:
         "<div>" +
-            "<div class='moderator-player-name'></div>" +
-            "<div class='moderator-player-role'></div>" +
+            "<div class='game-player-name'></div>" +
+            "<div class='game-player-role'></div>" +
         "</div>" +
         "<div>" +
             "<button class='moderator-player-button kill-player-button'>Kill \u2694</button>" +
+        "</div>",
+    GAME_PLAYER:
+        "<div>" +
+            "<div class='game-player-name'></div>" +
+            "<div class='game-player-role'></div>" +
         "</div>"
 }

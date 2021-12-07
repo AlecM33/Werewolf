@@ -8,10 +8,10 @@ const GameStateCurator = {
 
 function getGameStateBasedOnPermissions(game, person, gameRunner) {
     let client = game.status === globals.STATUS.LOBBY // people won't be able to know their role until past the lobby stage.
-        ? { name: person.name, id: person.id, userType: person.userType }
+        ? { name: person.name, cookie: person.cookie, userType: person.userType }
         : {
             name: person.name,
-            id: person.id,
+            cookie: person.cookie,
             userType: person.userType,
             gameRole: person.gameRole,
             gameRoleDescription: person.gameRoleDescription,
@@ -27,7 +27,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 deck: game.deck,
                 people: game.people
                     .filter((person) => {
-                        return person.assigned === true && person.id !== client.id
+                        return person.assigned === true && person.cookie !== client.cookie
                             && (person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR)
                     })
                     .map((filteredPerson) => ({ name: filteredPerson.name, userType: filteredPerson.userType })),
@@ -64,10 +64,11 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
 function mapPeopleForModerator(people, client) {
     return people
         .filter((person) => {
-            return person.assigned === true && person.id !== client.id
+            return person.assigned === true && person.cookie !== client.cookie
         })
         .map((person) => ({
         name: person.name,
+        id: person.id,
         userType: person.userType,
         gameRole: person.gameRole,
         gameRoleDescription: person.gameRoleDescription,
@@ -79,10 +80,11 @@ function mapPeopleForModerator(people, client) {
 function mapPeopleForTempModerator(people, client) {
     return people
         .filter((person) => {
-            return person.assigned === true && person.id !== client.id
+            return person.assigned === true && person.cookie !== client.cookie
         })
         .map((person) => ({
             name: person.name,
+            id: person.id,
             userType: person.userType,
             out: person.out
         }));

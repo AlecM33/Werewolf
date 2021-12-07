@@ -8,7 +8,8 @@ const globals = {
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',
         RESUME_TIMER: 'resumeTimer',
-        GET_TIME_REMAINING: 'getTimeRemaining'
+        GET_TIME_REMAINING: 'getTimeRemaining',
+        KILL_PLAYER: 'killPlayer'
     },
     STATUS: {
         LOBBY: "lobby",

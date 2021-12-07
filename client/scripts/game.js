@@ -33,9 +33,9 @@ function prepareGamePage(environment, socket, timerWorker) {
             } else {
                 toast('You are connected.', 'success', true, true, 3);
                 console.log(gameState);
-                userId = gameState.client.id;
+                userId = gameState.client.cookie;
                 UserUtility.setAnonymousUserId(userId, environment);
-                let gameStateRenderer = new GameStateRenderer(gameState);
+                let gameStateRenderer = new GameStateRenderer(gameState, socket);
                 let gameTimerManager;
                 if (gameState.timerParams) {
                     gameTimerManager = new GameTimerManager(gameState, socket);
@@ -71,8 +71,8 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
             gameStateRenderer.renderGameHeader();
             switch (gameState.client.userType) {
                 case globals.USER_TYPES.PLAYER:
-                    document.getElementById("game-state-container").innerHTML = templates.GAME;
-                    gameStateRenderer.renderPlayerRole();
+                    document.getElementById("game-state-container").innerHTML = templates.PLAYER_GAME_VIEW;
+                    gameStateRenderer.renderPlayerView();
                     break;
                 case globals.USER_TYPES.MODERATOR:
                     document.querySelector("#start-game-prompt")?.remove();
@@ -121,9 +121,9 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
             socket.emit(
                 globals.COMMANDS.FETCH_GAME_STATE,
                 gameStateRenderer.gameState.accessCode,
-                gameStateRenderer.gameState.client.id,
+                gameStateRenderer.gameState.client.cookie,
                 function (gameState) {
-                    processGameState(gameState, gameState.client.id, socket, gameStateRenderer);
+                    processGameState(gameState, gameState.client.cookie, socket, gameStateRenderer);
                 }
             );
         });
@@ -142,7 +142,7 @@ function displayStartGamePromptForModerators(gameStateRenderer, socket) {
     document.getElementById("start-game-button").addEventListener('click', (e) => {
         e.preventDefault();
         if (confirm("Start the game and deal roles?")) {
-            socket.emit(globals.COMMANDS.START_GAME, gameStateRenderer.gameState.accessCode, gameStateRenderer.gameState.client.id);
+            socket.emit(globals.COMMANDS.START_GAME, gameStateRenderer.gameState.accessCode, gameStateRenderer.gameState.client.cookie);
         }
 
     });

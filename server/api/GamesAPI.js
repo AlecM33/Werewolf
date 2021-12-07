@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
-const logger = require('../modules/logger')(debugMode);
+const logger = require('../modules/Logger')(debugMode);
 const GameManager = require('../modules/GameManager.js');
 
 const gameManager = new GameManager().getInstance();

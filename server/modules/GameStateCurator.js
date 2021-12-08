@@ -11,11 +11,13 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
         ? { name: person.name, cookie: person.cookie, userType: person.userType }
         : {
             name: person.name,
+            id: person.id,
             cookie: person.cookie,
             userType: person.userType,
             gameRole: person.gameRole,
             gameRoleDescription: person.gameRoleDescription,
-            alignment: person.alignment
+            alignment: person.alignment,
+            out: person.out
         }
     switch (person.userType) {
         case globals.USER_TYPES.PLAYER:
@@ -27,10 +29,10 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 deck: game.deck,
                 people: game.people
                     .filter((person) => {
-                        return person.assigned === true && person.cookie !== client.cookie
+                        return person.assigned === true
                             && (person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR)
                     })
-                    .map((filteredPerson) => ({ name: filteredPerson.name, userType: filteredPerson.userType })),
+                    .map((filteredPerson) => ({ name: filteredPerson.name, id: filteredPerson.id, userType: filteredPerson.userType, out: filteredPerson.out })),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
             }
@@ -91,7 +93,7 @@ function mapPeopleForTempModerator(people, client) {
 }
 
 function mapPerson(person) {
-    return { name: person.name, userType: person.userType, out: person.out };
+    return { name: person.name, id: person.id, userType: person.userType, out: person.out };
 }
 
 module.exports = GameStateCurator;

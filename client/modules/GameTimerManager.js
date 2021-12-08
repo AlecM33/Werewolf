@@ -28,15 +28,19 @@ export class GameTimerManager {
             if (this.gameState.client.userType !== globals.USER_TYPES.PLAYER) {
                 this.swapToPauseButton();
             }
-
+            let instance = this;
             let timer = document.getElementById('game-timer');
             timer.classList.remove('paused');
             timer.innerText = totalTime < 60000
                 ? returnHumanReadableTime(totalTime, true)
                 : returnHumanReadableTime(totalTime);
             timerWorker.onmessage = function (e) {
-                if (e.data.hasOwnProperty('timeRemainingInMilliseconds') && e.data.timeRemainingInMilliseconds > 0) {
-                    timer.innerText = e.data.displayTime;
+                if (e.data.hasOwnProperty('timeRemainingInMilliseconds') && e.data.timeRemainingInMilliseconds >= 0) {
+                    if (e.data.timeRemainingInMilliseconds === 0) {
+                        instance.displayExpiredTime();
+                    } else {
+                        timer.innerText = e.data.displayTime;
+                    }
                 }
             };
             timerWorker.postMessage({ totalTime: totalTime, tickInterval: tickRate });
@@ -70,6 +74,18 @@ export class GameTimerManager {
         timer.classList.add('paused');
     }
 
+    displayExpiredTime() {
+        let currentBtn = document.querySelector('#play-pause img');
+        if (currentBtn) {
+            currentBtn.removeEventListener('click', this.pauseListener);
+            currentBtn.removeEventListener('click', this.playListener);
+            currentBtn.remove();
+        }
+
+        let timer = document.getElementById('game-timer');
+        timer.innerText = returnHumanReadableTime(0, true);
+    }
+
     attachTimerSocketListeners(socket, timerWorker, gameStateRenderer) {
         // if (!socket.hasListeners(globals.EVENTS.START_TIMER)) {
         //     socket.on(globals.EVENTS.START_TIMER, () => {
@@ -100,6 +116,8 @@ export class GameTimerManager {
                 console.log('received time remaining from server');
                 if (paused) {
                     this.displayPausedTime(timeRemaining);
+                } else if (timeRemaining === 0) {
+                    this.displayExpiredTime();
                 } else {
                    this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
                 }

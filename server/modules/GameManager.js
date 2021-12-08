@@ -88,6 +88,10 @@ class GameManager {
                         socketId: socket.id,
                         logLevel: this.logger.logLevel
                     });
+                } else {
+                    if (game.timerParams && game.timerParams.timeRemaining === 0) {
+                        this.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+                    }
                 }
             }
         });
@@ -96,10 +100,10 @@ class GameManager {
             let game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
                 let person = game.people.find((person) => person.id === personId)
-                if (person) {
+                if (person && !person.out) {
                     this.logger.debug('game ' + accessCode + ': killing player ' + person.name);
                     person.out = true;
-                    namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, )
+                    namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, person.id)
                 }
             }
         })

@@ -75,7 +75,8 @@ export const templates = {
             "<div class='game-player-role'></div>" +
         "</div>" +
         "<div>" +
-            "<button class='moderator-player-button kill-player-button'>Kill \u2694</button>" +
+            "<button class='moderator-player-button kill-player-button'>Kill \uD83D\uDC80</button>" +
+        "<button class='moderator-player-button reveal-role-button'>Reveal Role <img src='../images/eye.svg'/></button>" +
         "</div>",
     GAME_PLAYER:
         "<div>" +

@@ -30,6 +30,10 @@ onmessage = function (e) {
 function stepFn (expected, interval, start, totalTime) {
     const now = Date.now();
     if (now - start >= totalTime) {
+        postMessage({
+            timeRemainingInMilliseconds: 0,
+            displayTime: returnHumanReadableTime(0, true)
+        });
         return;
     }
     const delta = now - expected;

@@ -25,7 +25,8 @@ export const globals = {
     EVENTS: {
         PLAYER_JOINED: "playerJoined",
         SYNC_GAME_STATE: "syncGameState",
-        START_TIMER: "startTimer"
+        START_TIMER: "startTimer",
+        KILL_PLAYER: "killPlayer"
     },
     USER_TYPES: {
         MODERATOR: "moderator",

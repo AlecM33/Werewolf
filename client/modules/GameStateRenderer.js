@@ -27,7 +27,7 @@ export class GameStateRenderer {
             playerCount += 1;
         }
         document.querySelector("label[for='lobby-players']").innerText =
-            "Other People (" + playerCount + "/" + getGameSize(this.gameState.deck) + " Players)";
+            "People (" + playerCount + "/" + getGameSize(this.gameState.deck) + " Players)";
     }
 
     renderLobbyHeader() {
@@ -67,20 +67,51 @@ export class GameStateRenderer {
         let div = document.createElement("div");
         div.innerHTML = templates.END_GAME_PROMPT;
         document.body.appendChild(div);
-        renderPlayersWithRoleAndAlignmentInfo(this.gameState.people, this.socket, this.gameState.accessCode, this.killPlayerHandlers);
+        this.renderPlayersWithRoleAndAlignmentInfo();
     }
 
     renderPlayerView() {
         renderPlayerRole(this.gameState);
-        renderPlayersWithNoRoleInformation(this.gameState.people, this.killPlayerHandlers);
+        this.renderPlayersWithNoRoleInformation();
     }
 
     refreshPlayerList(isModerator) {
         if (isModerator) {
-            renderPlayersWithRoleAndAlignmentInfo(this.gameState.people, this.socket, this.gameState.accessCode, this.killPlayerHandlers)
+            this.renderPlayersWithRoleAndAlignmentInfo()
         } else {
-            renderPlayersWithNoRoleInformation(this.gameState.people, this.killPlayerHandlers);
+            this.renderPlayersWithNoRoleInformation();
         }
+    }
+
+    renderPlayersWithRoleAndAlignmentInfo() {
+        document.querySelectorAll('.game-player').forEach((el) => {
+            let pointer = el.dataset.pointer;
+            if (pointer && this.killPlayerHandlers[pointer]) {
+                el.removeEventListener('click', this.killPlayerHandlers[pointer])
+            }
+            el.remove();
+        });
+        this.gameState.people.sort((a, b) => {
+            return a.name >= b.name ? 1 : -1;
+        });
+        let teamGood = this.gameState.people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
+        let teamEvil = this.gameState.people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
+        renderGroupOfPlayers(teamEvil, this.killPlayerHandlers, this.gameState.accessCode, globals.ALIGNMENT.EVIL, true, this.socket);
+        renderGroupOfPlayers(teamGood, this.killPlayerHandlers, this.gameState.accessCode, globals.ALIGNMENT.GOOD, true, this.socket);
+        document.getElementById("players-alive-label").innerText =
+            'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
+
+    }
+
+    renderPlayersWithNoRoleInformation() {
+        document.querySelectorAll('.game-player').forEach((el) => el.remove());
+        this.gameState.people.sort((a, b) => {
+            return a.name >= b.name ? 1 : -1;
+        });
+        renderGroupOfPlayers(this.gameState.people, this.killPlayerHandlers);
+        document.getElementById("players-alive-label").innerText =
+            'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
+
     }
 
 }
@@ -115,37 +146,6 @@ function removeExistingTitle() {
     }
 }
 
-function renderPlayersWithRoleAndAlignmentInfo(people, socket, accessCode, handlers) {
-    document.querySelectorAll('.game-player').forEach((el) => {
-        let pointer = el.dataset.pointer;
-        if (pointer && handlers[pointer]) {
-            el.removeEventListener('click', handlers[pointer])
-        }
-        el.remove();
-    });
-    people.sort((a, b) => {
-        return a.name >= b.name ? 1 : -1;
-    });
-    let teamGood = people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
-    let teamEvil = people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
-    renderGroupOfPlayers(teamEvil, handlers, accessCode, globals.ALIGNMENT.EVIL, true, socket);
-    renderGroupOfPlayers(teamGood, handlers, accessCode, globals.ALIGNMENT.GOOD, true, socket);
-    document.getElementById("players-alive-label").innerText =
-        'Players: ' + people.filter((person) => !person.out).length + ' / ' + people.length + ' Alive';
-
-}
-
-function renderPlayersWithNoRoleInformation(people, handlers) {
-    document.querySelectorAll('.game-player').forEach((el) => el.remove());
-    people.sort((a, b) => {
-        return a.name >= b.name ? 1 : -1;
-    });
-    renderGroupOfPlayers(people, handlers);
-    document.getElementById("players-alive-label").innerText =
-        'Players: ' + people.filter((person) => !person.out).length + ' / ' + people.length + ' Alive';
-
-}
-
 function renderGroupOfPlayers(players, handlers, accessCode=null, alignment=null, moderator=false, socket=null) {
     for (let player of players) {
         let container = document.createElement("div");
@@ -168,14 +168,18 @@ function renderGroupOfPlayers(players, handlers, accessCode=null, alignment=null
             document.getElementById("game-player-list").appendChild(container);
         }
 
-        if (moderator) {
-            handlers[player.id] = () => {
-                socket.emit(globals.COMMANDS.KILL_PLAYER, accessCode, player.id);
+        if (player.out) {
+            container.classList.add('killed');
+            if (moderator) {
+                container.querySelector('.kill-player-button')?.remove();
             }
-            if (player.out) {
-                container.classList.add('killed');
-                container.querySelector('.kill-player-button').remove();
-            } else {
+        } else {
+            if (moderator) {
+                handlers[player.id] = () => {
+                    if (confirm("KILL " + player.name + "?")) {
+                        socket.emit(globals.COMMANDS.KILL_PLAYER, accessCode, player.id);
+                    }
+                }
                 container.querySelector('.kill-player-button').addEventListener('click', handlers[player.id]);
             }
         }
@@ -191,11 +195,19 @@ function renderPlayerRole(gameState) {
         name.classList.add('evil');
     }
     name.setAttribute("title", gameState.client.gameRole);
-    document.querySelector('#role-description').innerText = gameState.client.gameRoleDescription;
-    document.getElementById("role-image").setAttribute(
-        'src',
-        '../images/roles/' + gameState.client.gameRole.replaceAll(' ', '') + '.png'
-    );
+    if (gameState.client.out) {
+        document.querySelector('#role-description').innerText = "You have been killed.";
+        document.getElementById("role-image").setAttribute(
+            'src',
+            '../images/tombstone.png'
+        );
+    } else {
+        document.querySelector('#role-description').innerText = gameState.client.gameRoleDescription;
+        document.getElementById("role-image").setAttribute(
+            'src',
+            '../images/roles/' + gameState.client.gameRole.replaceAll(' ', '') + '.png'
+        );
+    }
 
     document.getElementById("game-role-back").addEventListener('click', () => {
         document.getElementById("game-role").style.display = 'flex';

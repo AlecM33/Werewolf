@@ -346,7 +346,7 @@ label[for='moderator'] {
     text-overflow: ellipsis;
 }
 
-.kill-player-button, .make-mod-button {
+.kill-player-button, .reveal-role-button {
     font-family: 'signika-negative', sans-serif !important;
     padding: 5px;
     border-radius: 3px;
@@ -358,6 +358,18 @@ label[for='moderator'] {
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
     margin: 5px 0 5px 25px;
     min-width: 6em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.reveal-role-button {
+    background-color: #3f5256;
+}
+
+.reveal-role-button img {
+    width: 18px;
+    margin-left: 5px;
 }
 
 .killed::after {
@@ -367,12 +379,13 @@ label[for='moderator'] {
     font-size: 24px;
 }
 
-.killed {
-    filter: grayscale(1);
-    opacity: 0.6;
-    pointer-events: none;
+.killed, .killed .game-player-role {
+    color: gray !important;
 }
 
+.reveal-role-button {
+    display: flex;
+    align-items: center;
 }
 
 .make-mod-button {
@@ -390,7 +403,12 @@ label[for='moderator'] {
 }
 
 .kill-player-button {
-    background-color: #3f5256;
+    background-color: #9f4747;
+}
+
+.game-player > div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 #game-player-list > div {

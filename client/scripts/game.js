@@ -132,6 +132,22 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
     if (timerWorker && gameTimerManager) {
         gameTimerManager.attachTimerSocketListeners(socket, timerWorker, gameStateRenderer);
     }
+
+    if (!socket.hasListeners(globals.EVENTS.KILL_PLAYER)) {
+        socket.on(globals.EVENTS.KILL_PLAYER, (id) => {
+            let killedPerson = gameStateRenderer.gameState.people.find((person) =>  person.id === id);
+            if (killedPerson) {
+                killedPerson.out = true;
+                if (gameStateRenderer.gameState.client.userType === globals.USER_TYPES.MODERATOR) {
+                    toast(killedPerson.name + ' killed.', 'success', true, true, 6);
+                    gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo()
+                } else {
+                    toast(killedPerson.name + ' was killed!', 'warning', false, true, 6);
+                    gameStateRenderer.renderPlayersWithNoRoleInformation();
+                }
+            }
+        });
+    }
 }
 
 function displayStartGamePromptForModerators(gameStateRenderer, socket) {

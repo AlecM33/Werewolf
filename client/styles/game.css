@@ -41,8 +41,31 @@ h1 {
     margin: 0.5em auto;
 }
 
-#game-state-container > div {
+#game-state-container > div:not(#transfer-mod-modal-background):not(#transfer-mod-modal){
     margin: 1em;
+}
+
+.potential-moderator {
+    display: flex;
+    color: #d7d7d7;
+    background-color: black;
+    border: 2px solid transparent;
+    align-items: center;
+    padding: 10px;
+    border-radius: 3px;
+    justify-content: space-between;
+    margin: 0.5em 0;
+    position: relative;
+}
+
+.potential-moderator:hover {
+    border: 2px solid #d7d7d7;
+    cursor: pointer;
+}
+
+.potential-moderator:active {
+    border: 2px solid #21ba45;
+    transition: border 0.2s ease-out;
 }
 
 #game-link {
@@ -234,7 +257,7 @@ label[for='moderator'] {
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 1000;
+    z-index: 3;
     border-radius: 3px;
     font-family: 'signika-negative', sans-serif;
     font-weight: 100;
@@ -326,7 +349,7 @@ label[for='moderator'] {
 }
 
 .game-player {
-    border-left: 2px solid gray;
+    border-left: 3px solid #21ba45;
     display: flex;
     color: #d7d7d7;
     background-color: black;
@@ -380,7 +403,11 @@ label[for='moderator'] {
 }
 
 .killed, .killed .game-player-role {
-    color: gray !important;
+    /*color: gray !important;*/
+}
+
+.game-player.killed {
+    border-left: 3px solid #444444;
 }
 
 .reveal-role-button {
@@ -404,6 +431,10 @@ label[for='moderator'] {
 
 .kill-player-button {
     background-color: #9f4747;
+}
+
+.killed-card {
+    width: 55% !important;
 }
 
 .game-player > div:nth-child(2) {

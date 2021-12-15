@@ -9,7 +9,8 @@ const globals = {
         PAUSE_TIMER: 'pauseTimer',
         RESUME_TIMER: 'resumeTimer',
         GET_TIME_REMAINING: 'getTimeRemaining',
-        KILL_PLAYER: 'killPlayer'
+        KILL_PLAYER: 'killPlayer',
+        REVEAL_PLAYER: 'revealPlayer'
     },
     STATUS: {
         LOBBY: "lobby",
@@ -20,7 +21,9 @@ const globals = {
     USER_TYPES: {
         MODERATOR: "moderator",
         PLAYER: "player",
-        TEMPORARY_MODERATOR: "player / temp mod"
+        TEMPORARY_MODERATOR: "player / temp mod",
+        KILLED_PLAYER: "killed",
+        SPECTATOR: "spectator"
     },
     ERROR_MESSAGE: {
         GAME_IS_FULL: "This game is full"

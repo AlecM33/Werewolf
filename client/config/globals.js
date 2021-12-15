@@ -12,7 +12,9 @@ export const globals = {
         PAUSE_TIMER: 'pauseTimer',
         RESUME_TIMER: 'resumeTimer',
         GET_TIME_REMAINING: 'getTimeRemaining',
-        KILL_PLAYER: 'killPlayer'
+        KILL_PLAYER: 'killPlayer',
+        REVEAL_PLAYER: 'revealPlayer',
+        TRANSFER_MODERATOR: 'transferModerator'
     },
     STATUS: {
         LOBBY: "lobby",
@@ -26,12 +28,15 @@ export const globals = {
         PLAYER_JOINED: "playerJoined",
         SYNC_GAME_STATE: "syncGameState",
         START_TIMER: "startTimer",
-        KILL_PLAYER: "killPlayer"
+        KILL_PLAYER: "killPlayer",
+        REVEAL_PLAYER: 'revealPlayer'
     },
     USER_TYPES: {
         MODERATOR: "moderator",
         PLAYER: "player",
-        TEMPORARY_MODERATOR: "player / temp mod"
+        TEMPORARY_MODERATOR: "player / temp mod",
+        KILLED_PLAYER: "killed",
+        SPECTATOR: "spectator"
     },
     ENVIRONMENT: {
         LOCAL: "local",

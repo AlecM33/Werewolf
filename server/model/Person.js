@@ -11,6 +11,7 @@ class Person {
         this.alignment = alignment;
         this.assigned = assigned;
         this.out = false;
+        this.revealed = false;
     }
 }
 

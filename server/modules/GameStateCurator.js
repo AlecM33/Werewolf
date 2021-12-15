@@ -1,5 +1,8 @@
 const globals = require("../config/globals")
 
+/* The purpose of this component is to only return the game state information that is necessary. For example, we only want to return player role information
+    to moderators. This avoids any possibility of a player having access to information that they shouldn't.
+ */
 const GameStateCurator = {
     getGameStateFromPerspectiveOfPerson: (game, person, gameRunner, socket, logger) => {
         return getGameStateBasedOnPermissions(game, person, gameRunner);
@@ -21,6 +24,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
         }
     switch (person.userType) {
         case globals.USER_TYPES.PLAYER:
+        case globals.USER_TYPES.KILLED_PLAYER:
             return {
                 accessCode: game.accessCode,
                 status: game.status,
@@ -32,7 +36,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                         return person.assigned === true
                             && (person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR)
                     })
-                    .map((filteredPerson) => ({ name: filteredPerson.name, id: filteredPerson.id, userType: filteredPerson.userType, out: filteredPerson.out })),
+                    .map((filteredPerson) => mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
             }
@@ -75,7 +79,8 @@ function mapPeopleForModerator(people, client) {
         gameRole: person.gameRole,
         gameRoleDescription: person.gameRoleDescription,
         alignment: person.alignment,
-        out: person.out
+        out: person.out,
+        revealed: person.revealed
     }));
 }
 
@@ -88,12 +93,25 @@ function mapPeopleForTempModerator(people, client) {
             name: person.name,
             id: person.id,
             userType: person.userType,
-            out: person.out
+            out: person.out,
+            revealed: person.revealed
         }));
 }
 
 function mapPerson(person) {
-    return { name: person.name, id: person.id, userType: person.userType, out: person.out };
+    if (person.revealed) {
+        return {
+            name: person.name,
+            id: person.id,
+            userType: person.userType,
+            out: person.out,
+            revealed: person.revealed,
+            gameRole: person.gameRole,
+            alignment: person.alignment
+        };
+    } else {
+        return { name: person.name, id: person.id, userType: person.userType, out: person.out, revealed: person.revealed };
+    }
 }
 
 module.exports = GameStateCurator;

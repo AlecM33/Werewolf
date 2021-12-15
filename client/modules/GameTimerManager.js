@@ -11,21 +11,12 @@ export class GameTimerManager {
         }
     }
 
-    // startGameTimer (hours, minutes, tickRate, soundManager, timerWorker) {
-    //     if (window.Worker) {
-    //         timerWorker.onmessage = function (e) {
-    //             if (e.data.hasOwnProperty('timeRemainingInMilliseconds') && e.data.timeRemainingInMilliseconds > 0) {
-    //                 document.getElementById('game-timer').innerText = e.data.displayTime;
-    //             }
-    //         };
-    //         const totalTime = convertFromHoursToMilliseconds(hours) + convertFromMinutesToMilliseconds(minutes);
-    //         timerWorker.postMessage({ totalTime: totalTime, tickInterval: tickRate });
-    //     }
-    // }
-
     resumeGameTimer(totalTime, tickRate, soundManager, timerWorker) {
         if (window.Worker) {
-            if (this.gameState.client.userType !== globals.USER_TYPES.PLAYER) {
+            if (
+                this.gameState.client.userType === globals.USER_TYPES.MODERATOR
+                || this.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            ) {
                 this.swapToPauseButton();
             }
             let instance = this;
@@ -49,7 +40,10 @@ export class GameTimerManager {
 
     pauseGameTimer(timerWorker, timeRemaining) {
         if (window.Worker) {
-            if (this.gameState.client.userType !== globals.USER_TYPES.PLAYER) {
+            if (
+                this.gameState.client.userType === globals.USER_TYPES.MODERATOR
+                || this.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            ) {
                 this.swapToPlayButton();
             }
 
@@ -63,7 +57,10 @@ export class GameTimerManager {
     }
 
     displayPausedTime(time) {
-        if (this.gameState.client.userType !== globals.USER_TYPES.PLAYER) {
+        if (
+            this.gameState.client.userType === globals.USER_TYPES.MODERATOR
+            || this.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+        ) {
             this.swapToPlayButton();
         }
 
@@ -87,18 +84,6 @@ export class GameTimerManager {
     }
 
     attachTimerSocketListeners(socket, timerWorker, gameStateRenderer) {
-        // if (!socket.hasListeners(globals.EVENTS.START_TIMER)) {
-        //     socket.on(globals.EVENTS.START_TIMER, () => {
-        //         this.startGameTimer(
-        //             gameStateRenderer.gameState.timerParams.hours,
-        //             gameStateRenderer.gameState.timerParams.minutes,
-        //             globals.CLOCK_TICK_INTERVAL_MILLIS,
-        //             null,
-        //             timerWorker
-        //         )
-        //     });
-        // }
-
         if(!socket.hasListeners(globals.COMMANDS.PAUSE_TIMER)) {
             socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
                 this.pauseGameTimer(timerWorker, timeRemaining)
@@ -150,15 +135,6 @@ export class GameTimerManager {
         pauseBtn.addEventListener('click', this.pauseListener);
         document.getElementById('play-pause').appendChild(pauseBtn);
     }
-}
-
-
-function convertFromMinutesToMilliseconds(minutes) {
-    return minutes * 60 * 1000;
-}
-
-function convertFromHoursToMilliseconds(hours) {
-    return hours * 60 * 60 * 1000;
 }
 
 function returnHumanReadableTime(milliseconds, tenthsOfSeconds=false) {

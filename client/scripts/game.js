@@ -74,6 +74,10 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
                     document.getElementById("game-state-container").innerHTML = templates.PLAYER_GAME_VIEW;
                     gameStateRenderer.renderPlayerView();
                     break;
+                case globals.USER_TYPES.KILLED_PLAYER:
+                    document.getElementById("game-state-container").innerHTML = templates.PLAYER_GAME_VIEW;
+                    gameStateRenderer.renderPlayerView(true);
+                    break;
                 case globals.USER_TYPES.MODERATOR:
                     document.querySelector("#start-game-prompt")?.remove();
                     document.getElementById("game-state-container").innerHTML = templates.MODERATOR_GAME_VIEW;
@@ -142,8 +146,39 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
                     toast(killedPerson.name + ' killed.', 'success', true, true, 6);
                     gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo()
                 } else {
-                    toast(killedPerson.name + ' was killed!', 'warning', false, true, 6);
-                    gameStateRenderer.renderPlayersWithNoRoleInformation();
+                    if (killedPerson.id === gameStateRenderer.gameState.client.id) {
+                        let clientUserType = document.getElementById("client-user-type");
+                        if (clientUserType) {
+                            clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80'
+                        }
+                        gameStateRenderer.updatePlayerCardToKilledState();
+                        toast('You have been killed!', 'warning', false, true, 6);
+                    } else {
+                        toast(killedPerson.name + ' was killed!', 'warning', false, true, 6);
+                    }
+                    gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed();
+                }
+            }
+        });
+    }
+
+    if (!socket.hasListeners(globals.EVENTS.REVEAL_PLAYER)) {
+        socket.on(globals.EVENTS.REVEAL_PLAYER, (revealData) => {
+            let revealedPerson = gameStateRenderer.gameState.people.find((person) =>  person.id === revealData.id);
+            if (revealedPerson) {
+                revealedPerson.revealed = true;
+                revealedPerson.gameRole = revealData.gameRole;
+                revealedPerson.alignment = revealData.alignment;
+                if (gameStateRenderer.gameState.client.userType === globals.USER_TYPES.MODERATOR) {
+                    toast(revealedPerson.name + ' revealed.', 'success', true, true, 6);
+                    gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo()
+                } else {
+                    if (revealedPerson.id === gameStateRenderer.gameState.client.id) {
+                        toast('Your role has been revealed!', 'warning', false, true, 6);
+                    } else {
+                        toast(revealedPerson.name + ' was revealed as a ' + revealedPerson.gameRole + '!', 'warning', false, true, 6);
+                    }
+                    gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed();
                 }
             }
         });

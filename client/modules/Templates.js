@@ -46,6 +46,15 @@ export const templates = {
         "<div id='game-player-list'></div>" +
     "</div>",
     MODERATOR_GAME_VIEW:
+    "<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>" +
+    "<div id='transfer-mod-modal' class='modal' style='display: none'>" +
+        "<form id='transfer-mod-form'>" +
+            "<div id='transfer-mod-form-content'></div>" +
+            "<div id='modal-button-container'>" +
+                "<button id='close-modal-button'>Cancel</button>" +
+            "</div>" +
+        "</form>" +
+    "</div>" +
     "<div id='game-header'>" +
         "<div class='timer-container-moderator'>" +
             "<div>" +
@@ -54,7 +63,7 @@ export const templates = {
             "</div>" +
             "<div id='play-pause'>" + "</div>" +
         "</div>" +
-        "<button class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>" +
+        "<button id='mod-transfer-button' class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>" +
     "</div>" +
     "<div>" +
         "<label id='players-alive-label'></label>" +

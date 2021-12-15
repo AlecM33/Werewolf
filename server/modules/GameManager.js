@@ -102,8 +102,27 @@ class GameManager {
                 let person = game.people.find((person) => person.id === personId)
                 if (person && !person.out) {
                     this.logger.debug('game ' + accessCode + ': killing player ' + person.name);
+                    person.userType = globals.USER_TYPES.KILLED_PLAYER;
                     person.out = true;
                     namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, person.id)
+                }
+            }
+        });
+
+        socket.on(globals.CLIENT_COMMANDS.REVEAL_PLAYER, (accessCode, personId) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let person = game.people.find((person) => person.id === personId)
+                if (person && !person.revealed) {
+                    this.logger.debug('game ' + accessCode + ': revealing player ' + person.name);
+                    person.revealed = true;
+                    namespace.in(accessCode).emit(
+                        globals.CLIENT_COMMANDS.REVEAL_PLAYER,
+                        {
+                            id: person.id,
+                            gameRole: person.gameRole,
+                            alignment: person.alignment
+                        })
                 }
             }
         })

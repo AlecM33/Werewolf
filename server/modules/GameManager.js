@@ -125,6 +125,33 @@ class GameManager {
                         })
                 }
             }
+        });
+
+        socket.on(globals.CLIENT_COMMANDS.TRANSFER_MODERATOR, (accessCode, personId) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let person = game.people.find((person) => person.id === personId)
+                if (!person) {
+                    person = game.spectators.find((spectator) => spectator.id === personId)
+                }
+                if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
+                    this.logger.debug('game ' + accessCode + ': transferring mod powers to ' + person.name);
+                    if (game.people.includes(game.moderator)) { // the current moderator was at one point a dealt-in player.
+                        game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
+                    } else {
+                        game.moderator.userType = globals.USER_TYPES.SPECTATOR;
+                        if (!game.spectators.includes(game.moderator)) {
+                            game.spectators.push(game.moderator);
+                        }
+                        if (game.spectators.includes(person)) {
+                            game.spectators.splice(game.spectators.indexOf(person), 1);
+                        }
+                    }
+                    person.userType = globals.USER_TYPES.MODERATOR;
+                    game.moderator = person;
+                    namespace.in(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
+                }
+            }
         })
     }
 
@@ -265,7 +292,10 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
     const game = gameRunner.activeGames[accessCode];
     if (game) {
         let matchingPerson = game.people.find((person) => person.cookie === personCookie);
-        if (!matchingPerson && game.moderator.cookie === personCookie)  {
+        if (!matchingPerson) {
+            matchingPerson = game.spectators.find((spectator) => spectator.cookie = personCookie);
+        }
+        if (game.moderator.cookie === personCookie)  {
             matchingPerson = game.moderator;
         }
         if (matchingPerson) {

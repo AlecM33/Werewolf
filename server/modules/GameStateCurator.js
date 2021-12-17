@@ -34,7 +34,6 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 people: game.people
                     .filter((person) => {
                         return person.assigned === true
-                            && (person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR)
                     })
                     .map((filteredPerson) => mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
@@ -49,7 +48,8 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 deck: game.deck,
                 people: mapPeopleForModerator(game.people, client),
                 timerParams: game.timerParams,
-                isFull: game.isFull
+                isFull: game.isFull,
+                spectators: game.spectators
             }
         case globals.USER_TYPES.TEMPORARY_MODERATOR:
             return {
@@ -58,19 +58,38 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 moderator: mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
-                people: mapPeopleForTempModerator(game.people, client),
+                people: game.people
+                    .filter((person) => {
+                        return person.assigned === true
+                    })
+                    .map((filteredPerson) => mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
                 isFull: game.isFull
+            }
+        case globals.USER_TYPES.SPECTATOR:
+            return {
+                accessCode: game.accessCode,
+                status: game.status,
+                moderator: mapPerson(game.moderator),
+                client: client,
+                deck: game.deck,
+                people: game.people
+                    .filter((person) => {
+                        return person.assigned === true
+                    })
+                    .map((filteredPerson) => mapPerson(filteredPerson)),
+                timerParams: game.timerParams,
+                isFull: game.isFull,
             }
         default:
             break;
     }
 }
 
-function mapPeopleForModerator(people, client) {
+function mapPeopleForModerator(people) {
     return people
         .filter((person) => {
-            return person.assigned === true && person.cookie !== client.cookie
+            return person.assigned === true
         })
         .map((person) => ({
         name: person.name,
@@ -82,20 +101,6 @@ function mapPeopleForModerator(people, client) {
         out: person.out,
         revealed: person.revealed
     }));
-}
-
-function mapPeopleForTempModerator(people, client) {
-    return people
-        .filter((person) => {
-            return person.assigned === true && person.cookie !== client.cookie
-        })
-        .map((person) => ({
-            name: person.name,
-            id: person.id,
-            userType: person.userType,
-            out: person.out,
-            revealed: person.revealed
-        }));
 }
 
 function mapPerson(person) {

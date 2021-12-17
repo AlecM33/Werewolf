@@ -45,6 +45,7 @@ export const globals = {
     USER_TYPE_ICONS: {
         player: ' \uD83C\uDFAE',
         moderator: ' \uD83D\uDC51',
-        'player / temp mod': ' \uD83C\uDFAE\uD83D\uDC51'
+        'player / temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
+        spectator: ' \uD83D\uDC7B'
     }
 };

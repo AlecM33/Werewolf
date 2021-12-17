@@ -45,11 +45,24 @@ export const templates = {
         "<label id='players-alive-label'></label>" +
         "<div id='game-player-list'></div>" +
     "</div>",
+    SPECTATOR_GAME_VIEW:
+    "<div id='game-header'>" +
+        "<div>" +
+            "<label for='game-timer'>Time Remaining</label>" +
+            "<div id='game-timer'></div>" +
+        "</div>" +
+    "</div>" +
+    "<div>" +
+        "<label id='players-alive-label'></label>" +
+        "<div id='game-player-list'></div>" +
+    "</div>",
     MODERATOR_GAME_VIEW:
     "<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>" +
     "<div id='transfer-mod-modal' class='modal' style='display: none'>" +
         "<form id='transfer-mod-form'>" +
-            "<div id='transfer-mod-form-content'></div>" +
+            "<div id='transfer-mod-form-content'>" +
+                "<h3>Transfer Mod Powers &#128081;</h3>" +
+            "</div>" +
             "<div id='modal-button-container'>" +
                 "<button id='close-modal-button'>Cancel</button>" +
             "</div>" +
@@ -76,6 +89,41 @@ export const templates = {
                 "<label class='good'>Team Good</label>" +
                 "<div id='player-list-moderator-team-good'></div>" +
             "</div>" +
+        "</div>" +
+    "</div>",
+    TEMP_MOD_GAME_VIEW:
+    "<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>" +
+        "<div id='transfer-mod-modal' class='modal' style='display: none'>" +
+            "<form id='transfer-mod-form'>" +
+                "<div id='transfer-mod-form-content'>" +
+                    "<h3>Transfer Mod Powers &#128081;</h3>" +
+                "</div>" +
+                "<div id='modal-button-container'>" +
+                    "<button id='close-modal-button'>Cancel</button>" +
+                "</div>" +
+            "</form>" +
+        "</div>" +
+        "<div id='game-header'>" +
+            "<div class='timer-container-moderator'>" +
+                "<div>" +
+                    "<label for='game-timer'>Time Remaining</label>" +
+                    "<div id='game-timer'></div>" +
+                "</div>" +
+                "<div id='play-pause'>" + "</div>" +
+            "</div>" +
+        "</div>" +
+        "<div id='game-role' style='display:none'>" +
+            "<h4 id='role-name'></h4>" +
+            "<img alt='role' id='role-image'/>" +
+            "<p id='role-description'></p>" +
+        "</div>" +
+        "<div id='game-role-back'>" +
+            "<h4>Click to reveal your role</h4>" +
+            "<p>(click again to hide)</p>" +
+        "</div>" +
+        "<div>" +
+            "<label id='players-alive-label'></label>" +
+            "<div id='game-player-list'></div>" +
         "</div>" +
     "</div>",
     MODERATOR_PLAYER:

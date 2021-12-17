@@ -454,6 +454,14 @@ label[for='moderator'] {
     font-size: 25px;
 }
 
+#transfer-mod-form {
+    width: 100%;
+}
+
+#transfer-mod-form #modal-button-container {
+    justify-content: center;
+}
+
 @media(max-width: 685px) {
     #end-game-button {
         font-size: 25px;

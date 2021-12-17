@@ -96,7 +96,6 @@ button:active, input[type=submit]:active {
     flex-direction: column;
     justify-content: center;
     width: 95%;
-    max-width: 68em;
     margin: 0 auto;
 }
 

@@ -10,7 +10,8 @@ const globals = {
         RESUME_TIMER: 'resumeTimer',
         GET_TIME_REMAINING: 'getTimeRemaining',
         KILL_PLAYER: 'killPlayer',
-        REVEAL_PLAYER: 'revealPlayer'
+        REVEAL_PLAYER: 'revealPlayer',
+        TRANSFER_MODERATOR: 'transferModerator'
     },
     STATUS: {
         LOBBY: "lobby",

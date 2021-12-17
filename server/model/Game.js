@@ -9,6 +9,7 @@ class Game {
         this.timerParams = timerParams;
         this.isFull = false;
         this.timeRemaining = null;
+        this.spectators = [];
     }
 }
 

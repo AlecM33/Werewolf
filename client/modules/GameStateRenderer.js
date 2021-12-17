@@ -68,7 +68,7 @@ export class GameStateRenderer {
         let modTransferButton = document.getElementById("mod-transfer-button");
         modTransferButton.addEventListener(
             "click", () => {
-                this.displayAvailableModerators()
+                this.displayAvailableModerators();
                 ModalManager.displayModal(
                     "transfer-mod-modal",
                     "transfer-mod-modal-background",
@@ -79,6 +79,15 @@ export class GameStateRenderer {
         this.renderPlayersWithRoleAndAlignmentInfo();
     }
 
+    renderTempModView() {
+        let div = document.createElement("div");
+        div.innerHTML = templates.END_GAME_PROMPT;
+        document.body.appendChild(div);
+
+        renderPlayerRole(this.gameState);
+        this.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+    }
+
     renderPlayerView(isKilled=false) {
         if (isKilled) {
             let clientUserType = document.getElementById("client-user-type");
@@ -87,6 +96,10 @@ export class GameStateRenderer {
             }
         }
         renderPlayerRole(this.gameState);
+        this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
+    }
+
+    renderSpectatorView() {
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }
 
@@ -123,12 +136,26 @@ export class GameStateRenderer {
 
     }
 
-    renderPlayersWithNoRoleInformationUnlessRevealed() {
+    renderPlayersWithNoRoleInformationUnlessRevealed(tempMod = false) {
+        if (tempMod) {
+            document.querySelectorAll('.game-player').forEach((el) => {
+                let pointer = el.dataset.pointer;
+                if (pointer && this.killPlayerHandlers[pointer]) {
+                    el.removeEventListener('click', this.killPlayerHandlers[pointer]);
+                    delete this.killPlayerHandlers[pointer];
+                }
+                if (pointer && this.revealRoleHandlers[pointer]) {
+                    el.removeEventListener('click', this.revealRoleHandlers[pointer]);
+                    delete this.revealRoleHandlers[pointer];
+                }
+                el.remove();
+            });
+        }
         document.querySelectorAll('.game-player').forEach((el) => el.remove());
         this.gameState.people.sort((a, b) => {
             return a.name >= b.name ? 1 : -1;
         });
-        renderGroupOfPlayers(this.gameState.people, this.killPlayerHandlers);
+        renderGroupOfPlayers(this.gameState, this.killPlayerHandlers, this.revealRoleHandlers, this.gameState.accessCode, null, tempMod, this.socket);
         document.getElementById("players-alive-label").innerText =
             'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
 
@@ -153,25 +180,30 @@ export class GameStateRenderer {
         });
         let modalContent = document.getElementById("transfer-mod-form-content");
         if (modalContent) {
-            for (let player of this.gameState.people) {
-                if (player.out) {
-                    let container = document.createElement("div");
-                    container.classList.add('potential-moderator');
-                    container.dataset.pointer = player.id;
-                    container.innerText = player.name;
-                    this.transferModHandlers[player.id] = () => {
-                        if (confirm("Transfer moderator powers to " + player.name + "?")) {
-                            socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, this.gameState.accessCode, player.id);
-                        }
-                    }
-
-                    container.addEventListener('click', this.transferModHandlers[player.id]);
-                    modalContent.appendChild(container);
-                }
-            }
+            renderPotentialMods(this.gameState, this.gameState.people, this.transferModHandlers, modalContent, this.socket);
+            renderPotentialMods(this.gameState, this.gameState.spectators, this.transferModHandlers, modalContent, this.socket);
         }
     }
 
+}
+
+function renderPotentialMods(gameState, group, transferModHandlers, modalContent, socket) {
+    for (let member of group) {
+        if ((member.out || member.userType === globals.USER_TYPES.SPECTATOR) && !(member.id === gameState.client.id)) {
+            let container = document.createElement("div");
+            container.classList.add('potential-moderator');
+            container.dataset.pointer = member.id;
+            container.innerText = member.name;
+            transferModHandlers[member.id] = () => {
+                if (confirm("Transfer moderator powers to " + member.name + "?")) {
+                    socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, gameState.accessCode, member.id);
+                }
+            }
+
+            container.addEventListener('click', transferModHandlers[member.id]);
+            modalContent.appendChild(container);
+        }
+    }
 }
 
 function renderLobbyPerson(name, userType) {
@@ -204,12 +236,13 @@ function removeExistingTitle() {
     }
 }
 
-function renderGroupOfPlayers(players, killPlayerHandlers, revealRoleHandlers, accessCode=null, alignment=null, moderator=false, socket=null) {
-    for (let player of players) {
+// TODO: refactor to reduce the cyclomatic complexity of this function
+function renderGroupOfPlayers(gameState, killPlayerHandlers, revealRoleHandlers, accessCode=null, alignment=null, moderator=false, socket=null) {
+    for (let player of gameState.people) {
         let container = document.createElement("div");
         container.classList.add('game-player');
-        container.dataset.pointer = player.id;
-        if (alignment) {
+        if (moderator) {
+            container.dataset.pointer = player.id;
             container.innerHTML = templates.MODERATOR_PLAYER;
         } else {
             container.innerHTML = templates.GAME_PLAYER;
@@ -219,14 +252,24 @@ function renderGroupOfPlayers(players, killPlayerHandlers, revealRoleHandlers, a
 
         if (moderator) {
             roleElement.classList.add(alignment);
-            roleElement.innerText = player.gameRole;
-            document.getElementById("player-list-moderator-team-" + alignment).appendChild(container);
+            if (gameState.moderator.userType === globals.USER_TYPES.MODERATOR) {
+                roleElement.innerText = player.gameRole;
+                document.getElementById("player-list-moderator-team-" + alignment).appendChild(container);
+            } else {
+                if (player.revealed) {
+                    roleElement.innerText = player.gameRole;
+                    roleElement.classList.add(player.alignment);
+                } else {
+                    roleElement.innerText = "Unknown";
+                }
+                document.getElementById("game-player-list").appendChild(container);
+            }
         } else if (player.revealed) {
             roleElement.classList.add(player.alignment);
             roleElement.innerText = player.gameRole;
             document.getElementById("game-player-list").appendChild(container);
         } else {
-            roleElement.innerText = "Unknown"
+            roleElement.innerText = "Unknown";
             document.getElementById("game-player-list").appendChild(container);
         }
 

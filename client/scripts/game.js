@@ -41,7 +41,6 @@ function prepareGamePage(environment, socket, timerWorker) {
                     gameTimerManager = new GameTimerManager(gameState, socket);
                 }
                 setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTimerManager);
-                displayClientInfo(gameState.client.name, gameState.client.userType);
                 processGameState(gameState, userId, socket, gameStateRenderer);
             }
         });
@@ -51,6 +50,7 @@ function prepareGamePage(environment, socket, timerWorker) {
 }
 
 function processGameState (gameState, userId, socket, gameStateRenderer) {
+    displayClientInfo(gameState.client.name, gameState.client.userType);
     switch (gameState.status) {
         case globals.STATUS.LOBBY:
             document.getElementById("game-state-container").innerHTML = templates.LOBBY;
@@ -67,7 +67,6 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
             }
             break;
         case globals.STATUS.IN_PROGRESS:
-            gameStateRenderer.gameState = gameState;
             gameStateRenderer.renderGameHeader();
             switch (gameState.client.userType) {
                 case globals.USER_TYPES.PLAYER:
@@ -75,6 +74,7 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
                     gameStateRenderer.renderPlayerView();
                     break;
                 case globals.USER_TYPES.KILLED_PLAYER:
+                    document.querySelector("#end-game-prompt")?.remove();
                     document.getElementById("game-state-container").innerHTML = templates.PLAYER_GAME_VIEW;
                     gameStateRenderer.renderPlayerView(true);
                     break;
@@ -85,6 +85,13 @@ function processGameState (gameState, userId, socket, gameStateRenderer) {
                     break;
                 case globals.USER_TYPES.TEMPORARY_MODERATOR:
                     document.querySelector("#start-game-prompt")?.remove();
+                    document.getElementById("game-state-container").innerHTML = templates.TEMP_MOD_GAME_VIEW;
+                    gameStateRenderer.renderTempModView();
+                    break;
+                case globals.USER_TYPES.SPECTATOR:
+                    document.querySelector("#end-game-prompt")?.remove();
+                    document.getElementById("game-state-container").innerHTML = templates.SPECTATOR_GAME_VIEW;
+                    gameStateRenderer.renderSpectatorView();
                     break;
                 default:
                     break;
@@ -127,6 +134,8 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
                 gameStateRenderer.gameState.accessCode,
                 gameStateRenderer.gameState.client.cookie,
                 function (gameState) {
+                    gameStateRenderer.gameState = gameState;
+                    gameTimerManager.gameState = gameState;
                     processGameState(gameState, gameState.client.cookie, socket, gameStateRenderer);
                 }
             );
@@ -156,7 +165,11 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
                     } else {
                         toast(killedPerson.name + ' was killed!', 'warning', false, true, 6);
                     }
-                    gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed();
+                    if (gameStateRenderer.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                        gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+                    } else {
+                        gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
+                    }
                 }
             }
         });
@@ -178,7 +191,11 @@ function setClientSocketHandlers(gameStateRenderer, socket, timerWorker, gameTim
                     } else {
                         toast(revealedPerson.name + ' was revealed as a ' + revealedPerson.gameRole + '!', 'warning', false, true, 6);
                     }
-                    gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed();
+                    if (gameStateRenderer.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                        gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+                    } else {
+                        gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
+                    }
                 }
             }
         });

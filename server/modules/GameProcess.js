@@ -7,7 +7,7 @@ process.on('message', (msg) => {
     const logger = require('./Logger')(msg.logLevel);
     switch (msg.command) {
         case globals.GAME_PROCESS_COMMANDS.START_TIMER:
-            logger.debug('CHILD PROCESS ' + msg.accessCode + ': START TIMER');
+            logger.trace('CHILD PROCESS ' + msg.accessCode + ': START TIMER');
             timer = new ServerTimer(
                 msg.hours,
                 msg.minutes,
@@ -23,7 +23,7 @@ process.on('message', (msg) => {
             break;
         case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
             timer.stopTimer();
-            logger.debug('CHILD PROCESS ' + msg.accessCode + ': PAUSE TIMER');
+            logger.trace('CHILD PROCESS ' + msg.accessCode + ': PAUSE TIMER');
             process.send({ command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, timeRemaining: timer.currentTimeInMillis});
 
             break;
@@ -34,13 +34,13 @@ process.on('message', (msg) => {
                 process.send({ command: globals.GAME_PROCESS_COMMANDS.END_GAME });
                 process.exit(0);
             });
-            logger.debug('CHILD PROCESS ' + msg.accessCode + ': RESUME TIMER');
+            logger.trace('CHILD PROCESS ' + msg.accessCode + ': RESUME TIMER');
             process.send({ command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, timeRemaining: timer.currentTimeInMillis});
 
             break;
 
         case globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
-            logger.debug('CHILD PROCESS ' + msg.accessCode + ': GET TIME REMAINING');
+            logger.trace('CHILD PROCESS ' + msg.accessCode + ': GET TIME REMAINING');
             process.send({
                 command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                 timeRemaining: timer.currentTimeInMillis,

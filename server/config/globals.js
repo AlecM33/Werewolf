@@ -11,7 +11,11 @@ const globals = {
         GET_TIME_REMAINING: 'getTimeRemaining',
         KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
-        TRANSFER_MODERATOR: 'transferModerator'
+        TRANSFER_MODERATOR: 'transferModerator',
+        CHANGE_NAME: 'changeName'
+    },
+    MESSAGES: {
+        ENTER_NAME:  "Client must enter name."
     },
     STATUS: {
         LOBBY: "lobby",

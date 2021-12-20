@@ -313,12 +313,13 @@ function updateTracker(step) {
 function showButtons(back, forward, forwardHandler, backHandler, builtGame=null) {
     document.querySelector("#step-back-button")?.remove();
     document.querySelector("#step-forward-button")?.remove();
+    document.querySelector("#create-game")?.remove();
     if (back) {
         let backButton = document.createElement("button");
         backButton.innerText = "\u2bc7 Back";
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute("id", "step-back-button");
-        document.getElementById("creation-step-buttons").appendChild(backButton);
+        document.getElementById("tracker-container").prepend(backButton);
     }
 
     if (forward && builtGame === null) {
@@ -326,7 +327,7 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
         fwdButton.innerHTML = "Next \u25b6";
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute("id", "step-forward-button");
-        document.getElementById("creation-step-buttons").appendChild(fwdButton);
+        document.getElementById("tracker-container").appendChild(fwdButton);
     } else if (forward && builtGame !== null) {
         let createButton = document.createElement("button");
         createButton.innerText = "Create";
@@ -344,7 +345,7 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
                 toast("You must provide your name.", "error", true);
             }
         });
-        document.getElementById("creation-step-buttons").appendChild(createButton);
+        document.getElementById("tracker-container").appendChild(createButton);
     }
 }
 

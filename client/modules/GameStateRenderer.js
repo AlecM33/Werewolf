@@ -16,13 +16,13 @@ export class GameStateRenderer {
     renderLobbyPlayers() {
         document.querySelectorAll('.lobby-player').forEach((el) => el.remove())
         let lobbyPlayersContainer = document.getElementById("lobby-players");
-        if (this.gameState.client.userType === globals.USER_TYPES.PLAYER) {
+        if (this.gameState.client.userType === globals.USER_TYPES.PLAYER && this.gameState.moderator.userType === globals.USER_TYPES.MODERATOR) {
             lobbyPlayersContainer.appendChild(renderLobbyPerson(this.gameState.moderator.name, this.gameState.moderator.userType))
         }
         for (let person of this.gameState.people) {
             lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name,person.userType))
         }
-        let playerCount = this.gameState.people.filter((person) => person.userType === globals.USER_TYPES.PLAYER).length;
+        let playerCount = this.gameState.people.length;
         document.querySelector("label[for='lobby-players']").innerText =
             "People (" + playerCount + "/" + getGameSize(this.gameState.deck) + " Players)";
     }
@@ -129,8 +129,23 @@ export class GameStateRenderer {
         });
         let teamGood = this.gameState.people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
         let teamEvil = this.gameState.people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
-        renderGroupOfPlayers(teamEvil, this.killPlayerHandlers, this.revealRoleHandlers, this.gameState.accessCode, globals.ALIGNMENT.EVIL, true, this.socket);
-        renderGroupOfPlayers(teamGood, this.killPlayerHandlers, this.revealRoleHandlers, this.gameState.accessCode, globals.ALIGNMENT.GOOD, true, this.socket);
+        renderGroupOfPlayers(
+            teamEvil,
+            this.killPlayerHandlers,
+            this.revealRoleHandlers,
+            this.gameState.accessCode,
+            globals.ALIGNMENT.EVIL,
+            this.gameState.moderator.userType,
+            this.socket
+        );
+        renderGroupOfPlayers(
+            teamGood,
+            this.killPlayerHandlers,
+            this.revealRoleHandlers,
+            this.gameState.accessCode,
+            globals.ALIGNMENT.GOOD,
+            this.gameState.moderator.userType,
+            this.socket);
         document.getElementById("players-alive-label").innerText =
             'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
 
@@ -152,10 +167,17 @@ export class GameStateRenderer {
             });
         }
         document.querySelectorAll('.game-player').forEach((el) => el.remove());
-        this.gameState.people.sort((a, b) => {
-            return a.name >= b.name ? 1 : -1;
-        });
-        renderGroupOfPlayers(this.gameState, this.killPlayerHandlers, this.revealRoleHandlers, this.gameState.accessCode, null, tempMod, this.socket);
+        sortPeopleByStatus(this.gameState.people);
+        let modType = tempMod ? this.gameState.moderator.userType : null;
+        renderGroupOfPlayers(
+            this.gameState.people,
+            this.killPlayerHandlers,
+            this.revealRoleHandlers,
+            this.gameState.accessCode,
+            null,
+            modType,
+            this.socket
+        );
         document.getElementById("players-alive-label").innerText =
             'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
 
@@ -220,6 +242,19 @@ function renderLobbyPerson(name, userType) {
     return el;
 }
 
+function sortPeopleByStatus(people) {
+    people.sort((a, b) => {
+        if (a.out !== b.out) {
+            return a.out ? 1 : -1;
+        } else {
+            if (a.revealed !== b.revealed) {
+                return a.revealed? -1 : 1;
+            }
+            return a.name >= b.name ? 1 : -1;
+        }
+    });
+}
+
 function getGameSize(cards) {
     let quantity = 0;
     for (let card of cards) {
@@ -237,11 +272,11 @@ function removeExistingTitle() {
 }
 
 // TODO: refactor to reduce the cyclomatic complexity of this function
-function renderGroupOfPlayers(gameState, killPlayerHandlers, revealRoleHandlers, accessCode=null, alignment=null, moderator=false, socket=null) {
-    for (let player of gameState.people) {
+function renderGroupOfPlayers(people, killPlayerHandlers, revealRoleHandlers, accessCode=null, alignment=null, moderatorType, socket=null) {
+    for (let player of people) {
         let container = document.createElement("div");
         container.classList.add('game-player');
-        if (moderator) {
+        if (moderatorType) {
             container.dataset.pointer = player.id;
             container.innerHTML = templates.MODERATOR_PLAYER;
         } else {
@@ -250,9 +285,9 @@ function renderGroupOfPlayers(gameState, killPlayerHandlers, revealRoleHandlers,
         container.querySelector('.game-player-name').innerText = player.name;
         let roleElement = container.querySelector('.game-player-role')
 
-        if (moderator) {
+        if (moderatorType) {
             roleElement.classList.add(alignment);
-            if (gameState.moderator.userType === globals.USER_TYPES.MODERATOR) {
+            if (moderatorType === globals.USER_TYPES.MODERATOR) {
                 roleElement.innerText = player.gameRole;
                 document.getElementById("player-list-moderator-team-" + alignment).appendChild(container);
             } else {
@@ -275,11 +310,12 @@ function renderGroupOfPlayers(gameState, killPlayerHandlers, revealRoleHandlers,
 
         if (player.out) {
             container.classList.add('killed');
-            if (moderator) {
+            if (moderatorType) {
                 container.querySelector('.kill-player-button')?.remove();
+                insertPlaceholderButton(container, false, "killed");
             }
         } else {
-            if (moderator) {
+            if (moderatorType) {
                 killPlayerHandlers[player.id] = () => {
                     if (confirm("KILL " + player.name + "?")) {
                         socket.emit(globals.COMMANDS.KILL_PLAYER, accessCode, player.id);
@@ -290,11 +326,12 @@ function renderGroupOfPlayers(gameState, killPlayerHandlers, revealRoleHandlers,
         }
 
         if (player.revealed) {
-            if (moderator) {
+            if (moderatorType) {
                 container.querySelector('.reveal-role-button')?.remove();
+                insertPlaceholderButton(container, true, "revealed");
             }
         } else {
-            if (moderator) {
+            if (moderatorType) {
                 revealRoleHandlers[player.id] = () => {
                     if (confirm("REVEAL " + player.name + "?")) {
                         socket.emit(globals.COMMANDS.REVEAL_PLAYER, accessCode, player.id);
@@ -339,4 +376,19 @@ function renderPlayerRole(gameState) {
         document.getElementById("game-role-back").style.display = 'flex';
         document.getElementById("game-role").style.display = 'none';
     });
+}
+
+function insertPlaceholderButton(container, append, type) {
+    let button = document.createElement("div");
+    button.classList.add('placeholder-button');
+    if (type === "killed") {
+        button.innerText = 'Killed';
+    } else {
+        button.innerText = "Revealed";
+    }
+    if (append) {
+        container.querySelector('.player-action-buttons').appendChild(button);
+    } else {
+        container.querySelector('.player-action-buttons').prepend(button);
+    }
 }

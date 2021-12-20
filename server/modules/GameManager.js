@@ -104,6 +104,10 @@ class GameManager {
                     this.logger.debug('game ' + accessCode + ': killing player ' + person.name);
                     person.userType = globals.USER_TYPES.KILLED_PLAYER;
                     person.out = true;
+                    // temporary moderators will transfer their powers automatically to the first person they kill.
+                    if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                        transferModeratorPowers(game, person, namespace, this.logger);
+                    }
                     namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, person.id)
                 }
             }
@@ -134,25 +138,26 @@ class GameManager {
                 if (!person) {
                     person = game.spectators.find((spectator) => spectator.id === personId)
                 }
-                if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
-                    this.logger.debug('game ' + accessCode + ': transferring mod powers to ' + person.name);
-                    if (game.people.includes(game.moderator)) { // the current moderator was at one point a dealt-in player.
-                        game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
+                transferModeratorPowers(game, person, namespace, this.logger);
+            }
+        });
+
+        socket.on(globals.CLIENT_COMMANDS.CHANGE_NAME, (accessCode, data, ackFn) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                let person = findPersonById(game, data.personId);
+                if (person) {
+                    if (!isNameTaken(game, data.name)) {
+                        ackFn("changed");
+                        person.name = data.name.trim();
+                        person.hasEnteredName = true;
+                        socket.to(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
                     } else {
-                        game.moderator.userType = globals.USER_TYPES.SPECTATOR;
-                        if (!game.spectators.includes(game.moderator)) {
-                            game.spectators.push(game.moderator);
-                        }
-                        if (game.spectators.includes(person)) {
-                            game.spectators.splice(game.spectators.indexOf(person), 1);
-                        }
+                        ackFn("taken");
                     }
-                    person.userType = globals.USER_TYPES.MODERATOR;
-                    game.moderator = person;
-                    namespace.in(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
                 }
             }
-        })
+        });
     }
 
 
@@ -216,7 +221,9 @@ function initializeModerator(name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
-    return new Person(createRandomId(), createRandomId(), name, userType)
+    let moderator = new Person(createRandomId(), createRandomId(), name, userType);
+    moderator.hasEnteredName = true // they did this when creating the game.
+    return moderator;
 }
 
 function initializePeopleForGame(uniqueCards, moderator) {
@@ -242,7 +249,17 @@ function initializePeopleForGame(uniqueCards, moderator) {
     }
 
     while (j < numberOfRoles) {
-        people.push(new Person(createRandomId(), createRandomId(), UsernameGenerator.generate(), globals.USER_TYPES.PLAYER, cards[j].role, cards[j].description, cards[j].team))
+        let person = new Person(
+            createRandomId(),
+            createRandomId(),
+            UsernameGenerator.generate(),
+            globals.USER_TYPES.PLAYER,
+            cards[j].role,
+            cards[j].description,
+            cards[j].team
+        );
+        person.hasEnteredName = false;
+        people.push(person);
         j ++;
     }
 
@@ -280,13 +297,33 @@ class Singleton {
     }
 }
 
+function transferModeratorPowers(game, person, namespace, logger) {
+    if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
+        logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
+        if (game.people.includes(game.moderator)) { // the current moderator was at one point a dealt-in player.
+            game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
+        } else {
+            game.moderator.userType = globals.USER_TYPES.SPECTATOR;
+            if (!game.spectators.includes(game.moderator)) {
+                game.spectators.push(game.moderator);
+            }
+            if (game.spectators.includes(person)) {
+                game.spectators.splice(game.spectators.indexOf(person), 1);
+            }
+        }
+        person.userType = globals.USER_TYPES.MODERATOR;
+        game.moderator = person;
+        namespace.in(game.accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
+    }
+}
+
 /* Since clients are anonymous, we have to rely to some extent on a cookie to identify them. Socket ids
     are unique to a client, but they are re-generated if a client disconnects and then reconnects.
     Thus, to have the most resilient identification i.e. to let them refresh, navigate away and come back,
     get disconnected and reconnect, etc. we should have a combination of the socket id and the cookie. This
     will also allow us to reject certain theoretical ways of breaking things, such as copying someone else's
     cookie. Though if a client wants to clear their cookie and reset their connection, there's not much we can do.
-    The best thing in my opinion is to make it hard for clients to _accidentally_ break their experience.
+    The best thing in my opinion is to make it exceptionally difficult for clients to _accidentally_ break their experience.
  */
 function handleRequestForGameState(namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) {
     const game = gameRunner.activeGames[accessCode];
@@ -372,6 +409,21 @@ function findPersonWithMatchingSocketId(people, socketId) {
 
 function isGameFull(game) {
     return game.moderator.assigned === true && !game.people.find((person) => person.assigned === false);
+}
+
+function findPersonById(game, id) {
+    let person = game.people.find((person) => person.id === id)
+    if (!person) {
+        person = game.spectators.find((spectator) => spectator.id === id)
+    }
+    return person;
+}
+
+function isNameTaken(game, name) {
+    let processedName = name.toLowerCase().trim();
+    return (game.people.find((person) => person.name.toLowerCase().trim() === processedName))
+    || (game.moderator.name.toLowerCase().trim() === processedName)
+    || (game.spectators.find((spectator) => spectator.name.toLowerCase().trim() === processedName))
 }
 
 module.exports = Singleton;

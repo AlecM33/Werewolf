@@ -1,7 +1,8 @@
 const globals = require("../config/globals")
 
-/* The purpose of this component is to only return the game state information that is necessary. For example, we only want to return player role information
-    to moderators. This avoids any possibility of a player having access to information that they shouldn't.
+/* The purpose of this component is to only return the game state information that is necessary. For example, we only
+    want to return player role information to moderators. This avoids any possibility of a player having access to
+    information that they shouldn't.
  */
 const GameStateCurator = {
     getGameStateFromPerspectiveOfPerson: (game, person, gameRunner, socket, logger) => {
@@ -11,9 +12,10 @@ const GameStateCurator = {
 
 function getGameStateBasedOnPermissions(game, person, gameRunner) {
     let client = game.status === globals.STATUS.LOBBY // people won't be able to know their role until past the lobby stage.
-        ? { name: person.name, cookie: person.cookie, userType: person.userType }
+        ? { name: person.name, hasEnteredName: person.hasEnteredName, id: person.id, cookie: person.cookie, userType: person.userType }
         : {
             name: person.name,
+            hasEnteredName: person.hasEnteredName,
             id: person.id,
             cookie: person.cookie,
             userType: person.userType,

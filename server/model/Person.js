@@ -12,6 +12,7 @@ class Person {
         this.assigned = assigned;
         this.out = false;
         this.revealed = false;
+        this.hasEnteredName = false;
     }
 }
 

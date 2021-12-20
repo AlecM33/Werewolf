@@ -222,14 +222,25 @@ input[type="number"] {
     margin-bottom: 8em;
 }
 
+#game-creation-container {
+    width: 95%;
+    max-width: 60em;
+}
+
+#tracker-container {
+    display: flex;
+    align-items: center;
+    margin-top: 2em;
+    justify-content: center;
+    width: 100%;
+}
+
 #creation-step-tracker {
     display: flex;
     justify-content: center;
-    margin-top: 2em;
 }
 
 #step-forward-button, #step-back-button, #create-game {
-    position: absolute;
     font-family: sans-serif;
     font-size: 20px;
     padding: 10px 20px;

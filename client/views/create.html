@@ -29,7 +29,7 @@
     <img src="../images/Werewolf_Small.png"/>
     <a href="/">Home</a>
 </div>
-<div class="container">
+<div id="game-creation-container" class="container">
     <div id="add-role-modal-background" class="modal-background" style="display: none"></div>
     <div id="add-role-modal" class="modal" style="display: none">
         <form id="add-role-form">
@@ -55,11 +55,13 @@
         </form>
     </div>
     <h1>Create A Game</h1>
-    <div id="creation-step-tracker">
-        <div id="tracker-step-1" class="creation-step creation-step-filled"></div>
-        <div id="tracker-step-2" class="creation-step"></div>
-        <div id="tracker-step-3" class="creation-step"></div>
-        <div id="tracker-step-4" class="creation-step"></div>
+    <div id="tracker-container">
+        <div id="creation-step-tracker">
+            <div id="tracker-step-1" class="creation-step creation-step-filled"></div>
+            <div id="tracker-step-2" class="creation-step"></div>
+            <div id="tracker-step-3" class="creation-step"></div>
+            <div id="tracker-step-4" class="creation-step"></div>
+        </div>
     </div>
     <div id="creation-step-container">
         <h2 id="step-title">Select your method of moderation:</h2>
@@ -70,7 +72,6 @@
         <div class="animated-placeholder animated-placeholder-long"></div>
         <div class="animated-placeholder animated-placeholder-long"></div>
     </div>
-    <div id="creation-step-buttons"></div>
 <!--    <div id="deck-container">-->
 <!--        <label for="deck">Game Deck: 0 Players</label>-->
 <!--        <div id="deck"></div>-->

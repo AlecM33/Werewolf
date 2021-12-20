@@ -9,7 +9,7 @@ export const templates = {
         "<div id='game-player-count'></div>" +
     "</div>" +
     "<div>" +
-        "<div>" +
+        "<div id='lobby-people-container'>" +
             "<label for='lobby-players'>Other People</label>" +
             "<div id='lobby-players'></div>" +
         "</div>" +
@@ -41,7 +41,7 @@ export const templates = {
         "<h4>Click to reveal your role</h4>" +
         "<p>(click again to hide)</p>" +
     "</div>" +
-    "<div>" +
+    "<div id='game-people-container'>" +
         "<label id='players-alive-label'></label>" +
         "<div id='game-player-list'></div>" +
     "</div>",
@@ -121,7 +121,7 @@ export const templates = {
             "<h4>Click to reveal your role</h4>" +
             "<p>(click again to hide)</p>" +
         "</div>" +
-        "<div>" +
+        "<div id='game-people-container'>" +
             "<label id='players-alive-label'></label>" +
             "<div id='game-player-list'></div>" +
         "</div>" +
@@ -131,13 +131,52 @@ export const templates = {
             "<div class='game-player-name'></div>" +
             "<div class='game-player-role'></div>" +
         "</div>" +
-        "<div>" +
+        "<div class='player-action-buttons'>" +
             "<button class='moderator-player-button kill-player-button'>Kill \uD83D\uDC80</button>" +
-        "<button class='moderator-player-button reveal-role-button'>Reveal Role <img src='../images/eye.svg'/></button>" +
+            "<button class='moderator-player-button reveal-role-button'>Reveal Role <img src='../images/eye.svg'/></button>" +
         "</div>",
     GAME_PLAYER:
         "<div>" +
             "<div class='game-player-name'></div>" +
             "<div class='game-player-role'></div>" +
+        "</div>",
+    INITIAL_GAME_DOM:
+        "<div id='game-title'></div>" +
+        "<div id='client-container'>" +
+            "<label for='client'>You</label>" +
+            "<div id='client'>" +
+                "<div id='client-name'></div>" +
+                "<div id='client-user-type'></div>" +
+            "</div>" +
+        "</div>" +
+        "<div id='game-state-container'></div>",
+    // via https://loading.io/css/
+    SPINNER:
+        "<div class=\"lds-spinner\">" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+            "<div></div>" +
+        "</div>",
+    NAME_CHANGE_MODAL:
+        "<div id='change-name-modal-background' class='modal-background'></div>" +
+        "<div id='change-name-modal' class='modal'>" +
+            "<form id='change-name-form'>" +
+                "<div id='transfer-mod-form-content'>" +
+                    "<label for='player-new-name'>Your name:</label>" +
+                    "<input id='player-new-name' type='text'/>" +
+                "</div>" +
+                "<div id='modal-button-container'>" +
+                    "<input type='submit' id='submit-new-name' value='Set Name'/>" +
+                "</div>" +
+            "</form>" +
         "</div>"
 }

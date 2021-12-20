@@ -16,21 +16,33 @@
     <link rel="stylesheet" href="/styles/GLOBAL.css">
     <link rel="stylesheet" href="/styles/game.css">
     <link rel="stylesheet" href="/styles/modal.css">
+    <link rel="preload" as="font" href="/webfonts/SignikaNegative-Light.woff2" crossorigin/>
+    <link rel="preload" as="font" href="/webfonts/Diavlo_LIGHT_II_37.woff2" crossorigin/>
 </head>
 <body>
+<div class="spinner-background"></div>
+<div class="spinner-container">
+    <div class="lds-spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <p>Connecting to game...</p>
+</div>
 <div id="navbar">
     <img src="/images/Werewolf_Small.png"/>
     <a href="/">Home</a>
 </div>
-<div id="game-title"></div>
-<div id="client-container" class="container">
-    <label for="client">You</label>
-    <div id="client">
-        <div id="client-name"></div>
-        <div id="client-user-type"></div>
-    </div>
-</div>
-<div class="container" id="game-state-container"></div>
+<div id="game-content" class="container"></div>
 <script type="module">
     import { game } from "../scripts/game.js";
     game();

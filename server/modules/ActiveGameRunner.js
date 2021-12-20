@@ -22,27 +22,27 @@ class ActiveGameRunner {
                     //game.status = globals.STATUS.ENDED;
                     game.timerParams.paused = false;
                     game.timerParams.timeRemaining = 0;
-                    this.logger.debug('PARENT: END GAME');
+                    this.logger.trace('PARENT: END GAME');
                     namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_GAME, game.accessCode);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                     game.timerParams.paused = true;
                     this.logger.trace(msg);
                     game.timerParams.timeRemaining = msg.timeRemaining;
-                    this.logger.debug('PARENT: PAUSE TIMER');
+                    this.logger.trace('PARENT: PAUSE TIMER');
                     namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, game.timerParams.timeRemaining);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.RESUME_TIMER:
                     game.timerParams.paused = false;
                     this.logger.trace(msg);
                     game.timerParams.timeRemaining = msg.timeRemaining;
-                    this.logger.debug('PARENT: RESUME TIMER');
+                    this.logger.trace('PARENT: RESUME TIMER');
                     namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, game.timerParams.timeRemaining);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
                     this.logger.trace(msg);
                     game.timerParams.timeRemaining = msg.timeRemaining;
-                    this.logger.debug('PARENT: GET TIME REMAINING');
+                    this.logger.trace('PARENT: GET TIME REMAINING');
                     namespace.to(msg.socketId).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
                     break;
             }

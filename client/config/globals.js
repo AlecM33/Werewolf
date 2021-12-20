@@ -14,7 +14,8 @@ export const globals = {
         GET_TIME_REMAINING: 'getTimeRemaining',
         KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
-        TRANSFER_MODERATOR: 'transferModerator'
+        TRANSFER_MODERATOR: 'transferModerator',
+        CHANGE_NAME: 'changeName'
     },
     STATUS: {
         LOBBY: "lobby",
@@ -24,12 +25,16 @@ export const globals = {
         GOOD: "good",
         EVIL: "evil"
     },
+    MESSAGES: {
+        ENTER_NAME:  "Client must enter name."
+    },
     EVENTS: {
         PLAYER_JOINED: "playerJoined",
         SYNC_GAME_STATE: "syncGameState",
         START_TIMER: "startTimer",
         KILL_PLAYER: "killPlayer",
-        REVEAL_PLAYER: 'revealPlayer'
+        REVEAL_PLAYER: 'revealPlayer',
+        CHANGE_NAME: 'changeName'
     },
     USER_TYPES: {
         MODERATOR: "moderator",

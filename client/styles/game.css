@@ -14,6 +14,19 @@
     margin: 0.5em 0;
 }
 
+#lobby-players {
+    overflow-y: auto;
+    max-height: 30em;
+    overflow-x: hidden;
+    padding: 0 10px;
+    border-radius: 3px;
+}
+
+#lobby-people-container label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
 .lobby-player-client {
     border: 2px solid #21ba45;
 }
@@ -30,6 +43,9 @@
     justify-content: center;
     flex-direction: row;
     flex-wrap: wrap;
+    display: flex;
+    width: 95%;
+    margin: 0 auto 115px auto;
 }
 
 #lobby-header {
@@ -124,7 +140,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #333243;
+    background-color: #171522;
     border: 5px solid #61606a;
     position: relative;
     flex-direction: column;
@@ -215,7 +231,7 @@ h1 {
 
 #client-container {
     max-width: 35em;
-    margin-top: 2em;
+    margin: 1em 0;
 }
 
 #client {
@@ -226,12 +242,14 @@ h1 {
     justify-content: space-between;
     background-color: #333243;
     border-radius: 3px;
+    min-width: 15em;
 }
 
 #client-name {
     color: whitesmoke;
     font-family: 'diavlo', sans-serif;
     font-size: 30px;
+    margin: 0.25em 2em 0.25em 0;
 }
 
 #client-user-type {
@@ -267,7 +285,7 @@ label[for='moderator'] {
     bottom: 0;
     /* width: fit-content; */
     font-size: 20px;
-    height: 120px;
+    height: 85px;
     margin: 0 auto;
     animation: fade-in-slide-up 10s ease;
     animation-fill-mode: forwards;
@@ -276,16 +294,20 @@ label[for='moderator'] {
     background-color: #333243;
 }
 
+#end-game-prompt {
+    box-shadow: 0 -6px 40px black;
+}
+
 #start-game-button, #end-game-button {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
     border-radius: 3px;
     color: whitesmoke;
-    font-size: 30px;
     cursor: pointer;
     border: 2px solid transparent;
     transition: background-color, border 0.3s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
+    font-size: 25px;
 }
 
 #start-game-button {
@@ -358,9 +380,16 @@ label[for='moderator'] {
     justify-content: space-between;
     margin: 0.5em 0;
     position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.11),
+    0 2px 2px rgba(0,0,0,0.11),
+    0 4px 4px rgba(0,0,0,0.11),
+    0 8px 8px rgba(0,0,0,0.11),
+    0 16px 16px rgba(0,0,0,0.11),
+    0 32px 32px rgba(0,0,0,0.11);
 }
 
 .game-player-name {
+    position: relative;
     width: 10em;
     overflow: hidden;
     white-space: nowrap;
@@ -380,10 +409,25 @@ label[for='moderator'] {
     transition: background-color, border 0.3s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
     margin: 5px 0 5px 25px;
-    min-width: 6em;
+    width: 117px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.placeholder-button {
+    font-family: 'signika-negative', sans-serif !important;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    border-radius: 3px;
+    color: #767676;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid transparent;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
+    margin: 5px 0 5px 25px;
+    width: 103px;
 }
 
 .reveal-role-button {
@@ -395,11 +439,10 @@ label[for='moderator'] {
     margin-left: 5px;
 }
 
-.killed::after {
+#game-player-list > .game-player.killed::after {
     content: '\01F480';
-    position: absolute;
-    right: -44px;
     font-size: 24px;
+    margin-left: 1em;
 }
 
 .killed, .killed .game-player-role {
@@ -442,6 +485,13 @@ label[for='moderator'] {
     flex-wrap: wrap;
 }
 
+#game-player-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 10px;
+    max-height: 37em;
+}
+
 #game-player-list > div {
     padding: 2px 10px;
     border-radius: 3px;
@@ -462,14 +512,14 @@ label[for='moderator'] {
     justify-content: center;
 }
 
-@media(max-width: 685px) {
-    #end-game-button {
-        font-size: 25px;
-    }
+#change-name-modal-background {
+    cursor: default;
+}
 
-    #end-game-prompt {
-        height: 85px;
-    }
+#lobby-people-container , #game-people-container {
+    background-color: #333243;
+    padding: 10px 10px 0 10px;
+    border-radius: 3px;
 }
 
 @keyframes pulse {

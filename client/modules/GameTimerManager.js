@@ -1,21 +1,21 @@
 import {globals} from "../config/globals.js";
 
 export class GameTimerManager {
-    constructor(gameState, socket) {
-        this.gameState = gameState;
+    constructor(stateBucket, socket) {
+        this.stateBucket = stateBucket;
         this.playListener = () => {
-            socket.emit(globals.COMMANDS.RESUME_TIMER, this.gameState.accessCode);
+            socket.emit(globals.COMMANDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
         }
         this.pauseListener = () => {
-            socket.emit(globals.COMMANDS.PAUSE_TIMER, this.gameState.accessCode);
+            socket.emit(globals.COMMANDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
         }
     }
 
     resumeGameTimer(totalTime, tickRate, soundManager, timerWorker) {
         if (window.Worker) {
             if (
-                this.gameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
             ) {
                 this.swapToPauseButton();
             }
@@ -41,8 +41,8 @@ export class GameTimerManager {
     pauseGameTimer(timerWorker, timeRemaining) {
         if (window.Worker) {
             if (
-                this.gameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
             ) {
                 this.swapToPlayButton();
             }
@@ -58,8 +58,8 @@ export class GameTimerManager {
 
     displayPausedTime(time) {
         if (
-            this.gameState.client.userType === globals.USER_TYPES.MODERATOR
-            || this.gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
         ) {
             this.swapToPlayButton();
         }

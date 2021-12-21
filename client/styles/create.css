@@ -176,10 +176,16 @@ input[type="number"] {
     margin-bottom: 1em;
 }
 
-#create-game{
-    color: #45a445;
+#create-game {
+    background-color: #1c8a36;
+    color: whitesmoke;
     font-size: 30px;
     padding: 10px 50px;
+}
+
+#create-game:hover {
+    background-color: #326243;
+    border: 2px solid #1c8a36;
 }
 
 .dropdown {

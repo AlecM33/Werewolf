@@ -4,27 +4,33 @@ import {templates} from "./Templates.js";
 import {ModalManager} from "./ModalManager.js";
 
 export class GameStateRenderer {
-    constructor(gameState, socket) {
-        this.gameState = gameState;
+    constructor(stateBucket, socket) {
+        this.stateBucket = stateBucket;
         this.socket = socket;
         this.killPlayerHandlers = {};
         this.revealRoleHandlers = {};
         this.transferModHandlers = {};
-        this.cardFlipped = false;
     }
 
     renderLobbyPlayers() {
         document.querySelectorAll('.lobby-player').forEach((el) => el.remove())
         let lobbyPlayersContainer = document.getElementById("lobby-players");
-        if (this.gameState.client.userType === globals.USER_TYPES.PLAYER && this.gameState.moderator.userType === globals.USER_TYPES.MODERATOR) {
-            lobbyPlayersContainer.appendChild(renderLobbyPerson(this.gameState.moderator.name, this.gameState.moderator.userType))
+        if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.PLAYER
+            && this.stateBucket.currentGameState.moderator.userType === globals.USER_TYPES.MODERATOR
+        ) {
+            lobbyPlayersContainer.appendChild(
+                renderLobbyPerson(
+                    this.stateBucket.currentGameState.moderator.name,
+                    this.stateBucket.currentGameState.moderator.userType
+                )
+            )
         }
-        for (let person of this.gameState.people) {
+        for (let person of this.stateBucket.currentGameState.people) {
             lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name,person.userType))
         }
-        let playerCount = this.gameState.people.length;
+        let playerCount = this.stateBucket.currentGameState.people.length;
         document.querySelector("label[for='lobby-players']").innerText =
-            "People (" + playerCount + "/" + getGameSize(this.gameState.deck) + " Players)";
+            "People (" + playerCount + "/" + getGameSize(this.stateBucket.currentGameState.deck) + " Players)";
     }
 
     renderLobbyHeader() {
@@ -46,7 +52,7 @@ export class GameStateRenderer {
 
     renderLobbyFooter() {
         let gameDeckContainer = document.getElementById("game-deck");
-        for (let card of this.gameState.deck) {
+        for (let card of this.stateBucket.currentGameState.deck) {
             let cardEl = document.createElement("div");
             cardEl.innerText = card.quantity + 'x ' + card.role;
             cardEl.classList.add('lobby-card')
@@ -84,7 +90,7 @@ export class GameStateRenderer {
         div.innerHTML = templates.END_GAME_PROMPT;
         document.body.appendChild(div);
 
-        renderPlayerRole(this.gameState);
+        renderPlayerRole(this.stateBucket.currentGameState);
         this.renderPlayersWithNoRoleInformationUnlessRevealed(true);
     }
 
@@ -95,7 +101,7 @@ export class GameStateRenderer {
                 clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80'
             }
         }
-        renderPlayerRole(this.gameState);
+        renderPlayerRole(this.stateBucket.currentGameState);
         this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
     }
 
@@ -124,30 +130,31 @@ export class GameStateRenderer {
             }
             el.remove();
         });
-        this.gameState.people.sort((a, b) => {
+        this.stateBucket.currentGameState.people.sort((a, b) => {
             return a.name >= b.name ? 1 : -1;
         });
-        let teamGood = this.gameState.people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
-        let teamEvil = this.gameState.people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
+        let teamGood = this.stateBucket.currentGameState.people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
+        let teamEvil = this.stateBucket.currentGameState.people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
         renderGroupOfPlayers(
             teamEvil,
             this.killPlayerHandlers,
             this.revealRoleHandlers,
-            this.gameState.accessCode,
+            this.stateBucket.currentGameState.accessCode,
             globals.ALIGNMENT.EVIL,
-            this.gameState.moderator.userType,
+            this.stateBucket.currentGameState.moderator.userType,
             this.socket
         );
         renderGroupOfPlayers(
             teamGood,
             this.killPlayerHandlers,
             this.revealRoleHandlers,
-            this.gameState.accessCode,
+            this.stateBucket.currentGameState.accessCode,
             globals.ALIGNMENT.GOOD,
-            this.gameState.moderator.userType,
+            this.stateBucket.currentGameState.moderator.userType,
             this.socket);
         document.getElementById("players-alive-label").innerText =
-            'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
+            'Players: ' + this.stateBucket.currentGameState.people.filter((person) => !person.out).length + ' / '
+            + this.stateBucket.currentGameState.people.length + ' Alive';
 
     }
 
@@ -167,19 +174,20 @@ export class GameStateRenderer {
             });
         }
         document.querySelectorAll('.game-player').forEach((el) => el.remove());
-        sortPeopleByStatus(this.gameState.people);
-        let modType = tempMod ? this.gameState.moderator.userType : null;
+        sortPeopleByStatus(this.stateBucket.currentGameState.people);
+        let modType = tempMod ? this.stateBucket.currentGameState.moderator.userType : null;
         renderGroupOfPlayers(
-            this.gameState.people,
+            this.stateBucket.currentGameState.people,
             this.killPlayerHandlers,
             this.revealRoleHandlers,
-            this.gameState.accessCode,
+            this.stateBucket.currentGameState.accessCode,
             null,
             modType,
             this.socket
         );
         document.getElementById("players-alive-label").innerText =
-            'Players: ' + this.gameState.people.filter((person) => !person.out).length + ' / ' + this.gameState.people.length + ' Alive';
+            'Players: ' + this.stateBucket.currentGameState.people.filter((person) => !person.out).length + ' / '
+            + this.stateBucket.currentGameState.people.length + ' Alive';
 
     }
 
@@ -202,8 +210,20 @@ export class GameStateRenderer {
         });
         let modalContent = document.getElementById("transfer-mod-form-content");
         if (modalContent) {
-            renderPotentialMods(this.gameState, this.gameState.people, this.transferModHandlers, modalContent, this.socket);
-            renderPotentialMods(this.gameState, this.gameState.spectators, this.transferModHandlers, modalContent, this.socket);
+            renderPotentialMods(
+                this.stateBucket.currentGameState,
+                this.stateBucket.currentGameState.people,
+                this.transferModHandlers,
+                modalContent,
+                this.socket
+            );
+            renderPotentialMods( // spectators can also be made mods.
+                this.stateBucket.currentGameState,
+                this.stateBucket.currentGameState.spectators,
+                this.transferModHandlers,
+                modalContent,
+                this.socket
+            );
         }
     }
 
@@ -272,7 +292,15 @@ function removeExistingTitle() {
 }
 
 // TODO: refactor to reduce the cyclomatic complexity of this function
-function renderGroupOfPlayers(people, killPlayerHandlers, revealRoleHandlers, accessCode=null, alignment=null, moderatorType, socket=null) {
+function renderGroupOfPlayers(
+    people,
+    killPlayerHandlers,
+    revealRoleHandlers,
+    accessCode=null,
+    alignment=null,
+    moderatorType,
+    socket=null
+) {
     for (let player of people) {
         let container = document.createElement("div");
         container.classList.add('game-player');

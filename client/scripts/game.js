@@ -5,6 +5,7 @@ import {GameStateRenderer} from "../modules/GameStateRenderer.js";
 import {cancelCurrentToast, toast} from "../modules/Toast.js";
 import {GameTimerManager} from "../modules/GameTimerManager.js";
 import {ModalManager} from "../modules/ModalManager.js";
+import {stateBucket} from "../modules/StateBucket.js";
 
 export const game = () => {
     let timerWorker;
@@ -29,15 +30,28 @@ function prepareGamePage(environment, socket, timerWorker) {
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
         socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, userId, function (gameState) {
-            let currentGameState = gameState;
+            stateBucket.currentGameState = gameState;
             document.querySelector('.spinner-container')?.remove();
             document.querySelector('.spinner-background')?.remove();
+
             if (gameState === null) {
                 window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-            } else if (!gameState.client.hasEnteredName) {
-                userId = gameState.client.cookie;
-                UserUtility.setAnonymousUserId(userId, environment);
-                document.getElementById("game-content").innerHTML = templates.NAME_CHANGE_MODAL;
+            }
+
+            document.getElementById("game-content").innerHTML = templates.INITIAL_GAME_DOM;
+            toast('You are connected.', 'success', true, true, 2);
+            console.log(gameState);
+            userId = gameState.client.cookie;
+            UserUtility.setAnonymousUserId(userId, environment);
+            let gameStateRenderer = new GameStateRenderer(stateBucket, socket);
+            let gameTimerManager;
+            if (stateBucket.currentGameState.timerParams) {
+                gameTimerManager = new GameTimerManager(stateBucket, socket);
+            }
+            initializeGame(stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager);
+
+            if (!gameState.client.hasEnteredName) {
+                document.getElementById("prompt").innerHTML = templates.NAME_CHANGE_MODAL;
                 document.getElementById("change-name-form").onsubmit = (e) => {
                     e.preventDefault();
                     let name = document.getElementById("player-new-name").value;
@@ -50,22 +64,14 @@ function prepareGamePage(environment, socket, timerWorker) {
                                 case "changed":
                                     ModalManager.dispelModal("change-name-modal", "change-name-modal-background")
                                     toast('Name set.', 'success', true, true, 5);
-                                    document.getElementById("game-content").innerHTML = templates.INITIAL_GAME_DOM;
-                                    propagateNameChange(currentGameState, name, currentGameState.client.id);
-                                    initializeGame(currentGameState, socket, timerWorker, userId);
+                                    propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
+                                    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer);
                             }
                         })
                     } else {
                         toast("Name must be fewer than 30 characters.", 'error', true, true, 8);
                     }
                 }
-            } else {
-                document.getElementById("game-content").innerHTML = templates.INITIAL_GAME_DOM;
-                toast('You are connected.', 'success', true, true, 2);
-                console.log(gameState);
-                userId = gameState.client.cookie;
-                UserUtility.setAnonymousUserId(userId, environment);
-                initializeGame(gameState, socket, timerWorker, userId);
             }
         });
     } else {
@@ -73,14 +79,9 @@ function prepareGamePage(environment, socket, timerWorker) {
     }
 }
 
-function initializeGame(currentGameState, socket, timerWorker, userId) {
-    let gameStateRenderer = new GameStateRenderer(currentGameState, socket);
-    let gameTimerManager;
-    if (currentGameState.timerParams) {
-        gameTimerManager = new GameTimerManager(currentGameState, socket);
-    }
-    setClientSocketHandlers(currentGameState, gameStateRenderer, socket, timerWorker, gameTimerManager);
-    processGameState(currentGameState, userId, socket, gameStateRenderer);
+function initializeGame(stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager) {
+    setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
+    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer);
 }
 
 function processGameState (currentGameState, userId, socket, gameStateRenderer) {
@@ -97,7 +98,7 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer) 
                     || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
             ) {
-               displayStartGamePromptForModerators(gameStateRenderer, socket);
+               displayStartGamePromptForModerators(currentGameState, socket);
             }
             break;
         case globals.STATUS.IN_PROGRESS:
@@ -144,20 +145,20 @@ function displayClientInfo(name, userType) {
     document.getElementById("client-user-type").innerText += globals.USER_TYPE_ICONS[userType];
 }
 
-function setClientSocketHandlers(currentGameState, gameStateRenderer, socket, timerWorker, gameTimerManager) {
+function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager) {
     if (!socket.hasListeners(globals.EVENTS.PLAYER_JOINED)) {
         socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
             toast(player.name + " joined!", "success", false);
-            currentGameState.people.push(player);
+            stateBucket.currentGameState.people.push(player);
             gameStateRenderer.renderLobbyPlayers();
             if (
                 gameIsFull
                 && (
-                    currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                    || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                    stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                    || stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
             ) {
-                displayStartGamePromptForModerators(gameStateRenderer, socket);
+                displayStartGamePromptForModerators(stateBucket.currentGameState, socket);
             }
         });
     }
@@ -165,13 +166,11 @@ function setClientSocketHandlers(currentGameState, gameStateRenderer, socket, ti
         socket.on(globals.EVENTS.SYNC_GAME_STATE, () => {
             socket.emit(
                 globals.COMMANDS.FETCH_GAME_STATE,
-                currentGameState.accessCode,
-                currentGameState.client.cookie,
+                stateBucket.currentGameState.accessCode,
+                stateBucket.currentGameState.client.cookie,
                 function (gameState) {
-                    currentGameState = gameState;
-                    gameStateRenderer.gameState = currentGameState;
-                    gameTimerManager.gameState = currentGameState;
-                    processGameState(currentGameState, gameState.client.cookie, socket, gameStateRenderer);
+                    stateBucket.currentGameState = gameState;
+                    processGameState(stateBucket.currentGameState, gameState.client.cookie, socket, gameStateRenderer);
                 }
             );
         });
@@ -183,14 +182,14 @@ function setClientSocketHandlers(currentGameState, gameStateRenderer, socket, ti
 
     if (!socket.hasListeners(globals.EVENTS.KILL_PLAYER)) {
         socket.on(globals.EVENTS.KILL_PLAYER, (id) => {
-            let killedPerson = currentGameState.people.find((person) =>  person.id === id);
+            let killedPerson = stateBucket.currentGameState.people.find((person) =>  person.id === id);
             if (killedPerson) {
                 killedPerson.out = true;
-                if (currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+                if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
                     toast(killedPerson.name + ' killed.', 'success', true, true, 6);
                     gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo()
                 } else {
-                    if (killedPerson.id === currentGameState.client.id) {
+                    if (killedPerson.id === stateBucket.currentGameState.client.id) {
                         let clientUserType = document.getElementById("client-user-type");
                         if (clientUserType) {
                             clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80'
@@ -200,7 +199,7 @@ function setClientSocketHandlers(currentGameState, gameStateRenderer, socket, ti
                     } else {
                         toast(killedPerson.name + ' was killed!', 'warning', false, true, 6);
                     }
-                    if (currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                         gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
                     } else {
                         gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
@@ -212,21 +211,21 @@ function setClientSocketHandlers(currentGameState, gameStateRenderer, socket, ti
 
     if (!socket.hasListeners(globals.EVENTS.REVEAL_PLAYER)) {
         socket.on(globals.EVENTS.REVEAL_PLAYER, (revealData) => {
-            let revealedPerson = currentGameState.people.find((person) =>  person.id === revealData.id);
+            let revealedPerson = stateBucket.currentGameState.people.find((person) =>  person.id === revealData.id);
             if (revealedPerson) {
                 revealedPerson.revealed = true;
                 revealedPerson.gameRole = revealData.gameRole;
                 revealedPerson.alignment = revealData.alignment;
-                if (currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+                if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
                     toast(revealedPerson.name + ' revealed.', 'success', true, true, 6);
                     gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo()
                 } else {
-                    if (revealedPerson.id === currentGameState.client.id) {
+                    if (revealedPerson.id === stateBucket.currentGameState.client.id) {
                         toast('Your role has been revealed!', 'warning', false, true, 6);
                     } else {
                         toast(revealedPerson.name + ' was revealed as a ' + revealedPerson.gameRole + '!', 'warning', false, true, 6);
                     }
-                    if (currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                         gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
                     } else {
                         gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
@@ -238,20 +237,21 @@ function setClientSocketHandlers(currentGameState, gameStateRenderer, socket, ti
 
     if (!socket.hasListeners(globals.EVENTS.CHANGE_NAME)) {
         socket.on(globals.EVENTS.CHANGE_NAME, (personId, name) => {
-            propagateNameChange(currentGameState, name, personId);
-            processGameState(currentGameState, currentGameState.client.cookie, socket, gameStateRenderer);
+            propagateNameChange(stateBucket.currentGameState, name, personId);
+            updateDOMWithNameChange(stateBucket.currentGameState, gameStateRenderer);
+            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer);
         });
     }
 }
 
-function displayStartGamePromptForModerators(gameStateRenderer, socket) {
+function displayStartGamePromptForModerators(gameState, socket) {
     let div = document.createElement("div");
     div.innerHTML = templates.START_GAME_PROMPT;
     document.body.appendChild(div);
     document.getElementById("start-game-button").addEventListener('click', (e) => {
         e.preventDefault();
         if (confirm("Start the game and deal roles?")) {
-            socket.emit(globals.COMMANDS.START_GAME, gameStateRenderer.gameState.accessCode,gameStateRenderer.gameState.client.cookie);
+            socket.emit(globals.COMMANDS.START_GAME, gameState.accessCode, gameState.client.cookie);
         }
 
     });
@@ -286,5 +286,23 @@ function propagateNameChange(gameState, name, personId) {
     let matchingSpectator = gameState.spectators?.find((spectator) => spectator.id === personId);
     if (matchingSpectator) {
         matchingSpectator.name = name;
+    }
+}
+
+function updateDOMWithNameChange(gameState, gameStateRenderer) {
+    switch (gameState.client.userType) {
+        case globals.USER_TYPES.PLAYER:
+        case globals.USER_TYPES.KILLED_PLAYER:
+        case globals.USER_TYPES.SPECTATOR:
+            gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
+            break;
+        case globals.USER_TYPES.MODERATOR:
+            gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo();
+            break;
+        case globals.USER_TYPES.TEMPORARY_MODERATOR:
+            gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+            break;
+        default:
+            break;
     }
 }

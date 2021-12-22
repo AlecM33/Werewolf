@@ -14,6 +14,10 @@
     margin: 0.5em 0;
 }
 
+body {
+    margin-bottom: 100px;
+}
+
 #lobby-players {
     overflow-y: auto;
     max-height: 30em;
@@ -45,7 +49,11 @@
     flex-wrap: wrap;
     display: flex;
     width: 95%;
-    margin: 0 auto 115px auto;
+    margin: 1em auto 0 auto;
+}
+
+#game-state-container h2 {
+    margin: 0.5em 0;
 }
 
 #lobby-header {
@@ -61,6 +69,28 @@ h1 {
     margin: 1em;
 }
 
+#game-content .placeholder-row:nth-child(1) {
+    margin-top: 2em;
+}
+
+#footer.game-page-footer {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#footer.game-page-footer a {
+    margin: 0 5px;
+}
+
+#end-of-game-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#end-of-game-header button {
+    margin: 0.5em;
+}
 .potential-moderator {
     display: flex;
     color: #d7d7d7;
@@ -96,17 +126,83 @@ h1 {
     margin-top: 10px;
     padding: 7px;
     border-radius: 3px;
-    background-color: #722c2c;
+    background-color: #121314;
+    border: 2px solid #333243;
     color: whitesmoke;
     align-items: center;
     display: flex;
     transition: background-color 0.2s;
 }
 
-#game-player-count {
-    color: whitesmoke;
+.role-info-name {
+    display: flex;
+}
+
+.role-info-name h5:nth-child(1) {
+    margin-right: 10px;
+    color: #21ba45;
+}
+
+#role-info-button {
+    margin-top: 1em;
+}
+
+#role-info-button img {
+    height: 25px;
+    margin-left: 10px;
+}
+
+#game-role-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 1em 0;
+    overflow-y: auto;
+    max-height: 35em;
+}
+
+#game-role-info-container > div {
+    width: 95%;
+}
+
+#transfer-mod-modal-content {
+    overflow-y: auto;
+    max-height: 35em;
+    width: 100%;
+}
+
+.potential-moderator {
+    width: 90%;
+}
+
+#role-info-modal #modal-button-container {
+    margin-top: 1em;
+}
+
+#game-role-info-container .role-info-name {
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 20px;
+    font-family: signika-negative, sans-serif;
     margin: 0.5em 0;
-    font-size: 25px;
+    background-color: #15191c;
+}
+
+#role-info-modal h2 {
+    color: #d7d7d7;
+    font-family: diavlo, sans-serif;
+    font-weight: normal;
+}
+
+#game-role-info-container p, #game-role-info-container h5 {
+    text-align: left;
+    font-weight: normal;
+}
+
+#game-role-info-container p {
+    color: #d7d7d7;
+    font-size: 14px;
+    font-family: signika-negative, sans-serif;
 }
 
 #game-role {
@@ -183,6 +279,12 @@ h1 {
     border: 1px solid #747474;
 }
 
+#game-timer.low {
+    color: #e71c0d;
+    border: 1px solid #ca1b17;
+    background-color: #361a1a;
+}
+
 #role-name {
     position: absolute;
     top: 6%;
@@ -215,7 +317,7 @@ h1 {
     bottom: 8%;
     left: 50%;
     transform: translate(-50%, 0);
-    font-size: 16px;
+    font-size: 15px;
     width: 78%;
     max-height: 6em;
 }
@@ -279,7 +381,7 @@ label[for='moderator'] {
     border-radius: 3px;
     font-family: 'signika-negative', sans-serif;
     font-weight: 100;
-    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 25%);
+    box-shadow: 0 -2px 6px 0 rgb(0 0 0 / 45%);
     left: 0;
     right: 0;
     bottom: 0;
@@ -355,11 +457,15 @@ label[for='moderator'] {
     animation: pulse 0.75s linear infinite alternate;
 }
 
+.paused-low {
+    animation: pulse-low 0.75s linear infinite alternate;
+}
+
 #game-header {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     flex-direction: column;
+    align-items: flex-start;
 }
 
 .timer-container-moderator {
@@ -380,12 +486,7 @@ label[for='moderator'] {
     justify-content: space-between;
     margin: 0.5em 0;
     position: relative;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.11),
-    0 2px 2px rgba(0,0,0,0.11),
-    0 4px 4px rgba(0,0,0,0.11),
-    0 8px 8px rgba(0,0,0,0.11),
-    0 16px 16px rgba(0,0,0,0.11),
-    0 32px 32px rgba(0,0,0,0.11);
+    box-shadow: 2px 3px 6px rgb(0 0 0 / 50%);
 }
 
 .game-player-name {
@@ -488,14 +589,30 @@ label[for='moderator'] {
 #game-player-list {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 0 10px;
+    padding: 0;
     max-height: 37em;
 }
 
 #game-player-list > div {
     padding: 2px 10px;
     border-radius: 3px;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
+}
+
+#game-parameters {
+    color: #d7d7d7;
+    font-size: 25px;
+    margin: 0.5em;
+}
+
+#game-parameters > div {
+    display: flex;
+    align-items: center;
+}
+
+#game-parameters img {
+    height: 20px;
+    margin-right: 10px;
 }
 
 #players-alive-label {
@@ -512,6 +629,10 @@ label[for='moderator'] {
     justify-content: center;
 }
 
+#transfer-mod-modal #modal-button-container {
+    justify-content: center;
+}
+
 #change-name-modal-background {
     cursor: default;
 }
@@ -520,6 +641,88 @@ label[for='moderator'] {
     background-color: #333243;
     padding: 10px 10px 0 10px;
     border-radius: 3px;
+    min-height: 25em;
+    min-width: 15em;
+    max-width: 30em;
+}
+
+#transfer-mod-modal-content {
+    margin-bottom: 2em;
+}
+
+#game-state-container.vertical-flex {
+    flex-direction: column;
+    align-items: center;
+}
+
+@media(max-width: 500px) {
+    #client-name {
+        font-size: 25px;
+    }
+
+    #client-user-type, #game-parameters {
+        font-size: 20px;
+    }
+
+    #game-state-container {
+        margin: 0 auto 0 auto;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 5px;
+    }
+
+    #play-pause img {
+        width: 45px;
+    }
+
+    .make-mod-button {
+        font-size: 16px;
+        padding: 5px;
+    }
+
+    .game-player-name {
+        font-size: 16px;
+    }
+
+    #game-timer {
+        font-size: 30px;
+    }
+
+    #players-alive-label {
+        font-size: 20px;
+    }
+
+    #start-game-prompt, #end-game-prompt {
+        height: 65px;
+    }
+
+    #start-game-button, #end-game-button {
+        font-size: 20px;
+        padding: 5px;
+    }
+
+    #game-role, #game-role-back {
+        height: 20em;
+        max-width: 15em;
+    }
+
+    #client-container {
+        margin: 0;
+    }
+
+    #game-role-back p {
+        font-size: 16px;
+    }
+
+    #game-role-back h4 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
 }
 
 @keyframes pulse {
@@ -527,6 +730,14 @@ label[for='moderator'] {
         color: rgba(255, 255, 255, 0.1);
     } to {
         color: rgba(255, 255, 255, 1);
+    }
+}
+
+@keyframes pulse-low {
+    from {
+        color: rgba(231, 28, 13 , 0.1);
+    } to {
+          color: rgba(231, 28, 13, 1);
     }
 }
 

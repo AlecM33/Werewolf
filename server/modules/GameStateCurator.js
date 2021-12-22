@@ -7,6 +7,23 @@ const globals = require("../config/globals")
 const GameStateCurator = {
     getGameStateFromPerspectiveOfPerson: (game, person, gameRunner, socket, logger) => {
         return getGameStateBasedOnPermissions(game, person, gameRunner);
+    },
+
+    mapPeopleForModerator: (people) => {
+        return people
+            .filter((person) => {
+                return person.assigned === true
+            })
+            .map((person) => ({
+                name: person.name,
+                id: person.id,
+                userType: person.userType,
+                gameRole: person.gameRole,
+                gameRoleDescription: person.gameRoleDescription,
+                alignment: person.alignment,
+                out: person.out,
+                revealed: person.revealed
+            }));
     }
 }
 
@@ -27,7 +44,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
     switch (person.userType) {
         case globals.USER_TYPES.PLAYER:
         case globals.USER_TYPES.KILLED_PLAYER:
-            return {
+            let state = {
                 accessCode: game.accessCode,
                 status: game.status,
                 moderator: mapPerson(game.moderator),
@@ -37,10 +54,16 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                     .filter((person) => {
                         return person.assigned === true
                     })
-                    .map((filteredPerson) => mapPerson(filteredPerson)),
+                    .map((filteredPerson) =>
+                        mapPerson(filteredPerson)
+                    ),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
             }
+            if (game.status === globals.STATUS.ENDED) {
+                state.people = GameStateCurator.mapPeopleForModerator(game.people);
+            }
+            return state;
         case globals.USER_TYPES.MODERATOR:
             return {
                 accessCode: game.accessCode,
@@ -48,7 +71,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                 moderator: mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
-                people: mapPeopleForModerator(game.people, client),
+                people: GameStateCurator.mapPeopleForModerator(game.people, client),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
                 spectators: game.spectators
@@ -86,23 +109,6 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
         default:
             break;
     }
-}
-
-function mapPeopleForModerator(people) {
-    return people
-        .filter((person) => {
-            return person.assigned === true
-        })
-        .map((person) => ({
-        name: person.name,
-        id: person.id,
-        userType: person.userType,
-        gameRole: person.gameRole,
-        gameRoleDescription: person.gameRoleDescription,
-        alignment: person.alignment,
-        out: person.out,
-        revealed: person.revealed
-    }));
 }
 
 function mapPerson(person) {

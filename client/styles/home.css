@@ -5,7 +5,6 @@ html {
 body {
     align-items: center;
     justify-content: center;
-    height: 100%;
 }
 
 button {
@@ -31,7 +30,18 @@ a button {
 #join-button {
     min-width: 6em;
     max-height: 3em;
-    color: #21ba45;
+    background-color: #1c8a36;
+    color: whitesmoke;
+    font-size: 16px;
+}
+
+#join-button:hover {
+    background-color: #326243;
+    border: 2px solid #1c8a36;
+}
+
+#join-form div:nth-child(1) {
+    margin-right: 1em;
 }
 
 h3 {
@@ -42,11 +52,11 @@ h3 {
     font-family: 'diavlo', sans-serif;
 }
 
-img {
+img[src='../images/logo_cropped.gif'] {
     max-width: 400px;
     width: 63vw;
     min-width: 250px;
-    margin: 1em 0;
+    margin: 3em 0 1em 0;
 }
 
 form > div {

@@ -22,6 +22,11 @@ export class GameTimerManager {
             let instance = this;
             let timer = document.getElementById('game-timer');
             timer.classList.remove('paused');
+            timer.classList.remove('paused-low');
+            timer.classList.remove('low');
+            if (totalTime < 60000) {
+                timer.classList.add('low');
+            }
             timer.innerText = totalTime < 60000
                 ? returnHumanReadableTime(totalTime, true)
                 : returnHumanReadableTime(totalTime);
@@ -29,6 +34,9 @@ export class GameTimerManager {
                 if (e.data.hasOwnProperty('timeRemainingInMilliseconds') && e.data.timeRemainingInMilliseconds >= 0) {
                     if (e.data.timeRemainingInMilliseconds === 0) {
                         instance.displayExpiredTime();
+                    } else if (e.data.timeRemainingInMilliseconds < 60000) {
+                        timer.classList.add('low');
+                        timer.innerText = e.data.displayTime;
                     } else {
                         timer.innerText = e.data.displayTime;
                     }
@@ -49,10 +57,14 @@ export class GameTimerManager {
 
             timerWorker.postMessage('stop');
             let timer = document.getElementById('game-timer');
-            timer.innerText = timeRemaining < 60000
-                ? returnHumanReadableTime(timeRemaining, true)
-                : returnHumanReadableTime(timeRemaining);
-            timer.classList.add('paused');
+            if (timeRemaining < 60000) {
+                timer.innerText = returnHumanReadableTime(timeRemaining, true);
+                timer.classList.add('paused-low');
+                timer.classList.add('low');
+            } else {
+                timer.innerText = returnHumanReadableTime(timeRemaining);
+                timer.classList.add('paused');
+            }
         }
     }
 
@@ -65,10 +77,14 @@ export class GameTimerManager {
         }
 
         let timer = document.getElementById('game-timer');
-        timer.innerText = time < 60000
-            ? returnHumanReadableTime(time, true)
-            : returnHumanReadableTime(time);
-        timer.classList.add('paused');
+        if (time < 60000) {
+            timer.innerText = returnHumanReadableTime(time, true);
+            timer.classList.add('paused-low');
+            timer.classList.add('low');
+        } else {
+            timer.innerText = returnHumanReadableTime(time);
+            timer.classList.add('paused');
+        }
     }
 
     displayExpiredTime() {

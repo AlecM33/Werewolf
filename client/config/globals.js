@@ -15,11 +15,13 @@ export const globals = {
         KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
-        CHANGE_NAME: 'changeName'
+        CHANGE_NAME: 'changeName',
+        END_GAME: 'endGame'
     },
     STATUS: {
         LOBBY: "lobby",
-        IN_PROGRESS: "in progress"
+        IN_PROGRESS: "in progress",
+        ENDED: "ended"
     },
     ALIGNMENT: {
         GOOD: "good",
@@ -51,6 +53,7 @@ export const globals = {
         player: ' \uD83C\uDFAE',
         moderator: ' \uD83D\uDC51',
         'player / temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
-        spectator: ' \uD83D\uDC7B'
+        spectator: ' \uD83D\uDC7B',
+        killed: '\uD83D\uDC80'
     }
 };

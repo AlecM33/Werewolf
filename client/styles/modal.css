@@ -2,7 +2,7 @@
     border-radius: 2px;
     text-align: center;
     position: fixed;
-    width: 100%;
+    width: 85%;
     z-index: 100;
     top: 50%;
     left: 50%;
@@ -10,7 +10,7 @@
     background-color: #23282b;
     align-items: center;
     justify-content: center;
-    max-width: 19em;
+    max-width: 25em;
     max-height: 80%;
     height: fit-content;
     font-family: sans-serif;

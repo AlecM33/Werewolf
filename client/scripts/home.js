@@ -7,17 +7,19 @@ export const home = () => {
         let userCode = document.getElementById("room-code").value;
         if (roomCodeIsValid(userCode)) {
             attemptToJoinGame(userCode);
+        } else {
+            toast('Invalid code. Codes are 6 numbers or letters.', 'error', true, true);
         }
     }
 };
 
 function roomCodeIsValid(code) {
-    return typeof code === "string" && /^[a-z0-9]{6}$/.test(code);
+    return typeof code === "string" && /^[a-z0-9]{6}$/.test(code.toLowerCase());
 }
 
 function attemptToJoinGame(code) {
     XHRUtility.xhr(
-        '/api/games/availability/' + code,
+        '/api/games/availability/' + code.toLowerCase().trim(),
         'GET',
         null,
         null

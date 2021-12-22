@@ -10,7 +10,7 @@
     border-radius: 3px;
     user-select: none;
     max-width: 15em;
-    min-width: 12em;
+    min-width: 9em;
     display: flex;
     height: max-content;
 }
@@ -42,6 +42,7 @@
 
 .card-role {
     font-weight: bold;
+    pointer-events: none;
 }
 
 .compact-card-right p {
@@ -106,7 +107,7 @@
 #step-4 > div {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     text-align: left;
     justify-content: center;
     margin: 0 auto;
@@ -244,6 +245,7 @@ input[type="number"] {
 #creation-step-tracker {
     display: flex;
     justify-content: center;
+    margin: 0 20px;
 }
 
 #step-forward-button, #step-back-button, #create-game {

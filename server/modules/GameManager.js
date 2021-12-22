@@ -33,7 +33,7 @@ class GameManager {
             ackFn(this.environment);
         });
 
-        socket.on(globals.CLIENT_COMMANDS.START_GAME, (accessCode, personId) => {
+        socket.on(globals.CLIENT_COMMANDS.START_GAME, (accessCode) => {
             let game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
                 game.status = globals.STATUS.IN_PROGRESS;
@@ -158,6 +158,17 @@ class GameManager {
                 }
             }
         });
+
+        socket.on(globals.CLIENT_COMMANDS.END_GAME, (accessCode) => {
+            let game = this.activeGameRunner.activeGames[accessCode];
+            if (game) {
+                game.status = globals.STATUS.ENDED;
+                for (let person of game.people) {
+                    person.revealed = true;
+                }
+                namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
+            }
+        })
     }
 
 

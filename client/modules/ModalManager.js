@@ -18,6 +18,8 @@ function displayModal(modalId, backgroundId, closeButtonId) {
         });
         closeBtn.removeEventListener("click", closeModalHandler);
         closeBtn.addEventListener("click", closeModalHandler);
+    } else {
+        throw new Error("One or more of the ids supplied to ModalManager.displayModal is invalid.");
     }
 }
 

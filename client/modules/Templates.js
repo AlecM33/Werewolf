@@ -5,8 +5,19 @@ export const templates = {
             "<label for='game-link'>Share Link</label>" +
             "<div id='game-link'></div>" +
         "</div>" +
-        "<div id='game-time'></div>" +
-        "<div id='game-player-count'></div>" +
+        "<div id='game-parameters'>" +
+            "<div>" +
+                "<img alt='clock' src='/images/clock.svg'/>" +
+                "<div id='game-time'></div>" +
+            "</div>" +
+            "<div>" +
+                "<img alt='person' src='/images/person.svg'/>" +
+            "<div id='game-player-count'></div>" +
+        "</div>" +
+        "</div>" +
+        "<div>" +
+            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+        "</div>" +
     "</div>" +
     "<div>" +
         "<div id='lobby-people-container'>" +
@@ -31,6 +42,9 @@ export const templates = {
             "<label for='game-timer'>Time Remaining</label>" +
             "<div id='game-timer'></div>" +
         "</div>" +
+        "<div>" +
+            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+        "</div>" +
     "</div>" +
     "<div id='game-role' style='display:none'>" +
         "<h4 id='role-name'></h4>" +
@@ -51,22 +65,22 @@ export const templates = {
             "<label for='game-timer'>Time Remaining</label>" +
             "<div id='game-timer'></div>" +
         "</div>" +
+        "<div>" +
+            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+        "</div>" +
     "</div>" +
-    "<div>" +
+    "<div id='game-people-container'>" +
         "<label id='players-alive-label'></label>" +
         "<div id='game-player-list'></div>" +
     "</div>",
     MODERATOR_GAME_VIEW:
     "<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>" +
     "<div id='transfer-mod-modal' class='modal' style='display: none'>" +
-        "<form id='transfer-mod-form'>" +
-            "<div id='transfer-mod-form-content'>" +
-                "<h3>Transfer Mod Powers &#128081;</h3>" +
-            "</div>" +
-            "<div id='modal-button-container'>" +
-                "<button id='close-modal-button'>Cancel</button>" +
-            "</div>" +
-        "</form>" +
+        "<h3>Transfer Mod Powers &#128081;</h3>" +
+        "<div id='transfer-mod-modal-content'></div>" +
+        "<div id='modal-button-container'>" +
+            "<button id='close-mod-transfer-modal-button'>Cancel</button>" +
+        "</div>" +
     "</div>" +
     "<div id='game-header'>" +
         "<div class='timer-container-moderator'>" +
@@ -77,6 +91,9 @@ export const templates = {
             "<div id='play-pause'>" + "</div>" +
         "</div>" +
         "<button id='mod-transfer-button' class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>" +
+        "<div>" +
+            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+        "</div>" +
     "</div>" +
     "<div>" +
         "<label id='players-alive-label'></label>" +
@@ -178,5 +195,31 @@ export const templates = {
                     "<input type='submit' id='submit-new-name' value='Set Name'/>" +
                 "</div>" +
             "</form>" +
+        "</div>",
+    ROLE_INFO_MODAL:
+        "<div id='role-info-modal-background' class='modal-background'></div>" +
+        "<div id='role-info-modal' class='modal'>" +
+            "<h2>Roles in this game:</h2>" +
+            "<div id='game-role-info-container'></div>" +
+            "<div id='modal-button-container'>" +
+                "<button id='close-role-info-modal-button'>Close</button>" +
+            "</div>" +
+        "</div>",
+    END_OF_GAME_VIEW:
+        "<h2>The moderator has ended the game. Roles are revealed.</h2>" +
+        "<div id='end-of-game-header'>" +
+            "<div>" +
+                "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+            "</div>" +
+            "<div>" +
+                "<a href='/'>" +
+                    "<button>Go Home \uD83C\uDFE0</button>" +
+                "</a>" +
+            "</div>" +
+        "</div>" +
+        "<div id='game-people-container'>" +
+            "<label id='players-alive-label'></label>" +
+            "<div id='game-player-list'></div>" +
         "</div>"
+
 }

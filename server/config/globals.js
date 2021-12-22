@@ -12,7 +12,8 @@ const globals = {
         KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
-        CHANGE_NAME: 'changeName'
+        CHANGE_NAME: 'changeName',
+        END_GAME: 'endGame'
     },
     MESSAGES: {
         ENTER_NAME:  "Client must enter name."

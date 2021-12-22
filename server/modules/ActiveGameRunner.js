@@ -49,7 +49,7 @@ class ActiveGameRunner {
         });
 
         gameProcess.on('exit', () => {
-            this.logger.debug('Game ' + game.accessCode + ' has ended.');
+            this.logger.debug('Game ' + game.accessCode + ' timer has expired.');
             delete this.timerThreads[game.accessCode];
         });
         gameProcess.send({

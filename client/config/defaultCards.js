@@ -33,5 +33,10 @@ export const defaultCards = [
         role: "Hunter",
         team: "good",
         description: "If you are alive with a wolf at the end of the game, you best the wolf, and the village wins.",
+    },
+    {
+        role: "Mason",
+        team: "good",
+        description: "Masons know who the other masons are.",
     }
 ];

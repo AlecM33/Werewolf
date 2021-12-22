@@ -48,6 +48,29 @@ export class GameStateRenderer {
         let copyImg = document.createElement("img");
         copyImg.setAttribute("src", "../images/copy.svg");
         gameLinkContainer.appendChild(copyImg);
+
+        let time = document.getElementById("game-time");
+        let playerCount = document.getElementById("game-player-count");
+        playerCount.innerText = getGameSize(this.stateBucket.currentGameState.deck) + ' Players'
+
+        if (this.stateBucket.currentGameState.timerParams) {
+            let timeString = "";
+            let hours = this.stateBucket.currentGameState.timerParams.hours;
+            let minutes = this.stateBucket.currentGameState.timerParams.minutes
+            if (hours) {
+                timeString += hours > 1
+                    ? hours + ' hours '
+                    : hours + ' hour '
+            }
+            if (minutes) {
+                timeString += minutes > 1
+                    ? minutes + ' minutes '
+                    : minutes + ' minute '
+            }
+            time.innerText = timeString;
+        } else {
+            time.innerText = 'untimed';
+        }
     }
 
     renderLobbyFooter() {
@@ -69,7 +92,16 @@ export class GameStateRenderer {
     renderModeratorView() {
         let div = document.createElement("div");
         div.innerHTML = templates.END_GAME_PROMPT;
-        document.body.appendChild(div);
+        document.getElementById("game-content").appendChild(div);
+        document.getElementById("end-game-button").addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm("End the game?")) {
+                this.socket.emit(
+                    globals.COMMANDS.END_GAME,
+                    this.stateBucket.currentGameState.accessCode
+                );
+            }
+        });
 
         let modTransferButton = document.getElementById("mod-transfer-button");
         modTransferButton.addEventListener(
@@ -78,7 +110,7 @@ export class GameStateRenderer {
                 ModalManager.displayModal(
                     "transfer-mod-modal",
                     "transfer-mod-modal-background",
-                    "close-modal-button"
+                    "close-mod-transfer-modal-button"
                 )
             }
         )
@@ -118,18 +150,7 @@ export class GameStateRenderer {
     }
 
     renderPlayersWithRoleAndAlignmentInfo() {
-        document.querySelectorAll('.game-player').forEach((el) => {
-            let pointer = el.dataset.pointer;
-            if (pointer && this.killPlayerHandlers[pointer]) {
-                el.removeEventListener('click', this.killPlayerHandlers[pointer]);
-                delete this.killPlayerHandlers[pointer];
-            }
-            if (pointer && this.revealRoleHandlers[pointer]) {
-                el.removeEventListener('click', this.revealRoleHandlers[pointer]);
-                delete this.revealRoleHandlers[pointer];
-            }
-            el.remove();
-        });
+        removeExistingPlayerElements(this.killPlayerHandlers, this.revealRoleHandlers);
         this.stateBucket.currentGameState.people.sort((a, b) => {
             return a.name >= b.name ? 1 : -1;
         });
@@ -151,7 +172,8 @@ export class GameStateRenderer {
             this.stateBucket.currentGameState.accessCode,
             globals.ALIGNMENT.GOOD,
             this.stateBucket.currentGameState.moderator.userType,
-            this.socket);
+            this.socket
+        );
         document.getElementById("players-alive-label").innerText =
             'Players: ' + this.stateBucket.currentGameState.people.filter((person) => !person.out).length + ' / '
             + this.stateBucket.currentGameState.people.length + ' Alive';
@@ -208,28 +230,27 @@ export class GameStateRenderer {
             }
             el.remove();
         });
-        let modalContent = document.getElementById("transfer-mod-form-content");
-        if (modalContent) {
-            renderPotentialMods(
-                this.stateBucket.currentGameState,
-                this.stateBucket.currentGameState.people,
-                this.transferModHandlers,
-                modalContent,
-                this.socket
-            );
-            renderPotentialMods( // spectators can also be made mods.
-                this.stateBucket.currentGameState,
-                this.stateBucket.currentGameState.spectators,
-                this.transferModHandlers,
-                modalContent,
-                this.socket
-            );
-        }
+        renderPotentialMods(
+            this.stateBucket.currentGameState,
+            this.stateBucket.currentGameState.people,
+            this.transferModHandlers,
+            this.socket
+        );
+        renderPotentialMods( // spectators can also be made mods.
+            this.stateBucket.currentGameState,
+            this.stateBucket.currentGameState.spectators,
+            this.transferModHandlers,
+            this.socket
+        );
     }
 
+    renderEndOfGame() {
+        this.renderPlayersWithNoRoleInformationUnlessRevealed();
+    }
 }
 
-function renderPotentialMods(gameState, group, transferModHandlers, modalContent, socket) {
+function renderPotentialMods(gameState, group, transferModHandlers, socket) {
+    let modalContent = document.getElementById("transfer-mod-modal-content");
     for (let member of group) {
         if ((member.out || member.userType === globals.USER_TYPES.SPECTATOR) && !(member.id === gameState.client.id)) {
             let container = document.createElement("div");
@@ -244,6 +265,7 @@ function renderPotentialMods(gameState, group, transferModHandlers, modalContent
 
             container.addEventListener('click', transferModHandlers[member.id]);
             modalContent.appendChild(container);
+            console.log('test');
         }
     }
 }
@@ -419,4 +441,19 @@ function insertPlaceholderButton(container, append, type) {
     } else {
         container.querySelector('.player-action-buttons').prepend(button);
     }
+}
+
+function removeExistingPlayerElements(killPlayerHandlers, revealRoleHandlers) {
+    document.querySelectorAll('.game-player').forEach((el) => {
+        let pointer = el.dataset.pointer;
+        if (pointer && killPlayerHandlers[pointer]) {
+            el.removeEventListener('click', killPlayerHandlers[pointer]);
+            delete killPlayerHandlers[pointer];
+        }
+        if (pointer && revealRoleHandlers[pointer]) {
+            el.removeEventListener('click', revealRoleHandlers[pointer]);
+            delete revealRoleHandlers[pointer];
+        }
+        el.remove();
+    });
 }

@@ -70,7 +70,8 @@ const inGame = io.of('/in-game');
 
 
 /* Instantiate the singleton game manager */
-const gameManager = new GameManager(logger, environment).getInstance();
+//const gameManager = new GameManager(logger, environment).getInstance();
+const gameManager = new GameManager(logger, globals.ENVIRONMENT.LOCAL).getInstance(); // temporary
 
 /* Instantiate the singleton queue manager */
 //const queueManager = new QueueManager(matchmaking, logger).getInstance();

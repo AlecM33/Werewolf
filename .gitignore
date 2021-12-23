@@ -3,4 +3,3 @@ node_modules/*
 client/certs/
 client/dist/
 .vscode/launch.json
-package-lock.json

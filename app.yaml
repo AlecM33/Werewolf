@@ -1,4 +1,5 @@
-runtime: nodejs14
+runtime: nodejs
+env: flex
 entrypoint: npm run start:prod:linux
 automatic_scaling:
   max_instances: 1

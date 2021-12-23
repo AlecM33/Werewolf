@@ -1,7 +1,7 @@
 import { XHRUtility } from "../modules/XHRUtility.js";
 import { toast } from "../modules/Toast.js";
 
-export const home = () => {
+const home = () => {
     document.getElementById("join-form").onsubmit = (e) => {
         e.preventDefault();
         let userCode = document.getElementById("room-code").value;
@@ -37,5 +37,11 @@ function attemptToJoinGame(code) {
             toast("An unknown error occurred. Please try again later.", "error", true);
         }
     });
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = home;
+} else {
+    home();
 }
 

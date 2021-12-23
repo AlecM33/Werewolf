@@ -6,8 +6,9 @@ import {cancelCurrentToast, toast} from "../modules/Toast.js";
 import {GameTimerManager} from "../modules/GameTimerManager.js";
 import {ModalManager} from "../modules/ModalManager.js";
 import {stateBucket} from "../modules/StateBucket.js";
+import { io } from 'socket.io-client';
 
-export const game = () => {
+const game = () => {
     let timerWorker;
     const socket = io('/in-game');
     socket.on('disconnect', () => {
@@ -18,7 +19,7 @@ export const game = () => {
     });
     socket.on('connect', () => {
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function(returnedEnvironment) {
-            timerWorker = new Worker('../modules/Timer.js');
+            timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
             prepareGamePage(returnedEnvironment, socket, timerWorker);
         });
     })
@@ -365,4 +366,10 @@ function activateRoleInfoButton(deck) {
         }
         ModalManager.displayModal('role-info-modal', 'role-info-modal-background', 'close-role-info-modal-button');
     });
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = game;
+} else {
+    game();
 }

@@ -92,18 +92,20 @@ app.use('/favicon.ico', (req, res) => {
 const router = require('./routes/router');
 app.use('', router);
 
-app.use('/images', express.static(path.join(__dirname, '../client/images')));
-app.use('/scripts', express.static(path.join(__dirname, '../client/scripts')));
-app.use('/styles', express.static(path.join(__dirname, '../client/styles')));
-app.use('/styles/third-party', express.static(path.join(__dirname, '../client/styles/third_party')));
-app.use('/modules/third-party', express.static(path.join(__dirname, '../client/modules/third_party')))
-app.use('/modules', express.static(path.join(__dirname, '../client/modules')))
-app.use('/model', express.static(path.join(__dirname, '../client/model')))
-app.use('/config', express.static(path.join(__dirname, '../client/config')))
-app.use('/webfonts', express.static(path.join(__dirname, '../client/webfonts')));
+if (process.env.NODE_ENV.trim() === 'development') {
+    app.use('/dist', express.static(path.join(__dirname, '../client/dist')));
+} else if (process.env.NODE_ENV.trim() === 'production') {
+    app.use('/dist', express.static(path.join(__dirname, '../client/dist')));
+}
+
+// set up routing for static content that isn't being bundled.
+app.use('/images', express.static(path.join(__dirname, '../client/src/images')));
+app.use('/styles', express.static(path.join(__dirname, '../client/src/styles')));
+app.use('/webfonts', express.static(path.join(__dirname, '../client/src/webfonts')));
+
 
 app.use(function (req, res) {
-    res.sendFile(path.join(__dirname, '../client/views/404.html'));
+    res.sendFile(path.join(__dirname, '../client/src/views/404.html'));
 });
 
 inGame.on('connection', function (socket) {

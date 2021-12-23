@@ -3,15 +3,15 @@ const router = express.Router({ strict: true });
 const path = require('path');
 
 router.get('/', function (request, response) {
-    response.sendFile(path.join(__dirname, '../../client/views/home.html'));
+    response.sendFile(path.join(__dirname, '../../client/src/views/home.html'));
 });
 
 router.get('/create', function (request, response) {
-    response.sendFile(path.join(__dirname, '../../client/views/create.html'));
+    response.sendFile(path.join(__dirname, '../../client/src/views/create.html'));
 });
 
 router.get('/game/:code', function (request, response) {
-    response.sendFile(path.join(__dirname, '../../client/views/game.html'));
+    response.sendFile(path.join(__dirname, '../../client/src/views/game.html'));
 });
 
 

@@ -1,11 +1,9 @@
 import { defaultCards } from "../config/defaultCards.js";
 import { customCards } from "../config/customCards.js";
 import { DeckStateManager } from "../modules/DeckStateManager.js";
-import { XHRUtility } from "../modules/XHRUtility.js";
-import { Game } from "../model/Game.js";
 import { GameCreationStepManager } from "../modules/GameCreationStepManager.js";
 
-export const create = () => {
+const create = () => {
     let deckManager = new DeckStateManager();
     let gameCreationStepManager = new GameCreationStepManager(deckManager);
     loadDefaultCards(deckManager);
@@ -31,4 +29,10 @@ function loadCustomRoles(deckManager) {
         return a.role.localeCompare(b.role);
     });
     deckManager.customRoleOptions = customCards;
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = create;
+} else {
+    create();
 }

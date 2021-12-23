@@ -2,9 +2,14 @@
   "name": "werewolf_game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "start": "node server/main.js",
+    "build:dev": "npx webpack --config client/webpack/webpack-dev.config.js --mode=development",
+    "build:prod": "npx webpack --config client/webpack/webpack-prod.config.js --mode=production",
+    "start:dev:linux": "NODE_ENV=development node server/main.js",
+    "start:dev": "SET NODE_ENV=development && node server/main.js",
+    "start:prod:linux": "NODE_ENV=production node server/main.js",
+    "start:prod": "SET NODE_ENV=production && node server/main.js",
     "test": "jasmine && node browsertest.js openBrowser socket",
     "test:unit": "jasmine",
     "test:e2e": "node browsertest.js"
@@ -15,9 +20,19 @@
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
     "jasmine": "^3.5.0",
-    "socket.io": "^2.4.1"
+    "socket.io": "^4.4.0"
   },
   "devDependencies": {
-    "open": "^7.0.3"
+    "@babel/core": "^7.16.5",
+    "@babel/plugin-transform-object-assign": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "babel-loader": "^8.2.3",
+    "css-loader": "^6.5.1",
+    "open": "^7.0.3",
+    "socket.io-client": "^4.4.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-remove-debug": "^0.1.0"
   }
 }

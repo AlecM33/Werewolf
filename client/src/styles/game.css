@@ -533,7 +533,7 @@ label[for='moderator'] {
 
 #game-link:hover {
     background-color: #26282a;
-    border: 1px solid #d7d7d7;
+    border: 2px solid #d7d7d7;
 }
 
 .reveal-role-button {

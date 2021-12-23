@@ -173,13 +173,13 @@ class GameManager {
 
 
     createGame = (gameParams) => {
-        const expectedKeys = ['deck', 'hasTimer', 'timerParams', 'moderatorName'];
+        const expectedKeys = ['deck', 'hasTimer', 'timerParams'];
         if (typeof gameParams !== 'object' || expectedKeys.some((key) => !Object.keys(gameParams).includes(key))) {
             this.logger.error('Tried to create game with invalid options: ' + JSON.stringify(gameParams));
             return Promise.reject('Tried to create game with invalid options: ' + gameParams);
         } else {
             const newAccessCode = this.generateAccessCode();
-            let moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
+            let moderator = initializeModerator(UsernameGenerator.generate(), gameParams.hasDedicatedModerator);
             if (gameParams.timerParams !== null) {
                 gameParams.timerParams.paused = false;
             }
@@ -233,7 +233,6 @@ function initializeModerator(name, hasDedicatedModerator) {
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
     let moderator = new Person(createRandomId(), createRandomId(), name, userType);
-    moderator.hasEnteredName = true // they did this when creating the game.
     return moderator;
 }
 
@@ -423,7 +422,13 @@ function isGameFull(game) {
 }
 
 function findPersonById(game, id) {
-    let person = game.people.find((person) => person.id === id)
+    let person;
+    if (id === game.moderator.id) {
+        person = game.moderator;
+    }
+    if (!person) {
+        person = game.people.find((person) => person.id === id);
+    }
     if (!person) {
         person = game.spectators.find((spectator) => spectator.id === id)
     }

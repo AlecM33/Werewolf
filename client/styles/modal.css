@@ -11,7 +11,6 @@
     align-items: center;
     justify-content: center;
     max-width: 25em;
-    max-height: 80%;
     height: fit-content;
     font-family: sans-serif;
     flex-direction: column;
@@ -40,13 +39,13 @@
     font-size: 16px;
 }
 
+#close-modal-button {
+    background-color: #762323;
+}
+
 #modal-button-container {
     display: flex;
     width: 100%;
     justify-content: space-between;
     flex-direction: row;
-}
-
-#modal-button-container input {
-    color: #21ba45;
 }

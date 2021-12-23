@@ -85,13 +85,13 @@ export class GameCreationStepManager {
             4: {
                 title: "Review and submit:",
                 backHandler: this.defaultBackHandler,
-                forwardHandler: (deck, hasTimer, hasDedicatedModerator, modName, timerParams) => {
+                forwardHandler: (deck, hasTimer, hasDedicatedModerator, timerParams) => {
                     XHRUtility.xhr(
                         '/api/games/create',
                         'POST',
                         null,
                         JSON.stringify(
-                            new Game(deck, hasTimer, hasDedicatedModerator, modName, timerParams)
+                            new Game(deck, hasTimer, hasDedicatedModerator, timerParams)
                         )
                     )
                     .then((res) => {
@@ -154,7 +154,7 @@ export class GameCreationStepManager {
 
 function renderModerationTypeStep(game, containerId, stepNumber) {
     const stepContainer = document.createElement("div");
-    setAttributes(stepContainer, {'id': 'step-' + stepNumber, 'class': 'flex-row-container'});
+    setAttributes(stepContainer, {'id': 'step-' + stepNumber, 'class': 'flex-row-container step'});
 
     stepContainer.innerHTML =
         "<div id='moderation-dedicated'>I will be the <strong>dedicated mod.</strong> Don't deal me a card.</div>" +
@@ -186,7 +186,7 @@ function renderModerationTypeStep(game, containerId, stepNumber) {
 
 function renderRoleSelectionStep(game, containerId, step, deckManager) {
     const stepContainer = document.createElement("div");
-    setAttributes(stepContainer, {'id': 'step-' + step, 'class': 'flex-row-container-left-align'});
+    setAttributes(stepContainer, {'id': 'step-' + step, 'class': 'flex-row-container-left-align step'});
 
     let div = document.createElement("div");
     div.setAttribute("id", "deck-container");
@@ -208,35 +208,37 @@ function renderRoleSelectionStep(game, containerId, step, deckManager) {
 
     document.getElementById(containerId).appendChild(stepContainer);
 
-    $('.ui.dropdown')
-        .dropdown();
-
     initializeRemainingEventListeners(deckManager);
 }
 
 function renderTimerStep(containerId, stepNumber, game) {
     let div = document.createElement("div");
     div.setAttribute("id", "step-" + stepNumber);
+    div.classList.add('step');
 
     let timeContainer = document.createElement("div");
     timeContainer.setAttribute("id", "game-time");
 
+    let hoursDiv = document.createElement("div");
     let hoursLabel = document.createElement("label");
     hoursLabel.setAttribute("for", "game-hours");
     hoursLabel.innerText = "Hours (max 5)"
     let hours = document.createElement("input");
     setAttributes(hours, {type: "number", id: "game-hours", name: "game-hours", min: "0", max: "5", value: game.timerParams?.hours})
 
+    let minutesDiv = document.createElement("div");
     let minsLabel = document.createElement("label");
     minsLabel.setAttribute("for", "game-minutes");
     minsLabel.innerText = "Minutes"
     let minutes = document.createElement("input");
     setAttributes(minutes, {type: "number", id: "game-minutes", name: "game-minutes", min: "1", max: "60", value: game.timerParams?.minutes})
 
-    timeContainer.appendChild(hoursLabel);
-    timeContainer.appendChild(hours);
-    timeContainer.appendChild(minsLabel);
-    timeContainer.appendChild(minutes);
+    hoursDiv.appendChild(hoursLabel);
+    hoursDiv.appendChild(hours);
+    minutesDiv.appendChild(minsLabel);
+    minutesDiv.appendChild(minutes);
+    timeContainer.appendChild(hoursDiv);
+    timeContainer.appendChild(minutesDiv);
     div.appendChild(timeContainer);
 
     document.getElementById(containerId).appendChild(div);
@@ -245,6 +247,7 @@ function renderTimerStep(containerId, stepNumber, game) {
 function renderReviewAndCreateStep(containerId, stepNumber, game) {
     let div = document.createElement("div");
     div.setAttribute("id", "step-" + stepNumber);
+    div.classList.add('step');
 
     div.innerHTML =
         "<div>" +
@@ -285,12 +288,6 @@ function renderReviewAndCreateStep(containerId, stepNumber, game) {
         div.querySelector('#roles-option').appendChild(roleEl);
     }
 
-    let nameDiv = document.createElement("div");
-    nameDiv.innerHTML =
-        "<label for='mod-name'>Your Name</label>" +
-        "<input id='mod-name' type='text' maxLength='30' required/>"
-
-    div.appendChild(nameDiv);
     document.getElementById(containerId).appendChild(div);
 }
 
@@ -333,17 +330,12 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
         createButton.innerText = "Create";
         createButton.setAttribute("id", "create-game");
         createButton.addEventListener("click", () => {
-            if (document.getElementById("mod-name").value.length > 0) {
-                forwardHandler(
-                    builtGame.deck.filter((card) => card.quantity > 0),
-                    builtGame.hasTimer,
-                    builtGame.hasDedicatedModerator,
-                    document.getElementById("mod-name").value,
-                    builtGame.timerParams
-                );
-            } else {
-                toast("You must provide your name.", "error", true);
-            }
+            forwardHandler(
+                builtGame.deck.filter((card) => card.quantity > 0),
+                builtGame.hasTimer,
+                builtGame.hasDedicatedModerator,
+                builtGame.timerParams
+            );
         });
         document.getElementById("tracker-container").appendChild(createButton);
     }
@@ -373,15 +365,13 @@ function loadCustomRoles(deckManager) {
 
     let createRoleButton = document.createElement("button");
     createRoleButton.setAttribute("id", "custom-role-btn");
-    createRoleButton.innerText = 'Create Custom Role';
+    createRoleButton.innerText = '+ Create Custom Role';
 
     let form = document.createElement("form");
     form.setAttribute("id", "add-card-to-deck-form");
 
     let selectEl = document.createElement("select");
     selectEl.setAttribute("id", "deck-select");
-    selectEl.setAttribute("class", "ui search dropdown");
-
     addOptionsToList(deckManager.getCurrentCustomRoleOptions(), selectEl);
 
     form.appendChild(selectEl);
@@ -394,9 +384,9 @@ function loadCustomRoles(deckManager) {
         if (selectEl.value && selectEl.value.length > 0) {
             deckManager.addToDeck(selectEl.value);
             let cardEl = constructCompactDeckBuilderElement(deckManager.getCard(selectEl.value), deckManager);
+            toast('"' + selectEl.value + '" included.', 'success', true, true, 3);
             updateCustomRoleOptionsList(deckManager, selectEl);
             document.getElementById("deck").appendChild(cardEl);
-            document.querySelector("#add-card-to-deck-form .text").innerText = "";
         }
     })
     form.appendChild(submitBtn);

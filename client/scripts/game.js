@@ -131,7 +131,12 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer) 
                 default:
                     break;
             }
-            socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode);
+            if (currentGameState.timerParams) {
+                socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode);
+            } else {
+                document.querySelector('#game-timer')?.remove();
+                document.querySelector('label[for="game-timer"]')?.remove();
+            }
             break;
         case globals.STATUS.ENDED:
             let container = document.getElementById("game-state-container")

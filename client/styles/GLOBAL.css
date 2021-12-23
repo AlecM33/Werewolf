@@ -65,6 +65,7 @@ h3 {
     color: #d7d7d7;
     font-size: 14px;
     margin-top: 3em;
+    margin-bottom: 0.5em;
 }
 #footer a img {
     width: 32px;
@@ -125,13 +126,14 @@ button {
 button, input[type="submit"] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
-    background-color: #722c2c;
+    background-color: #13762b;
     border-radius: 3px;
     color: whitesmoke;
     font-size: 18px;
     cursor: pointer;
     border: 2px solid transparent;
     transition: background-color 0.3s ease-out;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
 }
 
 button:active, input[type=submit]:active {
@@ -150,7 +152,8 @@ button:active, input[type=submit]:active {
 }
 
 button:hover, input[type="submit"]:hover, #game-link:hover {
-    background-color: #333243;
+    background-color: #326243;
+    border: 2px solid #1c8a36;
 }
 
 input {

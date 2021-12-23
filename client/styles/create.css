@@ -36,10 +36,6 @@
     border: 2px solid #c5c5c5;
 }
 
-.search {
-    color: black;
-}
-
 .card-role {
     font-weight: bold;
     pointer-events: none;
@@ -104,6 +100,11 @@
     margin: 0 auto;
 }
 
+option {
+    background-color: #1f1f1f;
+    cursor: pointer;
+}
+
 #step-4 > div {
     display: flex;
     flex-direction: column;
@@ -139,6 +140,11 @@ select {
     padding: 10px;
     font-size: 18px;
     font-family: 'signika-negative', sans-serif;
+    background-color: transparent;
+    color: #d7d7d7;
+    border-radius: 3px;
+    min-width: 10em;
+    cursor: pointer;
 }
 
 #game-form > div {
@@ -155,9 +161,24 @@ select {
     display: flex;
 }
 
+#game-time {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #1f1f1f;
+    border-radius: 3px;
+}
+
+.step {
+    margin-bottom: 2em;
+}
+
 #game-time label, #game-time input {
     margin-right: 10px;
     font-size: 25px;
+}
+
+#game-time div {
+    margin: 0.5em;
 }
 
 label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
@@ -187,6 +208,10 @@ input[type="number"] {
 #create-game:hover {
     background-color: #326243;
     border: 2px solid #1c8a36;
+}
+
+#deck-select {
+    margin: 0.5em 1em 1.5em 0;
 }
 
 .dropdown {
@@ -260,6 +285,7 @@ input[type="number"] {
 
 #step-back-button {
     left: 15%;
+    background-color: #762323;
 }
 
 #step-1 div {
@@ -291,6 +317,7 @@ input[type="number"] {
     background-color: #1f1f1f;
     color: whitesmoke;
     padding: 10px;
+    font-size: 18px;
     width: fit-content;
     border-radius: 3px;
     margin: 0.5em 0;
@@ -312,6 +339,16 @@ input[type="number"] {
 
     #step-1 div {
         font-size: 20px;
+    }
+
+    .creation-step {
+        width: 13px;
+        height: 13px;
+    }
+
+    #step-forward-button, #step-back-button, #create-game {
+        padding: 10px 15px;
+        font-size: 16px;
     }
 }
 

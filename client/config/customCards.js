@@ -5,8 +5,8 @@ export const customCards = [
         description: "hohoho",
     },
     {
-        role: "Mason",
+        role: "The Thing",
         team: "good",
-        description: "you are a mason",
+        description: "you go bump in the night",
     },
 ];

@@ -41,7 +41,6 @@ function prepareGamePage(environment, socket, timerWorker) {
 
             document.getElementById("game-content").innerHTML = templates.INITIAL_GAME_DOM;
             toast('You are connected.', 'success', true, true, 2);
-            console.log(gameState);
             userId = gameState.client.cookie;
             UserUtility.setAnonymousUserId(userId, environment);
             let gameStateRenderer = new GameStateRenderer(stateBucket, socket);
@@ -66,7 +65,7 @@ function prepareGamePage(environment, socket, timerWorker) {
                                     ModalManager.dispelModal("change-name-modal", "change-name-modal-background")
                                     toast('Name set.', 'success', true, true, 5);
                                     propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
-                                    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer);
+                                    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
                             }
                         })
                     } else {
@@ -82,10 +81,10 @@ function prepareGamePage(environment, socket, timerWorker) {
 
 function initializeGame(stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager) {
     setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
-    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer);
+    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
 }
 
-function processGameState (currentGameState, userId, socket, gameStateRenderer) {
+function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker) {
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
     switch (currentGameState.status) {
         case globals.STATUS.LOBBY:
@@ -133,7 +132,9 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer) 
                     break;
             }
             if (currentGameState.timerParams) {
-                socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode);
+                socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode, (timeRemaining, paused) => {
+                    gameTimerManager.processTimeRemaining(timeRemaining, paused, timerWorker);
+                });
             } else {
                 document.querySelector('#game-timer')?.remove();
                 document.querySelector('label[for="game-timer"]')?.remove();
@@ -183,7 +184,7 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
                 stateBucket.currentGameState.client.cookie,
                 function (gameState) {
                     stateBucket.currentGameState = gameState;
-                    processGameState(stateBucket.currentGameState, gameState.client.cookie, socket, gameStateRenderer);
+                    processGameState(stateBucket.currentGameState, gameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
                 }
             );
         });
@@ -252,7 +253,7 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
         socket.on(globals.EVENTS.CHANGE_NAME, (personId, name) => {
             propagateNameChange(stateBucket.currentGameState, name, personId);
             updateDOMWithNameChange(stateBucket.currentGameState, gameStateRenderer);
-            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer);
+            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
         });
     }
 
@@ -260,7 +261,7 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
         socket.on(globals.COMMANDS.END_GAME, (people) => {
             stateBucket.currentGameState.people = people;
             stateBucket.currentGameState.status = globals.STATUS.ENDED;
-            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer);
+            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
         });
     }
 }

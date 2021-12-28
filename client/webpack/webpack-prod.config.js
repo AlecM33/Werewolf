@@ -1,4 +1,5 @@
 const path = require('path');
+'use strict';
 
 module.exports = {
     entry: {
@@ -12,7 +13,6 @@ module.exports = {
     },
     mode: "production",
     node: false,
-    devtool: 'source-map',
     module: {
         rules: [
             {

@@ -39,7 +39,9 @@ export class GameStateRenderer {
         title.innerText = "Lobby";
         document.getElementById("game-title").appendChild(title);
         let gameLinkContainer = document.getElementById("game-link");
-        gameLinkContainer.innerText = window.location;
+        let linkDiv = document.createElement("div");
+        linkDiv.innerText = window.location;
+        gameLinkContainer.prepend(linkDiv);
         gameLinkContainer.addEventListener('click', () => {
             navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
                 toast('Link copied!', 'success', true);
@@ -265,7 +267,6 @@ function renderPotentialMods(gameState, group, transferModHandlers, socket) {
 
             container.addEventListener('click', transferModHandlers[member.id]);
             modalContent.appendChild(container);
-            console.log('test');
         }
     }
 }

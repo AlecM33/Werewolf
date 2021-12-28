@@ -3,8 +3,20 @@ const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
 const GameManager = require('../modules/GameManager.js');
+const rateLimit = require('express-rate-limit').default
 
 const gameManager = new GameManager().getInstance();
+
+const apiLimiter = rateLimit({
+    windowMs: 600000,
+    max: 3,
+    standardHeaders: true,
+    legacyHeaders: false,
+})
+
+if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 3 games per 10 minutes.
+    router.use('/create', apiLimiter);
+}
 
 router.post('/create', function (req, res) {
     logger.debug('Received request to create new game: ' + JSON.stringify(req.body, null, 4));

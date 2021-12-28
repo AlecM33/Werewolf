@@ -12,6 +12,7 @@ module.exports = {
     },
     mode: "development",
     node: false,
+    devtool: 'source-map',
     module: {
         rules: [
             {

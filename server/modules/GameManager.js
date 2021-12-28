@@ -178,6 +178,8 @@ class GameManager {
             this.logger.error('Tried to create game with invalid options: ' + JSON.stringify(gameParams));
             return Promise.reject('Tried to create game with invalid options: ' + gameParams);
         } else {
+            // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
+            pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
             const newAccessCode = this.generateAccessCode();
             let moderator = initializeModerator(UsernameGenerator.generate(), gameParams.hasDedicatedModerator);
             if (gameParams.timerParams !== null) {
@@ -192,6 +194,7 @@ class GameManager {
                 moderator,
                 gameParams.timerParams
             );
+            this.activeGameRunner.activeGames[newAccessCode].createTime = new Date().toJSON();
             return Promise.resolve(newAccessCode);
         }
     }
@@ -359,12 +362,11 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     logger.trace('this person is already associated with a socket connection');
                     let alreadyConnectedSocket = namespace.connected[matchingPerson.socketId];
                     if (alreadyConnectedSocket && alreadyConnectedSocket.leave) {
-                        alreadyConnectedSocket.leave(accessCode, ()=> {
-                            logger.trace('kicked existing connection out of room ' + accessCode);
-                            socket.join(accessCode);
-                            matchingPerson.socketId = socket.id;
-                            ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
-                        })
+                        alreadyConnectedSocket.leave(accessCode);
+                        logger.trace('kicked existing connection out of room ' + accessCode);
+                        socket.join(accessCode);
+                        matchingPerson.socketId = socket.id;
+                        ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                     }
                 }
             }
@@ -398,7 +400,7 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
         }
     } else {
         rejectClientRequestForGameState(ackFn);
-        logger.trace('the game' + accessCode + ' was not found');
+        logger.trace('the game ' + accessCode + ' was not found');
     }
 }
 
@@ -440,6 +442,23 @@ function isNameTaken(game, name) {
     return (game.people.find((person) => person.name.toLowerCase().trim() === processedName))
     || (game.moderator.name.toLowerCase().trim() === processedName)
     || (game.spectators.find((spectator) => spectator.name.toLowerCase().trim() === processedName))
+}
+
+function pruneStaleGames(activeGames, timerThreads, logger) {
+    for (const [accessCode, game] of Object.entries(activeGames)) {
+        if (game.createTime) {
+            let createDate = new Date(game.createTime);
+            if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) { // clear games created more than 12 hours ago
+                logger.info('PRUNING STALE GAME ' + accessCode);
+                delete activeGames[accessCode];
+                if (timerThreads[accessCode]) {
+                    logger.info('KILLING STALE TIMER PROCESS FOR ' + accessCode);
+                    timerThreads[accessCode].kill();
+                    delete timerThreads[accessCode];
+                }
+            }
+        }
+    }
 }
 
 module.exports = Singleton;

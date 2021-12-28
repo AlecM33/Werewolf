@@ -1,7 +1,7 @@
 export class DeckStateManager {
     constructor() {
         this.deck = null;
-        this.customRoleOptions = null;
+        this.customRoleOptions = [];
     }
 
     addToDeck(role) {

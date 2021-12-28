@@ -3,7 +3,6 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
-const socketIO = require('socket.io');
 const app = express();
 const bodyParser = require('body-parser');
 const GameManager = require('./modules/GameManager.js');
@@ -62,9 +61,30 @@ if (localServer) {
     app.use(secure);
 }
 
-const io = socketIO(main);
-
 app.set('port', port);
+
+let io;
+
+if (process.env.NODE_ENV.trim() === 'development') {
+    io = require("socket.io")(main, {
+        cors: {
+            origin: "http://localhost:" + port,
+            methods: ["GET", "POST"],
+            allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
+            credentials: false
+        }
+    });
+} else {
+    io = require("socket.io")(main, {
+        cors: {
+            origin: ["https://playwerewolf.uk.r.appspot.com", "wss://playwerewolf.uk.r.appspot.com"],
+            methods: ["GET", "POST"],
+            allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
+            credentials: false
+        },
+        transports: ["polling"]
+    });
+}
 
 const inGame = io.of('/in-game');
 
@@ -75,7 +95,6 @@ const gameManager = new GameManager(logger, globals.ENVIRONMENT.LOCAL).getInstan
 
 /* Instantiate the singleton queue manager */
 //const queueManager = new QueueManager(matchmaking, logger).getInstance();
-
 
 /* api endpoints */
 const games = require('./api/GamesAPI');

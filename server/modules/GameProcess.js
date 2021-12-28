@@ -16,7 +16,7 @@ process.on('message', (msg) => {
             );
             timer.runTimer().then(() => {
                 logger.debug('Timer finished for ' + msg.accessCode);
-                process.send({ command: globals.GAME_PROCESS_COMMANDS.END_GAME });
+                process.send({ command: globals.GAME_PROCESS_COMMANDS.END_TIMER });
                 process.exit(0);
             });
 
@@ -31,7 +31,7 @@ process.on('message', (msg) => {
         case globals.GAME_PROCESS_COMMANDS.RESUME_TIMER:
             timer.resumeTimer().then(() => {
                 logger.debug('Timer finished for ' + msg.accessCode);
-                process.send({ command: globals.GAME_PROCESS_COMMANDS.END_GAME });
+                process.send({ command: globals.GAME_PROCESS_COMMANDS.END_TIMER });
                 process.exit(0);
             });
             logger.trace('CHILD PROCESS ' + msg.accessCode + ': RESUME TIMER');

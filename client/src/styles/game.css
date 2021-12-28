@@ -58,6 +58,7 @@ body {
 
 #lobby-header {
     margin-bottom: 1em;
+    max-width: 95%;
 }
 
 h1 {
@@ -115,13 +116,6 @@ h1 {
 }
 
 #game-link {
-    user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     cursor: pointer;
     margin-top: 10px;
     padding: 7px;
@@ -132,6 +126,13 @@ h1 {
     align-items: center;
     display: flex;
     transition: background-color 0.2s;
+}
+
+#game-link > div {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 95%;
 }
 
 .role-info-name {
@@ -277,6 +278,9 @@ h1 {
     font-size: 35px;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
     border: 1px solid #747474;
+    min-width: 5em;
+    display: flex;
+    justify-content: center;
 }
 
 #game-timer.low {

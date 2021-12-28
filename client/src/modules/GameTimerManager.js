@@ -114,7 +114,6 @@ export class GameTimerManager {
 
         if(!socket.hasListeners(globals.COMMANDS.GET_TIME_REMAINING)) {
             socket.on(globals.COMMANDS.GET_TIME_REMAINING, (timeRemaining, paused) => {
-                console.log('received time remaining from server');
                 if (paused) {
                     this.displayPausedTime(timeRemaining);
                 } else if (timeRemaining === 0) {
@@ -150,6 +149,16 @@ export class GameTimerManager {
         pauseBtn.setAttribute('src', '../images/pause-button.svg');
         pauseBtn.addEventListener('click', this.pauseListener);
         document.getElementById('play-pause').appendChild(pauseBtn);
+    }
+
+    processTimeRemaining(timeRemaining, paused, timerWorker) {
+        if (paused) {
+            this.displayPausedTime(timeRemaining);
+        } else if (timeRemaining === 0) {
+            this.displayExpiredTime();
+        } else {
+            this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
+        }
     }
 }
 

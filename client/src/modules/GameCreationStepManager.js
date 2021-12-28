@@ -67,7 +67,6 @@ export class GameCreationStepManager {
                             this.currentGame.hasTimer = false;
                             this.currentGame.timerParams = null;
                         }
-                        console.log(this.currentGame);
                         cancelCurrentToast();
                         this.removeStepElementsFromDOM(this.step);
                         this.incrementStep();
@@ -101,6 +100,10 @@ export class GameCreationStepManager {
                             && typeof res.content === 'string'
                         ) {
                             window.location = ('/game/' + res.content);
+                        }
+                    }).catch((e) => {
+                        if (e.status === 429) {
+                            toast('You\'ve sent this request too many times.', 'error', true, true, 6);
                         }
                     });
                 }
@@ -450,8 +453,9 @@ function initializeRemainingEventListeners(deckManager) {
         e.preventDefault();
         let name = document.getElementById("role-name").value.trim();
         let description = document.getElementById("role-description").value.trim();
+        let team = document.getElementById("role-alignment").value.toLowerCase().trim();
         if (!deckManager.getCustomRoleOption(name)) { // confirm there is no existing custom role with the same name
-            deckManager.addToCustomRoleOptions({role: name, description: description});
+            deckManager.addToCustomRoleOptions({role: name, description: description, team: team});
             updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"))
             ModalManager.dispelModal("add-role-modal", "add-role-modal-background");
             toast("Role Added", "success", true);
@@ -481,10 +485,10 @@ function addOptionsToList(options, selectEl) {
     });
     for (let i = 0; i < options.length; i ++) {
         let optionEl = document.createElement("option");
-        let alignmentClass = customCards[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL
+        let alignmentClass = options[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL
         optionEl.classList.add(alignmentClass);
-        optionEl.setAttribute("value", customCards[i].role);
-        optionEl.innerText = customCards[i].role;
+        optionEl.setAttribute("value", options[i].role);
+        optionEl.innerText = options[i].role;
         selectEl.appendChild(optionEl);
     }
 }

@@ -14,5 +14,13 @@ router.get('/game/:code', function (request, response) {
     response.sendFile(path.join(__dirname, '../../client/src/views/game.html'));
 });
 
+router.get('/liveness_check', (req, res) => {
+    res.sendStatus(200);
+});
+
+router.get('/readiness_check', (req, res) => {
+    res.sendStatus(200);
+});
+
 
 module.exports = router;

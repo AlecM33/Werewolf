@@ -257,6 +257,7 @@ input[type="number"] {
 #game-creation-container {
     width: 95%;
     max-width: 60em;
+    position: relative;
 }
 
 #tracker-container {

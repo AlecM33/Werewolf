@@ -1,7 +1,7 @@
 .modal {
     border-radius: 2px;
     text-align: center;
-    position: fixed;
+    position: absolute;
     width: 85%;
     z-index: 100;
     top: 50%;
@@ -11,7 +11,6 @@
     align-items: center;
     justify-content: center;
     max-width: 25em;
-    height: fit-content;
     font-family: sans-serif;
     flex-direction: column;
     padding: 1em;
@@ -48,4 +47,12 @@
     width: 100%;
     justify-content: space-between;
     flex-direction: row;
+}
+
+#change-name-modal, #transfer-mod-modal, #role-info-modal {
+    position: fixed;
+}
+
+#role-info-modal, #transfer-mod-modal {
+    max-height: 80%;
 }

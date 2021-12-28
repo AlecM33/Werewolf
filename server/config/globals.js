@@ -2,6 +2,7 @@ const globals = {
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     ACCESS_CODE_LENGTH: 6,
     CLOCK_TICK_INTERVAL_MILLIS: 10,
+    STALE_GAME_HOURS: 12,
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         GET_ENVIRONMENT: 'getEnvironment',
@@ -50,7 +51,7 @@ const globals = {
         TRACE: "trace"
     },
     GAME_PROCESS_COMMANDS: {
-        END_GAME: "endGame",
+        END_TIMER: "endTimer",
         START_GAME: "startGame",
         START_TIMER: "startTimer",
         PAUSE_TIMER: "pauseTimer",

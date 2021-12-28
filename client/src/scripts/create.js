@@ -7,7 +7,7 @@ const create = () => {
     let deckManager = new DeckStateManager();
     let gameCreationStepManager = new GameCreationStepManager(deckManager);
     loadDefaultCards(deckManager);
-    loadCustomRoles(deckManager);
+    //loadCustomRoles(deckManager);
     gameCreationStepManager.renderStep("creation-step-container", 1);
 }
 

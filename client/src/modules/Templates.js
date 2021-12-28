@@ -128,6 +128,9 @@ export const templates = {
                 "</div>" +
                 "<div id='play-pause'>" + "</div>" +
             "</div>" +
+            "<div>" +
+                "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+            "</div>" +
         "</div>" +
         "<div id='game-role' style='display:none'>" +
             "<h4 id='role-name'></h4>" +

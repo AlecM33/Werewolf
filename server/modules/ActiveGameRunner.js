@@ -18,12 +18,10 @@ class ActiveGameRunner {
         this.timerThreads[game.accessCode] = gameProcess;
         gameProcess.on('message', (msg) => {
             switch (msg.command) {
-                case globals.GAME_PROCESS_COMMANDS.END_GAME:
-                    //game.status = globals.STATUS.ENDED;
+                case globals.GAME_PROCESS_COMMANDS.END_TIMER:
                     game.timerParams.paused = false;
                     game.timerParams.timeRemaining = 0;
-                    this.logger.trace('PARENT: END GAME');
-                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_GAME, game.accessCode);
+                    this.logger.trace('PARENT: END TIMER');
                     break;
                 case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                     game.timerParams.paused = true;

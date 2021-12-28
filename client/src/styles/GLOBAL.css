@@ -31,6 +31,19 @@ body {
     flex-direction: column;
     align-items: flex-start;
     margin: 0 auto;
+    position: relative;
+}
+
+.bmc-btn {
+    height: 40px !important;
+    border-radius: 3px !important;
+    font-size: 18px !important;
+    min-width: 180px !important;
+    padding: 0 17px !important;
+}
+
+.bmc-btn-text {
+    margin: 0 !important;
 }
 
 h1 {
@@ -76,6 +89,7 @@ h3 {
     text-decoration: none;
     cursor: pointer;
     font-family: 'diavlo', sans-serif;
+    margin: 0 0.25em;
 }
 
 #footer a:hover {

@@ -33,7 +33,8 @@ const globals = {
         SPECTATOR: "spectator"
     },
     ERROR_MESSAGE: {
-        GAME_IS_FULL: "This game is full"
+        GAME_IS_FULL: "This game is full",
+        BAD_CREATE_REQUEST: "Game has invalid options."
     },
     EVENTS: {
         PLAYER_JOINED: "playerJoined",

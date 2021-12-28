@@ -176,7 +176,7 @@ class GameManager {
         const expectedKeys = ['deck', 'hasTimer', 'timerParams'];
         if (typeof gameParams !== 'object' || expectedKeys.some((key) => !Object.keys(gameParams).includes(key))) {
             this.logger.error('Tried to create game with invalid options: ' + JSON.stringify(gameParams));
-            return Promise.reject('Tried to create game with invalid options: ' + gameParams);
+            return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
         } else {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
             pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);

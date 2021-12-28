@@ -4,6 +4,7 @@ const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())
 const logger = require('../modules/Logger')(debugMode);
 const GameManager = require('../modules/GameManager.js');
 const rateLimit = require('express-rate-limit').default
+const globals = require('../config/globals');
 
 const gameManager = new GameManager().getInstance();
 
@@ -19,13 +20,17 @@ if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to
 }
 
 router.post('/create', function (req, res) {
-    logger.debug('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
+    logger.trace('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
     const gameCreationPromise = gameManager.createGame(req.body, false);
     gameCreationPromise.then((result) => {
         if (result instanceof Error) {
             res.status(500).send();
         } else {
             res.send(result); // game was created successfully, and access code was returned
+        }
+    }).catch((e) => {
+        if (e === globals.ERROR_MESSAGE.BAD_CREATE_REQUEST) {
+            res.status(400).send(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
         }
     });
 });

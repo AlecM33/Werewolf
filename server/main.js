@@ -4,6 +4,7 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const app = express();
+const cors = require('cors')
 const bodyParser = require('body-parser');
 const GameManager = require('./modules/GameManager.js');
 const globals = require('./config/globals');
@@ -66,6 +67,12 @@ app.set('port', port);
 let io;
 
 if (process.env.NODE_ENV.trim() === 'development') {
+    const corsOptions = {
+        origin: "http://localhost:" + port,
+        optionsSuccessStatus: 200,
+        methods: ["GET", "POST"]
+    }
+    app.use(cors(corsOptions));
     io = require("socket.io")(main, {
         cors: {
             origin: "http://localhost:" + port,
@@ -75,6 +82,13 @@ if (process.env.NODE_ENV.trim() === 'development') {
         }
     });
 } else {
+    const corsOptions = {
+        origin: ["https://playwerewolf.uk.r.appspot.com"],
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
+        optionsSuccessStatus: 200,
+    }
+    app.use(cors(corsOptions));
     io = require("socket.io")(main, {
         cors: {
             origin: ["https://playwerewolf.uk.r.appspot.com", "wss://playwerewolf.uk.r.appspot.com"],

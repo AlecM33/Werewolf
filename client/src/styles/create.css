@@ -288,7 +288,7 @@ input[type="number"] {
 
 #step-back-button {
     left: 15%;
-    background-color: #762323;
+    background-color: #762323 !important;
 }
 
 #step-1 div {

@@ -39,7 +39,7 @@
 }
 
 #close-modal-button {
-    background-color: #762323;
+    background-color: #762323 !important;
 }
 
 #modal-button-container {

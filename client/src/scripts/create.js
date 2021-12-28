@@ -2,8 +2,10 @@ import { defaultCards } from "../config/defaultCards.js";
 import { customCards } from "../config/customCards.js";
 import { DeckStateManager } from "../modules/DeckStateManager.js";
 import { GameCreationStepManager } from "../modules/GameCreationStepManager.js";
+import { injectNavbar } from "../modules/Navbar.js";
 
 const create = () => {
+    injectNavbar();
     let deckManager = new DeckStateManager();
     let gameCreationStepManager = new GameCreationStepManager(deckManager);
     loadDefaultCards(deckManager);

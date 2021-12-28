@@ -1,7 +1,9 @@
 import { XHRUtility } from "../modules/XHRUtility.js";
 import { toast } from "../modules/Toast.js";
+import { injectNavbar } from "../modules/Navbar.js";
 
 const home = () => {
+    injectNavbar();
     document.getElementById("join-form").onsubmit = (e) => {
         e.preventDefault();
         let userCode = document.getElementById("room-code").value;

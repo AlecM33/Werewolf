@@ -7,8 +7,10 @@ import {GameTimerManager} from "../modules/GameTimerManager.js";
 import {ModalManager} from "../modules/ModalManager.js";
 import {stateBucket} from "../modules/StateBucket.js";
 import { io } from 'socket.io-client';
+import { injectNavbar } from "../modules/Navbar.js";
 
 const game = () => {
+    injectNavbar();
     let timerWorker;
     const socket = io('/in-game');
     socket.on('disconnect', () => {

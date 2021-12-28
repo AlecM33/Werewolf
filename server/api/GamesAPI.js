@@ -10,12 +10,12 @@ const gameManager = new GameManager().getInstance();
 
 const apiLimiter = rateLimit({
     windowMs: 600000,
-    max: 3,
+    max: 5,
     standardHeaders: true,
     legacyHeaders: false,
 })
 
-if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 3 games per 10 minutes.
+if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);
 }
 

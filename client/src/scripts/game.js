@@ -259,6 +259,7 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
 
     if (!socket.hasListeners(globals.COMMANDS.END_GAME)) {
         socket.on(globals.COMMANDS.END_GAME, (people) => {
+            document.querySelector("#end-game-prompt")?.remove();
             stateBucket.currentGameState.people = people;
             stateBucket.currentGameState.status = globals.STATUS.ENDED;
             processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);

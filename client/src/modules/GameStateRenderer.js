@@ -94,8 +94,7 @@ export class GameStateRenderer {
     renderModeratorView() {
         let div = document.createElement("div");
         div.innerHTML = templates.END_GAME_PROMPT;
-        document.getElementById("game-content").appendChild(div);
-        document.getElementById("end-game-button").addEventListener('click', (e) => {
+        div.querySelector("#end-game-button").addEventListener('click', (e) => {
             e.preventDefault();
             if (confirm("End the game?")) {
                 this.socket.emit(
@@ -104,6 +103,8 @@ export class GameStateRenderer {
                 );
             }
         });
+        document.getElementById("game-content").appendChild(div);
+
 
         let modTransferButton = document.getElementById("mod-transfer-button");
         modTransferButton.addEventListener(

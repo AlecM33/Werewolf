@@ -192,7 +192,7 @@ label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
 }
 
 input[type="number"] {
-    min-width: 3em;
+    width: 3em;
     font-size: 40px;
 }
 

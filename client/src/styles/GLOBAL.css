@@ -24,6 +24,7 @@ th, thead, tr, tt, u, ul, var {
 html {
     font-family: 'signika-negative', sans-serif !important;
     background-color: #0f0f10;
+    overflow: auto;
 }
 
 body {
@@ -32,6 +33,8 @@ body {
     align-items: flex-start;
     margin: 0 auto;
     position: relative;
+    background-color: #0f0f10;
+    height: 100vh;
 }
 
 .bmc-btn {
@@ -235,8 +238,8 @@ input {
     font-family: 'diavlo', sans-serif;
     border-radius: 5px;
     padding: 2px 5px;
-    font-size: 18px;
-    margin: 0 0.5em;
+    font-size: 19px;
+    margin: 0 0.75em;
     width: fit-content;
 }
 

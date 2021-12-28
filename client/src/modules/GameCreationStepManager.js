@@ -455,6 +455,14 @@ function initializeRemainingEventListeners(deckManager) {
         let description = document.getElementById("role-description").value.trim();
         let team = document.getElementById("role-alignment").value.toLowerCase().trim();
         if (!deckManager.getCustomRoleOption(name)) { // confirm there is no existing custom role with the same name
+            if (name.length > 40) {
+                toast('Your name is too long (max 40 characters).', "error", true);
+                return;
+            }
+            if (description.length > 500) {
+                toast('Your description is too long (max 500 characters).', "error", true);
+                return;
+            }
             deckManager.addToCustomRoleOptions({role: name, description: description, team: team});
             updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"))
             ModalManager.dispelModal("add-role-modal", "add-role-modal-background");

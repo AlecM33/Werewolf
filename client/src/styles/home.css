@@ -1,5 +1,6 @@
 html {
-    height: 100%;
+    background: rgb(0,0,0);
+    background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgb(17 18 18) 35%, rgba(27,31,31,1) 100%);
 }
 
 body {
@@ -18,7 +19,7 @@ form {
     margin: 1em 0;
     padding: 10px;
     border-radius: 3px;
-    background-color: #1f1f1f;
+    background-color: black;
     justify-content: center;
     align-items: center;
 }
@@ -70,7 +71,7 @@ form > div {
 #join-container > label {
     font-size: 35px;
     font-family: 'diavlo', sans-serif;
-    color: #ab2626;
+    color: #b1afcd;
     filter: drop-shadow(2px 2px 4px black);
 }
 

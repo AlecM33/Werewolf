@@ -7,8 +7,8 @@
     "bundle": "webpack --config client/webpack/webpack-prod.config.js",
     "prestart": "npm run bundle",
     "build:dev": "webpack --watch --config client/webpack/webpack-dev.config.js --mode=development",
-    "start:dev": "NODE_ENV=development node server/main.js",
-    "start:dev:windows": "SET NODE_ENV=development && node server/main.js",
+    "start:dev": "NODE_ENV=development nodemon server/main.js",
+    "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
     "start": "NODE_ENV=production node server/main.js -- loglevel=warn port=8080",
     "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
     "test": "jasmine && node browsertest.js openBrowser socket",
@@ -26,6 +26,7 @@
     "@babel/preset-env": "^7.16.5",
     "acorn": "^8.6.0",
     "babel-loader": "^8.2.3",
+    "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
@@ -38,5 +39,8 @@
     "webpack-cli": "^4.9.1",
     "webpack-remove-debug": "^0.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "nodemonConfig": {
+    "ignore": ["client/*", "node_modules/*"]
+  }
 }

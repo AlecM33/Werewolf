@@ -85,9 +85,10 @@
 
 #deck-container, #custom-roles-container {
     margin: 1em 0;
-    background-color: #1f1f1f;
+    background-color: #191920;
     padding: 10px;
     border-radius: 3px;
+    border: 2px solid #333243;
 }
 
 #step-3 {
@@ -101,7 +102,7 @@
 }
 
 option {
-    background-color: #1f1f1f;
+    background-color: #191920;
     cursor: pointer;
 }
 
@@ -148,7 +149,7 @@ select {
 }
 
 #game-form > div {
-    background-color: #1f1f1f;
+    background-color: #191920;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -164,7 +165,8 @@ select {
 #game-time {
     display: flex;
     flex-wrap: wrap;
-    background-color: #1f1f1f;
+    background-color: #191920;
+    border: 2px solid #333243;
     border-radius: 3px;
 }
 
@@ -290,13 +292,13 @@ input[type="number"] {
 }
 
 #step-1 div {
-    background-color: black;
+    background-color: #191920;
     color: whitesmoke;
     padding: 1em;
     max-width: 20em;
     margin: 0.5em;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 2px solid #333243;
     border-radius: 3px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
@@ -315,7 +317,8 @@ input[type="number"] {
 }
 
 .review-option {
-    background-color: #1f1f1f;
+    background-color: #191920;
+    border: 2px solid #333243;
     color: whitesmoke;
     padding: 10px;
     font-size: 18px;

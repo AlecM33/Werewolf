@@ -116,7 +116,7 @@ export const templates = {
                     "<h3>Transfer Mod Powers &#128081;</h3>" +
                 "</div>" +
                 "<div id='modal-button-container'>" +
-                    "<button id='close-modal-button'>Cancel</button>" +
+                    "<button id='close-modal-button' class='cancel'>Cancel</button>" +
                 "</div>" +
             "</form>" +
         "</div>" +

@@ -178,6 +178,7 @@ h1 {
 
 #role-info-modal #modal-button-container {
     margin-top: 1em;
+    justify-content: center;
 }
 
 #game-role-info-container .role-info-name {
@@ -186,7 +187,7 @@ h1 {
     font-size: 20px;
     font-family: signika-negative, sans-serif;
     margin: 0.5em 0;
-    background-color: #15191c;
+    background-color: black;
 }
 
 #role-info-modal h2 {
@@ -541,7 +542,15 @@ label[for='moderator'] {
 }
 
 .reveal-role-button {
-    background-color: #3f5256;
+    background-color: #586a6e;
+}
+
+.reveal-role-button:hover, #mod-transfer-button:hover {
+    background-color: #4e5664;
+}
+
+.kill-player-button:hover {
+    background-color: #b35c5c;
 }
 
 .reveal-role-button img {

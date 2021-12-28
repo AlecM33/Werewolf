@@ -18,6 +18,5 @@
   "start_url": "/?source=pwa",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone", "minimal-ui"],
-
   "description": "A utility to deal Werewolf cards and run games in any setting, on any device."
 }

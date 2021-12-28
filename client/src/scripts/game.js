@@ -141,6 +141,7 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
             }
             break;
         case globals.STATUS.ENDED:
+            document.querySelector("#end-game-prompt")?.remove();
             let container = document.getElementById("game-state-container")
             container.innerHTML = templates.END_OF_GAME_VIEW;
             container.classList.add('vertical-flex');

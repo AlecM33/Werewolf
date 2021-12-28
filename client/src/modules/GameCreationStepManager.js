@@ -319,6 +319,7 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
         backButton.innerText = "\u2bc7 Back";
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute("id", "step-back-button");
+        backButton.classList.add('cancel');
         document.getElementById("tracker-container").prepend(backButton);
     }
 

@@ -23,7 +23,8 @@ th, thead, tr, tt, u, ul, var {
 
 html {
     font-family: 'signika-negative', sans-serif !important;
-    background-color: #121314 !important;
+    background-color: #0f0f10;
+    height: 100%;
 }
 
 body {
@@ -48,7 +49,7 @@ body {
 
 h1 {
     font-family: 'diavlo', sans-serif;
-    color: #ab2626;
+    color: #b1afcd;
     filter: drop-shadow(2px 2px 4px black);
     margin: 0.5em 0;
 }
@@ -154,6 +155,11 @@ button:active, input[type=submit]:active {
     border: 2px solid #21ba45;
 }
 
+.cancel:hover {
+    background-color: #623232 !important;
+    border: 2px solid #8a1c1c;
+}
+
 .container {
     padding: 5px;
     border-radius: 3px;
@@ -206,6 +212,7 @@ input {
     padding: 5px 0;
     width: 100%;
     background-color: #333243;
+    border-bottom: 2px solid #57566a
 }
 
 #navbar img {

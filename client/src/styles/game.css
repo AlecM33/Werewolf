@@ -14,10 +14,6 @@
     margin: 0.5em 0;
 }
 
-body {
-    margin-bottom: 100px;
-}
-
 #lobby-players {
     overflow-y: auto;
     max-height: 30em;
@@ -49,7 +45,7 @@ body {
     flex-wrap: wrap;
     display: flex;
     width: 95%;
-    margin: 1em auto 0 auto;
+    margin: 1em auto 85px auto;
 }
 
 #game-state-container h2 {
@@ -66,7 +62,7 @@ h1 {
     margin: 0.5em auto;
 }
 
-#game-state-container > div:not(#transfer-mod-modal-background):not(#transfer-mod-modal){
+#game-state-container > div:not(#transfer-mod-modal-background):not(#transfer-mod-modal):not(#game-people-container) {
     margin: 1em;
 }
 
@@ -76,7 +72,7 @@ h1 {
 
 #footer.game-page-footer {
     margin-top: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 85px;
 }
 
 #footer.game-page-footer a {
@@ -581,6 +577,13 @@ label[for='moderator'] {
     background-color: #3f5256;
     font-size: 18px;
     padding: 10px;
+    border: 2px transparent;
+    border-radius: 3px;
+    color: #d7d7d7;
+}
+
+.make-mod-button:hover {
+    cursor: pointer;
 }
 
 .good-players {
@@ -660,12 +663,14 @@ label[for='moderator'] {
     padding: 10px 10px 0 10px;
     border-radius: 3px;
     min-height: 25em;
-    min-width: 18em;
-    max-width: 30em;
+    max-width: 25em;
+    min-width: 17em;
+    margin-top: 1em;
 }
 
 #transfer-mod-modal-content {
     margin-bottom: 2em;
+    color: #d7d7d7;
 }
 
 #game-state-container.vertical-flex {
@@ -683,7 +688,7 @@ label[for='moderator'] {
     }
 
     #game-state-container {
-        margin: 0 auto 0 auto;
+        margin: 0 auto 85px auto;
     }
 
     button {

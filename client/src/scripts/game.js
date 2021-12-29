@@ -87,6 +87,7 @@ function initializeGame(stateBucket, socket, timerWorker, userId, gameStateRende
 }
 
 function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker) {
+    console.log(currentGameState);
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
     switch (currentGameState.status) {
         case globals.STATUS.LOBBY:

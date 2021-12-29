@@ -245,6 +245,10 @@ export class GameStateRenderer {
             this.transferModHandlers,
             this.socket
         );
+
+        if (document.querySelectorAll('.potential-moderator').length === 0) {
+            document.getElementById("transfer-mod-modal-content").innerText = "There is nobody available to transfer to."
+        }
     }
 
     renderEndOfGame() {

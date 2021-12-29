@@ -34,7 +34,6 @@ body {
     margin: 0 auto;
     position: relative;
     background-color: #0f0f10;
-    height: 100vh;
 }
 
 .bmc-btn {
@@ -140,7 +139,7 @@ button {
     justify-content: center;
 }
 
-button:not(#navbar-hamburger), input[type="submit"] {
+.app-button, input[type="submit"] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
     background-color: #13762b;
@@ -152,8 +151,12 @@ button:not(#navbar-hamburger), input[type="submit"] {
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
 }
 
-button:not(#navbar-hamburger):active, input[type=submit]:active {
+.app-button:active, input[type=submit]:active {
     border: 2px solid #21ba45;
+}
+
+.cancel {
+    background-color: #762323 !important;
 }
 
 .cancel:hover {
@@ -172,7 +175,7 @@ button:not(#navbar-hamburger):active, input[type=submit]:active {
     align-items: center;
 }
 
-button:not(#navbar-hamburger):hover, input[type="submit"]:hover, #game-link:hover {
+.app-button:hover, input[type="submit"]:hover, #game-link:hover {
     background-color: #326243;
     border: 2px solid #1c8a36;
 }

@@ -102,13 +102,15 @@ class GameManager {
                 let person = game.people.find((person) => person.id === personId)
                 if (person && !person.out) {
                     this.logger.debug('game ' + accessCode + ': killing player ' + person.name);
-                    person.userType = globals.USER_TYPES.KILLED_PLAYER;
+                    if (person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                        person.userType = globals.USER_TYPES.KILLED_PLAYER;
+                    }
                     person.out = true;
+                    namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, person.id);
                     // temporary moderators will transfer their powers automatically to the first person they kill.
                     if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                         transferModeratorPowers(game, person, namespace, this.logger);
                     }
-                    namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, person.id)
                 }
             }
         });
@@ -313,19 +315,27 @@ class Singleton {
 function transferModeratorPowers(game, person, namespace, logger) {
     if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
         logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
-        if (game.people.includes(game.moderator)) { // the current moderator was at one point a dealt-in player.
-            game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
+        if (game.moderator === person) {
+            logger.debug('temp mod killed themselves');
+            person.userType = globals.USER_TYPES.MODERATOR;
         } else {
-            game.moderator.userType = globals.USER_TYPES.SPECTATOR;
-            if (!game.spectators.includes(game.moderator)) {
-                game.spectators.push(game.moderator);
-            }
-            if (game.spectators.includes(person)) {
-                game.spectators.splice(game.spectators.indexOf(person), 1);
-            }
+           if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+               game.moderator.userType = globals.USER_TYPES.PLAYER;
+           } else if (game.moderator.gameRole) { // the current moderator was at one point a dealt-in player.
+               game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
+           } else if (game.moderator.userType === globals.USER_TYPES.MODERATOR) {
+               game.moderator.userType = globals.USER_TYPES.SPECTATOR;
+               if (!game.spectators.includes(game.moderator)) {
+                   game.spectators.push(game.moderator);
+               }
+               if (game.spectators.includes(person)) {
+                   game.spectators.splice(game.spectators.indexOf(person), 1);
+               }
+           }
+           person.userType = globals.USER_TYPES.MODERATOR;
+           game.moderator = person;
         }
-        person.userType = globals.USER_TYPES.MODERATOR;
-        game.moderator = person;
+
         namespace.in(game.accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
     }
 }

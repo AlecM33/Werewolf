@@ -320,6 +320,7 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute("id", "step-back-button");
         backButton.classList.add('cancel');
+        backButton.classList.add('app-button');
         document.getElementById("tracker-container").prepend(backButton);
     }
 
@@ -328,11 +329,13 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
         fwdButton.innerHTML = "Next \u25b6";
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute("id", "step-forward-button");
+        fwdButton.classList.add('app-button');
         document.getElementById("tracker-container").appendChild(fwdButton);
     } else if (forward && builtGame !== null) {
         let createButton = document.createElement("button");
         createButton.innerText = "Create";
         createButton.setAttribute("id", "create-game");
+        createButton.classList.add('app-button');
         createButton.addEventListener("click", () => {
             forwardHandler(
                 builtGame.deck.filter((card) => card.quantity > 0),
@@ -369,6 +372,7 @@ function loadCustomRoles(deckManager) {
 
     let createRoleButton = document.createElement("button");
     createRoleButton.setAttribute("id", "custom-role-btn");
+    createRoleButton.classList.add('app-button');
     createRoleButton.innerText = '+ Create Custom Role';
 
     let form = document.createElement("form");

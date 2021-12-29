@@ -16,7 +16,7 @@ export const templates = {
         "</div>" +
         "</div>" +
         "<div>" +
-            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+            "<button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'</button>" +
         "</div>" +
     "</div>" +
     "<div>" +
@@ -43,7 +43,7 @@ export const templates = {
             "<div id='game-timer'></div>" +
         "</div>" +
         "<div>" +
-            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+            "<button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'</button>" +
         "</div>" +
     "</div>" +
     "<div id='game-role' style='display:none'>" +
@@ -66,7 +66,7 @@ export const templates = {
             "<div id='game-timer'></div>" +
         "</div>" +
         "<div>" +
-            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+            "<button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'</button>" +
         "</div>" +
     "</div>" +
     "<div id='game-people-container'>" +
@@ -79,7 +79,7 @@ export const templates = {
         "<h3>Transfer Mod Powers &#128081;</h3>" +
         "<div id='transfer-mod-modal-content'></div>" +
         "<div id='modal-button-container'>" +
-            "<button id='close-mod-transfer-modal-button'>Cancel</button>" +
+            "<button id='close-mod-transfer-modal-button' class='app-button cancel'>Cancel</button>" +
         "</div>" +
     "</div>" +
     "<div id='game-header'>" +
@@ -92,7 +92,7 @@ export const templates = {
         "</div>" +
         "<button id='mod-transfer-button' class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>" +
         "<div>" +
-            "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+            "<button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'</button>" +
         "</div>" +
     "</div>" +
     "<div>" +
@@ -116,7 +116,7 @@ export const templates = {
                     "<h3>Transfer Mod Powers &#128081;</h3>" +
                 "</div>" +
                 "<div id='modal-button-container'>" +
-                    "<button id='close-modal-button' class='cancel'>Cancel</button>" +
+                    "<button id='close-modal-button' class='cancel app-button'>Cancel</button>" +
                 "</div>" +
             "</form>" +
         "</div>" +
@@ -129,7 +129,7 @@ export const templates = {
                 "<div id='play-pause'>" + "</div>" +
             "</div>" +
             "<div>" +
-                "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+                "<button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'</button>" +
             "</div>" +
         "</div>" +
         "<div id='game-role' style='display:none'>" +
@@ -205,18 +205,18 @@ export const templates = {
             "<h2>Roles in this game:</h2>" +
             "<div id='game-role-info-container'></div>" +
             "<div id='modal-button-container'>" +
-                "<button id='close-role-info-modal-button'>Close</button>" +
+                "<button id='close-role-info-modal-button' class='app-button'>Close</button>" +
             "</div>" +
         "</div>",
     END_OF_GAME_VIEW:
         "<h2>The moderator has ended the game. Roles are revealed.</h2>" +
         "<div id='end-of-game-header'>" +
             "<div>" +
-                "<button id='role-info-button'>View Role Info <img src='/images/info.svg'</button>" +
+                "<button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'</button>" +
             "</div>" +
             "<div>" +
                 "<a href='/'>" +
-                    "<button>Go Home \uD83C\uDFE0</button>" +
+                    "<button class='app-button'>Go Home \uD83C\uDFE0</button>" +
                 "</a>" +
             "</div>" +
         "</div>" +

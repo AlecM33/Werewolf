@@ -1,7 +1,7 @@
 .modal {
     border-radius: 2px;
     text-align: center;
-    position: absolute;
+    position: fixed;
     width: 85%;
     z-index: 100;
     top: 50%;

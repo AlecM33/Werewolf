@@ -316,7 +316,7 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
     document.querySelector("#create-game")?.remove();
     if (back) {
         let backButton = document.createElement("button");
-        backButton.innerText = "\u2bc7 Back";
+        backButton.innerText = "\u25C0";
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute("id", "step-back-button");
         backButton.classList.add('cancel');
@@ -326,7 +326,7 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
 
     if (forward && builtGame === null) {
         let fwdButton = document.createElement("button");
-        fwdButton.innerHTML = "Next \u25b6";
+        fwdButton.innerHTML = "\u25b6";
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute("id", "step-forward-button");
         fwdButton.classList.add('app-button');

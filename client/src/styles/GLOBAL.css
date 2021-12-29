@@ -241,7 +241,7 @@ input {
     font-family: 'diavlo', sans-serif;
     border-radius: 5px;
     padding: 2px 5px;
-    font-size: 19px;
+    font-size: 20px;
     margin: 0 0.75em;
     width: fit-content;
 }
@@ -281,7 +281,7 @@ input {
 }
 
 .mobile-link {
-    margin-top: 0.5em !important;
+    margin-top: 1em !important;
     margin-left: 1em !important;
 }
 

@@ -93,7 +93,7 @@ const ServerBootstrapper = {
                     origin: ["https://playwerewolf.uk.r.appspot.com", "wss://playwerewolf.uk.r.appspot.com"],
                     methods: ["GET", "POST"],
                     allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
-                    credentials: false
+                    credentials: true
                 },
                 transports: ["polling"]
             });

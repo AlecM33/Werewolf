@@ -87,8 +87,9 @@ function initializeGame(stateBucket, socket, timerWorker, userId, gameStateRende
 }
 
 function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker) {
-    console.log(currentGameState);
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
+    document.querySelector("#start-game-prompt")?.remove();
+    document.querySelector("#end-game-prompt")?.remove();
     switch (currentGameState.status) {
         case globals.STATUS.LOBBY:
             document.getElementById("game-state-container").innerHTML = templates.LOBBY;
@@ -112,22 +113,19 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
                     gameStateRenderer.renderPlayerView();
                     break;
                 case globals.USER_TYPES.KILLED_PLAYER:
-                    document.querySelector("#end-game-prompt")?.remove();
+
                     document.getElementById("game-state-container").innerHTML = templates.PLAYER_GAME_VIEW;
                     gameStateRenderer.renderPlayerView(true);
                     break;
                 case globals.USER_TYPES.MODERATOR:
-                    document.querySelector("#start-game-prompt")?.remove();
                     document.getElementById("game-state-container").innerHTML = templates.MODERATOR_GAME_VIEW;
                     gameStateRenderer.renderModeratorView();
                     break;
                 case globals.USER_TYPES.TEMPORARY_MODERATOR:
-                    document.querySelector("#start-game-prompt")?.remove();
                     document.getElementById("game-state-container").innerHTML = templates.TEMP_MOD_GAME_VIEW;
                     gameStateRenderer.renderTempModView();
                     break;
                 case globals.USER_TYPES.SPECTATOR:
-                    document.querySelector("#end-game-prompt")?.remove();
                     document.getElementById("game-state-container").innerHTML = templates.SPECTATOR_GAME_VIEW;
                     gameStateRenderer.renderSpectatorView();
                     break;
@@ -144,7 +142,6 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
             }
             break;
         case globals.STATUS.ENDED:
-            document.querySelector("#end-game-prompt")?.remove();
             let container = document.getElementById("game-state-container")
             container.innerHTML = templates.END_OF_GAME_VIEW;
             container.classList.add('vertical-flex');
@@ -263,7 +260,6 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
 
     if (!socket.hasListeners(globals.COMMANDS.END_GAME)) {
         socket.on(globals.COMMANDS.END_GAME, (people) => {
-            document.querySelector("#end-game-prompt")?.remove();
             stateBucket.currentGameState.people = people;
             stateBucket.currentGameState.status = globals.STATUS.ENDED;
             processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);

@@ -12,13 +12,22 @@ button#home-create-button {
     margin-bottom: 1em;
 }
 
+#home-page-top-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #1e1b26;
+    margin-bottom: 15px;
+}
+
 form {
     display: flex;
     flex-wrap: wrap;
     margin: 10px 0;
     padding: 10px;
     border-radius: 3px;
-    background-color: black;
     justify-content: center;
     align-items: center;
 }
@@ -60,7 +69,7 @@ img[src='../images/logo_cropped.gif'] {
 }
 
 form > div {
-    margin: 1em 0;
+    margin: 15px 0;
 }
 
 #join-container {

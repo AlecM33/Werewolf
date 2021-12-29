@@ -471,7 +471,7 @@ function initializeRemainingEventListeners(deckManager) {
             deckManager.addToCustomRoleOptions({role: name, description: description, team: team});
             updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"))
             ModalManager.dispelModal("add-role-modal", "add-role-modal-background");
-            toast("Role Added", "success", true);
+            toast("Role Created", "success", true);
         } else {
             toast("There is already a custom role with this name.", "error", true);
         }

@@ -45,7 +45,7 @@
     flex-wrap: wrap;
     display: flex;
     width: 95%;
-    margin: 1em auto 85px auto;
+    margin: 1em auto 100px auto;
 }
 
 #game-state-container h2 {
@@ -278,6 +278,8 @@ h1 {
     min-width: 5em;
     display: flex;
     justify-content: center;
+    align-items: center;
+    height: 43px;
 }
 
 #game-timer.low {
@@ -580,6 +582,7 @@ label[for='moderator'] {
     border: 2px transparent;
     border-radius: 3px;
     color: #d7d7d7;
+    font-family: signika-negative, sans-serif;
 }
 
 .make-mod-button:hover {
@@ -663,7 +666,7 @@ label[for='moderator'] {
     padding: 10px 10px 0 10px;
     border-radius: 3px;
     min-height: 25em;
-    max-width: 25em;
+    max-width: 35em;
     min-width: 17em;
     margin-top: 1em;
 }
@@ -711,6 +714,7 @@ label[for='moderator'] {
 
     #game-timer {
         font-size: 30px;
+        height: 38px;
     }
 
     #players-alive-label {

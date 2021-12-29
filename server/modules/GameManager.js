@@ -343,17 +343,15 @@ function transferModeratorPowers(game, person, namespace, logger) {
 /* Since clients are anonymous, we have to rely to some extent on a cookie to identify them. Socket ids
     are unique to a client, but they are re-generated if a client disconnects and then reconnects.
     Thus, to have the most resilient identification i.e. to let them refresh, navigate away and come back,
-    get disconnected and reconnect, etc. we should have a combination of the socket id and the cookie. This
-    will also allow us to reject certain theoretical ways of breaking things, such as copying someone else's
-    cookie. Though if a client wants to clear their cookie and reset their connection, there's not much we can do.
-    The best thing in my opinion is to make it exceptionally difficult for clients to _accidentally_ break their experience.
+    get disconnected and reconnect, etc. we should have a combination of the socket id and the cookie.
+    My philosophy is to make it exceptionally difficult for clients to _accidentally_ break their experience.
  */
 function handleRequestForGameState(namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) {
     const game = gameRunner.activeGames[accessCode];
     if (game) {
         let matchingPerson = game.people.find((person) => person.cookie === personCookie);
         if (!matchingPerson) {
-            matchingPerson = game.spectators.find((spectator) => spectator.cookie = personCookie);
+            matchingPerson = game.spectators.find((spectator) => spectator.cookie === personCookie);
         }
         if (game.moderator.cookie === personCookie)  {
             matchingPerson = game.moderator;
@@ -391,7 +389,6 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                     : game.people.find((person) => person.assigned === false);
                 if (unassignedPerson) {
                     logger.trace("completely new person with a first connection to the room: " + unassignedPerson.name);
-                    socket.join(accessCode);
                     unassignedPerson.assigned = true;
                     unassignedPerson.socketId = socket.id;
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, unassignedPerson, gameRunner, socket, logger));
@@ -402,10 +399,18 @@ function handleRequestForGameState(namespace, logger, gameRunner, accessCode, pe
                         {name: unassignedPerson.name, userType: unassignedPerson.userType},
                         isFull
                     );
-                } else {
-                    rejectClientRequestForGameState(ackFn);
-                    logger.trace('this game is full');
+                } else { // if the game is full, make them a spectator.
+                    let spectator = new Person(
+                        createRandomId(),
+                        createRandomId(),
+                        UsernameGenerator.generate(),
+                        globals.USER_TYPES.SPECTATOR
+                    );
+                    logger.trace("new spectator: " + spectator.name);
+                    game.spectators.push(spectator);
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, spectator, gameRunner, socket, logger));
                 }
+                socket.join(accessCode);
             }
         }
     } else {

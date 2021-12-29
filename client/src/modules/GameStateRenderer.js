@@ -30,7 +30,7 @@ export class GameStateRenderer {
         }
         let playerCount = this.stateBucket.currentGameState.people.length;
         document.querySelector("label[for='lobby-players']").innerText =
-            "People (" + playerCount + "/" + getGameSize(this.stateBucket.currentGameState.deck) + " Players)";
+            "Participants (" + playerCount + "/" + getGameSize(this.stateBucket.currentGameState.deck) + " Players)";
     }
 
     renderLobbyHeader() {
@@ -92,19 +92,7 @@ export class GameStateRenderer {
     }
 
     renderModeratorView() {
-        let div = document.createElement("div");
-        div.innerHTML = templates.END_GAME_PROMPT;
-        div.querySelector("#end-game-button").addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm("End the game?")) {
-                this.socket.emit(
-                    globals.COMMANDS.END_GAME,
-                    this.stateBucket.currentGameState.accessCode
-                );
-            }
-        });
-        document.getElementById("game-content").appendChild(div);
-
+        createEndGamePromptComponent(this.socket, this.stateBucket);
 
         let modTransferButton = document.getElementById("mod-transfer-button");
         modTransferButton.addEventListener(
@@ -121,9 +109,7 @@ export class GameStateRenderer {
     }
 
     renderTempModView() {
-        let div = document.createElement("div");
-        div.innerHTML = templates.END_GAME_PROMPT;
-        document.body.appendChild(div);
+        createEndGamePromptComponent(this.socket, this.stateBucket)
 
         renderPlayerRole(this.stateBucket.currentGameState);
         this.renderPlayersWithNoRoleInformationUnlessRevealed(true);
@@ -462,4 +448,19 @@ function removeExistingPlayerElements(killPlayerHandlers, revealRoleHandlers) {
         }
         el.remove();
     });
+}
+
+function createEndGamePromptComponent(socket, stateBucket) {
+    let div = document.createElement("div");
+    div.innerHTML = templates.END_GAME_PROMPT;
+    div.querySelector("#end-game-button").addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm("End the game?")) {
+            socket.emit(
+                globals.COMMANDS.END_GAME,
+                stateBucket.currentGameState.accessCode
+            );
+        }
+    });
+    document.getElementById("game-content").appendChild(div);
 }

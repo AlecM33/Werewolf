@@ -190,7 +190,7 @@ input {
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 1000;
+    z-index: 55000;
     padding: 10px;
     border-radius: 3px;
     font-family: 'signika-negative', sans-serif;
@@ -218,6 +218,7 @@ input {
     background-color: #333243;
     border-bottom: 2px solid #57566a;
     height: 51px;
+    z-index: 53000;
 }
 
 #desktop-links > a:nth-child(1), #mobile-links a:nth-child(1) {

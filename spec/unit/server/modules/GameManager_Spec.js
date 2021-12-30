@@ -185,7 +185,6 @@ describe('GameManager', function () {
             let socket = { id: "socket_222222", join: () => {}};
             spyOn(socket, 'join');
             spyOn(GameStateCurator, 'getGameStateFromPerspectiveOfPerson');
-            spyOn(gameManager, 'roomContainsSocketOfMatchingPerson').and.callFake(() => { return false });
             player.socketId = "socket_111111";
             let gameRunner = {
                 activeGames: {
@@ -214,44 +213,6 @@ describe('GameManager', function () {
                 .toHaveBeenCalledWith(gameRunner.activeGames["abc"], player, gameRunner, socket, logger);
             expect(player.socketId).toEqual(socket.id);
             expect(socket.join).toHaveBeenCalled();
-        });
-
-        it('should seek to re-assign a socket connection should two connections match the same person', () => {
-            let player = new Person("1", "123", "Joe", USER_TYPES.PLAYER);
-            let socket = { id: "socket_222222", join: () => {}};
-            let ackFn = () => {};
-            spyOn(socket, 'join');
-            spyOn(GameStateCurator, 'getGameStateFromPerspectiveOfPerson');
-            spyOn(gameManager, 'handleRequestFromNonMatchingPerson');
-            spyOn(gameManager, 'roomContainsSocketOfMatchingPerson').and.callFake(() => { return true });
-            player.socketId = "socket_111111";
-            let gameRunner = {
-                activeGames: {
-                    "abc": new Game(
-                        "abc",
-                        globals.STATUS.IN_PROGRESS,
-                        [ player ],
-                        [],
-                        false,
-                        new Person("2", "456", "Jane", USER_TYPES.MODERATOR)
-                    )
-                }
-            }
-            spyOn(namespace.in(), 'emit');
-            gameManager.handleRequestForGameState(
-                namespace,
-                logger,
-                gameRunner,
-                "abc",
-                "123",
-                ackFn,
-                socket
-            );
-
-            expect(GameStateCurator.getGameStateFromPerspectiveOfPerson).not.toHaveBeenCalled();
-            expect(gameManager.handleRequestFromNonMatchingPerson).toHaveBeenCalledWith(gameRunner.activeGames["abc"], socket, gameRunner, ackFn, logger)
-            expect(player.socketId).not.toEqual(socket.id);
-            expect(socket.join).not.toHaveBeenCalled();
         });
     });
 });

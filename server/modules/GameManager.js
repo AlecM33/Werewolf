@@ -258,12 +258,7 @@ class GameManager {
         }
     }
 
-    /* Since clients are anonymous, we have to rely to some extent on a cookie to identify them. Socket ids
-    are unique to a client, but they are re-generated if a client disconnects and then reconnects.
-    Thus, to have the most resilient identification i.e. to let them refresh, navigate away and come back,
-    get disconnected and reconnect, etc. we should have a combination of the socket id and the cookie.
-    My philosophy is to make it exceptionally difficult for clients to _accidentally_ break their experience.
-    */
+
     handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
@@ -279,15 +274,10 @@ class GameManager {
                     logger.trace("matching person found with an established connection to the room: " + matchingPerson.name);
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                 } else {
-                    if (!this.roomContainsSocketOfMatchingPerson(namespace, matchingPerson, logger, accessCode)) {
-                        logger.trace("matching person found with a new connection to the room: " + matchingPerson.name);
-                        socket.join(accessCode);
-                        matchingPerson.socketId = socket.id;
-                        ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
-                    } else {
-                        logger.trace('this person is already associated with a socket connection');
-                        this.handleRequestFromNonMatchingPerson(game, socket, gameRunner, ackFn, logger);
-                    }
+                    logger.trace("matching person found with a new connection to the room: " + matchingPerson.name);
+                    socket.join(accessCode);
+                    matchingPerson.socketId = socket.id;
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                 }
             } else {
                 this.handleRequestFromNonMatchingPerson(game, socket, gameRunner, ackFn, logger);
@@ -332,13 +322,6 @@ class GameManager {
             }
             socket.join(game.accessCode);
         }
-    }
-
-    // starting with socket.io 4.x, the rooms object is a Map, and its values a Set.
-    roomContainsSocketOfMatchingPerson = (namespace, matchingPerson, logger, accessCode) => {
-        return namespace.adapter
-            && namespace.adapter.rooms.get(accessCode)
-            && namespace.adapter.rooms.get(accessCode).has(matchingPerson.socketId);
     }
 
 }

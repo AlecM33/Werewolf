@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
-const GameManager = require('./modules/GameManager.js');
+const GameManager  = require('./modules/GameManager.js');
 const globals = require('./config/globals');
 const ServerBootstrapper = require('./modules/ServerBootstrapper');
 

@@ -11,9 +11,7 @@
     "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
     "start": "NODE_ENV=production node server/main.js -- loglevel=debug port=8080",
     "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
-    "test": "jasmine && node browsertest.js openBrowser socket",
-    "test:unit": "jasmine",
-    "test:e2e": "node browsertest.js"
+    "test": "jasmine"
   },
   "engines": {
     "node": ">=14.0.0"

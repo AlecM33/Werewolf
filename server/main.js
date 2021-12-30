@@ -26,8 +26,14 @@ inGameSocketServer.on('connection', function (socket) {
     gameManager.addGameSocketHandlers(inGameSocketServer, socket);
 });
 
+let gameManager;
+
 /* Instantiate the singleton game manager */
-const gameManager = new GameManager(logger, globals.ENVIRONMENT.LOCAL).getInstance(); // temporarily use local environment configuration for game manager
+if (process.env.NODE_ENV.trim() === 'development') {
+    gameManager = new GameManager(logger, globals.ENVIRONMENT.LOCAL).getInstance();
+} else {
+    gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
+}
 
 /* api endpoints */
 const games = require('./api/GamesAPI');

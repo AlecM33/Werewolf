@@ -9,7 +9,7 @@
     "build:dev": "webpack --watch --config client/webpack/webpack-dev.config.js --mode=development",
     "start:dev": "NODE_ENV=development nodemon server/main.js",
     "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
-    "start": "NODE_ENV=production node server/main.js -- loglevel=warn port=8080",
+    "start": "NODE_ENV=production node server/main.js -- loglevel=debug port=8080",
     "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
     "test": "jasmine && node browsertest.js openBrowser socket",
     "test:unit": "jasmine",

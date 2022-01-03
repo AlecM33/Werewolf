@@ -10,7 +10,7 @@
     border-radius: 3px;
     user-select: none;
     max-width: 15em;
-    min-width: 9em;
+    min-width: 130px;
     display: flex;
     height: 55px;
 }
@@ -144,7 +144,7 @@
 }
 
 #deck-good, #deck-evil {
-    padding: 10px;
+    padding: 0;
     border-radius: 3px;
     margin: 0.5em;
     display: flex;

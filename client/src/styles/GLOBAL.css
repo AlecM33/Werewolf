@@ -394,6 +394,14 @@ input {
     color: #4b6bfa;
 }
 
+.good-players, #deck-good {
+    background-color: #1c1a36;
+}
+
+.evil-players, #deck-evil {
+    background-color: #361a1a;
+}
+
 .evil, .compact-card.evil .card-role {
     color: #e73333;
 }

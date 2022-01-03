@@ -40,12 +40,21 @@
                 <label for="role-description">Description</label>
                 <textarea style="resize:none" id="role-description" rows="10" cols="30" placeholder="Describe your role..." required></textarea>
             </div>
-            <div id="modal-button-container">
+            <div class="modal-button-container">
                 <button id="close-modal-button" class="cancel app-button">Close</button>
                 <input type="submit" id="create-role-button" value="Create Role"/>
             </div>
         </form>
     </div>
+<!--    <div id="upload-custom-roles-modal">-->
+<!--        <form id="upload-custom-roles-form">-->
+<!--            <input type="file" id="upload-custom-roles" name="Upload Custom Roles" accept="application/json"/>-->
+<!--        </form>-->
+<!--        <div class="modal-button-container">-->
+<!--            <button id="close-upload-custom-roles-modal-button" class="cancel app-button">Close</button>-->
+<!--            <input type="submit" id="upload-custom-roles-button" value="Upload"/>-->
+<!--        </div>-->
+<!--    </div>-->
     <h1>Create A Game</h1>
     <div id="tracker-container">
         <div id="creation-step-tracker">
@@ -64,28 +73,6 @@
         <div class="animated-placeholder animated-placeholder-long"></div>
         <div class="animated-placeholder animated-placeholder-long"></div>
     </div>
-<!--    <div id="deck-container">-->
-<!--        <label for="deck">Game Deck: 0 Players</label>-->
-<!--        <div id="deck"></div>-->
-<!--    </div>-->
-<!--    <form id="game-form">-->
-<!--        <div>-->
-<!--            <label for="game-time">Timer (Optional)</label>-->
-<!--            <div id="game-time">-->
-<!--                <label for="game-hours">Hours (max 5)</label>-->
-<!--                <input type="number" id="game-hours" name="game-hours"-->
-<!--                       min="0" max="5" />-->
-<!--                <label for="game-hours">Minutes</label>-->
-<!--                <input type="number" id="game-minutes" name="game-minutes"-->
-<!--                       min="1" max="60" />-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div>-->
-<!--            <label for="mod-name">Your Name</label>-->
-<!--            <input id="mod-name" type="text" maxlength="30" required/>-->
-<!--        </div>-->
-<!--        <input id="create-game" type="submit" value="Create"/>-->
-<!--    </form>-->
 </div>
 <script src="/dist/create-bundle.js"></script>
 </body>

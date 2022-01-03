@@ -78,7 +78,7 @@ export const templates = {
     "<div id='transfer-mod-modal' class='modal' style='display: none'>" +
         "<h3>Transfer Mod Powers &#128081;</h3>" +
         "<div id='transfer-mod-modal-content'></div>" +
-        "<div id='modal-button-container'>" +
+        "<div class='modal-button-container'>" +
             "<button id='close-mod-transfer-modal-button' class='app-button cancel'>Cancel</button>" +
         "</div>" +
     "</div>" +
@@ -115,7 +115,7 @@ export const templates = {
                 "<div id='transfer-mod-form-content'>" +
                     "<h3>Transfer Mod Powers &#128081;</h3>" +
                 "</div>" +
-                "<div id='modal-button-container'>" +
+                "<div class='modal-button-container'>" +
                     "<button id='close-modal-button' class='cancel app-button'>Cancel</button>" +
                 "</div>" +
             "</form>" +
@@ -194,7 +194,7 @@ export const templates = {
                     "<label for='player-new-name'>Your name:</label>" +
                     "<input id='player-new-name' type='text'/>" +
                 "</div>" +
-                "<div id='modal-button-container'>" +
+                "<div class='modal-button-container'>" +
                     "<input type='submit' id='submit-new-name' value='Set Name'/>" +
                 "</div>" +
             "</form>" +
@@ -204,7 +204,7 @@ export const templates = {
         "<div id='role-info-modal' class='modal'>" +
             "<h2>Roles in this game:</h2>" +
             "<div id='game-role-info-container'></div>" +
-            "<div id='modal-button-container'>" +
+            "<div class='modal-button-container'>" +
                 "<button id='close-role-info-modal-button' class='app-button'>Close</button>" +
             "</div>" +
         "</div>",
@@ -223,6 +223,36 @@ export const templates = {
         "<div id='game-people-container'>" +
             "<label id='players-alive-label'></label>" +
             "<div id='game-player-list'></div>" +
-        "</div>"
+        "</div>",
+    CREATE_GAME_DECK:
+        "<div id='deck-container'>" +
+            "<div>" +
+                "<label for='deck-good'>Good Roles</label>" +
+                "<div id='deck-good'></div>" +
+            "</div>" +
+            "<div>" +
+                "<label for='deck-evil'>Evil Roles</label>" +
+                "<div id='deck-evil'></div>" +
+            "</div>" +
+        "</div>",
+    CREATE_GAME_CUSTOM_ROLES:
+        '<div id=\"custom-roles-container\">' +
+            // '<button id="custom-role-hamburger" class="hamburger hamburger--collapse" type="button">' +
+            //     '<span class="hamburger-box">' +
+            //         '<span class="hamburger-inner"></span>' +
+            //     '</span>' +
+            // '</button>' +
+            // '<div id="custom-role-actions" style="display:none">' +
+            //     '<div class="custom-role-action">Export</div>' +
+            //     '<div class="custom-role-action">Import</div>' +
+            //     '<div class="custom-role-action">Edit</div>' +
+            // '</div>' +
+            '<label for=\"add-card-to-deck-form\">Custom Roles</label>' +
+            '<form id=\"add-card-to-deck-form\">' +
+                '<select id=\"deck-select\"></select>' +
+                '<input id="include-role" type=\"submit\" value=\"Include Role\">' +
+            '</form>' +
+            '<button id=\"custom-role-btn\" class=\"app-button\">+ Create Custom Role</button>' +
+        '</div>'
 
 }

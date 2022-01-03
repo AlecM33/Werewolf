@@ -172,7 +172,7 @@ h1 {
     width: 90%;
 }
 
-#role-info-modal #modal-button-container {
+#role-info-modal .modal-button-container {
     margin-top: 1em;
     justify-content: center;
 }
@@ -224,6 +224,14 @@ h1 {
     0 32px 32px rgba(0,0,0,0.11);
     /*perspective: 1000px;*/
     /*transform-style: preserve-3d;*/
+}
+
+.game-role-good {
+    border: 5px solid #5469c5 !important;
+}
+
+.game-role-evil {
+    border: 5px solid #c55454 !important;
 }
 
 #game-role-back {
@@ -589,14 +597,6 @@ label[for='moderator'] {
     cursor: pointer;
 }
 
-.good-players {
-    background-color: #1c1a36;
-}
-
-.evil-players {
-    background-color: #361a1a;
-}
-
 .kill-player-button {
     background-color: #9f4747;
 }
@@ -649,11 +649,11 @@ label[for='moderator'] {
     width: 100%;
 }
 
-#transfer-mod-form #modal-button-container {
+#transfer-mod-form .modal-button-container {
     justify-content: center;
 }
 
-#transfer-mod-modal #modal-button-container {
+#transfer-mod-modal .modal-button-container {
     justify-content: center;
 }
 

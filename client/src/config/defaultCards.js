@@ -12,31 +12,36 @@ export const defaultCards = [
     {
         role: "Dream Wolf",
         team: "evil",
-        description: "If a Werewolf dies, you become a Werewolf. You do not wake up with the Werewolves until this happens. You count for parity only after converting to a wolf.",
+        description: "You are a Werewolf, but you don't wake up with the other Werewolves until one of them dies.",
     },
     {
-        role: "Knowing Minion",
+        role: "Sorceress",
         team: "evil",
-        description: "You are an evil villager - you know who the wolves are, and you want them to win.",
+        description: "Each night, learn if a chosen person is the Seer.",
     },
     {
-        role: "Double-Blind Minion",
+        role: "Minion",
         team: "evil",
-        description: "You are an evil villager. You don't know who the wolves are, but you want them to win.",
+        description: "You are an evil Villager, and you know who the Werewolves are.",
+    },
+    {
+        role: "Blind Minion",
+        team: "evil",
+        description: "You are an evil villager, but you don't know who the Werewolves are.",
     },
     {
         role: "Seer",
         team: "good",
-        description: "During each night, choose one person. The moderator will tell you whether that player is a wolf.",
+        description: "Each night, learn if a chosen person is a Werewolf.",
+    },
+    {
+        role: "Parity Hunter",
+        team: "good",
+        description: "You beat a werewolf in a 1v1 situation, winning the game for the village.",
     },
     {
         role: "Hunter",
         team: "good",
-        description: "If you are alive with a wolf at the end of the game, you best the wolf, and the village wins.",
-    },
-    {
-        role: "Mason",
-        team: "good",
-        description: "Masons know who the other masons are.",
+        description: "When you are eliminated, choose another player to go with you.",
     }
 ];

@@ -6,8 +6,7 @@ export class DeckStateManager {
 
     addToDeck(role) {
         let option = this.customRoleOptions.find((option) => option.role === role);
-        let existingCard = this.deck.find((card) => card.role === role);
-        if (option && !existingCard) {
+        if (option) {
             option.quantity = 0;
             this.deck.push(option);
             this.customRoleOptions.splice(this.customRoleOptions.indexOf(option), 1);

@@ -4,6 +4,7 @@ import { customCards } from "../config/customCards.js";
 import { ModalManager } from "./ModalManager.js";
 import {XHRUtility} from "./XHRUtility.js";
 import {globals} from "../config/globals.js";
+import {templates} from "./Templates.js";
 
 export class GameCreationStepManager {
     constructor(deckManager) {
@@ -33,14 +34,14 @@ export class GameCreationStepManager {
             2: {
                 title: "Create your deck of cards:",
                 forwardHandler: () => {
-                    if (this.deckManager.getDeckSize() >= 5) {
+                    if (this.deckManager.getDeckSize() >= 5 && this.deckManager.getDeckSize() <= 50) {
                         this.currentGame.deck = deckManager.getCurrentDeck().filter((card) => card.quantity > 0)
                         cancelCurrentToast();
                         this.removeStepElementsFromDOM(this.step);
                         this.incrementStep();
                         this.renderStep("creation-step-container", this.step);
                     } else {
-                        toast("You must include enough cards for 5 players.", "error", true);
+                        toast("You must have a deck for between 5 and 50 players", "error", true);
                     }
                 },
                 backHandler: this.defaultBackHandler
@@ -191,25 +192,27 @@ function renderRoleSelectionStep(game, containerId, step, deckManager) {
     const stepContainer = document.createElement("div");
     setAttributes(stepContainer, {'id': 'step-' + step, 'class': 'flex-row-container-left-align step'});
 
-    let div = document.createElement("div");
-    div.setAttribute("id", "deck-container");
-    let deckContainer = document.createElement("div");
-    deckContainer.setAttribute("id", "deck");
-
-    deckContainer = loadIncludedCards(deckManager, deckContainer);
-
-    let deckLabel = document.createElement("label");
-    deckLabel.setAttribute("for", "deck");
-    deckLabel.innerText = 'Game Deck: ' + deckManager.getDeckSize() + ' Players';
-    div.prepend(deckLabel);
-    div.appendChild(deckContainer);
-    stepContainer.appendChild(div);
-
-    let customForm = loadCustomRoles(deckManager);
-
-    stepContainer.prepend(customForm);
+    stepContainer.innerHTML =templates.CREATE_GAME_CUSTOM_ROLES;
+    stepContainer.innerHTML += templates.CREATE_GAME_DECK;
 
     document.getElementById(containerId).appendChild(stepContainer);
+
+    let clickHandler = () => {
+        console.log("fired");
+        let actions = document.getElementById("custom-role-actions");
+        if (actions.style.display !== 'none') {
+            actions.style.display = 'none';
+        } else {
+            actions.style.display = 'block';
+        }
+    };
+
+    //document.getElementById("custom-role-hamburger").addEventListener("click", clickHandler);
+
+    loadIncludedCards(deckManager);
+
+    loadCustomRoles(deckManager);
+
 
     initializeRemainingEventListeners(deckManager);
 }
@@ -349,61 +352,41 @@ function showButtons(back, forward, forwardHandler, backHandler, builtGame=null)
 }
 
 // Display a widget for each default card that allows copies of it to be added/removed. Set initial deck state.
-function loadIncludedCards(deckManager, deckContainer) {
-
+function loadIncludedCards(deckManager) {
     for (let i = 0; i < deckManager.getCurrentDeck().length; i ++) { // each dropdown should include every
         let card = deckManager.getCurrentDeck()[i];
         let cardEl = constructCompactDeckBuilderElement(card, deckManager);
-        deckContainer.appendChild(cardEl);
+        if (card.team === globals.ALIGNMENT.GOOD) {
+            document.getElementById("deck-good").appendChild(cardEl);
+        } else {
+            document.getElementById("deck-evil").appendChild(cardEl);
+        }
     }
-
-    return deckContainer;
 }
 
 /* Display a dropdown containing all the custom roles. Adding one will add it to the game deck and
 create a widget for it */
 function loadCustomRoles(deckManager) {
-    let customContainer = document.createElement("div");
-    customContainer.setAttribute("id", "custom-roles-container");
-
-    let formLabel = document.createElement("label");
-    formLabel.innerText = 'Custom Roles';
-    formLabel.setAttribute("for", "add-card-to-deck-form");
-
-    let createRoleButton = document.createElement("button");
-    createRoleButton.setAttribute("id", "custom-role-btn");
-    createRoleButton.classList.add('app-button');
-    createRoleButton.innerText = '+ Create Custom Role';
-
-    let form = document.createElement("form");
-    form.setAttribute("id", "add-card-to-deck-form");
-
-    let selectEl = document.createElement("select");
-    selectEl.setAttribute("id", "deck-select");
-    addOptionsToList(deckManager.getCurrentCustomRoleOptions(), selectEl);
-
-    form.appendChild(selectEl);
-
-    let submitBtn = document.createElement("input");
-    submitBtn.setAttribute("type", "submit");
-    submitBtn.setAttribute("value", "Include Role");
-    submitBtn.addEventListener('click', (e) => {
+    let select = document.getElementById("deck-select");
+    addOptionsToList(deckManager.getCurrentCustomRoleOptions(), document.getElementById("deck-select"));
+    document.getElementById("include-role").addEventListener('click', (e) => {
         e.preventDefault();
-        if (selectEl.value && selectEl.value.length > 0) {
-            deckManager.addToDeck(selectEl.value);
-            let cardEl = constructCompactDeckBuilderElement(deckManager.getCard(selectEl.value), deckManager);
-            toast('"' + selectEl.value + '" included.', 'success', true, true, 3);
-            updateCustomRoleOptionsList(deckManager, selectEl);
-            document.getElementById("deck").appendChild(cardEl);
+        if (select.value && select.value.length > 0) {
+            if (!deckManager.getCard(select.value)) {
+                deckManager.addToDeck(select.value);
+                let cardEl = constructCompactDeckBuilderElement(deckManager.getCard(select.value), deckManager);
+                toast('"' + select.value + '" included.', 'success', true, true, 3);
+                if (deckManager.getCard(select.value).team === globals.ALIGNMENT.GOOD) {
+                    document.getElementById("deck-good").appendChild(cardEl);
+                } else {
+                    document.getElementById("deck-evil").appendChild(cardEl);
+                }
+                updateCustomRoleOptionsList(deckManager, select);
+            } else {
+                toast('"' + select.value + '" already included.', 'error', true, true, 3);
+            }
         }
     })
-    form.appendChild(submitBtn);
-
-    customContainer.appendChild(formLabel);
-    customContainer.appendChild(form);
-    customContainer.appendChild(createRoleButton);
-
-    return customContainer;
 }
 
 function constructCompactDeckBuilderElement(card, deckManager) {
@@ -437,7 +420,6 @@ function constructCompactDeckBuilderElement(card, deckManager) {
     cardContainer.querySelector('.compact-card-right').addEventListener('click', () => {
         deckManager.addCopyOfCard(card.role);
         cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
-        document.querySelector('label[for="deck"]').innerText = 'Game Deck: ' + deckManager.getDeckSize() + ' Players';
         if (deckManager.getCard(card.role).quantity > 0) {
             document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.add('selected-card')
         }
@@ -445,7 +427,6 @@ function constructCompactDeckBuilderElement(card, deckManager) {
     cardContainer.querySelector('.compact-card-left').addEventListener('click', () => {
         deckManager.removeCopyOfCard(card.role);
         cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
-        document.querySelector('label[for="deck"]').innerText = 'Game Deck: ' + deckManager.getDeckSize() + ' Players';
         if (deckManager.getCard(card.role).quantity === 0) {
             document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.remove('selected-card')
         }
@@ -459,7 +440,7 @@ function initializeRemainingEventListeners(deckManager) {
         let name = document.getElementById("role-name").value.trim();
         let description = document.getElementById("role-description").value.trim();
         let team = document.getElementById("role-alignment").value.toLowerCase().trim();
-        if (!deckManager.getCustomRoleOption(name)) { // confirm there is no existing custom role with the same name
+        if (!deckManager.getCustomRoleOption(name) && !deckManager.getCard(name)) { // confirm there is no existing custom role with the same name
             if (name.length > 40) {
                 toast('Your name is too long (max 40 characters).', "error", true);
                 return;
@@ -473,7 +454,7 @@ function initializeRemainingEventListeners(deckManager) {
             ModalManager.dispelModal("add-role-modal", "add-role-modal-background");
             toast("Role Created", "success", true);
         } else {
-            toast("There is already a custom role with this name.", "error", true);
+            toast("There is already a role with this name", "error", true, true, 3);
         }
     }
     document.getElementById("custom-role-btn").addEventListener(
@@ -494,6 +475,9 @@ function updateCustomRoleOptionsList(deckManager, selectEl) {
 
 function addOptionsToList(options, selectEl) {
     options.sort((a, b) => {
+        if (a.team !== b.team) {
+            return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+        }
         return a.role.localeCompare(b.role);
     });
     for (let i = 0; i < options.length; i ++) {

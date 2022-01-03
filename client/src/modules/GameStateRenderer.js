@@ -389,8 +389,10 @@ function renderPlayerRole(gameState) {
     let name = document.querySelector('#role-name');
     name.innerText = gameState.client.gameRole;
     if (gameState.client.alignment === globals.ALIGNMENT.GOOD) {
+        document.getElementById("game-role").classList.add('game-role-good');
         name.classList.add('good');
     } else {
+        document.getElementById("game-role").classList.add('game-role-evil');
         name.classList.add('evil');
     }
     name.setAttribute("title", gameState.client.gameRole);
@@ -401,10 +403,17 @@ function renderPlayerRole(gameState) {
             '../images/tombstone.png'
         );
     } else {
-        document.getElementById("role-image").setAttribute(
-            'src',
-            '../images/roles/' + gameState.client.gameRole.replaceAll(' ', '') + '.png'
-        );
+        if (gameState.client.gameRole.toLowerCase() === 'villager') {
+            document.getElementById("role-image").setAttribute(
+                'src',
+                '../images/roles/Villager' + Math.ceil(Math.random() * 2) + '.png'
+            );
+        } else {
+            document.getElementById("role-image").setAttribute(
+                'src',
+                '../images/roles/' + gameState.client.gameRole.replaceAll(' ', '') + '.png'
+            );
+        }
     }
 
     document.querySelector('#role-description').innerText = gameState.client.gameRoleDescription;

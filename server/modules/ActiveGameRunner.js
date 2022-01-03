@@ -58,7 +58,6 @@ class ActiveGameRunner {
             minutes: game.timerParams.minutes
         });
         game.startTime = new Date().toJSON();
-        //namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.START_TIMER);
     }
 }
 

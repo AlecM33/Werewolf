@@ -27,7 +27,7 @@
     cursor: pointer;
 }
 
-.modal > form > div {
+.modal > form > div:not(.modal-button-container) {
     display: flex;
     flex-direction: column;
     margin-bottom: 1em;
@@ -42,7 +42,7 @@
     background-color: #762323 !important;
 }
 
-#modal-button-container {
+.modal-button-container {
     display: flex;
     width: 100%;
     justify-content: space-between;

@@ -3,18 +3,21 @@ import { customCards } from "../config/customCards.js";
 import { DeckStateManager } from "../modules/DeckStateManager.js";
 import { GameCreationStepManager } from "../modules/GameCreationStepManager.js";
 import { injectNavbar } from "../modules/Navbar.js";
+import {globals} from "../config/globals";
 
 const create = () => {
     injectNavbar();
     let deckManager = new DeckStateManager();
     let gameCreationStepManager = new GameCreationStepManager(deckManager);
     loadDefaultCards(deckManager);
-    //loadCustomRoles(deckManager);
     gameCreationStepManager.renderStep("creation-step-container", 1);
 }
 
 function loadDefaultCards(deckManager) {
     defaultCards.sort((a, b) => {
+        if (a.team !== b.team) {
+            return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+        }
         return a.role.localeCompare(b.role);
     });
     let deck = [];

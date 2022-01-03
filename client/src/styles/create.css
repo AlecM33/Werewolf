@@ -12,7 +12,7 @@
     max-width: 15em;
     min-width: 9em;
     display: flex;
-    height: max-content;
+    height: 55px;
 }
 
 .compact-card h1 {
@@ -28,7 +28,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 8em;
+    max-width: 9em;
     font-size: 16px;
 }
 
@@ -62,7 +62,7 @@
 .compact-card .card-quantity {
     text-align: center;
     margin: 0;
-    font-size: 20px;
+    font-size: 25px;
 }
 
 .compact-card-header {
@@ -83,12 +83,87 @@
     width: fit-content;
 }
 
-#deck-container, #custom-roles-container {
+#custom-roles-container {
     margin: 1em 0;
     background-color: #191920;
     padding: 10px;
     border-radius: 3px;
     border: 2px solid #333243;
+    position: relative;
+}
+
+#custom-role-hamburger .hamburger-inner, #custom-role-hamburger .hamburger-inner::before, #custom-role-hamburger .hamburger-inner::after {
+    background-color: whitesmoke;
+    width: 28px;
+    height: 3px;
+}
+
+#custom-roles-container .hamburger-box {
+    width: 28px;
+    height: 20px;
+}
+
+#custom-role-hamburger {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#custom-role-hamburger .hamburger-inner::before {
+    top: -8px;
+}
+
+#custom-role-hamburger .hamburger-inner::after {
+    top: -16px;
+}
+
+#custom-role-actions {
+    color: whitesmoke;
+    position: absolute;
+    top: 38px;
+    right: 29px;
+    background-color: #333243;
+    border-radius: 3px;
+    box-shadow: -3px -3px 6px rgb(0 0 0 / 60%);
+}
+
+.custom-role-action {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    background-color: #333243;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+.custom-role-action:hover {
+    background-color: #57566a;
+    cursor: pointer;
+}
+
+#deck-good, #deck-evil {
+    padding: 10px;
+    border-radius: 3px;
+    margin: 0.5em;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    max-height: 20em;
+}
+
+#deck-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#deck-container label {
+    margin: 0.5em;
+    display: block;
 }
 
 #step-3 {
@@ -119,13 +194,6 @@ option {
 
 #step-4 > div label {
     width: 100%;
-}
-
-#deck {
-    display: flex;
-    flex-wrap: wrap;
-    overflow: auto;
-    max-height: 20em;
 }
 
 #moderation-self span {
@@ -174,6 +242,12 @@ select {
     margin-bottom: 2em;
 }
 
+#step-2 {
+    max-width: 70em;
+    margin: 0 auto;
+    justify-content: center;
+}
+
 #game-time label, #game-time input {
     margin-right: 10px;
     font-size: 25px;
@@ -181,6 +255,10 @@ select {
 
 #game-time div {
     margin: 0.5em;
+}
+
+#role-alignment {
+    max-width: 10em;
 }
 
 label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
@@ -197,7 +275,7 @@ input[type="number"] {
 }
 
 #add-card-to-deck-form {
-    margin-bottom: 1em;
+    margin: 1em 0;
 }
 
 #create-game {
@@ -258,8 +336,8 @@ input[type="number"] {
 
 #game-creation-container {
     width: 95%;
-    max-width: 60em;
     position: relative;
+    margin-bottom: 2em;
 }
 
 #tracker-container {

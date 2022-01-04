@@ -1,49 +1,79 @@
-<img alt="Werewolf" src="/assets/images/roles-small/wolf_logo.png" />
+An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
+smoothly when you don't have a deck, or when you and your friends are together virtually. Inspired by my time playing
+<a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
+2020's quarantine. The app is free to use and anonymous. 
 
-This app is still in active development. The latest deployment can be found <a href="https://play-werewolf.herokuapp.com">here</a>
+## Features
 
-A Werewolf utility that provides the tools to run games smoothly in the absence of a deck, or in any context in which traditional moderation is hindered. 
+This is meant to facilitate a game through a shared game state and various utilities - not to control
+every aspect of the game flow. The app provides a host the ability to construct a deck with a custom distribution
+of roles. Players can join a game with one click and are then dealt a role to their device. The app features a concealable 
+role card, an optional shared timer (which the moderator can play/pause), a reference for roles in the game, and status 
+information for players including who is alive/dead and who has had their role revealed. The app also provides the 
+option for a "dedicated moderator" or a "temporary moderator." Dedicated moderators will never be dealt in, and will 
+have all controls and information from the beginning of the game. Temporary moderators _will_ be dealt a role and will
+have some moderator powers, but will only exist until the first player is out, at which point that player will be made 
+the game's dedicated moderator. A dedicated moderator can transfer their powers to another player that is out of the 
+game at any time. 
 
-This is a Javascript application running on a node express main. I am using the socket.io package as a wrapper for Javascript Websocket. This was built from scratch as a learning project; I do not claim it as a shining example of socket programming or web app design in general. I welcome collaboration and suggestions for improvements. 
+The application prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 
-All pixel art is my own (for better or for worse).
+## Tech Stack
 
-This is meant to facilitate the game in a face-to-face social setting and provide utility/convenience - not control all aspects of the game flow. The app allows players to create or join a game lobby where state is synchronized. The creator of the game can build a deck from either the standard set of provided defaultCards, or from any number of custom defaultCards the user creates. Once the game begins, this deck will be randomly dealt to all participants. 
+This is a Node.js application. It is written purely using JavaScript/HTML/CSS. The main dependencies are
+<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It is fully open source
+and under the MIT license. This was (and still is) fundamentally a learning project, and thus I welcome collaboration 
+and feedback of any kind. After a long break of maintaining the application I am back to work on re-designing and
+improving it. 
 
-Players will see their card (which can be flipped up and down), an optional timer, and a button to say that they have been killed off. If a player presses the button, they will be removed from the game, and their role revealed to other players. The game will continue until the end of the game is detected, or the timer expires.
+All pixel art is my own, for better or for worse.
 
-To learn more about this type of game, see the Wikipedia entry on the game's ancestor, <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Mafia</a>.
+## Contributing and Developers' Guide
 
-<br>
-<div>
-  <img alt="home" width="200" src="/assets/images/screenshots/home.PNG" />
-  <img alt="create" width="200" src="/assets/images/screenshots/create.PNG" />
-  <img alt="lobby" width="200" src="/assets/images/screenshots/lobby.PNG" />
-</div>
-<br>
-<div>
-  <img alt="game" width="200" src="/assets/images/screenshots/game.PNG" />
-  <img alt="killed" width="200" src="/assets/images/screenshots/killed.PNG" />
-  <img alt="hunter" width="200" src="/assets/images/screenshots/hunter.PNG" />
-</div>
-<br>
-<br>
-<br>
+### Running Locally
 
-# Run Locally
+If you haven't already, install <a href="https://nodejs.org/en/">Node.js.</a> This should include the node package 
+manager, <a href="https://www.npmjs.com/">npm</a>.
 
-Run `npm install` from the root directory.
+Run `npm install` from the root directory to install the necessary dependencies.
 
-Run `node main.js` from the root directory, navigate to **localhost:5000**
+These instructions assume you are somewhat familiar with Node.js and npm. At this point, we will use some of the run
+commands defined in `package.json`.
 
-# Testing/Debugging
+First, start a terminal in the root directory. Execute `npm run build:dev`. This uses <a href="https://webpack.js.org/">
+Webpack</a> to bundle javascript from the `client/src` directory and place it in the `client/dist` directory, which is ignored by Git.
+If you look at this command as defined in `package.json`, it uses the `--watch` flag, which means the process will continue
+to run in this terminal, watching for changes to JavaScript within the `client/src` directory and re-bundling automatically. You 
+definitely want this if making frequent JavaScript changes to client-side source code. Any other changes, such as to HTML or CSS
+files, are not bundled, and thus your changes will be picked up simply by refreshing the browser.
 
-Use `npm run test` to run unit tests using <a href='https://jasmine.github.io/'>Jasmine</a> (test coverage is barebones and is currently being expanded)
-<br><br>
-To turn on logging at the debug level, add the `debug` argument like so:
+Next, in a separate terminal, we will start the application:
 
-`node main.js -- debug`
+`npm run start:dev` (if developing on a linux machine)<br>
+`npm run start:dev:windows` (if developing on a windows machine)
 
-# Contributing
+This will start the application and serve it on the default port of **5000**. This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
+to listen for changes to **server-side code** (Node.js modules) and automatically restart the server. If you do not want 
+this, run instead `npm run start:dev:no-hot-reload` or `npm run start:dev:windows:no-hot-reload`. 
 
-Contributions of any kind are welcome. Simply open an issue or pull request and I can respond accordingly. 
+And there we go! You should be able to navigate to and use the application on localhost. There are additional CLI arguments
+you can provide to the run commands that specify things such as port, HTTP vs HTTPS, or the log level. I **highly recommend**
+consulting these below.
+
+### CLI Options
+
+These options will be at the end of your run command following two dashes e.g. `npm run start:dev -- [options]`.
+Options are key-value pairs with the syntax `[key]=[value]` e.g. `port=4242`. Options include:
+
+- `port`. Specify an integer port for the application.
+- `loglevel` the log level for the application. Can be `info`, `error`, `warn`, `debug`, or `trace`. 
+- `protocol` either HTTP or HTTPS. If you specify HTTPS, the server will look in `client/certs` for localhost certificates
+before serving the application over HTTPS - otherwise it will revert to HTTP. Using HTTPS is particularly useful if you
+  want to make the application public on your home network, which would allow you to test it on your mobile device. **Careful -
+  I had to disable my computer's firewall for this to work, which would of course make browsing the internet much riskier.**
+
+## Testing
+
+Unit tests are written using <a href="https://jasmine.github.io/">Jasmine</a>. Execute them by running `npm run test`. 
+They reside in the `spec/unit` directory, which maps 1:1 to the application directory structure - i.e. unit tests for 
+`server/modules/GameManager` are found in `spec/unit/server/modules/GameManager_Spec.js`

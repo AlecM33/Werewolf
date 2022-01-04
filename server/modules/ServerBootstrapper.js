@@ -9,7 +9,7 @@ const ServerBootstrapper = {
     processCLIArgs: () => {
         try {
             let args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));
-            const useHttps = args.includes('https');
+            const useHttps = args.includes('protocol=https');
             const port = process.env.PORT || args
                 .filter((arg) => {
                     return /port=\d+/.test(arg);

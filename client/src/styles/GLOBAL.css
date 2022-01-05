@@ -395,11 +395,11 @@ input {
 }
 
 .good-players, #deck-good {
-    background-color: #1c1a36;
+    background-color: #26244a;
 }
 
 .evil-players, #deck-evil {
-    background-color: #361a1a;
+    background-color: #4a2424;
 }
 
 .evil, .compact-card.evil .card-role {

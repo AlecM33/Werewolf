@@ -4,7 +4,7 @@
     cursor: pointer;
     position: relative;
     margin: 0.3em;
-    background-color: #393a40;
+    background-color: #191920;
     color: gray;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
@@ -83,13 +83,43 @@
     width: fit-content;
 }
 
-#custom-roles-container {
-    margin: 1em 0;
+.deck-role {
+    border-radius: 3px;
+    margin: 0.25em 0;
+    padding: 0 5px;
+    font-size: 18px;
+}
+
+#custom-roles-container, #deck-status-container {
+    color: #d7d7d7;
+    margin: 1em 0.5em;
     background-color: #191920;
     padding: 10px;
     border-radius: 3px;
     border: 2px solid #333243;
     position: relative;
+}
+
+#deck-status-container {
+    min-width: 15em;
+    height: 13em;
+    overflow-y: auto;
+    position: relative;
+}
+
+#deck-count {
+    font-size: 30px;
+    position: sticky;
+    top: 0;
+    left: 5px;
+    background-color: #333243;
+    width: fit-content;
+    padding: 0 5px;
+    border-radius: 3px;
+}
+
+#deck-list {
+    margin-top: 0.5em;
 }
 
 #custom-role-hamburger .hamburger-inner, #custom-role-hamburger .hamburger-inner::before, #custom-role-hamburger .hamburger-inner::after {
@@ -360,13 +390,17 @@ input[type="number"] {
     padding: 10px 20px;
 }
 
+#step-forward-button, #step-back-button {
+    background-color: #66666657 !important;
+}
+
 #step-forward-button, #create-game {
     right: 15%;
 }
 
 #step-back-button {
     left: 15%;
-    background-color: #762323 !important;
+    background-color: #762323;
 }
 
 #step-1 div {

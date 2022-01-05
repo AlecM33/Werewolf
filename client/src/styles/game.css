@@ -512,7 +512,6 @@ label[for='moderator'] {
 
 .kill-player-button, .reveal-role-button {
     font-family: 'signika-negative', sans-serif !important;
-    padding: 5px;
     border-radius: 3px;
     color: whitesmoke;
     font-size: 16px;
@@ -529,7 +528,6 @@ label[for='moderator'] {
 
 .placeholder-button {
     font-family: 'signika-negative', sans-serif !important;
-    padding: 5px;
     display: flex;
     justify-content: center;
     border-radius: 3px;
@@ -538,7 +536,7 @@ label[for='moderator'] {
     font-size: 16px;
     border: 2px solid transparent;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
-    margin: 5px 0 5px 25px;
+    margin: 5px 0 5px 35px;
     width: 103px;
 }
 
@@ -613,7 +611,7 @@ label[for='moderator'] {
 #game-player-list {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 0;
+    padding: 0 10px 10px 0;
     max-height: 37em;
 }
 

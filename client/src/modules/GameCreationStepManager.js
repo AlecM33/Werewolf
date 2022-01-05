@@ -192,7 +192,8 @@ function renderRoleSelectionStep(game, containerId, step, deckManager) {
     const stepContainer = document.createElement("div");
     setAttributes(stepContainer, {'id': 'step-' + step, 'class': 'flex-row-container-left-align step'});
 
-    stepContainer.innerHTML =templates.CREATE_GAME_CUSTOM_ROLES;
+    stepContainer.innerHTML = templates.CREATE_GAME_CUSTOM_ROLES;
+    stepContainer.innerHTML += templates.CREATE_GAME_DECK_STATUS;
     stepContainer.innerHTML += templates.CREATE_GAME_DECK;
 
     document.getElementById(containerId).appendChild(stepContainer);
@@ -213,6 +214,7 @@ function renderRoleSelectionStep(game, containerId, step, deckManager) {
 
     loadCustomRoles(deckManager);
 
+    updateDeckStatus(deckManager);
 
     initializeRemainingEventListeners(deckManager);
 }
@@ -399,14 +401,14 @@ function constructCompactDeckBuilderElement(card, deckManager) {
 
     cardContainer.innerHTML =
         "<div class='compact-card-left'>" +
-        "<p>-</p>" +
+            "<p>-</p>" +
         "</div>" +
         "<div class='compact-card-header'>" +
-        "<p class='card-role'></p>" +
+            "<p class='card-role'></p>" +
         "<div class='card-quantity'></div>" +
         "</div>" +
         "<div class='compact-card-right'>" +
-        "<p>+</p>" +
+            "<p>+</p>" +
         "</div>";
 
     cardContainer.querySelector('.card-role').innerText = card.role;
@@ -419,6 +421,7 @@ function constructCompactDeckBuilderElement(card, deckManager) {
 
     cardContainer.querySelector('.compact-card-right').addEventListener('click', () => {
         deckManager.addCopyOfCard(card.role);
+        updateDeckStatus(deckManager);
         cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
         if (deckManager.getCard(card.role).quantity > 0) {
             document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.add('selected-card')
@@ -426,6 +429,7 @@ function constructCompactDeckBuilderElement(card, deckManager) {
     });
     cardContainer.querySelector('.compact-card-left').addEventListener('click', () => {
         deckManager.removeCopyOfCard(card.role);
+        updateDeckStatus(deckManager);
         cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
         if (deckManager.getCard(card.role).quantity === 0) {
             document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.remove('selected-card')
@@ -487,6 +491,24 @@ function addOptionsToList(options, selectEl) {
         optionEl.setAttribute("value", options[i].role);
         optionEl.innerText = options[i].role;
         selectEl.appendChild(optionEl);
+    }
+}
+
+function updateDeckStatus(deckManager) {
+    document.querySelectorAll('.deck-role').forEach((el) => el.remove());
+    document.getElementById("deck-count").innerText = deckManager.getDeckSize() + " Players";
+    for (let card of deckManager.getCurrentDeck()) {
+        if (card.quantity > 0) {
+            let roleEl = document.createElement("div");
+            roleEl.classList.add('deck-role');
+            if (card.team === globals.ALIGNMENT.GOOD) {
+                roleEl.classList.add(globals.ALIGNMENT.GOOD);
+            } else {
+                roleEl.classList.add(globals.ALIGNMENT.EVIL);
+            }
+            roleEl.innerText = card.quantity + 'x ' + card.role;
+            document.getElementById("deck-list").appendChild(roleEl);
+        }
     }
 }
 

@@ -153,7 +153,7 @@ export const templates = {
         "</div>" +
         "<div class='player-action-buttons'>" +
             "<button class='moderator-player-button kill-player-button'>Kill \uD83D\uDC80</button>" +
-            "<button class='moderator-player-button reveal-role-button'>Reveal Role <img src='../images/eye.svg'/></button>" +
+            "<button class='moderator-player-button reveal-role-button'>Reveal <img src='../images/eye.svg'/></button>" +
         "</div>",
     GAME_PLAYER:
         "<div>" +
@@ -253,6 +253,12 @@ export const templates = {
                 '<input id="include-role" type=\"submit\" value=\"Include Role\">' +
             '</form>' +
             '<button id=\"custom-role-btn\" class=\"app-button\">+ Create Custom Role</button>' +
+        '</div>',
+    CREATE_GAME_DECK_STATUS:
+        '<div id="deck-status-container">' +
+            '<div id="deck-count">0 Players</div>' +
+            '<div id="deck-list">' +
+            '</div>' +
         '</div>'
 
 }

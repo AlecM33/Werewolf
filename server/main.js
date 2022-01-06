@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({
 const args = ServerBootstrapper.processCLIArgs();
 
 const logger = require('./modules/Logger')(args.logLevel);
-logger.log('LOG LEVEL IS: ' + args.logLevel);
+logger.info('LOG LEVEL IS: ' + args.logLevel);
 
 const main = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, args.port, logger)
 
@@ -66,5 +66,5 @@ app.use(function (req, res) {
 });
 
 main.listen(args.port, function () {
-    logger.log(`Starting server on port ${args.port}` );
+    logger.info(`Starting server on port ${args.port}` );
 });

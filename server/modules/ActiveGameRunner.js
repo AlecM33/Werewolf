@@ -64,7 +64,7 @@ class ActiveGameRunner {
 class Singleton {
     constructor (logger) {
         if (!Singleton.instance) {
-            logger.log('CREATING SINGLETON ACTIVE GAME RUNNER');
+            logger.info('CREATING SINGLETON ACTIVE GAME RUNNER');
             Singleton.instance = new ActiveGameRunner(logger);
         }
     }

@@ -450,7 +450,7 @@ function pruneStaleGames(activeGames, timerThreads, logger) {
 class Singleton {
     constructor (logger, environment) {
         if (!Singleton.instance) {
-            logger.log('CREATING SINGLETON GAME MANAGER');
+            logger.info('CREATING SINGLETON GAME MANAGER');
             Singleton.instance = new GameManager(logger, environment);
         }
     }

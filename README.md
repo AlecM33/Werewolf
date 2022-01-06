@@ -3,6 +3,8 @@ smoothly when you don't have a deck, or when you and your friends are together v
 <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
 2020's quarantine. The app is free to use and anonymous. 
 
+![player](./client/src/images/screenshots/player.PNG)
+
 ## Features
 
 This is meant to facilitate a game through a shared game state and various utilities - not to control

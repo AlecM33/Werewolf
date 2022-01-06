@@ -38,7 +38,7 @@ const ServerBootstrapper = {
     createServerWithCorrectHTTPProtocol: (app, useHttps, port, logger) => {
         let main;
         if (process.env.NODE_ENV.trim() === 'development') {
-            logger.log('starting main in DEVELOPMENT mode.');
+            logger.info('starting main in DEVELOPMENT mode.');
             if (
                 useHttps
                 && fs.existsSync(path.join(__dirname, '../../client/certs/localhost-key.pem'))
@@ -46,13 +46,13 @@ const ServerBootstrapper = {
             ) {
                 const key = fs.readFileSync(path.join(__dirname, '../../client/certs/localhost-key.pem'), 'utf-8');
                 const cert = fs.readFileSync(path.join(__dirname, '../../client/certs/localhost.pem'), 'utf-8');
-                logger.log('local certs detected. Using HTTPS.');
+                logger.info('local certs detected. Using HTTPS.');
                 main = https.createServer({ key, cert }, app);
-                logger.log(`navigate to https://localhost:${port}`);
+                logger.info(`navigate to https://localhost:${port}`);
             } else {
-                logger.log('https not specified or no local certs detected. Certs should reside in /client/certs. Using HTTP.');
+                logger.info('https not specified or no local certs detected. Certs should reside in /client/certs. Using HTTP.');
                 main = http.createServer(app);
-                logger.log(`navigate to http://localhost:${port}`);
+                logger.info(`navigate to http://localhost:${port}`);
             }
         } else {
             logger.warn('starting main in PRODUCTION mode. This should not be used for local development.');

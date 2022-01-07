@@ -9,8 +9,6 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
     user-select: none;
-    max-width: 15em;
-    min-width: 130px;
     display: flex;
     height: 55px;
 }
@@ -28,8 +26,6 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 9em;
-    font-size: 16px;
 }
 
 .selected-card {
@@ -83,11 +79,19 @@
     width: fit-content;
 }
 
+#custom-roles-container {
+    width: 95%;
+    max-width: 25em;
+}
+
 .deck-role {
     border-radius: 3px;
     margin: 0.25em 0;
     padding: 0 5px;
     font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #custom-roles-container, #deck-status-container {
@@ -101,7 +105,8 @@
 }
 
 #deck-status-container {
-    min-width: 15em;
+    width: 20em;
+    max-width: 95%;
     height: 13em;
     overflow-y: auto;
     position: relative;
@@ -120,6 +125,17 @@
 
 #deck-list {
     margin-top: 0.5em;
+}
+
+#deck-list-placeholder {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 290px;
+    height: 20px;
 }
 
 #custom-role-hamburger .hamburger-inner, #custom-role-hamburger .hamburger-inner::before, #custom-role-hamburger .hamburger-inner::after {
@@ -189,6 +205,8 @@
     margin: 0 auto;
     justify-content: center;
     flex-direction: column;
+    width: 95%;
+    max-width: 38em;
 }
 
 #deck-container label {
@@ -322,6 +340,53 @@ input[type="number"] {
 
 #deck-select {
     margin: 0.5em 1em 1.5em 0;
+    overflow-y: auto;
+    height: 15em;
+}
+
+.deck-select-role {
+    display: flex;
+    justify-content: space-between;
+    background-color: black;
+    align-items: center;
+    padding: 5px;
+    margin: 0.25em 0;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    font-size: 16px;
+}
+
+.deck-select-role-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.deck-select-role:hover {
+    border: 1px solid #d7d7d7;
+}
+
+.deck-select-role-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#deck-select img {
+    height: 20px;
+    margin: 0 8px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#deck-select img:nth-child(4) {
+    height: 18px;
+}
+
+#deck-select img:hover {
+    filter: brightness(1.5);
+    background-color: #8080804d;
 }
 
 .dropdown {
@@ -367,7 +432,7 @@ input[type="number"] {
 #game-creation-container {
     width: 95%;
     position: relative;
-    margin-bottom: 2em;
+    margin-bottom: 4em;
 }
 
 #tracker-container {
@@ -376,6 +441,10 @@ input[type="number"] {
     margin-top: 2em;
     justify-content: center;
     width: 100%;
+}
+
+#upload-custom-roles-modal input[type='file'] {
+    margin: 2em 0;
 }
 
 #creation-step-tracker {
@@ -466,6 +535,20 @@ input[type="number"] {
         padding: 10px 15px;
         font-size: 16px;
     }
+
+    .deck-select-role-name {
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .compact-card .card-role {
+        max-width: 9em;
+        font-size: 13px;
+    }
+
+    .compact-card {
+        min-width: 130px;
+    }
 }
 
 @media(min-width: 551px) {
@@ -475,5 +558,14 @@ input[type="number"] {
 
     #step-1 div {
         font-size: 25px;
+    }
+
+    .compact-card .card-role {
+        max-width: 10em;
+        font-size: 15px;
+    }
+
+    .compact-card {
+        min-width: 155px;
     }
 }

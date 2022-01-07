@@ -3,6 +3,10 @@ smoothly when you don't have a deck, or when you and your friends are together v
 <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
 2020's quarantine. The app is free to use and anonymous. 
 
+After a long hiatus from maintaining the application, I have come back and undertaken a large-scale redesign, rewriting 
+most of the code and producing a result that I believe is more stable and has much more sensible client-server interaction.
+It's a shame that my first attempt is what ended up in Github's Artic Code Vault :)
+
 ![player](./client/src/images/screenshots/player.PNG)
 
 ## Features
@@ -23,10 +27,9 @@ The application prioritizes responsiveness. A key scenario would be when a group
 ## Tech Stack
 
 This is a Node.js application. It is written purely using JavaScript/HTML/CSS. The main dependencies are
-<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It is fully open source
+<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It is fully open-source
 and under the MIT license. This was (and still is) fundamentally a learning project, and thus I welcome collaboration 
-and feedback of any kind. After a long break of maintaining the application I am back to work on re-designing and
-improving it. 
+and feedback of any kind.
 
 All pixel art is my own, for better or for worse.
 
@@ -65,7 +68,7 @@ consulting these below.
 ### CLI Options
 
 These options will be at the end of your run command following two dashes e.g. `npm run start:dev -- [options]`.
-Options are key-value pairs with the syntax `[key]=[value]` e.g. `port=4242`. Options include:
+Options are whitespace-delimited key-value pairs with the syntax `[key]=[value]` e.g. `port=4242`. Options include:
 
 - `port`. Specify an integer port for the application.
 - `loglevel` the log level for the application. Can be `info`, `error`, `warn`, `debug`, or `trace`. 

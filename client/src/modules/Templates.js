@@ -227,38 +227,40 @@ export const templates = {
     CREATE_GAME_DECK:
         "<div id='deck-container'>" +
             "<div>" +
-                "<label for='deck-good'>Good Roles</label>" +
+                "<label for='deck-good'>Included Good Roles</label>" +
                 "<div id='deck-good'></div>" +
             "</div>" +
             "<div>" +
-                "<label for='deck-evil'>Evil Roles</label>" +
+                "<label for='deck-evil'>Included Evil Roles</label>" +
                 "<div id='deck-evil'></div>" +
             "</div>" +
         "</div>",
     CREATE_GAME_CUSTOM_ROLES:
         '<div id=\"custom-roles-container\">' +
-            // '<button id="custom-role-hamburger" class="hamburger hamburger--collapse" type="button">' +
-            //     '<span class="hamburger-box">' +
-            //         '<span class="hamburger-inner"></span>' +
-            //     '</span>' +
-            // '</button>' +
-            // '<div id="custom-role-actions" style="display:none">' +
-            //     '<div class="custom-role-action">Export</div>' +
-            //     '<div class="custom-role-action">Import</div>' +
-            //     '<div class="custom-role-action">Edit</div>' +
-            // '</div>' +
+            '<button id="custom-role-hamburger" class="hamburger hamburger--collapse" type="button">' +
+                '<span class="hamburger-box">' +
+                    '<span class="hamburger-inner"></span>' +
+                '</span>' +
+            '</button>' +
+            '<div id="custom-role-actions" style="display:none">' +
+                '<div class="custom-role-action" id="custom-roles-export">Export</div>' +
+                '<div class="custom-role-action" id="custom-roles-import">Import</div>' +
+            '</div>' +
             '<label for=\"add-card-to-deck-form\">Custom Roles</label>' +
-            '<form id=\"add-card-to-deck-form\">' +
-                '<select id=\"deck-select\"></select>' +
-                '<input id="include-role" type=\"submit\" value=\"Include Role\">' +
-            '</form>' +
+            '<div id=\"deck-select\"></div>' +
             '<button id=\"custom-role-btn\" class=\"app-button\">+ Create Custom Role</button>' +
         '</div>',
     CREATE_GAME_DECK_STATUS:
         '<div id="deck-status-container">' +
             '<div id="deck-count">0 Players</div>' +
-            '<div id="deck-list">' +
-            '</div>' +
+            '<div id="deck-list"></div>' +
+        '</div>',
+    DECK_SELECT_ROLE:
+        '<div class="deck-select-role-name"></div>' +
+        '<div class="deck-select-role-options">' +
+            '<img class="deck-select-include" src="images/add.svg" title="include" alt="include"/>' +
+            '<img class="deck-select-info" src="images/info.svg" title="info" alt="info"/>' +
+            '<img class="deck-select-edit" src="images/pencil.svg" title="edit" alt="edit"/>' +
+            '<img class="deck-select-remove" src="images/delete.svg" title="remove" alt="remove"/>' +
         '</div>'
-
 }

@@ -22,7 +22,7 @@
 <div id="mobile-menu-background-overlay"></div>
 <div id="navbar"></div>
 <div id="game-creation-container" class="container">
-    <div id="add-role-modal-background" class="modal-background" style="display: none"></div>
+    <div id="modal-background" class="modal-background" style="display: none"></div>
     <div id="add-role-modal" class="modal" style="display: none">
         <form id="add-role-form">
             <div>
@@ -46,15 +46,16 @@
             </div>
         </form>
     </div>
-<!--    <div id="upload-custom-roles-modal">-->
-<!--        <form id="upload-custom-roles-form">-->
-<!--            <input type="file" id="upload-custom-roles" name="Upload Custom Roles" accept="application/json"/>-->
-<!--        </form>-->
-<!--        <div class="modal-button-container">-->
-<!--            <button id="close-upload-custom-roles-modal-button" class="cancel app-button">Close</button>-->
-<!--            <input type="submit" id="upload-custom-roles-button" value="Upload"/>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div id="upload-custom-roles-modal" class="modal" style="display:none">
+        <h3>Import Custom Roles</h3>
+        <form id="upload-custom-roles-form">
+            <input type="file" id="upload-custom-roles" name="Upload Custom Roles" accept="text/plain"/>
+            <div class="modal-button-container">
+                <button id="close-upload-custom-roles-modal-button" class="cancel app-button">Close</button>
+                <input type="submit" id="upload-custom-roles-button" value="Upload"/>
+            </div>
+        </form>
+    </div>
     <h1>Create A Game</h1>
     <div id="tracker-container">
         <div id="creation-step-tracker">

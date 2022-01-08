@@ -165,6 +165,7 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
         socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
             toast(player.name + " joined!", "success", false, true, 3);
             stateBucket.currentGameState.people.push(player);
+            stateBucket.currentGameState.isFull = gameIsFull;
             gameStateRenderer.renderLobbyPlayers();
             if (
                 gameIsFull

@@ -355,6 +355,7 @@ function initializePeopleForGame(uniqueCards, moderator) {
     let j = 0;
     if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.
         moderator.gameRole = cards[j].role;
+        moderator.customRole = cards[j].custom;
         moderator.gameRoleDescription = cards[j].description;
         moderator.alignment = cards[j].team;
         people.push(moderator);
@@ -371,6 +372,7 @@ function initializePeopleForGame(uniqueCards, moderator) {
             cards[j].description,
             cards[j].team
         );
+        person.customRole = cards[j].custom;
         person.hasEnteredName = false;
         people.push(person);
         j ++;

@@ -135,7 +135,9 @@
     bottom: 0;
     right: 0;
     width: 290px;
-    height: 20px;
+    height: 50px;
+    font-size: 20px;
+    text-align: center;
 }
 
 #custom-role-hamburger .hamburger-inner, #custom-role-hamburger .hamburger-inner::before, #custom-role-hamburger .hamburger-inner::after {

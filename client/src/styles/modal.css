@@ -49,6 +49,29 @@
     flex-direction: row;
 }
 
+#custom-role-info-modal {
+    display: flex;
+    color: #d7d7d7;
+    text-align: left;
+    font-family: signika-negative, sans-serif;
+}
+
+#custom-role-info-modal-description {
+    margin: 2em 0;
+    max-height: 10em;
+    overflow: auto;
+}
+
+#custom-role-info-modal-name {
+    font-family: 'diavlo', sans-serif;
+    font-size: 23px;
+}
+
+#custom-role-info-modal-alignment {
+    font-size: 20px;
+    font-weight: bold;
+}
+
 #change-name-modal, #transfer-mod-modal, #role-info-modal {
     position: fixed;
 }

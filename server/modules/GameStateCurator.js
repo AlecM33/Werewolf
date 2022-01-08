@@ -38,6 +38,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
             userType: person.userType,
             gameRole: person.gameRole,
             gameRoleDescription: person.gameRoleDescription,
+            customRole: person.customRole,
             alignment: person.alignment,
             out: person.out
         }

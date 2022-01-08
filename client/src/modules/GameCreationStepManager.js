@@ -537,7 +537,7 @@ function addCustomRoleEventListeners(deckManager, select) {
             if (!deckManager.getCard(name)) {
                 deckManager.addToDeck(name);
                 let cardEl = constructCompactDeckBuilderElement(deckManager.getCard(name), deckManager);
-                toast('"' + name + '" included.', 'success', true, true, 3);
+                toast('"' + name + '" made available below.', 'success', true, true, 4);
                 if (deckManager.getCard(name).team === globals.ALIGNMENT.GOOD) {
                     document.getElementById("deck-good").appendChild(cardEl);
                 } else {
@@ -555,6 +555,19 @@ function addCustomRoleEventListeners(deckManager, select) {
                 deckManager.removeFromCustomRoleOptions(name);
                 updateCustomRoleOptionsList(deckManager, select);
             }
+        });
+
+        role.querySelector('.deck-select-info').addEventListener('click', (e) => {
+            let alignmentEl = document.getElementById("custom-role-info-modal-alignment");
+            alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
+            alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+            e.preventDefault();
+            let option = deckManager.getCustomRoleOption(name);
+            document.getElementById("custom-role-info-modal-name").innerText = name;
+            alignmentEl.classList.add(option.team);
+            document.getElementById("custom-role-info-modal-description").innerText = option.description;
+            alignmentEl.innerText = option.team;
+            ModalManager.displayModal("custom-role-info-modal", "modal-background", "close-custom-role-info-modal-button");
         })
     });
 }

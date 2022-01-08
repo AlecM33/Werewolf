@@ -15,9 +15,7 @@ export class GameStateRenderer {
     renderLobbyPlayers() {
         document.querySelectorAll('.lobby-player').forEach((el) => el.remove())
         let lobbyPlayersContainer = document.getElementById("lobby-players");
-        if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.PLAYER
-            && this.stateBucket.currentGameState.moderator.userType === globals.USER_TYPES.MODERATOR
-        ) {
+        if (this.stateBucket.currentGameState.moderator.userType === globals.USER_TYPES.MODERATOR) {
             lobbyPlayersContainer.appendChild(
                 renderLobbyPerson(
                     this.stateBucket.currentGameState.moderator.name,
@@ -409,10 +407,17 @@ function renderPlayerRole(gameState) {
                 '../images/roles/Villager' + Math.ceil(Math.random() * 2) + '.png'
             );
         } else {
-            document.getElementById("role-image").setAttribute(
-                'src',
-                '../images/roles/' + gameState.client.gameRole.replaceAll(' ', '') + '.png'
-            );
+            if (gameState.client.customRole) {
+                document.getElementById("role-image").setAttribute(
+                    'src',
+                    '../images/roles/custom-role.svg'
+                );
+            } else {
+                document.getElementById("role-image").setAttribute(
+                    'src',
+                    '../images/roles/' + gameState.client.gameRole.replaceAll(' ', '') + '.png'
+                );
+            }
         }
     }
 

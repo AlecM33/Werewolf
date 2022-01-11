@@ -14,7 +14,8 @@ const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
-        END_GAME: 'endGame'
+        END_GAME: 'endGame',
+        FETCH_IN_PROGRESS_STATE: 'fetchInitialInProgressState'
     },
     MESSAGES: {
         ENTER_NAME:  "Client must enter name."
@@ -38,6 +39,7 @@ const globals = {
     },
     EVENTS: {
         PLAYER_JOINED: "playerJoined",
+        PLAYER_LEFT: "playerLeft",
         SYNC_GAME_STATE: "syncGameState"
     },
     ENVIRONMENT: {

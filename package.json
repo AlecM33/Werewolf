@@ -11,7 +11,7 @@
     "start:dev:no-hot-reload": "NODE_ENV=development && node server/main.js",
     "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
     "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node server/main.js",
-    "start": "NODE_ENV=production node server/main.js -- loglevel=debug port=8080",
+    "start": "NODE_ENV=production node server/main.js -- loglevel=trace port=8080",
     "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
     "test": "jasmine"
   },

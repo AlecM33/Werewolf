@@ -52,7 +52,7 @@ export const templates = {
         "<p id='role-description'></p>" +
     "</div>" +
     "<div id='game-role-back'>" +
-        "<h4>Click to reveal your role</h4>" +
+        "<h4>Click to show your role</h4>" +
         "<p>(click again to hide)</p>" +
     "</div>" +
     "<div id='game-people-container'>" +
@@ -138,7 +138,7 @@ export const templates = {
             "<p id='role-description'></p>" +
         "</div>" +
         "<div id='game-role-back'>" +
-            "<h4>Click to reveal your role</h4>" +
+            "<h4>Click to show your role</h4>" +
             "<p>(click again to hide)</p>" +
         "</div>" +
         "<div id='game-people-container'>" +

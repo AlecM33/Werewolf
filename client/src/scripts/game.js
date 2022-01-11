@@ -13,16 +13,21 @@ const game = () => {
     injectNavbar();
     let timerWorker;
     const socket = io('/in-game');
+    stateBucket.gameStateRequestInFlight = false;
     socket.on('disconnect', () => {
+        stateBucket.gameStateRequestInFlight = false;
         if (timerWorker) {
             timerWorker.terminate();
         }
         toast('Disconnected. Attempting reconnect...', 'error', true, false);
     });
     socket.on('connect', () => {
-        socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function(returnedEnvironment) {
-            timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
-            prepareGamePage(returnedEnvironment, socket, timerWorker);
+        console.log('fired connect event');
+        socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function (returnedEnvironment) {
+            if (!stateBucket.gameStateRequestInFlight) {
+                timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
+                prepareGamePage(returnedEnvironment, socket, timerWorker);
+            }
         });
     })
 };
@@ -32,46 +37,51 @@ function prepareGamePage(environment, socket, timerWorker) {
     const splitUrl = window.location.href.split('/game/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
+        stateBucket.gameStateRequestInFlight = true;
         socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, userId, function (gameState) {
+            stateBucket.gameStateRequestInFlight = false;
             stateBucket.currentGameState = gameState;
             document.querySelector('.spinner-container')?.remove();
             document.querySelector('.spinner-background')?.remove();
 
             if (gameState === null) {
                 window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-            }
+            } else {
+                document.getElementById("game-content").innerHTML = templates.INITIAL_GAME_DOM;
+                toast('You are connected.', 'success', true, true, 2);
+                userId = gameState.client.cookie;
+                UserUtility.setAnonymousUserId(userId, environment);
+                let gameStateRenderer = new GameStateRenderer(stateBucket, socket);
+                let gameTimerManager;
+                if (stateBucket.currentGameState.timerParams) {
+                    gameTimerManager = new GameTimerManager(stateBucket, socket);
+                }
+                initializeGame(stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager);
 
-            document.getElementById("game-content").innerHTML = templates.INITIAL_GAME_DOM;
-            toast('You are connected.', 'success', true, true, 2);
-            userId = gameState.client.cookie;
-            UserUtility.setAnonymousUserId(userId, environment);
-            let gameStateRenderer = new GameStateRenderer(stateBucket, socket);
-            let gameTimerManager;
-            if (stateBucket.currentGameState.timerParams) {
-                gameTimerManager = new GameTimerManager(stateBucket, socket);
-            }
-            initializeGame(stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager);
-
-            if (!gameState.client.hasEnteredName) {
-                document.getElementById("prompt").innerHTML = templates.NAME_CHANGE_MODAL;
-                document.getElementById("change-name-form").onsubmit = (e) => {
-                    e.preventDefault();
-                    let name = document.getElementById("player-new-name").value;
-                    if (validateName(name)) {
-                        socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, { name: name, personId: gameState.client.id }, (result) => {
-                            switch (result) {
-                                case "taken":
-                                    toast('This name is already taken.', 'error', true, true, 8);
-                                    break;
-                                case "changed":
-                                    ModalManager.dispelModal("change-name-modal", "change-name-modal-background")
-                                    toast('Name set.', 'success', true, true, 5);
-                                    propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
-                                    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
-                            }
-                        })
-                    } else {
-                        toast("Name must be between 1 and 30 characters.", 'error', true, true, 8);
+                if (!gameState.client.hasEnteredName) {
+                    document.getElementById("prompt").innerHTML = templates.NAME_CHANGE_MODAL;
+                    document.getElementById("change-name-form").onsubmit = (e) => {
+                        e.preventDefault();
+                        let name = document.getElementById("player-new-name").value;
+                        if (validateName(name)) {
+                            socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, {
+                                name: name,
+                                personId: gameState.client.id
+                            }, (result) => {
+                                switch (result) {
+                                    case "taken":
+                                        toast('This name is already taken.', 'error', true, true, 8);
+                                        break;
+                                    case "changed":
+                                        ModalManager.dispelModal("change-name-modal", "change-name-modal-background")
+                                        toast('Name set.', 'success', true, true, 5);
+                                        propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
+                                        processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
+                                }
+                            })
+                        } else {
+                            toast("Name must be between 1 and 30 characters.", 'error', true, true, 8);
+                        }
                     }
                 }
             }
@@ -86,10 +96,12 @@ function initializeGame(stateBucket, socket, timerWorker, userId, gameStateRende
     processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
 }
 
-function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker) {
+function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker, refreshPrompt=true) {
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
-    document.querySelector("#start-game-prompt")?.remove();
-    document.querySelector("#end-game-prompt")?.remove();
+    if (refreshPrompt) {
+        removeStartGameFunctionalityIfPresent(gameStateRenderer);
+        document.querySelector("#end-game-prompt")?.remove();
+    }
     switch (currentGameState.status) {
         case globals.STATUS.LOBBY:
             document.getElementById("game-state-container").innerHTML = templates.LOBBY;
@@ -101,8 +113,9 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
                     currentGameState.client.userType === globals.USER_TYPES.MODERATOR
                     || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
+                && refreshPrompt
             ) {
-               displayStartGamePromptForModerators(currentGameState, socket);
+               displayStartGamePromptForModerators(currentGameState, gameStateRenderer);
             }
             break;
         case globals.STATUS.IN_PROGRESS:
@@ -174,21 +187,69 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
                     || stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
                 )
             ) {
-                displayStartGamePromptForModerators(stateBucket.currentGameState, socket);
+                displayStartGamePromptForModerators(stateBucket.currentGameState, gameStateRenderer);
             }
+        });
+    }
+
+    if (!socket.hasListeners(globals.EVENTS.PLAYER_LEFT)) {
+        socket.on(globals.EVENTS.PLAYER_LEFT, (player) => {
+            removeStartGameFunctionalityIfPresent(gameStateRenderer);
+            toast(player.name + " has left!", "error", false, true, 3);
+            let index = stateBucket.currentGameState.people.findIndex(person => person.id === player.id);
+            if (index >= 0) {
+                stateBucket.currentGameState.people.splice(
+                    index,
+                    1
+                );
+                gameStateRenderer.renderLobbyPlayers();
+            }
+        });
+    }
+
+    if (!socket.hasListeners(globals.EVENTS.START_GAME)) {
+        socket.on(globals.EVENTS.START_GAME, () => {
+            socket.emit(
+                globals.COMMANDS.FETCH_IN_PROGRESS_STATE,
+                stateBucket.currentGameState.accessCode,
+                stateBucket.currentGameState.client.cookie,
+                function (gameState) {
+                    stateBucket.gameStateRequestInFlight = false;
+                    stateBucket.currentGameState = gameState;
+                    processGameState(
+                        stateBucket.currentGameState,
+                        gameState.client.cookie,
+                        socket,
+                        gameStateRenderer,
+                        gameTimerManager,
+                        timerWorker
+                    );
+                }
+            );
         });
     }
     if (!socket.hasListeners(globals.EVENTS.SYNC_GAME_STATE)) {
         socket.on(globals.EVENTS.SYNC_GAME_STATE, () => {
-            socket.emit(
-                globals.COMMANDS.FETCH_GAME_STATE,
-                stateBucket.currentGameState.accessCode,
-                stateBucket.currentGameState.client.cookie,
-                function (gameState) {
-                    stateBucket.currentGameState = gameState;
-                    processGameState(stateBucket.currentGameState, gameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
-                }
-            );
+            if (!stateBucket.gameStateRequestInFlight) {
+                stateBucket.gameStateRequestInFlight = true;
+                socket.emit(
+                    globals.COMMANDS.FETCH_IN_PROGRESS_STATE,
+                    stateBucket.currentGameState.accessCode,
+                    stateBucket.currentGameState.client.cookie,
+                    function (gameState) {
+                        stateBucket.gameStateRequestInFlight = false;
+                        stateBucket.currentGameState = gameState;
+                        processGameState(
+                            stateBucket.currentGameState,
+                            gameState.client.cookie,
+                            socket,
+                            gameStateRenderer,
+                            gameTimerManager,
+                            timerWorker
+                        );
+                    }
+                );
+            }
         });
     }
 
@@ -255,7 +316,15 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
         socket.on(globals.EVENTS.CHANGE_NAME, (personId, name) => {
             propagateNameChange(stateBucket.currentGameState, name, personId);
             updateDOMWithNameChange(stateBucket.currentGameState, gameStateRenderer);
-            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+            processGameState(
+                stateBucket.currentGameState,
+                stateBucket.currentGameState.client.cookie,
+                socket,
+                gameStateRenderer,
+                gameTimerManager,
+                timerWorker,
+                false
+            );
         });
     }
 
@@ -263,21 +332,22 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
         socket.on(globals.COMMANDS.END_GAME, (people) => {
             stateBucket.currentGameState.people = people;
             stateBucket.currentGameState.status = globals.STATUS.ENDED;
-            processGameState(stateBucket.currentGameState, stateBucket.currentGameState.client.cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+            processGameState(
+                stateBucket.currentGameState,
+                stateBucket.currentGameState.client.cookie,
+                socket,
+                gameStateRenderer,
+                gameTimerManager,
+                timerWorker
+            );
         });
     }
 }
 
-function displayStartGamePromptForModerators(gameState, socket) {
+function displayStartGamePromptForModerators(gameState, gameStateRenderer) {
     let div = document.createElement("div");
     div.innerHTML = templates.START_GAME_PROMPT;
-    div.querySelector('#start-game-button').addEventListener('click', (e) => {
-        e.preventDefault();
-        if (confirm("Start the game and deal roles?")) {
-            socket.emit(globals.COMMANDS.START_GAME, gameState.accessCode);
-        }
-
-    });
+    div.querySelector('#start-game-button').addEventListener('click', gameStateRenderer.startGameHandler);
     document.body.appendChild(div);
 }
 
@@ -296,8 +366,15 @@ function validateName(name) {
     return typeof name === 'string' && name.length > 0 && name.length <= 30;
 }
 
+function removeStartGameFunctionalityIfPresent(gameStateRenderer) {
+    document.querySelector("#start-game-prompt")?.removeEventListener('click', gameStateRenderer.startGameHandler);
+    document.querySelector("#start-game-prompt")?.remove();
+}
+
 function propagateNameChange(gameState, name, personId) {
-    gameState.client.name = name;
+    if (gameState.client.id === personId) {
+        gameState.client.name = name;
+    }
     let matchingPerson = gameState.people.find((person) => person.id === personId);
     if (matchingPerson) {
         matchingPerson.name = name;
@@ -314,20 +391,24 @@ function propagateNameChange(gameState, name, personId) {
 }
 
 function updateDOMWithNameChange(gameState, gameStateRenderer) {
-    switch (gameState.client.userType) {
-        case globals.USER_TYPES.PLAYER:
-        case globals.USER_TYPES.KILLED_PLAYER:
-        case globals.USER_TYPES.SPECTATOR:
-            gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
-            break;
-        case globals.USER_TYPES.MODERATOR:
-            gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo(gameState.status === globals.STATUS.ENDED);
-            break;
-        case globals.USER_TYPES.TEMPORARY_MODERATOR:
-            gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
-            break;
-        default:
-            break;
+    if (gameState.status === globals.STATUS.IN_PROGRESS) {
+        switch (gameState.client.userType) {
+            case globals.USER_TYPES.PLAYER:
+            case globals.USER_TYPES.KILLED_PLAYER:
+            case globals.USER_TYPES.SPECTATOR:
+                gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
+                break;
+            case globals.USER_TYPES.MODERATOR:
+                gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo(gameState.status === globals.STATUS.ENDED);
+                break;
+            case globals.USER_TYPES.TEMPORARY_MODERATOR:
+                gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+                break;
+            default:
+                break;
+        }
+    } else {
+        gameStateRenderer.renderLobbyPlayers();
     }
 }
 

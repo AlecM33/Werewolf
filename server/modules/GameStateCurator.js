@@ -24,6 +24,21 @@ const GameStateCurator = {
                 out: person.out,
                 revealed: person.revealed
             }));
+    },
+    mapPerson: (person) => {
+        if (person.revealed) {
+            return {
+                name: person.name,
+                id: person.id,
+                userType: person.userType,
+                out: person.out,
+                revealed: person.revealed,
+                gameRole: person.gameRole,
+                alignment: person.alignment
+            };
+        } else {
+            return { name: person.name, id: person.id, userType: person.userType, out: person.out, revealed: person.revealed };
+        }
     }
 }
 
@@ -48,7 +63,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
             let state = {
                 accessCode: game.accessCode,
                 status: game.status,
-                moderator: mapPerson(game.moderator),
+                moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
                 people: game.people
@@ -56,7 +71,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
                         return person.assigned === true
                     })
                     .map((filteredPerson) =>
-                        mapPerson(filteredPerson)
+                        GameStateCurator.mapPerson(filteredPerson)
                     ),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
@@ -69,7 +84,7 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
             return {
                 accessCode: game.accessCode,
                 status: game.status,
-                moderator: mapPerson(game.moderator),
+                moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
                 people: GameStateCurator.mapPeopleForModerator(game.people, client),
@@ -81,14 +96,14 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
             return {
                 accessCode: game.accessCode,
                 status: game.status,
-                moderator: mapPerson(game.moderator),
+                moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
                 people: game.people
                     .filter((person) => {
                         return person.assigned === true
                     })
-                    .map((filteredPerson) => mapPerson(filteredPerson)),
+                    .map((filteredPerson) => GameStateCurator.mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
                 isFull: game.isFull
             }
@@ -96,35 +111,19 @@ function getGameStateBasedOnPermissions(game, person, gameRunner) {
             return {
                 accessCode: game.accessCode,
                 status: game.status,
-                moderator: mapPerson(game.moderator),
+                moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
                 people: game.people
                     .filter((person) => {
                         return person.assigned === true
                     })
-                    .map((filteredPerson) => mapPerson(filteredPerson)),
+                    .map((filteredPerson) => GameStateCurator.mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
             }
         default:
             break;
-    }
-}
-
-function mapPerson(person) {
-    if (person.revealed) {
-        return {
-            name: person.name,
-            id: person.id,
-            userType: person.userType,
-            out: person.out,
-            revealed: person.revealed,
-            gameRole: person.gameRole,
-            alignment: person.alignment
-        };
-    } else {
-        return { name: person.name, id: person.id, userType: person.userType, out: person.out, revealed: person.revealed };
     }
 }
 

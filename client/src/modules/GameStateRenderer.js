@@ -10,6 +10,12 @@ export class GameStateRenderer {
         this.killPlayerHandlers = {};
         this.revealRoleHandlers = {};
         this.transferModHandlers = {};
+        this.startGameHandler = (e) => {
+            e.preventDefault();
+            if (confirm("Start the game and deal roles?")) {
+                socket.emit(globals.COMMANDS.START_GAME, this.stateBucket.currentGameState.accessCode);
+            }
+        }
     }
 
     renderLobbyPlayers() {
@@ -465,16 +471,18 @@ function removeExistingPlayerElements(killPlayerHandlers, revealRoleHandlers) {
 }
 
 function createEndGamePromptComponent(socket, stateBucket) {
-    let div = document.createElement("div");
-    div.innerHTML = templates.END_GAME_PROMPT;
-    div.querySelector("#end-game-button").addEventListener('click', (e) => {
-        e.preventDefault();
-        if (confirm("End the game?")) {
-            socket.emit(
-                globals.COMMANDS.END_GAME,
-                stateBucket.currentGameState.accessCode
-            );
-        }
-    });
-    document.getElementById("game-content").appendChild(div);
+    if (document.querySelector("#end-game-prompt") === null) {
+        let div = document.createElement("div");
+        div.innerHTML = templates.END_GAME_PROMPT;
+        div.querySelector("#end-game-button").addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm("End the game?")) {
+                socket.emit(
+                    globals.COMMANDS.END_GAME,
+                    stateBucket.currentGameState.accessCode
+                );
+            }
+        });
+        document.getElementById("game-content").appendChild(div);
+    }
 }

@@ -11,7 +11,6 @@ class GameManager {
         this.environment = environment;
         this.activeGameRunner = new ActiveGameRunner(logger).getInstance();
         this.namespace = null;
-        //this.gameSocketUtility = GameSocketUtility;
     }
 
     addGameSocketHandlers = (namespace, socket) => {
@@ -29,19 +28,36 @@ class GameManager {
             );
         });
 
+        /* this event handler will call handleRequestForGameState() with the 'handleNoMatch' arg as false - only
+            connections that match a participant in the game at that time will have the game state sent to them.
+        */
+        socket.on(globals.CLIENT_COMMANDS.FETCH_IN_PROGRESS_STATE, (accessCode, personId, ackFn) => {
+            this.logger.trace('request for game state for accessCode ' + accessCode + ', person ' + personId);
+            this.handleRequestForGameState(
+                this.namespace,
+                this.logger,
+                this.activeGameRunner,
+                accessCode,
+                personId,
+                ackFn,
+                socket,
+                false
+            );
+        });
+
         socket.on(globals.CLIENT_COMMANDS.GET_ENVIRONMENT, (ackFn) => {
             ackFn(this.environment);
         });
 
         socket.on(globals.CLIENT_COMMANDS.START_GAME, (accessCode) => {
             let game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
+            if (game && game.isFull) {
                 game.status = globals.STATUS.IN_PROGRESS;
-                namespace.in(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
                 if (game.hasTimer) {
                     game.timerParams.paused = true;
                     this.activeGameRunner.runGame(game, namespace);
                 }
+                namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
             }
         });
 
@@ -142,7 +158,7 @@ class GameManager {
                         ackFn("changed");
                         person.name = data.name.trim();
                         person.hasEnteredName = true;
-                        socket.to(accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
+                        namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.CHANGE_NAME, person.id, person.name);
                     } else {
                         ackFn("taken");
                     }
@@ -261,14 +277,14 @@ class GameManager {
     }
 
 
-    handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) => {
+    handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket, handleNoMatch=true) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
             let matchingPerson = game.people.find((person) => person.cookie === personCookie);
             if (!matchingPerson) {
                 matchingPerson = game.spectators.find((spectator) => spectator.cookie === personCookie);
             }
-            if (game.moderator.cookie === personCookie)  {
+            if (!matchingPerson && game.moderator.cookie === personCookie)  {
                 matchingPerson = game.moderator;
             }
             if (matchingPerson) {
@@ -281,7 +297,7 @@ class GameManager {
                     matchingPerson.socketId = socket.id;
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                 }
-            } else {
+            } else if (handleNoMatch) {
                 this.handleRequestFromNonMatchingPerson(game, socket, gameRunner, ackFn, logger);
             }
         } else {
@@ -291,7 +307,7 @@ class GameManager {
     }
 
     handleRequestFromNonMatchingPerson = (game, socket, gameRunner, ackFn, logger) => {
-        let personWithMatchingSocketId = findPersonWithMatchingSocketId(game.people, socket.id);
+        let personWithMatchingSocketId = findPersonWithMatchingSocketId(game, socket.id);
         if (personWithMatchingSocketId) {
             logger.trace("matching person found whose cookie got cleared after establishing a connection to the room: " + personWithMatchingSocketId.name);
             ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId, gameRunner, socket, logger));
@@ -308,7 +324,7 @@ class GameManager {
                 game.isFull = isFull;
                 socket.to(game.accessCode).emit(
                     globals.EVENTS.PLAYER_JOINED,
-                    {name: unassignedPerson.name, userType: unassignedPerson.userType},
+                    GameStateCurator.mapPerson(unassignedPerson),
                     isFull
                 );
             } else { // if the game is full, make them a spectator.
@@ -326,6 +342,30 @@ class GameManager {
         }
     }
 
+    removeClientFromLobbyIfApplicable(socket) {
+        socket.rooms.forEach((room) => {
+            if (this.activeGameRunner.activeGames[room]) {
+                this.logger.trace('disconnected socket is in a game');
+                let game = this.activeGameRunner.activeGames[room];
+                if (game.status === globals.STATUS.LOBBY) {
+                    let matchingPlayer = findPlayerBySocketId(game.people, socket.id);
+                    if (matchingPlayer) {
+                        this.logger.trace("un-assigning disconnected player: " + matchingPlayer.name);
+                        matchingPlayer.assigned = false;
+                        matchingPlayer.socketId = null;
+                        matchingPlayer.cookie = createRandomId();
+                        matchingPlayer.hasEnteredName = false;
+                        socket.to(game.accessCode).emit(
+                            globals.EVENTS.PLAYER_LEFT,
+                            GameStateCurator.mapPerson(matchingPlayer)
+                        );
+                        game.isFull = isGameFull(game);
+                        matchingPlayer.name = UsernameGenerator.generate();
+                    }
+                }
+            }
+        })
+    }
 }
 
 function getRandomInt (max) {
@@ -403,8 +443,19 @@ function rejectClientRequestForGameState(acknowledgementFunction) {
     return acknowledgementFunction(null);
 }
 
-function findPersonWithMatchingSocketId(people, socketId) {
-    return people.find((person) => person.socketId === socketId);
+function findPersonWithMatchingSocketId(game, socketId) {
+    let person = game.people.find((person) => person.socketId === socketId);
+    if (!person) {
+        person = game.spectators.find((spectator) => spectator.socketId === socketId);
+    }
+    if (!person && game.moderator.socketId === socketId) {
+        person = game.moderator;
+    }
+    return person;
+}
+
+function findPlayerBySocketId(people, socketId) {
+    return people.find((person) => person.socketId === socketId && person.userType === globals.USER_TYPES.PLAYER);
 }
 
 function isGameFull(game) {

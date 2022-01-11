@@ -18,7 +18,8 @@ export const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
-        END_GAME: 'endGame'
+        END_GAME: 'endGame',
+        FETCH_IN_PROGRESS_STATE: 'fetchInitialInProgressState'
     },
     STATUS: {
         LOBBY: "lobby",
@@ -38,7 +39,9 @@ export const globals = {
         START_TIMER: "startTimer",
         KILL_PLAYER: "killPlayer",
         REVEAL_PLAYER: 'revealPlayer',
-        CHANGE_NAME: 'changeName'
+        CHANGE_NAME: 'changeName',
+        START_GAME: 'startGame',
+        PLAYER_LEFT: 'playerLeft'
     },
     USER_TYPES: {
         MODERATOR: "moderator",

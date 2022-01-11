@@ -221,6 +221,16 @@ input {
     z-index: 53000;
 }
 
+#how-to-use-container {
+    color: #d7d7d7;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 95%;
+    max-width: 70em;
+    line-height: 1.5;
+}
+
 #desktop-links > a:nth-child(1), #mobile-links a:nth-child(1) {
     margin: 0 0.5em;
     width: 50px;

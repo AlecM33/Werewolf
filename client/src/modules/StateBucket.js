@@ -4,5 +4,6 @@
  */
 export const stateBucket = {
     currentGameState: null,
-    timerWorker: null
+    timerWorker: null,
+    gameStateRequestInFlight: false
 }

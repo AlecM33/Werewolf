@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Werewolf Utility</title>
+        <meta name="description" content="A utility to deal Werewolf cards and run games in any setting, on any device.">
+        <meta property="og:title" content="Werewolf Utility">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://playwerewolf.uk.r.appspot.com/">
+        <meta property="og:description" content="A utility to deal Werewolf cards and run games in any setting, on any device.">
+        <meta property="og:image" content="image.png">
+
+        <link rel="icon" href="/favicon.ico">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+        <link rel="stylesheet" href="./styles/GLOBAL.css">
+        <link rel="stylesheet" href="./styles/home.css">
+        <link rel="stylesheet" href="/styles/hamburgers.css">
+    </head>
+    <body>
+    <div id="mobile-menu-background-overlay"></div>
+    <div id="navbar"></div>
+    <div id="home-page-top-section">
+        <img src="../images/logo_cropped.gif"/>
+        <h3>A tool to run werewolf when not in-person, or in any setting without a deck of cards.</h3>
+        <a href="/create">
+            <button id="home-create-button" class="app-button">Create A Game</button>
+        </a>
+    </div>
+    <div id="join-container">
+        <label for="join-form">Join A Game</label>
+        <form id="join-form">
+            <div>
+                <label for="room-code">Room Code</label>
+                <input id="room-code" type="text" placeholder="six-character code..." required/>
+            </div>
+            <input id="join-button" type="submit" value="Join"/>
+        </form>
+    </div>
+    <footer id="footer">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="alecm33" data-color="#333243" data-emoji=""  data-font="Lato" data-text="Buy me a coffee" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
+        <div>
+            <a href="https://github.com/AlecM33/Werewolf"><img src='/images/GitHub-Mark-Light-120px-plus.png'/></a>
+            <a href="mailto:play.werewolf.contact@gmail.com?Subject=Werewolf App" target="_top"><img src='/images/email.svg'/></a>
+        </div>
+        <div>
+            <p>Werewolf created by Andrew Plotkin</p>
+        </div>
+    </footer>
+    <script src="/dist/home-bundle.js"></script>
+    </body>
+</html>

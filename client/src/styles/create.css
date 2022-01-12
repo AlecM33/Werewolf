@@ -1,0 +1,573 @@
+.compact-card {
+    border: 2px solid transparent;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    margin: 0.3em;
+    background-color: #191920;
+    color: gray;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
+    user-select: none;
+    display: flex;
+    height: 55px;
+}
+
+.compact-card h1 {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin: 0 10px 0 10px;
+}
+
+.compact-card .card-role {
+    color: #bfb8b8;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.selected-card {
+    border: 2px solid #c5c5c5;
+}
+
+.card-role {
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.compact-card-right p {
+    font-size: 40px;
+    margin: 0 10px 0 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.compact-card-left p {
+    font-size: 40px;
+    margin: 0 0 0 10px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.compact-card-left, .compact-card-right {
+    width: 50%;
+}
+
+.compact-card .card-quantity {
+    text-align: center;
+    margin: 0;
+    font-size: 25px;
+}
+
+.compact-card-header {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    top: 0;
+    pointer-events: none;
+    text-align: center;
+}
+
+#deck-container, #deck, #custom-roles-container {
+    width: fit-content;
+}
+
+#custom-roles-container {
+    width: 95%;
+    max-width: 25em;
+}
+
+.deck-role {
+    border-radius: 3px;
+    margin: 0.25em 0;
+    padding: 0 5px;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#custom-roles-container, #deck-status-container {
+    color: #d7d7d7;
+    margin: 1em 0.5em;
+    background-color: #191920;
+    padding: 10px;
+    border-radius: 3px;
+    border: 2px solid #333243;
+    position: relative;
+}
+
+#deck-status-container {
+    width: 20em;
+    max-width: 95%;
+    height: 13em;
+    overflow-y: auto;
+    position: relative;
+}
+
+#deck-count {
+    font-size: 30px;
+    position: sticky;
+    top: 0;
+    left: 5px;
+    background-color: #333243;
+    width: fit-content;
+    padding: 0 5px;
+    border-radius: 3px;
+}
+
+#deck-list {
+    margin-top: 0.5em;
+}
+
+#deck-list-placeholder {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 290px;
+    height: 50px;
+    font-size: 20px;
+    text-align: center;
+}
+
+#custom-role-hamburger .hamburger-inner, #custom-role-hamburger .hamburger-inner::before, #custom-role-hamburger .hamburger-inner::after {
+    background-color: whitesmoke;
+    width: 28px;
+    height: 3px;
+}
+
+#custom-roles-container .hamburger-box {
+    width: 28px;
+    height: 20px;
+}
+
+#custom-role-hamburger {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#custom-role-hamburger .hamburger-inner::before {
+    top: -8px;
+}
+
+#custom-role-hamburger .hamburger-inner::after {
+    top: -16px;
+}
+
+#custom-role-actions {
+    color: whitesmoke;
+    position: absolute;
+    top: 38px;
+    right: 29px;
+    background-color: #333243;
+    border-radius: 3px;
+    box-shadow: -3px -3px 6px rgb(0 0 0 / 60%);
+}
+
+.custom-role-action {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    background-color: #333243;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+}
+
+.custom-role-action:hover {
+    background-color: #57566a;
+    cursor: pointer;
+}
+
+#deck-good, #deck-evil {
+    padding: 0;
+    border-radius: 3px;
+    margin: 0.5em;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    max-height: 20em;
+}
+
+#deck-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    justify-content: center;
+    flex-direction: column;
+    width: 95%;
+    max-width: 38em;
+}
+
+#deck-container label {
+    margin: 0.5em;
+    display: block;
+}
+
+#step-3 {
+    display: flex;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    border-radius: 3px;
+    margin: 0 auto;
+}
+
+option {
+    background-color: #191920;
+    cursor: pointer;
+}
+
+#step-4 > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    justify-content: center;
+    margin: 0 auto;
+    width: 25em;
+    max-width: 95%;
+}
+
+#step-4 > div label {
+    width: 100%;
+}
+
+#moderation-self span {
+    color: gray;
+    font-size: 18px;
+}
+
+form {
+    width: 100%;
+}
+
+select {
+    padding: 10px;
+    font-size: 16px;
+    font-family: 'signika-negative', sans-serif;
+    background-color: transparent;
+    color: #d7d7d7;
+    border-radius: 3px;
+    min-width: 10em;
+    cursor: pointer;
+}
+
+#game-form > div {
+    background-color: #191920;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 3px;
+    width: fit-content;
+    margin: 1em 0;
+}
+
+#game-form > div > label {
+    display: flex;
+}
+
+#game-time {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #191920;
+    border: 2px solid #333243;
+    border-radius: 3px;
+}
+
+.step {
+    margin-bottom: 2em;
+}
+
+#step-2 {
+    max-width: 70em;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+#game-time label, #game-time input {
+    margin-right: 10px;
+    font-size: 25px;
+}
+
+#game-time div {
+    margin: 0.5em;
+}
+
+#role-alignment {
+    max-width: 10em;
+}
+
+label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
+    color: whitesmoke;
+    font-size: 20px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input[type="number"] {
+    width: 3em;
+    font-size: 40px;
+}
+
+#add-card-to-deck-form {
+    margin: 1em 0;
+}
+
+#create-game {
+    background-color: #1c8a36;
+    color: whitesmoke;
+    font-size: 30px;
+    padding: 10px 50px;
+}
+
+#create-game:hover {
+    background-color: #326243;
+    border: 2px solid #1c8a36;
+}
+
+#deck-select {
+    margin: 0.5em 1em 1.5em 0;
+    overflow-y: auto;
+    height: 15em;
+}
+
+.deck-select-role {
+    display: flex;
+    justify-content: space-between;
+    background-color: black;
+    align-items: center;
+    padding: 5px;
+    margin: 0.25em 0;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    font-size: 16px;
+}
+
+.deck-select-role-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.deck-select-role:hover {
+    border: 1px solid #d7d7d7;
+}
+
+.deck-select-role-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#deck-select img {
+    height: 20px;
+    margin: 0 8px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#deck-select img:nth-child(4) {
+    height: 18px;
+}
+
+#deck-select img:hover {
+    filter: brightness(1.5);
+    background-color: #8080804d;
+}
+
+.dropdown {
+    margin: 0.5em;
+}
+
+.creation-step {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-radius: 50%;
+    border: 2px solid whitesmoke;
+    margin: 0 0.5em;
+}
+
+.creation-step-filled {
+    background-color: whitesmoke;
+}
+
+#creation-step-container {
+    margin-top: 2em;
+    width: 100%;
+    min-height: 16em;
+}
+
+#creation-step-container > div:nth-child(2) {
+    animation: fade-in 0.5s ease-out;
+}
+
+#step-title {
+    margin: 0 auto 1em auto;
+    text-align: center;
+}
+
+#creation-step-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2em;
+    position: relative;
+    margin-bottom: 8em;
+}
+
+#game-creation-container {
+    width: 95%;
+    position: relative;
+    margin-bottom: 4em;
+}
+
+#tracker-container {
+    display: flex;
+    align-items: center;
+    margin-top: 2em;
+    justify-content: center;
+    width: 100%;
+}
+
+#upload-custom-roles-modal input[type='file'] {
+    margin: 2em 0;
+}
+
+#creation-step-tracker {
+    display: flex;
+    justify-content: center;
+    margin: 0 20px;
+}
+
+#step-forward-button, #step-back-button, #create-game {
+    font-family: sans-serif;
+    font-size: 20px;
+    padding: 10px 20px;
+}
+
+#step-forward-button, #step-back-button {
+    background-color: #66666657 !important;
+}
+
+#step-forward-button, #create-game {
+    right: 15%;
+}
+
+#step-back-button {
+    left: 15%;
+    background-color: #762323;
+}
+
+#step-1 div {
+    background-color: #191920;
+    color: whitesmoke;
+    padding: 1em;
+    max-width: 20em;
+    margin: 0.5em;
+    cursor: pointer;
+    border: 2px solid #333243;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+}
+
+#step-1 div.option-selected {
+    border: 2px solid whitesmoke;
+    background-color: #3a3c46;
+}
+
+#step-1 div > strong {
+    color: #00a718;
+}
+
+#step-1 div:hover {
+    border: 2px solid whitesmoke;
+}
+
+.review-option {
+    background-color: #191920;
+    border: 2px solid #333243;
+    color: whitesmoke;
+    padding: 10px;
+    font-size: 18px;
+    width: fit-content;
+    border-radius: 3px;
+    margin: 0.5em 0;
+    align-self: flex-start;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}
+
+@media(max-width: 550px) {
+    h1 {
+        font-size: 35px;
+    }
+
+    #step-1 div {
+        font-size: 20px;
+    }
+
+    .creation-step {
+        width: 13px;
+        height: 13px;
+    }
+
+    #step-forward-button, #step-back-button, #create-game {
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+
+    .deck-select-role-name {
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .compact-card .card-role {
+        max-width: 9em;
+        font-size: 13px;
+    }
+
+    .compact-card {
+        min-width: 130px;
+    }
+}
+
+@media(min-width: 551px) {
+    h1 {
+        font-size: 50px;
+    }
+
+    #step-1 div {
+        font-size: 25px;
+    }
+
+    .compact-card .card-role {
+        max-width: 10em;
+        font-size: 15px;
+    }
+
+    .compact-card {
+        min-width: 155px;
+    }
+}

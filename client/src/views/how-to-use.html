@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create A Game</title>
+    <meta name="description" content="How to use this app.">
+    <meta property="og:title" content="How to use">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://playwerewolf.uk.r.appspot.com/how-to-use">
+    <meta property="og:description" content="How to use this app.">
+    <meta property="og:image" content="image.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="/styles/GLOBAL.css">
+    <link rel="stylesheet" href="/styles/create.css">
+    <link rel="stylesheet" href="/styles/modal.css">
+    <link rel="stylesheet" href="/styles/hamburgers.css">
+</head>
+<body>
+<div id="mobile-menu-background-overlay"></div>
+<div id="navbar"></div>
+<div id="how-to-use-container">
+    <h1 class="how-to-use-header">Purpose of the Application</h1>
+    <div class="how-to-use-section">This app serves as a means of running games in a social setting where a traditional
+        running of the game is hindered. This might be when people are meeting virtually, and thus roles can't be handed
+        out in-person, or when people are in-person but don't have Werewolf cards with them. You can use a deck of regular
+        playing cards, but it can be difficult for players to remember which card signifies which role, especially if
+        you want to build a crazy game with many different roles. Even when people are together and have cards, there's
+        information that would be great to centralize for everyone - a timer, role descriptions, and the in/out status of
+        players. This app attempts to provide the utilities necessary to run Werewolf with all the different roles you want,
+        wherever you can access the internet.
+    </div>
+    <h1 class="">Creating a Game</h1>
+    <div class="how-to-use-section">
+        Creating a game through the app has 3 main components:
+        <br>
+        <h3>Step One: Choosing method of moderation</h3>
+        <br>
+        You have two options for moderation during the game. If the moderator isn't playing, you can choose the <span class="emphasized">dedicated
+        moderator</span> option. Dedicated Moderators are <span class="emphasized">not dealt into the game</span>. Once they start the game, they will know
+        everyone's role. At that point, they can kill players, reveal players' roles to everyone else, transfer their
+        moderator powers, play/pause the timer (if there is one), and end the game when team good or evil wins.
+        <br><br>
+        Similarly, you can also choose the <span class="emphasized">temporary moderator</span> option. The key differences
+        here are that you are <span class="emphasized">dealt a role</span>. You have the same powers as the dedicated
+        moderator, with the exception of game knowledge - you know the same information that a regular player does.
+        When you remove the first player from the game, your powers will be automatically transferred to them - they become
+        the dedicated moderator, and you become a regular player.
+        <br><br>
+        <span class="emphasized">Dedicated moderators</span> can <span class="emphasized">transfer their moderator powers</span>
+        to a player that is out, or to a spectator. That way, if the current dedicated moderator has to leave, or simply
+        does not want to moderate anymore, they can easily delegate.
+        <br><br>
+        <img src="../images/tutorial/moderation-option.png" alt="moderation-option"/>
+        <br><br>
+        <h3>Step Two: Build your deck</h3>
+        <br>
+        A default set of common roles are available to you on this page. <span class="emphasized">Available roles</span>
+        are ones that have a widget where you can adjust their quantity and add them to the current game. They have been
+        "taken out of the box," so to speak:
+        <br><br>
+        <img class='tutorial-image-small' src="../images/tutorial/default-roles.PNG"/>
+        <br><br>
+        You also have a <span class="emphasized">custom role box</span>. These are not yet "available," in that they
+        are still "in the box." If you want them in the game, click the green plus button, and they will become part of the
+        available roles - a widget will be created, and you can increment or decrement the quantity of that card in the game.
+        Custom roles can be created, removed, edited, and imported/exported via a formatted text file:
+        <br><br>
+        <img class='tutorial-image-small' src="../images/tutorial/custom-roles.PNG"/>
+        <br><br>
+        <h3>Step Three: Set an optional timer</h3>
+        <br>
+        If you don't fill in these fields, the game will be untimed. If you do, you can use a time between 1 minute
+        and 5 hours. The timer can be played and paused by the current moderator. Importantly, when the timer expires
+        <span class="emphasized">nothing automatically happens.</span> The timer will display 0s, but the game will not
+        end. Whether or not the game ends immediately after that or continues longer is up to the moderator.
+        <br><br>
+        <p style="text-align:center;color:gray;margin-bottom:3em;">More content coming soon.</p>
+    </div>
+</div>
+<script src="/dist/howToUse-bundle.js"></script>
+</body>
+</html>

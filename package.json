@@ -2,20 +2,56 @@
   "name": "werewolf_game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
+    "bundle": "webpack --config client/webpack/webpack-prod.config.js",
+    "prestart": "npm run bundle",
+    "build:dev": "webpack --watch --config client/webpack/webpack-dev.config.js --mode=development",
+    "start:dev": "NODE_ENV=development nodemon server/main.js",
+    "start:dev:no-hot-reload": "NODE_ENV=development && node server/main.js",
+    "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
+    "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node server/main.js",
+    "start": "NODE_ENV=production node server/main.js -- loglevel=trace port=8080",
+    "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
     "test": "jasmine"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cron": "^1.7.1",
+    "@babel/plugin-transform-object-assign": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
+    "acorn": "^8.6.0",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.3",
+    "body-parser": "^1.19.1",
+    "cors": "^2.8.5",
+    "eslint-config-standard": "^16.0.3",
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
+    "express-rate-limit": "^6.0.1",
     "jasmine": "^3.5.0",
-    "socket.io": "^2.2.0"
+    "open": "^7.0.3",
+    "socket.io": "^4.4.0",
+    "socket.io-client": "^4.4.0",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-remove-debug": "^0.1.0"
   },
   "devDependencies": {
-    "open": "^7.0.3"
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
+    "eslint": "^8.6.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "client/*",
+      "node_modules/*"
+    ]
   }
 }

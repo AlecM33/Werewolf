@@ -1,0 +1,81 @@
+.modal {
+    border-radius: 2px;
+    text-align: center;
+    position: fixed;
+    width: 85%;
+    z-index: 100;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #191920;
+    align-items: center;
+    justify-content: center;
+    max-width: 25em;
+    font-family: sans-serif;
+    flex-direction: column;
+    padding: 1em;
+}
+
+.modal-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 100px);
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 50;
+    cursor: pointer;
+}
+
+.modal > form > div:not(.modal-button-container) {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1em;
+}
+
+.modal > form > div > label {
+    display: flex;
+    font-size: 16px;
+}
+
+#close-modal-button {
+    background-color: #762323 !important;
+}
+
+.modal-button-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+#custom-role-info-modal {
+    display: flex;
+    color: #d7d7d7;
+    text-align: left;
+    font-family: signika-negative, sans-serif;
+}
+
+#custom-role-info-modal-description {
+    margin: 2em 0;
+    max-height: 10em;
+    overflow: auto;
+}
+
+#custom-role-info-modal-name {
+    font-family: 'diavlo', sans-serif;
+    font-size: 23px;
+}
+
+#custom-role-info-modal-alignment {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#change-name-modal, #transfer-mod-modal, #role-info-modal {
+    position: fixed;
+}
+
+#role-info-modal, #transfer-mod-modal {
+    max-height: 80%;
+}

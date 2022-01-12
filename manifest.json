@@ -1,0 +1,22 @@
+{
+  "name": "Werewolf Utility",
+  "short_name": "Werewolf",
+  "icons": [
+    {
+      "src": "/client/favicon_package/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/client/favicon_package/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "start_url": "/?source=pwa",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "description": "A utility to deal Werewolf cards and run games in any setting, on any device."
+}

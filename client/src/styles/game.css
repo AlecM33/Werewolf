@@ -1,0 +1,781 @@
+.lobby-player, #moderator {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: black;
+    color: whitesmoke;
+    padding: 10px;
+    border-radius: 3px;
+    font-size: 17px;
+    width: fit-content;
+    min-width: 15em;
+    border: 2px solid transparent;
+    margin: 0.5em 0;
+}
+
+#lobby-players {
+    overflow-y: auto;
+    max-height: 30em;
+    overflow-x: hidden;
+    padding: 0 10px;
+    border-radius: 3px;
+}
+
+#lobby-people-container label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.lobby-player-client {
+    border: 2px solid #21ba45;
+}
+
+.lobby-player div:nth-child(2) {
+    color: #21ba45;
+}
+
+#moderator.moderator-client {
+    border: 2px solid lightgray;
+}
+
+#game-state-container {
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    display: flex;
+    width: 95%;
+    margin: 1em auto 100px auto;
+}
+
+#game-state-container h2 {
+    margin: 0.5em 0;
+}
+
+#lobby-header {
+    margin-bottom: 1em;
+    max-width: 95%;
+}
+
+h1 {
+    text-align: center;
+    margin: 0.5em auto;
+}
+
+#game-state-container > div:not(#transfer-mod-modal-background):not(#transfer-mod-modal):not(#game-people-container) {
+    margin: 1em;
+}
+
+#game-content .placeholder-row:nth-child(1) {
+    margin-top: 2em;
+}
+
+#footer.game-page-footer {
+    margin-top: 1em;
+    margin-bottom: 85px;
+}
+
+#footer.game-page-footer a {
+    margin: 0 5px;
+}
+
+#end-of-game-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#end-of-game-header button {
+    margin: 0.5em;
+}
+.potential-moderator {
+    display: flex;
+    color: #d7d7d7;
+    background-color: black;
+    border: 2px solid transparent;
+    align-items: center;
+    padding: 10px;
+    border-radius: 3px;
+    justify-content: space-between;
+    margin: 0.5em 0;
+    position: relative;
+}
+
+.potential-moderator:hover {
+    border: 2px solid #d7d7d7;
+    cursor: pointer;
+}
+
+.potential-moderator:active {
+    border: 2px solid #21ba45;
+    transition: border 0.2s ease-out;
+}
+
+#game-link {
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 7px;
+    border-radius: 3px;
+    background-color: #121314;
+    border: 2px solid #333243;
+    color: whitesmoke;
+    align-items: center;
+    display: flex;
+    transition: background-color 0.2s;
+}
+
+#game-link > div {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 95%;
+}
+
+.role-info-name {
+    display: flex;
+}
+
+.role-info-name h5:nth-child(1) {
+    margin-right: 10px;
+    color: #21ba45;
+}
+
+#role-info-button {
+    margin-top: 1em;
+}
+
+#role-info-button img {
+    height: 25px;
+    margin-left: 10px;
+}
+
+#game-role-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 1em 0;
+    overflow-y: auto;
+    max-height: 35em;
+}
+
+#game-role-info-container > div {
+    width: 95%;
+}
+
+#transfer-mod-modal-content {
+    overflow-y: auto;
+    max-height: 35em;
+    width: 100%;
+}
+
+.potential-moderator {
+    width: 90%;
+}
+
+#role-info-modal .modal-button-container {
+    margin-top: 1em;
+    justify-content: center;
+}
+
+#game-role-info-container .role-info-name {
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 20px;
+    font-family: signika-negative, sans-serif;
+    margin: 0.5em 0;
+    background-color: black;
+}
+
+#role-info-modal h2 {
+    color: #d7d7d7;
+    font-family: diavlo, sans-serif;
+    font-weight: normal;
+}
+
+#game-role-info-container p, #game-role-info-container h5 {
+    text-align: left;
+    font-weight: normal;
+}
+
+#game-role-info-container p {
+    color: #d7d7d7;
+    font-size: 14px;
+    font-family: signika-negative, sans-serif;
+}
+
+#game-role {
+    position: relative;
+    border: 5px solid transparent;
+    background-color: #e7e7e7;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    justify-content: space-between;
+    max-width: 17em;
+    border-radius: 3px;
+    height: 23em;
+    margin: 0 auto 2em auto;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.11),
+    0 2px 2px rgba(0,0,0,0.11),
+    0 4px 4px rgba(0,0,0,0.11),
+    0 8px 8px rgba(0,0,0,0.11),
+    0 16px 16px rgba(0,0,0,0.11),
+    0 32px 32px rgba(0,0,0,0.11);
+    /*perspective: 1000px;*/
+    /*transform-style: preserve-3d;*/
+}
+
+.game-role-good {
+    border: 5px solid #5469c5 !important;
+}
+
+.game-role-evil {
+    border: 5px solid #c55454 !important;
+}
+
+#game-role-back {
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #171522;
+    border: 5px solid #61606a;
+    position: relative;
+    flex-direction: column;
+    cursor: pointer;
+    max-width: 17em;
+    border-radius: 3px;
+    height: 23em;
+    margin: 0 auto 2em auto;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.11),
+    0 2px 2px rgba(0,0,0,0.11),
+    0 4px 4px rgba(0,0,0,0.11),
+    0 8px 8px rgba(0,0,0,0.11),
+    0 16px 16px rgba(0,0,0,0.11),
+    0 32px 32px rgba(0,0,0,0.11);
+    /*perspective: 1000px;*/
+    /*transform-style: preserve-3d;*/
+}
+
+#game-role-back h4 {
+    font-size: 24px;
+    padding: 0.5em;
+    text-align: center;
+    color: #e7e7e7;
+}
+
+#game-role-back p {
+   color: #c3c3c3;
+    font-size: 20px;
+}
+
+#game-timer {
+    padding: 10px;
+    margin-top: 5px;
+    background-color: #262626;
+    color: whitesmoke;
+    border-radius: 3px;
+    font-size: 35px;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
+    border: 1px solid #747474;
+    min-width: 5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 43px;
+}
+
+#game-timer.low {
+    color: #e71c0d;
+    border: 1px solid #ca1b17;
+    background-color: #361a1a;
+}
+
+#role-name {
+    position: absolute;
+    top: 6%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-family: 'diavlo', sans-serif;
+    width: 95%;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#role-image {
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    position: absolute;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 78%;
+}
+
+#role-description {
+    overflow: auto;
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 15px;
+    width: 78%;
+    max-height: 6em;
+}
+
+#game-link img {
+    width: 20px;
+    margin-left: 0.5em;
+}
+
+#game-title {
+    margin: 0 auto;
+}
+
+#client-container {
+    max-width: 35em;
+    margin: 1em 0;
+}
+
+#client {
+    padding: 5px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #333243;
+    border-radius: 3px;
+    min-width: 15em;
+}
+
+#client-name {
+    color: whitesmoke;
+    font-family: 'diavlo', sans-serif;
+    font-size: 30px;
+    margin: 0.25em 2em 0.25em 0;
+}
+
+#client-user-type {
+    color: #21ba45;
+    font-family: 'signika-negative', sans-serif;
+    font-size: 25px;
+    background-color: black;
+    border-radius: 3px;
+    display: block;
+    padding: 0 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+label[for='moderator'] {
+    font-family: 'diavlo', sans-serif;
+    color: lightgray;
+    filter: drop-shadow(2px 2px 4px black);
+    font-size: 30px;
+}
+
+#start-game-prompt, #end-game-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 3;
+    border-radius: 3px;
+    font-family: 'signika-negative', sans-serif;
+    font-weight: 100;
+    box-shadow: 0 -2px 6px 0 rgb(0 0 0 / 45%);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* width: fit-content; */
+    font-size: 20px;
+    height: 85px;
+    margin: 0 auto;
+    animation: fade-in-slide-up 10s ease;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+    width: 100%;
+    background-color: #333243;
+}
+
+#end-game-prompt {
+    box-shadow: 0 -6px 40px black;
+}
+
+#start-game-button, #end-game-button {
+    font-family: 'signika-negative', sans-serif !important;
+    padding: 10px;
+    border-radius: 3px;
+    color: whitesmoke;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background-color, border 0.3s ease-out;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
+    font-size: 25px;
+}
+
+#start-game-button {
+    background-color: #1c8a36;
+}
+
+#end-game-button {
+    background-color: #8a1c1c;
+}
+
+#start-game-button:hover {
+    background-color: #326243;
+    border: 2px solid #1c8a36;
+}
+
+#end-game-button:hover {
+    background-color: #623232;
+    border: 2px solid #8a1c1c;
+}
+
+#play-pause {
+    display: flex;
+    align-items: center;
+    margin-left: 1em;
+}
+
+#play-pause img {
+    cursor: pointer;
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    width: 60px;
+}
+
+#play-pause img:hover {
+    filter: brightness(0.5);
+}
+
+#play-pause img:active {
+    transform: scale(0.95);
+}
+
+.paused {
+    animation: pulse 0.75s linear infinite alternate;
+}
+
+.paused-low {
+    animation: pulse-low 0.75s linear infinite alternate;
+}
+
+#game-header {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.timer-container-moderator {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1em;
+}
+
+.game-player {
+    border-left: 3px solid #21ba45;
+    display: flex;
+    color: #d7d7d7;
+    background-color: black;
+    align-items: center;
+    padding: 0 5px;
+    justify-content: space-between;
+    margin: 0.5em 0;
+    position: relative;
+    box-shadow: 2px 3px 6px rgb(0 0 0 / 50%);
+}
+
+.game-player-name {
+    position: relative;
+    width: 10em;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 18px;
+    text-overflow: ellipsis;
+}
+
+.kill-player-button, .reveal-role-button {
+    font-family: 'signika-negative', sans-serif !important;
+    border-radius: 3px;
+    color: whitesmoke;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background-color, border 0.3s ease-out;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
+    margin: 5px 0 5px 25px;
+    width: 117px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.placeholder-button {
+    font-family: 'signika-negative', sans-serif !important;
+    display: flex;
+    justify-content: center;
+    border-radius: 3px;
+    color: #767676;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid transparent;
+    text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
+    margin: 5px 0 5px 35px;
+    width: 103px;
+}
+
+#game-link:hover {
+    background-color: #26282a;
+    border: 2px solid #d7d7d7;
+}
+
+.reveal-role-button {
+    background-color: #586a6e;
+}
+
+.reveal-role-button:hover, #mod-transfer-button:hover {
+    background-color: #4e5664;
+}
+
+.kill-player-button:hover {
+    background-color: #b35c5c;
+}
+
+.reveal-role-button img {
+    width: 18px;
+    margin-left: 5px;
+}
+
+#game-player-list > .game-player.killed::after {
+    content: '\01F480';
+    font-size: 24px;
+    margin-left: 1em;
+}
+
+.killed, .killed .game-player-role {
+    /*color: gray !important;*/
+}
+
+.game-player.killed {
+    border-left: 3px solid #444444;
+}
+
+.reveal-role-button {
+    display: flex;
+    align-items: center;
+}
+
+.make-mod-button {
+    background-color: #3f5256;
+    font-size: 18px;
+    padding: 10px;
+    border: 2px transparent;
+    border-radius: 3px;
+    color: #d7d7d7;
+    font-family: signika-negative, sans-serif;
+}
+
+.make-mod-button:hover {
+    cursor: pointer;
+}
+
+.kill-player-button {
+    background-color: #9f4747;
+}
+
+.killed-card {
+    width: 55% !important;
+}
+
+.game-player > div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#game-player-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 10px 10px 0;
+    max-height: 37em;
+}
+
+#game-player-list > div {
+    padding: 2px 10px;
+    border-radius: 3px;
+    margin-bottom: 0.5em;
+}
+
+#game-parameters {
+    color: #d7d7d7;
+    font-size: 25px;
+    margin: 0.5em;
+}
+
+#game-parameters > div {
+    display: flex;
+    align-items: center;
+}
+
+#game-parameters img {
+    height: 20px;
+    margin-right: 10px;
+}
+
+#players-alive-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 25px;
+}
+
+#transfer-mod-form {
+    width: 100%;
+}
+
+#transfer-mod-form .modal-button-container {
+    justify-content: center;
+}
+
+#transfer-mod-modal .modal-button-container {
+    justify-content: center;
+}
+
+#change-name-modal-background {
+    cursor: default;
+}
+
+#lobby-people-container , #game-people-container {
+    background-color: #333243;
+    padding: 10px 10px 0 10px;
+    border-radius: 3px;
+    min-height: 25em;
+    max-width: 35em;
+    min-width: 17em;
+    margin-top: 1em;
+}
+
+#transfer-mod-modal-content {
+    margin-bottom: 2em;
+    color: #d7d7d7;
+}
+
+#game-state-container.vertical-flex {
+    flex-direction: column;
+    align-items: center;
+}
+
+@media(max-width: 500px) {
+    #client-name {
+        font-size: 25px;
+    }
+
+    #client-user-type, #game-parameters {
+        font-size: 20px;
+    }
+
+    #game-state-container {
+        margin: 0 auto 85px auto;
+    }
+
+    button {
+        font-size: 16px;
+    }
+
+    #play-pause img {
+        width: 45px;
+    }
+
+    .make-mod-button {
+        font-size: 16px;
+        padding: 5px;
+    }
+
+    .game-player-name {
+        font-size: 16px;
+    }
+
+    #game-timer {
+        font-size: 30px;
+        height: 38px;
+    }
+
+    #players-alive-label {
+        font-size: 20px;
+    }
+
+    #start-game-prompt, #end-game-prompt {
+        height: 65px;
+    }
+
+    #start-game-button, #end-game-button {
+        font-size: 20px;
+        padding: 5px;
+    }
+
+    #game-role, #game-role-back {
+        height: 20em;
+        max-width: 15em;
+    }
+
+    #client-container {
+        margin: 0;
+    }
+
+    #game-role-back p {
+        font-size: 16px;
+    }
+
+    #game-role-back h4 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+}
+
+@keyframes pulse {
+    from {
+        color: rgba(255, 255, 255, 0.1);
+    } to {
+        color: rgba(255, 255, 255, 1);
+    }
+}
+
+@keyframes pulse-low {
+    from {
+        color: rgba(231, 28, 13 , 0.1);
+    } to {
+          color: rgba(231, 28, 13, 1);
+    }
+}
+
+@keyframes fade-in-slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    5% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}

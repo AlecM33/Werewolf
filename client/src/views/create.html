@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create A Game</title>
+    <meta name="description" content="Create a game of Werewolf using your custom set of roles.">
+    <meta property="og:title" content="Werewolf Utility - Create A Game">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://playwerewolf.uk.r.appspot.com/create">
+    <meta property="og:description" content="Create a game of Werewolf using your custom set of roles.">
+    <meta property="og:image" content="image.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="./styles/GLOBAL.css">
+    <link rel="stylesheet" href="./styles/create.css">
+    <link rel="stylesheet" href="./styles/modal.css">
+    <link rel="stylesheet" href="/styles/hamburgers.css">
+</head>
+<body>
+<div id="mobile-menu-background-overlay"></div>
+<div id="navbar"></div>
+<div id="game-creation-container" class="container">
+    <div id="modal-background" class="modal-background" style="display: none"></div>
+    <div id="role-modal" class="modal" style="display: none">
+        <form id="role-form">
+            <div>
+                <label for="role-name">Role Name</label>
+                <input id="role-name" type="text" placeholder="Name your role..." required/>
+            </div>
+            <div>
+                <label for="role-alignment">Role Alignment</label>
+                <select id="role-alignment" required>
+                    <option value="good">good</option>
+                    <option value="evil">evil</option>
+                </select>
+            </div>
+            <div>
+                <label for="role-description">Description</label>
+                <textarea style="resize:none" id="role-description" rows="4" cols="1" placeholder="Describe your role..." required></textarea>
+            </div>
+            <div class="modal-button-container">
+                <button id="close-modal-button" class="cancel app-button">Close</button>
+                <input type="submit" id="create-role-button" value="Create Role"/>
+            </div>
+        </form>
+    </div>
+    <div id="upload-custom-roles-modal" class="modal" style="display:none">
+        <h3>Import Custom Roles</h3>
+        <form id="upload-custom-roles-form">
+            <input type="file" id="upload-custom-roles" name="Upload Custom Roles" accept="text/plain"/>
+            <div class="modal-button-container">
+                <button id="close-upload-custom-roles-modal-button" class="cancel app-button">Close</button>
+                <input type="submit" id="upload-custom-roles-button" value="Upload"/>
+            </div>
+        </form>
+    </div>
+    <div id="custom-role-info-modal" class="modal" style="display:none">
+        <h3 id="custom-role-info-modal-name"></h3>
+        <div id="custom-role-info-modal-alignment"></div>
+        <div id="custom-role-info-modal-description"></div>
+        <div class="modal-button-container">
+            <button id="close-custom-role-info-modal-button" class="cancel app-button">Close</button>
+        </div>
+    </div>
+    <h1>Create A Game</h1>
+    <div id="tracker-container">
+        <div id="creation-step-tracker">
+            <div id="tracker-step-1" class="creation-step creation-step-filled"></div>
+            <div id="tracker-step-2" class="creation-step"></div>
+            <div id="tracker-step-3" class="creation-step"></div>
+            <div id="tracker-step-4" class="creation-step"></div>
+        </div>
+    </div>
+    <div id="creation-step-container">
+        <h2 id="step-title">Select your method of moderation:</h2>
+        <div class="placeholder-row">
+            <div class="animated-placeholder animated-placeholder-short"></div>
+            <div class="animated-placeholder animated-placeholder-short animated-placeholder-invisible"></div>
+        </div>
+        <div class="animated-placeholder animated-placeholder-long"></div>
+        <div class="animated-placeholder animated-placeholder-long"></div>
+    </div>
+</div>
+<script src="/dist/create-bundle.js"></script>
+</body>
+</html>

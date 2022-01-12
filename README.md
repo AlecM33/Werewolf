@@ -2,6 +2,9 @@
   <img width="300" src="/client/src/images/logo.gif"/>
 </p>
 
+Find the latest deployment here: https://playwerewolf.uk.r.appspot.com/.
+I value your feedback.
+
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Inspired by my time playing
 <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by

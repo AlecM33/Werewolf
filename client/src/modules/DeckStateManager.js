@@ -6,6 +6,8 @@ export class DeckStateManager {
     constructor() {
         this.deck = null;
         this.customRoleOptions = [];
+        this.createMode = false;
+        this.currentlyEditingRoleName = null;
     }
 
     addToDeck(role) {
@@ -19,6 +21,13 @@ export class DeckStateManager {
 
     addToCustomRoleOptions(role) {
         this.customRoleOptions.push(role);
+        localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(this.customRoleOptions.concat(this.deck.filter(card => card.custom === true))));
+    }
+
+    updateCustomRoleOption(option, name, description, team) {
+        option.role = name;
+        option.description = description;
+        option.team = team;
         localStorage.setItem("play-werewolf-custom-roles", JSON.stringify(this.customRoleOptions.concat(this.deck.filter(card => card.custom === true))));
     }
 

@@ -180,6 +180,26 @@ button {
     border: 2px solid #1c8a36;
 }
 
+.emphasized {
+    font-weight: bold;
+    color: #00a718;
+}
+
+#how-to-use-container img {
+    max-width: 98%;
+    border: 1px solid #57566a;
+    border-radius: 3px;
+    width: 45em;
+    margin: 0 auto;
+    /* justify-self: center; */
+    /* align-self: center; */
+    display: flex;
+}
+
+#how-to-use-container h1 {
+    font-family: signika-negative, sans-serif;
+}
+
 input {
     padding: 10px;
 }
@@ -227,8 +247,20 @@ input {
     flex-direction: column;
     margin: 0 auto;
     width: 95%;
-    max-width: 70em;
+    max-width: 64em;
     line-height: 1.5;
+}
+
+#how-to-use-container h3 {
+    font-size: 25px;
+}
+
+#how-to-use-container h1 {
+    font-size: 40px !important;
+}
+
+.tutorial-image-small {
+    width: 30em !important;
 }
 
 #desktop-links > a:nth-child(1), #mobile-links a:nth-child(1) {

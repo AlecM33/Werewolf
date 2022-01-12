@@ -5,7 +5,6 @@ smoothly when you don't have a deck, or when you and your friends are together v
 
 After a long hiatus from maintaining the application, I have come back and undertaken a large-scale redesign, rewriting 
 most of the code and producing a result that I believe is more stable and has much more sensible client-server interaction.
-It's a shame that my first attempt is what ended up in Github's Artic Code Vault :)
 
 ![player](./client/src/images/screenshots/player.PNG)
 

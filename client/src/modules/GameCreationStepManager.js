@@ -470,37 +470,68 @@ function constructCompactDeckBuilderElement(card, deckManager) {
 }
 
 function initializeRemainingEventListeners(deckManager) {
-    document.getElementById("add-role-form").onsubmit = (e) => {
+    document.getElementById("role-form").onsubmit = (e) => {
         e.preventDefault();
         let name = document.getElementById("role-name").value.trim();
         let description = document.getElementById("role-description").value.trim();
         let team = document.getElementById("role-alignment").value.toLowerCase().trim();
-        if (!deckManager.getCustomRoleOption(name) && !deckManager.getCard(name)) { // confirm there is no existing custom role with the same name
-            if (name.length > 40) {
-                toast('Your name is too long (max 40 characters).', "error", true);
-                return;
+        if (deckManager.createMode) {
+            if (!deckManager.getCustomRoleOption(name) && !deckManager.getCard(name)) { // confirm there is no existing custom role with the same name
+                processNewCustomRoleSubmission(name, description, team, deckManager,false);
+            } else {
+                toast("There is already a role with this name", "error", true, true, 3);
             }
-            if (description.length > 500) {
-                toast('Your description is too long (max 500 characters).', "error", true);
-                return;
-            }
-            deckManager.addToCustomRoleOptions({role: name, description: description, team: team, custom: true});
-            updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"))
-            ModalManager.dispelModal("add-role-modal", "modal-background");
-            toast("Role Created", "success", true);
         } else {
-            toast("There is already a role with this name", "error", true, true, 3);
+            let option = deckManager.getCustomRoleOption(deckManager.currentlyEditingRoleName);
+            if (name === option.role) { // did they edit the name?
+                processNewCustomRoleSubmission(name, description, team, deckManager,true, option);
+            } else {
+                if (!deckManager.getCustomRoleOption(name) && !deckManager.getCard(name)) {
+                    processNewCustomRoleSubmission(name, description, team, deckManager, true, option);
+                } else {
+                    toast("There is already a role with this name", "error", true, true, 3);
+                }
+            }
         }
     }
     document.getElementById("custom-role-btn").addEventListener(
         "click", () => {
+            let createBtn = document.getElementById("create-role-button");
+            createBtn.setAttribute("value", "Create");
+            deckManager.createMode = true;
+            deckManager.currentlyEditingRoleName = null;
+            document.getElementById("role-name").value = "";
+            document.getElementById("role-alignment").value = globals.ALIGNMENT.GOOD;
+            document.getElementById("role-description").value = "";
             ModalManager.displayModal(
-                "add-role-modal",
+                "role-modal",
                 "modal-background",
                 "close-modal-button"
             )
         }
     )
+}
+
+function processNewCustomRoleSubmission(name, description, team, deckManager, isUpdate, option=null) {
+    if (name.length > 40) {
+        toast('Your name is too long (max 40 characters).', "error", true);
+        return;
+    }
+    if (description.length > 500) {
+        toast('Your description is too long (max 500 characters).', "error", true);
+        return;
+    }
+    if (isUpdate) {
+        deckManager.updateCustomRoleOption(option, name, description, team);
+        ModalManager.dispelModal("role-modal", "modal-background");
+        toast("Role Updated", "success", true);
+    } else {
+        deckManager.addToCustomRoleOptions({role: name, description: description, team: team, custom: true});
+        ModalManager.dispelModal("role-modal", "modal-background");
+        toast("Role Created", "success", true);
+    }
+
+    updateCustomRoleOptionsList(deckManager, document.getElementById("deck-select"));
 }
 
 function updateCustomRoleOptionsList(deckManager, selectEl) {
@@ -568,8 +599,25 @@ function addCustomRoleEventListeners(deckManager, select) {
             document.getElementById("custom-role-info-modal-description").innerText = option.description;
             alignmentEl.innerText = option.team;
             ModalManager.displayModal("custom-role-info-modal", "modal-background", "close-custom-role-info-modal-button");
-        })
+        });
+
+        role.querySelector('.deck-select-edit').addEventListener('click', (e) => {
+            e.preventDefault();
+            let option = deckManager.getCustomRoleOption(name);
+            document.getElementById("role-name").value = option.role;
+            document.getElementById("role-alignment").value = option.team;
+            document.getElementById("role-description").value = option.description;
+            deckManager.createMode = false;
+            deckManager.currentlyEditingRoleName = option.role;
+            let createBtn = document.getElementById("create-role-button");
+            createBtn.setAttribute("value", "Update");
+            ModalManager.displayModal("role-modal", "modal-background", "close-modal-button");
+        });
     });
+}
+
+function displayCustomRoleModalInAddOrEditMode() {
+    let ad
 }
 
 function updateDeckStatus(deckManager) {
@@ -578,7 +626,7 @@ function updateDeckStatus(deckManager) {
     if (deckManager.getDeckSize() === 0) {
         let placeholder = document.createElement("div");
         placeholder.setAttribute("id", "deck-list-placeholder");
-        placeholder.innerText = "Add a card from the included roles below.";
+        placeholder.innerText = "Add a card from the available roles below.";
         document.getElementById("deck-list").appendChild(placeholder);
     } else {
         if (document.getElementById("deck-list-placeholder")) {

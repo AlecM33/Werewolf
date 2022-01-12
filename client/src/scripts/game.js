@@ -13,9 +13,7 @@ const game = () => {
     injectNavbar();
     let timerWorker;
     const socket = io('/in-game');
-    stateBucket.gameStateRequestInFlight = false;
     socket.on('disconnect', () => {
-        stateBucket.gameStateRequestInFlight = false;
         if (timerWorker) {
             timerWorker.terminate();
         }
@@ -24,10 +22,8 @@ const game = () => {
     socket.on('connect', () => {
         console.log('fired connect event');
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function (returnedEnvironment) {
-            if (!stateBucket.gameStateRequestInFlight) {
-                timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
-                prepareGamePage(returnedEnvironment, socket, timerWorker);
-            }
+            timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
+            prepareGamePage(returnedEnvironment, socket, timerWorker);
         });
     })
 };
@@ -37,9 +33,7 @@ function prepareGamePage(environment, socket, timerWorker) {
     const splitUrl = window.location.href.split('/game/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-        stateBucket.gameStateRequestInFlight = true;
         socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, userId, function (gameState) {
-            stateBucket.gameStateRequestInFlight = false;
             stateBucket.currentGameState = gameState;
             document.querySelector('.spinner-container')?.remove();
             document.querySelector('.spinner-background')?.remove();
@@ -214,7 +208,6 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
                 stateBucket.currentGameState.accessCode,
                 stateBucket.currentGameState.client.cookie,
                 function (gameState) {
-                    stateBucket.gameStateRequestInFlight = false;
                     stateBucket.currentGameState = gameState;
                     processGameState(
                         stateBucket.currentGameState,
@@ -230,26 +223,22 @@ function setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWo
     }
     if (!socket.hasListeners(globals.EVENTS.SYNC_GAME_STATE)) {
         socket.on(globals.EVENTS.SYNC_GAME_STATE, () => {
-            if (!stateBucket.gameStateRequestInFlight) {
-                stateBucket.gameStateRequestInFlight = true;
-                socket.emit(
-                    globals.COMMANDS.FETCH_IN_PROGRESS_STATE,
-                    stateBucket.currentGameState.accessCode,
-                    stateBucket.currentGameState.client.cookie,
-                    function (gameState) {
-                        stateBucket.gameStateRequestInFlight = false;
-                        stateBucket.currentGameState = gameState;
-                        processGameState(
-                            stateBucket.currentGameState,
-                            gameState.client.cookie,
-                            socket,
-                            gameStateRenderer,
-                            gameTimerManager,
-                            timerWorker
-                        );
-                    }
-                );
-            }
+            socket.emit(
+                globals.COMMANDS.FETCH_IN_PROGRESS_STATE,
+                stateBucket.currentGameState.accessCode,
+                stateBucket.currentGameState.client.cookie,
+                function (gameState) {
+                    stateBucket.currentGameState = gameState;
+                    processGameState(
+                        stateBucket.currentGameState,
+                        gameState.client.cookie,
+                        socket,
+                        gameStateRenderer,
+                        gameTimerManager,
+                        timerWorker
+                    );
+                }
+            );
         });
     }
 

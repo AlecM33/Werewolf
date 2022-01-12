@@ -215,6 +215,7 @@ export class GameStateRenderer {
     }
 
     displayAvailableModerators() {
+        document.getElementById("transfer-mod-modal-content").innerText = "";
         document.querySelectorAll('.potential-moderator').forEach((el) => {
             let pointer = el.dataset.pointer;
             if (pointer && this.transferModHandlers[pointer]) {

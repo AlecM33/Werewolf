@@ -80,7 +80,7 @@ Options are whitespace-delimited key-value pairs with the syntax `[key]=[value]`
 
 - `port`. Specify an integer port for the application.
 - `loglevel` the log level for the application. Can be `info`, `error`, `warn`, `debug`, or `trace`. 
-- `protocol` either HTTP or HTTPS. If you specify HTTPS, the server will look in `client/certs` for localhost certificates
+- `protocol` either `http` or `https`. If you specify HTTPS, the server will look in `client/certs` for localhost certificates
 before serving the application over HTTPS - otherwise it will revert to HTTP. Using HTTPS is particularly useful if you
   want to make the application public on your home network, which would allow you to test it on your mobile device. **Careful -
   I had to disable my computer's firewall for this to work, which would of course make browsing the internet much riskier.**

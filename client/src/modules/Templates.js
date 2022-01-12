@@ -192,7 +192,7 @@ export const templates = {
             "<form id='change-name-form'>" +
                 "<div id='transfer-mod-form-content'>" +
                     "<label for='player-new-name'>Your name:</label>" +
-                    "<input id='player-new-name' type='text'/>" +
+                    "<input id='player-new-name' autocomplete='given-name' type='text'/>" +
                 '</div>' +
                 "<div class='modal-button-container'>" +
                     "<input type='submit' id='submit-new-name' value='Set Name'/>" +

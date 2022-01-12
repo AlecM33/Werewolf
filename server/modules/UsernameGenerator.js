@@ -3,9 +3,9 @@ const usernameGenerator = {
         const randAdjIndex = Math.floor(Math.random() * adjectives.length);
         const randAnimalIndex = Math.floor(Math.random() * animals.length);
         const randNumber = Math.floor(Math.random() * 100);
-        return adjectives[randAdjIndex].charAt(0).toUpperCase() + adjectives[randAdjIndex].slice(1)
-            + animals[randAnimalIndex].replace(/ /g, '')
-            + randNumber;
+        return adjectives[randAdjIndex].charAt(0).toUpperCase() + adjectives[randAdjIndex].slice(1) +
+            animals[randAnimalIndex].replace(/ /g, '') +
+            randNumber;
     }
 };
 

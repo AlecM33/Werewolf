@@ -26,5 +26,4 @@ router.get('/readiness_check', (req, res) => {
     res.sendStatus(200);
 });
 
-
 module.exports = router;

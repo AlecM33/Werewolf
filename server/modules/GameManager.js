@@ -50,7 +50,7 @@ class GameManager {
         });
 
         socket.on(globals.CLIENT_COMMANDS.START_GAME, (accessCode) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game && game.isFull) {
                 game.status = globals.STATUS.IN_PROGRESS;
                 if (game.hasTimer) {
@@ -63,9 +63,9 @@ class GameManager {
 
         socket.on(globals.CLIENT_COMMANDS.PAUSE_TIMER, (accessCode) => {
             this.logger.trace(accessCode);
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let thread = this.activeGameRunner.timerThreads[accessCode];
+                const thread = this.activeGameRunner.timerThreads[accessCode];
                 if (thread) {
                     this.logger.debug('Timer thread found for game ' + accessCode);
                     thread.send({
@@ -79,9 +79,9 @@ class GameManager {
 
         socket.on(globals.CLIENT_COMMANDS.RESUME_TIMER, (accessCode) => {
             this.logger.trace(accessCode);
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let thread = this.activeGameRunner.timerThreads[accessCode];
+                const thread = this.activeGameRunner.timerThreads[accessCode];
                 if (thread) {
                     this.logger.debug('Timer thread found for game ' + accessCode);
                     thread.send({
@@ -94,9 +94,9 @@ class GameManager {
         });
 
         socket.on(globals.CLIENT_COMMANDS.GET_TIME_REMAINING, (accessCode) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let thread = this.activeGameRunner.timerThreads[accessCode];
+                const thread = this.activeGameRunner.timerThreads[accessCode];
                 if (thread) {
                     thread.send({
                         command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
@@ -113,17 +113,17 @@ class GameManager {
         });
 
         socket.on(globals.CLIENT_COMMANDS.KILL_PLAYER, (accessCode, personId) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let person = game.people.find((person) => person.id === personId)
+                const person = game.people.find((person) => person.id === personId);
                 this.killPlayer(game, person, namespace, this.logger);
             }
         });
 
         socket.on(globals.CLIENT_COMMANDS.REVEAL_PLAYER, (accessCode, personId) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let person = game.people.find((person) => person.id === personId)
+                const person = game.people.find((person) => person.id === personId);
                 if (person && !person.revealed) {
                     this.logger.debug('game ' + accessCode + ': revealing player ' + person.name);
                     person.revealed = true;
@@ -133,51 +133,50 @@ class GameManager {
                             id: person.id,
                             gameRole: person.gameRole,
                             alignment: person.alignment
-                        })
+                        });
                 }
             }
         });
 
         socket.on(globals.CLIENT_COMMANDS.TRANSFER_MODERATOR, (accessCode, personId) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let person = game.people.find((person) => person.id === personId)
+                let person = game.people.find((person) => person.id === personId);
                 if (!person) {
-                    person = game.spectators.find((spectator) => spectator.id === personId)
+                    person = game.spectators.find((spectator) => spectator.id === personId);
                 }
                 this.transferModeratorPowers(game, person, namespace, this.logger);
             }
         });
 
         socket.on(globals.CLIENT_COMMANDS.CHANGE_NAME, (accessCode, data, ackFn) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
-                let person = findPersonById(game, data.personId);
+                const person = findPersonById(game, data.personId);
                 if (person) {
                     if (!isNameTaken(game, data.name)) {
-                        ackFn("changed");
+                        ackFn('changed');
                         person.name = data.name.trim();
                         person.hasEnteredName = true;
                         namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.CHANGE_NAME, person.id, person.name);
                     } else {
-                        ackFn("taken");
+                        ackFn('taken');
                     }
                 }
             }
         });
 
         socket.on(globals.CLIENT_COMMANDS.END_GAME, (accessCode) => {
-            let game = this.activeGameRunner.activeGames[accessCode];
+            const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
                 game.status = globals.STATUS.ENDED;
-                for (let person of game.people) {
+                for (const person of game.people) {
                     person.revealed = true;
                 }
                 namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
             }
-        })
-    }
-
+        });
+    };
 
     createGame = (gameParams) => {
         const expectedKeys = ['deck', 'hasTimer', 'timerParams'];
@@ -190,7 +189,7 @@ class GameManager {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
             pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
             const newAccessCode = this.generateAccessCode();
-            let moderator = initializeModerator(UsernameGenerator.generate(), gameParams.hasDedicatedModerator);
+            const moderator = initializeModerator(UsernameGenerator.generate(), gameParams.hasDedicatedModerator);
             if (gameParams.timerParams !== null) {
                 gameParams.timerParams.paused = false;
             }
@@ -206,12 +205,12 @@ class GameManager {
             this.activeGameRunner.activeGames[newAccessCode].createTime = new Date().toJSON();
             return Promise.resolve(newAccessCode);
         }
-    }
+    };
 
     joinGame = (code) => {
-        let game = this.activeGameRunner.activeGames[code];
+        const game = this.activeGameRunner.activeGames[code];
         if (game) {
-            let unassignedPerson = game.people.find((person) => person.assigned === false);
+            const unassignedPerson = game.people.find((person) => person.assigned === false);
             if (!unassignedPerson) {
                 return Promise.resolve(new Error(globals.ERROR_MESSAGE.GAME_IS_FULL));
             } else {
@@ -220,7 +219,7 @@ class GameManager {
         } else {
             return Promise.resolve(404);
         }
-    }
+    };
 
     generateAccessCode = () => {
         const numLetters = globals.ACCESS_CODE_CHAR_POOL.length;
@@ -231,7 +230,7 @@ class GameManager {
             codeDigits.push(globals.ACCESS_CODE_CHAR_POOL[getRandomInt(numLetters)]);
         }
         return codeDigits.join('');
-    }
+    };
 
     transferModeratorPowers = (game, person, namespace, logger) => {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
@@ -259,7 +258,7 @@ class GameManager {
 
             namespace.in(game.accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
         }
-    }
+    };
 
     killPlayer = (game, person, namespace, logger) => {
         if (person && !person.out) {
@@ -274,25 +273,24 @@ class GameManager {
                 this.transferModeratorPowers(game, person, namespace, logger);
             }
         }
-    }
+    };
 
-
-    handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket, handleNoMatch=true) => {
+    handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket, handleNoMatch = true) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
             let matchingPerson = game.people.find((person) => person.cookie === personCookie);
             if (!matchingPerson) {
                 matchingPerson = game.spectators.find((spectator) => spectator.cookie === personCookie);
             }
-            if (!matchingPerson && game.moderator.cookie === personCookie)  {
+            if (!matchingPerson && game.moderator.cookie === personCookie) {
                 matchingPerson = game.moderator;
             }
             if (matchingPerson) {
                 if (matchingPerson.socketId === socket.id) {
-                    logger.trace("matching person found with an established connection to the room: " + matchingPerson.name);
+                    logger.trace('matching person found with an established connection to the room: ' + matchingPerson.name);
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
                 } else {
-                    logger.trace("matching person found with a new connection to the room: " + matchingPerson.name);
+                    logger.trace('matching person found with a new connection to the room: ' + matchingPerson.name);
                     socket.join(accessCode);
                     matchingPerson.socketId = socket.id;
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
@@ -304,23 +302,23 @@ class GameManager {
             rejectClientRequestForGameState(ackFn);
             logger.trace('the game ' + accessCode + ' was not found');
         }
-    }
+    };
 
     handleRequestFromNonMatchingPerson = (game, socket, gameRunner, ackFn, logger) => {
-        let personWithMatchingSocketId = findPersonWithMatchingSocketId(game, socket.id);
+        const personWithMatchingSocketId = findPersonWithMatchingSocketId(game, socket.id);
         if (personWithMatchingSocketId) {
-            logger.trace("matching person found whose cookie got cleared after establishing a connection to the room: " + personWithMatchingSocketId.name);
+            logger.trace('matching person found whose cookie got cleared after establishing a connection to the room: ' + personWithMatchingSocketId.name);
             ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, personWithMatchingSocketId, gameRunner, socket, logger));
         } else {
-            let unassignedPerson = game.moderator.assigned === false
+            const unassignedPerson = game.moderator.assigned === false
                 ? game.moderator
                 : game.people.find((person) => person.assigned === false);
             if (unassignedPerson) {
-                logger.trace("completely new person with a first connection to the room: " + unassignedPerson.name);
+                logger.trace('completely new person with a first connection to the room: ' + unassignedPerson.name);
                 unassignedPerson.assigned = true;
                 unassignedPerson.socketId = socket.id;
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, unassignedPerson, gameRunner, socket, logger));
-                let isFull = isGameFull(game);
+                const isFull = isGameFull(game);
                 game.isFull = isFull;
                 socket.to(game.accessCode).emit(
                     globals.EVENTS.PLAYER_JOINED,
@@ -328,29 +326,29 @@ class GameManager {
                     isFull
                 );
             } else { // if the game is full, make them a spectator.
-                let spectator = new Person(
+                const spectator = new Person(
                     createRandomId(),
                     createRandomId(),
                     UsernameGenerator.generate(),
                     globals.USER_TYPES.SPECTATOR
                 );
-                logger.trace("new spectator: " + spectator.name);
+                logger.trace('new spectator: ' + spectator.name);
                 game.spectators.push(spectator);
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, spectator, gameRunner, socket, logger));
             }
             socket.join(game.accessCode);
         }
-    }
+    };
 
-    removeClientFromLobbyIfApplicable(socket) {
+    removeClientFromLobbyIfApplicable (socket) {
         socket.rooms.forEach((room) => {
             if (this.activeGameRunner.activeGames[room]) {
                 this.logger.trace('disconnected socket is in a game');
-                let game = this.activeGameRunner.activeGames[room];
+                const game = this.activeGameRunner.activeGames[room];
                 if (game.status === globals.STATUS.LOBBY) {
-                    let matchingPlayer = findPlayerBySocketId(game.people, socket.id);
+                    const matchingPlayer = findPlayerBySocketId(game.people, socket.id);
                     if (matchingPlayer) {
-                        this.logger.trace("un-assigning disconnected player: " + matchingPlayer.name);
+                        this.logger.trace('un-assigning disconnected player: ' + matchingPlayer.name);
                         matchingPlayer.assigned = false;
                         matchingPlayer.socketId = null;
                         matchingPlayer.cookie = createRandomId();
@@ -364,7 +362,7 @@ class GameManager {
                     }
                 }
             }
-        })
+        });
     }
 }
 
@@ -372,21 +370,21 @@ function getRandomInt (max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
-function initializeModerator(name, hasDedicatedModerator) {
+function initializeModerator (name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
-    return new Person(createRandomId(), createRandomId(), name, userType);;
+    return new Person(createRandomId(), createRandomId(), name, userType); ;
 }
 
-function initializePeopleForGame(uniqueCards, moderator) {
-    let people = [];
+function initializePeopleForGame (uniqueCards, moderator) {
+    const people = [];
     let cards = []; // this will contain copies of each card equal to the quantity.
     let numberOfRoles = 0;
-    for (let card of uniqueCards) {
-        for (let i = 0; i < card.quantity; i ++) {
+    for (const card of uniqueCards) {
+        for (let i = 0; i < card.quantity; i++) {
             cards.push(card);
-            numberOfRoles ++;
+            numberOfRoles++;
         }
     }
 
@@ -399,11 +397,11 @@ function initializePeopleForGame(uniqueCards, moderator) {
         moderator.gameRoleDescription = cards[j].description;
         moderator.alignment = cards[j].team;
         people.push(moderator);
-        j ++;
+        j++;
     }
 
     while (j < numberOfRoles) {
-        let person = new Person(
+        const person = new Person(
             createRandomId(),
             createRandomId(),
             UsernameGenerator.generate(),
@@ -415,7 +413,7 @@ function initializePeopleForGame(uniqueCards, moderator) {
         person.customRole = cards[j].custom;
         person.hasEnteredName = false;
         people.push(person);
-        j ++;
+        j++;
     }
 
     return people;
@@ -439,11 +437,11 @@ function createRandomId () {
     return id;
 }
 
-function rejectClientRequestForGameState(acknowledgementFunction) {
+function rejectClientRequestForGameState (acknowledgementFunction) {
     return acknowledgementFunction(null);
 }
 
-function findPersonWithMatchingSocketId(game, socketId) {
+function findPersonWithMatchingSocketId (game, socketId) {
     let person = game.people.find((person) => person.socketId === socketId);
     if (!person) {
         person = game.spectators.find((spectator) => spectator.socketId === socketId);
@@ -454,15 +452,15 @@ function findPersonWithMatchingSocketId(game, socketId) {
     return person;
 }
 
-function findPlayerBySocketId(people, socketId) {
+function findPlayerBySocketId (people, socketId) {
     return people.find((person) => person.socketId === socketId && person.userType === globals.USER_TYPES.PLAYER);
 }
 
-function isGameFull(game) {
+function isGameFull (game) {
     return game.moderator.assigned === true && !game.people.find((person) => person.assigned === false);
 }
 
-function findPersonById(game, id) {
+function findPersonById (game, id) {
     let person;
     if (id === game.moderator.id) {
         person = game.moderator;
@@ -471,22 +469,22 @@ function findPersonById(game, id) {
         person = game.people.find((person) => person.id === id);
     }
     if (!person) {
-        person = game.spectators.find((spectator) => spectator.id === id)
+        person = game.spectators.find((spectator) => spectator.id === id);
     }
     return person;
 }
 
-function isNameTaken(game, name) {
-    let processedName = name.toLowerCase().trim();
+function isNameTaken (game, name) {
+    const processedName = name.toLowerCase().trim();
     return (game.people.find((person) => person.name.toLowerCase().trim() === processedName))
     || (game.moderator.name.toLowerCase().trim() === processedName)
-    || (game.spectators.find((spectator) => spectator.name.toLowerCase().trim() === processedName))
+    || (game.spectators.find((spectator) => spectator.name.toLowerCase().trim() === processedName));
 }
 
-function pruneStaleGames(activeGames, timerThreads, logger) {
+function pruneStaleGames (activeGames, timerThreads, logger) {
     for (const [accessCode, game] of Object.entries(activeGames)) {
         if (game.createTime) {
-            let createDate = new Date(game.createTime);
+            const createDate = new Date(game.createTime);
             if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) { // clear games created more than 12 hours ago
                 logger.info('PRUNING STALE GAME ' + accessCode);
                 delete activeGames[accessCode];
@@ -512,6 +510,5 @@ class Singleton {
         return Singleton.instance;
     }
 }
-
 
 module.exports = Singleton;

@@ -21,13 +21,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/core": "^7.16.5",
     "@babel/plugin-transform-object-assign": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "acorn": "^8.6.0",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.3",
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
+    "eslint-config-standard": "^16.0.3",
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
     "express-rate-limit": "^6.0.1",
@@ -39,7 +40,14 @@
     "webpack-cli": "^4.9.1",
     "webpack-remove-debug": "^0.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
+    "eslint": "^8.6.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.0.0"
+  },
   "nodemonConfig": {
     "ignore": [
       "client/*",

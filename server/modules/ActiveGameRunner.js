@@ -58,7 +58,7 @@ class ActiveGameRunner {
             minutes: game.timerParams.minutes
         });
         game.startTime = new Date().toJSON();
-    }
+    };
 }
 
 class Singleton {

@@ -3,7 +3,7 @@ const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
 const GameManager = require('../modules/GameManager.js');
-const rateLimit = require('express-rate-limit').default
+const rateLimit = require('express-rate-limit').default;
 const globals = require('../config/globals');
 
 const gameManager = new GameManager().getInstance();
@@ -12,8 +12,8 @@ const apiLimiter = rateLimit({
     windowMs: 600000,
     max: 5,
     standardHeaders: true,
-    legacyHeaders: false,
-})
+    legacyHeaders: false
+});
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);
@@ -42,7 +42,7 @@ router.get('/availability/:code', function (req, res) {
             res.status(404).send();
         } else if (result instanceof Error) {
             res.status(400).send(result.message);
-        } else if (typeof result === "string") {
+        } else if (typeof result === 'string') {
             logger.debug(result);
             res.status(200).send(result);
         } else {

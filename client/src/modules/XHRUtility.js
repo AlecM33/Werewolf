@@ -34,7 +34,6 @@ export const XHRUtility =
                 };
                 body ? req.send(body) : req.send();
             });
-        },
-
+        }
 
     };

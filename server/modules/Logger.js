@@ -31,7 +31,7 @@ module.exports = function (logLevel = globals.LOG_LEVEL.INFO) {
             console.debug('DEBUG ', now.toGMTString(), ': ', message);
         },
 
-        trace(message = '') {
+        trace (message = '') {
             if (
                 logLevel === globals.LOG_LEVEL.INFO
                 || logLevel === globals.LOG_LEVEL.WARN

@@ -3,12 +3,12 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
-const cors = require('cors')
+const cors = require('cors');
 
 const ServerBootstrapper = {
     processCLIArgs: () => {
         try {
-            let args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));
+            const args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));
             const useHttps = args.includes('protocol=https');
             const port = process.env.PORT || args
                 .filter((arg) => {
@@ -31,7 +31,7 @@ const ServerBootstrapper = {
                 logLevel: logLevel
             };
         } catch (e) {
-            throw new Error("Your server run command is malformed. Consult the codebase wiki for proper usage. Error: " + e);
+            throw new Error('Your server run command is malformed. Consult the codebase wiki for proper usage. Error: ' + e);
         }
     },
 
@@ -67,40 +67,40 @@ const ServerBootstrapper = {
         let io;
         if (process.env.NODE_ENV.trim() === 'development') {
             const corsOptions = {
-                origin: "http://localhost:" + port,
+                origin: 'http://localhost:' + port,
                 optionsSuccessStatus: 200,
-                methods: ["GET", "POST"]
-            }
+                methods: ['GET', 'POST']
+            };
             app.use(cors(corsOptions));
-            io = require("socket.io")(main, {
+            io = require('socket.io')(main, {
                 cors: {
-                    origin: "http://localhost:" + port,
-                    methods: ["GET", "POST"],
-                    allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
+                    origin: 'http://localhost:' + port,
+                    methods: ['GET', 'POST'],
+                    allowedHeaders: ['Content-Type', 'X-Requested-With', 'Accept'],
                     credentials: false
                 }
             });
         } else {
             const corsOptions = {
-                origin: ["https://playwerewolf.uk.r.appspot.com"],
-                methods: ["GET", "POST"],
-                allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
-                optionsSuccessStatus: 200,
-            }
+                origin: ['https://playwerewolf.uk.r.appspot.com'],
+                methods: ['GET', 'POST'],
+                allowedHeaders: ['Content-Type', 'X-Requested-With', 'Accept'],
+                optionsSuccessStatus: 200
+            };
             app.use(cors(corsOptions));
-            io = require("socket.io")(main, {
+            io = require('socket.io')(main, {
                 cors: {
-                    origin: ["https://playwerewolf.uk.r.appspot.com", "wss://playwerewolf.uk.r.appspot.com"],
-                    methods: ["GET", "POST"],
-                    allowedHeaders: ["Content-Type", "X-Requested-With", "Accept"],
+                    origin: ['https://playwerewolf.uk.r.appspot.com', 'wss://playwerewolf.uk.r.appspot.com'],
+                    methods: ['GET', 'POST'],
+                    allowedHeaders: ['Content-Type', 'X-Requested-With', 'Accept'],
                     credentials: true
                 },
-                transports: ["polling"]
+                transports: ['polling']
             });
         }
 
         return io.of('/in-game');
     }
-}
+};
 
 module.exports = ServerBootstrapper;

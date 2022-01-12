@@ -24,7 +24,7 @@ process.on('message', (msg) => {
         case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
             timer.stopTimer();
             logger.trace('CHILD PROCESS ' + msg.accessCode + ': PAUSE TIMER');
-            process.send({ command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, timeRemaining: timer.currentTimeInMillis});
+            process.send({ command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, timeRemaining: timer.currentTimeInMillis });
 
             break;
 
@@ -35,7 +35,7 @@ process.on('message', (msg) => {
                 process.exit(0);
             });
             logger.trace('CHILD PROCESS ' + msg.accessCode + ': RESUME TIMER');
-            process.send({ command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, timeRemaining: timer.currentTimeInMillis});
+            process.send({ command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, timeRemaining: timer.currentTimeInMillis });
 
             break;
 
@@ -50,4 +50,3 @@ process.on('message', (msg) => {
             break;
     }
 });
-

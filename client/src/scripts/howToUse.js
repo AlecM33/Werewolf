@@ -1,4 +1,4 @@
-import { injectNavbar } from "../modules/Navbar.js";
+import { injectNavbar } from '../modules/Navbar.js';
 
 const howToUse = () => { injectNavbar(); };
 

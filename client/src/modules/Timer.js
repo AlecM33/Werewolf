@@ -38,7 +38,7 @@ function stepFn (expected, interval, start, totalTime) {
     }
     const delta = now - expected;
     expected += interval;
-    let displayTime = (totalTime - (now - start)) < 60000
+    const displayTime = (totalTime - (now - start)) < 60000
         ? returnHumanReadableTime(totalTime - (now - start), true)
         : returnHumanReadableTime(totalTime - (now - start));
     postMessage({
@@ -46,8 +46,8 @@ function stepFn (expected, interval, start, totalTime) {
         displayTime: displayTime
     });
     Singleton.setNewTimeoutReference(setTimeout(() => {
-            stepFn(expected, interval, start, totalTime);
-        }, Math.max(0, interval - delta)
+        stepFn(expected, interval, start, totalTime);
+    }, Math.max(0, interval - delta)
     )); // take into account drift - also retain a reference to this clock tick so it can be cleared later
 }
 
@@ -73,7 +73,7 @@ class Timer {
         }
     }
 
-    stopTimer() {
+    stopTimer () {
         if (this.timeoutId) {
             clearTimeout(this.timeoutId);
         }
@@ -105,18 +105,17 @@ class Singleton {
     }
 }
 
-function returnHumanReadableTime(milliseconds, tenthsOfSeconds=false) {
-
-    let tenths = Math.floor((milliseconds / 100) % 10);
+function returnHumanReadableTime (milliseconds, tenthsOfSeconds = false) {
+    const tenths = Math.floor((milliseconds / 100) % 10);
     let seconds = Math.floor((milliseconds / 1000) % 60);
     let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
     let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
 
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
 
     return tenthsOfSeconds
-        ? hours + ":" + minutes + ":" + seconds + '.' + tenths
-        : hours + ":" + minutes + ":" + seconds;
+        ? hours + ':' + minutes + ':' + seconds + '.' + tenths
+        : hours + ':' + minutes + ':' + seconds;
 }

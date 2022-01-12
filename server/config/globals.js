@@ -18,48 +18,48 @@ const globals = {
         FETCH_IN_PROGRESS_STATE: 'fetchInitialInProgressState'
     },
     MESSAGES: {
-        ENTER_NAME:  "Client must enter name."
+        ENTER_NAME: 'Client must enter name.'
     },
     STATUS: {
-        LOBBY: "lobby",
-        IN_PROGRESS: "in progress",
-        ENDED: "ended"
+        LOBBY: 'lobby',
+        IN_PROGRESS: 'in progress',
+        ENDED: 'ended'
     },
     USER_SIGNATURE_LENGTH: 25,
     USER_TYPES: {
-        MODERATOR: "moderator",
-        PLAYER: "player",
-        TEMPORARY_MODERATOR: "player / temp mod",
-        KILLED_PLAYER: "killed",
-        SPECTATOR: "spectator"
+        MODERATOR: 'moderator',
+        PLAYER: 'player',
+        TEMPORARY_MODERATOR: 'player / temp mod',
+        KILLED_PLAYER: 'killed',
+        SPECTATOR: 'spectator'
     },
     ERROR_MESSAGE: {
-        GAME_IS_FULL: "This game is full",
-        BAD_CREATE_REQUEST: "Game has invalid options."
+        GAME_IS_FULL: 'This game is full',
+        BAD_CREATE_REQUEST: 'Game has invalid options.'
     },
     EVENTS: {
-        PLAYER_JOINED: "playerJoined",
-        PLAYER_LEFT: "playerLeft",
-        SYNC_GAME_STATE: "syncGameState"
+        PLAYER_JOINED: 'playerJoined',
+        PLAYER_LEFT: 'playerLeft',
+        SYNC_GAME_STATE: 'syncGameState'
     },
     ENVIRONMENT: {
-        LOCAL: "local",
-        PRODUCTION: "production"
+        LOCAL: 'local',
+        PRODUCTION: 'production'
     },
     LOG_LEVEL: {
-        INFO: "info",
-        DEBUG: "debug",
-        ERROR: "error",
-        WARN: "warn",
-        TRACE: "trace"
+        INFO: 'info',
+        DEBUG: 'debug',
+        ERROR: 'error',
+        WARN: 'warn',
+        TRACE: 'trace'
     },
     GAME_PROCESS_COMMANDS: {
-        END_TIMER: "endTimer",
-        START_GAME: "startGame",
-        START_TIMER: "startTimer",
-        PAUSE_TIMER: "pauseTimer",
-        RESUME_TIMER: "resumeTimer",
-        GET_TIME_REMAINING: "getTimeRemaining"
+        END_TIMER: 'endTimer',
+        START_GAME: 'startGame',
+        START_TIMER: 'startTimer',
+        PAUSE_TIMER: 'pauseTimer',
+        RESUME_TIMER: 'resumeTimer',
+        GET_TIME_REMAINING: 'getTimeRemaining'
     }
 };
 

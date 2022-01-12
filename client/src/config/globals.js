@@ -22,37 +22,37 @@ export const globals = {
         FETCH_IN_PROGRESS_STATE: 'fetchInitialInProgressState'
     },
     STATUS: {
-        LOBBY: "lobby",
-        IN_PROGRESS: "in progress",
-        ENDED: "ended"
+        LOBBY: 'lobby',
+        IN_PROGRESS: 'in progress',
+        ENDED: 'ended'
     },
     ALIGNMENT: {
-        GOOD: "good",
-        EVIL: "evil"
+        GOOD: 'good',
+        EVIL: 'evil'
     },
     MESSAGES: {
-        ENTER_NAME:  "Client must enter name."
+        ENTER_NAME: 'Client must enter name.'
     },
     EVENTS: {
-        PLAYER_JOINED: "playerJoined",
-        SYNC_GAME_STATE: "syncGameState",
-        START_TIMER: "startTimer",
-        KILL_PLAYER: "killPlayer",
+        PLAYER_JOINED: 'playerJoined',
+        SYNC_GAME_STATE: 'syncGameState',
+        START_TIMER: 'startTimer',
+        KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
         CHANGE_NAME: 'changeName',
         START_GAME: 'startGame',
         PLAYER_LEFT: 'playerLeft'
     },
     USER_TYPES: {
-        MODERATOR: "moderator",
-        PLAYER: "player",
-        TEMPORARY_MODERATOR: "player / temp mod",
-        KILLED_PLAYER: "killed",
-        SPECTATOR: "spectator"
+        MODERATOR: 'moderator',
+        PLAYER: 'player',
+        TEMPORARY_MODERATOR: 'player / temp mod',
+        KILLED_PLAYER: 'killed',
+        SPECTATOR: 'spectator'
     },
     ENVIRONMENT: {
-        LOCAL: "local",
-        PRODUCTION: "production"
+        LOCAL: 'local',
+        PRODUCTION: 'production'
     },
     USER_TYPE_ICONS: {
         player: ' \uD83C\uDFAE',

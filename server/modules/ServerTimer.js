@@ -4,8 +4,8 @@ function stepFn (serverTimerInstance, expected) {
     serverTimerInstance.currentTimeInMillis = serverTimerInstance.totalTime - (now - serverTimerInstance.start);
     if (now - serverTimerInstance.start >= serverTimerInstance.totalTime) { // check if the time has elapsed
         serverTimerInstance.logger.debug(
-            'ELAPSED: ' + (now - serverTimerInstance.start) + 'ms (~'
-            + (Math.abs(serverTimerInstance.totalTime - (now - serverTimerInstance.start)) / serverTimerInstance.totalTime).toFixed(3) + '% error).'
+            'ELAPSED: ' + (now - serverTimerInstance.start) + 'ms (~' +
+            (Math.abs(serverTimerInstance.totalTime - (now - serverTimerInstance.start)) / serverTimerInstance.totalTime).toFixed(3) + '% error).'
         );
         serverTimerInstance.timesUpResolver(); // this is a reference to the callback defined in the construction of the promise in runTimer()
         clearTimeout(serverTimerInstance.ticking);
@@ -22,7 +22,6 @@ function stepFn (serverTimerInstance, expected) {
 }
 
 class ServerTimer {
-
     constructor (hours, minutes, tickInterval, logger) {
         this.hours = hours;
         this.minutes = minutes;
@@ -36,8 +35,8 @@ class ServerTimer {
         this.totalTime = null;
     }
 
-    runTimer (pausedInitially=true) {
-        let total = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
+    runTimer (pausedInitially = true) {
+        const total = convertFromHoursToMilliseconds(this.hours) + convertFromMinutesToMilliseconds(this.minutes);
         this.totalTime = total;
         this.currentTimeInMillis = total;
         this.logger.debug('STARTING TIMER FOR ' + this.totalTime + 'ms');
@@ -59,14 +58,13 @@ class ServerTimer {
         return this.timesUpPromise;
     }
 
-    stopTimer() {
+    stopTimer () {
         if (this.ticking) {
             clearTimeout(this.ticking);
         }
-        let now = Date.now();
     }
 
-    resumeTimer() {
+    resumeTimer () {
         this.logger.debug('RESUMING TIMER FOR ' + this.currentTimeInMillis + 'ms');
         this.start = Date.now();
         this.totalTime = this.currentTimeInMillis;
@@ -83,11 +81,11 @@ class ServerTimer {
     }
 }
 
-function convertFromMinutesToMilliseconds(minutes) {
+function convertFromMinutesToMilliseconds (minutes) {
     return minutes * 60 * 1000;
 }
 
-function convertFromHoursToMilliseconds(hours) {
+function convertFromHoursToMilliseconds (hours) {
     return hours * 60 * 60 * 1000;
 }
 

@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
-const GameManager  = require('./modules/GameManager.js');
+const GameManager = require('./modules/GameManager.js');
 const globals = require('./config/globals');
 const ServerBootstrapper = require('./modules/ServerBootstrapper');
 
@@ -16,15 +16,15 @@ const args = ServerBootstrapper.processCLIArgs();
 const logger = require('./modules/Logger')(args.logLevel);
 logger.info('LOG LEVEL IS: ' + args.logLevel);
 
-const main = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, args.port, logger)
+const main = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, args.port, logger);
 
 app.set('port', args.port);
 
 const inGameSocketServer = ServerBootstrapper.createSocketServer(main, app, args.port);
 
 inGameSocketServer.on('connection', function (socket) {
-    socket.on("disconnecting", (reason) => {
-        logger.trace('client socket disconnecting because: ' + reason)
+    socket.on('disconnecting', (reason) => {
+        logger.trace('client socket disconnecting because: ' + reason);
         gameManager.removeClientFromLobbyIfApplicable(socket);
     });
     gameManager.addGameSocketHandlers(inGameSocketServer, socket);
@@ -70,5 +70,5 @@ app.use(function (req, res) {
 });
 
 main.listen(args.port, function () {
-    logger.info(`Starting server on port ${args.port}` );
+    logger.info(`Starting server on port ${args.port}`);
 });

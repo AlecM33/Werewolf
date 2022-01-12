@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="300" src="/client/src/images/logo.gif"/>
+</p>
+
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Inspired by my time playing
 <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
@@ -5,8 +9,10 @@ smoothly when you don't have a deck, or when you and your friends are together v
 
 After a long hiatus from maintaining the application, I have come back and undertaken a large-scale redesign, rewriting 
 most of the code and producing a result that I believe is more stable and has much more sensible client-server interaction.
-
-![player](./client/src/images/screenshots/player.PNG)
+<br><br>
+<p align="center">
+  <img width="600" src="./client/src/images/screenshots/player.PNG"/>
+</p>
 
 ## Features
 
@@ -81,3 +87,8 @@ before serving the application over HTTPS - otherwise it will revert to HTTP. Us
 Unit tests are written using <a href="https://jasmine.github.io/">Jasmine</a>. Execute them by running `npm run test`. 
 They reside in the `spec/unit` directory, which maps 1:1 to the application directory structure - i.e. unit tests for 
 `server/modules/GameManager` are found in `spec/unit/server/modules/GameManager_Spec.js`
+
+## Code Formatting
+
+This application uses <a href="https://eslint.org/">ESLint</a> to enforce code formatting standards. This configuration is found at the root in `.eslintrc.json`. 
+To audit the codebase, run `npx eslint [directory]`, and to fix them along with that, run `npx eslint [directory] --fix`.

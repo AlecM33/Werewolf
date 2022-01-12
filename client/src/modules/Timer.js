@@ -3,7 +3,8 @@ A timer using setTimeout that compensates for drift. Drift can happen for severa
 https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#reasons_for_delays
 
 This means the timer may very well be late in executing the next call (but never early).
-This timer is accurate to within a few ms for any amount of time provided. It's meant to be utilized as a Web Worker.
+This timer is accurate to within a few ms for any amount of time provided. This is the client-side version of this module,
+and is meant to be utilized as a Web Worker.
 See: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
  */
 

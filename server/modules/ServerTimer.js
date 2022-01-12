@@ -1,3 +1,10 @@
+/*
+A timer using setTimeout that compensates for drift. Drift can happen for several reasons:
+https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#reasons_for_delays
+
+This means the timer may very well be late in executing the next call (but never early).
+This timer is accurate to within a few ms for any amount of time provided.
+ */
 
 function stepFn (serverTimerInstance, expected) {
     const now = Date.now(); //

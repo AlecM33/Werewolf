@@ -16,7 +16,7 @@ class GameManager {
     addGameSocketHandlers = (namespace, socket) => {
         this.namespace = namespace;
         socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, (accessCode, personId, ackFn) => {
-            this.logger.trace('request for game state for accessCode ' + accessCode + ', person ' + personId);
+            this.logger.trace('request for game state for accessCode: ' + accessCode + ' from socket: ' + socket.id + ' with cookie: ' + personId);
             this.handleRequestForGameState(
                 this.namespace,
                 this.logger,
@@ -332,6 +332,7 @@ class GameManager {
                     UsernameGenerator.generate(),
                     globals.USER_TYPES.SPECTATOR
                 );
+                spectator.socketId = socket.id;
                 logger.trace('new spectator: ' + spectator.name);
                 game.spectators.push(spectator);
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, spectator, gameRunner, socket, logger));

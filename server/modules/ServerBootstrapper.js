@@ -57,7 +57,6 @@ const ServerBootstrapper = {
         } else {
             logger.warn('starting main in PRODUCTION mode. This should not be used for local development.');
             main = http.createServer(app);
-            app.use(require('express-force-https'));
         }
 
         return main;
@@ -66,36 +65,16 @@ const ServerBootstrapper = {
     createSocketServer: (main, app, port) => {
         let io;
         if (process.env.NODE_ENV.trim() === 'development') {
-            const corsOptions = {
-                origin: 'http://localhost:' + port,
-                optionsSuccessStatus: 200,
-                methods: ['GET', 'POST']
-            };
-            app.use(cors(corsOptions));
             io = require('socket.io')(main, {
-                cors: {
-                    origin: 'http://localhost:' + port,
-                    methods: ['GET', 'POST'],
-                    allowedHeaders: ['Content-Type', 'X-Requested-With', 'Accept'],
-                    credentials: false
-                }
+                cors: { origin: 'http://localhost:' + port },
+                pingTimeout: 5000,
+                pingInterval: 5000
             });
         } else {
-            const corsOptions = {
-                origin: ['https://playwerewolf.uk.r.appspot.com'],
-                methods: ['GET', 'POST'],
-                allowedHeaders: ['Content-Type', 'X-Requested-With', 'Accept'],
-                optionsSuccessStatus: 200
-            };
-            app.use(cors(corsOptions));
             io = require('socket.io')(main, {
-                cors: {
-                    origin: ['https://playwerewolf.uk.r.appspot.com', 'wss://playwerewolf.uk.r.appspot.com'],
-                    methods: ['GET', 'POST'],
-                    allowedHeaders: ['Content-Type', 'X-Requested-With', 'Accept'],
-                    credentials: true
-                },
-                transports: ['polling']
+                cors: { origin: 'https://playwerewolf.uk.r.appspot.com' },
+                pingTimeout: 5000,
+                pingInterval: 5000
             });
         }
 

@@ -17,9 +17,11 @@ const game = () => {
         if (timerWorker) {
             timerWorker.terminate();
         }
+        timerWorker = null;
         toast('Disconnected. Attempting reconnect...', 'error', true, false);
     });
     socket.on('connect', () => {
+        console.log("connect event fired");
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function (returnedEnvironment) {
             timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
             prepareGamePage(returnedEnvironment, socket, timerWorker);

@@ -150,16 +150,6 @@ export class GameTimerManager {
         pauseBtn.addEventListener('click', this.pauseListener);
         document.getElementById('play-pause').appendChild(pauseBtn);
     }
-
-    processTimeRemaining (timeRemaining, paused, timerWorker) {
-        if (paused) {
-            this.displayPausedTime(timeRemaining);
-        } else if (timeRemaining === 0) {
-            this.displayExpiredTime();
-        } else {
-            this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
-        }
-    }
 }
 
 function returnHumanReadableTime (milliseconds, tenthsOfSeconds = false) {

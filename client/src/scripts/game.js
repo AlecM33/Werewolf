@@ -11,19 +11,14 @@ import { injectNavbar } from '../modules/Navbar.js';
 
 const game = () => {
     injectNavbar();
-    let timerWorker;
+    const timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
     const socket = io('/in-game');
     socket.on('disconnect', () => {
-        if (timerWorker) {
-            timerWorker.terminate();
-        }
-        timerWorker = null;
         toast('Disconnected. Attempting reconnect...', 'error', true, false);
     });
     socket.on('connect', () => {
         console.log("connect event fired");
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function (returnedEnvironment) {
-            timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
             prepareGamePage(returnedEnvironment, socket, timerWorker);
         });
     });
@@ -141,9 +136,7 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
                     break;
             }
             if (currentGameState.timerParams) {
-                socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode, (timeRemaining, paused) => {
-                    gameTimerManager.processTimeRemaining(timeRemaining, paused, timerWorker);
-                });
+                socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode);
             } else {
                 document.querySelector('#game-timer')?.remove();
                 document.querySelector('label[for="game-timer"]')?.remove();

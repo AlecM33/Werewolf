@@ -58,7 +58,7 @@ h3 {
     margin-bottom: 1em;
     padding: 1em;
     max-width: 23em;
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
 }
 
 img[src='../images/logo_cropped.gif'] {
@@ -78,7 +78,7 @@ form > div {
 
 #join-container > label {
     font-size: 35px;
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     color: #b1afcd;
     filter: drop-shadow(2px 2px 4px black);
 }

@@ -23,7 +23,7 @@
 <div id="navbar"></div>
 <div id="game-creation-container" class="container">
     <div id="modal-background" class="modal-background" style="display: none"></div>
-    <div id="role-modal" class="modal" style="display: none">
+    <div tabindex="-1" id="role-modal" class="modal" style="display: none">
         <form id="role-form">
             <div>
                 <label for="role-name">Role Name</label>
@@ -46,7 +46,7 @@
             </div>
         </form>
     </div>
-    <div id="upload-custom-roles-modal" class="modal" style="display:none">
+    <div tabindex="-1" id="upload-custom-roles-modal" class="modal" style="display:none">
         <h3>Import Custom Roles</h3>
         <form id="upload-custom-roles-form">
             <input type="file" id="upload-custom-roles" name="Upload Custom Roles" accept="text/plain"/>
@@ -56,7 +56,7 @@
             </div>
         </form>
     </div>
-    <div id="custom-role-info-modal" class="modal" style="display:none">
+    <div tabindex="-1" id="custom-role-info-modal" class="modal" style="display:none">
         <h3 id="custom-role-info-modal-name"></h3>
         <div id="custom-role-info-modal-alignment"></div>
         <div id="custom-role-info-modal-description"></div>

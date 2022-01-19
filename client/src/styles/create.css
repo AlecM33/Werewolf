@@ -461,8 +461,15 @@ input[type="number"] {
     padding: 10px 20px;
 }
 
+#step-forward-button img, #step-back-button img {
+    height: 40px;
+    filter: drop-shadow(-2px 3px 2px rgb(0 0 0 / 60%));
+}
+
 #step-forward-button, #step-back-button {
     background-color: #66666657 !important;
+    padding: 0 !important;
+    width: 50px;
 }
 
 #step-forward-button, #create-game {

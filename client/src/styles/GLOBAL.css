@@ -12,7 +12,7 @@ th, thead, tr, tt, u, ul, var {
     background: transparent;
 }
 @font-face {
-    font-family: 'diavlo';
+    font-family: 'signika-negative';
     src: url("../webfonts/Diavlo_LIGHT_II_37.woff2") format("woff2");
 }
 
@@ -49,7 +49,7 @@ body {
 }
 
 h1 {
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     color: #b1afcd;
     filter: drop-shadow(2px 2px 4px black);
     margin: 0.5em 0;
@@ -90,7 +90,7 @@ h3 {
     color: #f7f7f7;
     text-decoration: none;
     cursor: pointer;
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     margin: 0 0.25em;
 }
 
@@ -236,7 +236,6 @@ input {
     padding: 5px 0;
     width: 100%;
     background-color: #333243;
-    border-bottom: 2px solid #57566a;
     height: 51px;
     z-index: 53000;
 }
@@ -281,10 +280,10 @@ input {
     color: #f7f7f7;
     text-decoration: none;
     cursor: pointer;
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     border-radius: 5px;
     padding: 2px 5px;
-    font-size: 20px;
+    font-size: 18px;
     margin: 0 0.75em;
     width: fit-content;
 }

@@ -46,11 +46,15 @@ export class GameStateRenderer {
         const linkDiv = document.createElement('div');
         linkDiv.innerText = window.location;
         gameLinkContainer.prepend(linkDiv);
-        gameLinkContainer.addEventListener('click', () => {
-            navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
-                toast('Link copied!', 'success', true);
-            });
-        });
+        const linkCopyHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
+                    toast('Link copied!', 'success', true);
+                });
+            }
+        }
+        gameLinkContainer.addEventListener('click', linkCopyHandler);
+        gameLinkContainer.addEventListener('keyup', linkCopyHandler);
         const copyImg = document.createElement('img');
         copyImg.setAttribute('src', '../images/copy.svg');
         gameLinkContainer.appendChild(copyImg);

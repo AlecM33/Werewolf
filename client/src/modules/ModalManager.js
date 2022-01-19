@@ -21,6 +21,7 @@ function displayModal (modalId, backgroundId, closeButtonId) {
     } else {
         throw new Error('One or more of the ids supplied to ModalManager.displayModal is invalid.');
     }
+    modal.focus();
 }
 
 function dispelModal (modalId, backgroundId) {

@@ -3,7 +3,7 @@ export const templates = {
     "<div id='lobby-header'>" +
         '<div>' +
             "<label for='game-link'>Share Link</label>" +
-            "<div id='game-link'></div>" +
+            "<div tabindex='0' id='game-link'></div>" +
         '</div>' +
         "<div id='game-parameters'>" +
             '<div>' +
@@ -188,7 +188,7 @@ export const templates = {
         '</div>',
     NAME_CHANGE_MODAL:
         "<div id='change-name-modal-background' class='modal-background'></div>" +
-        "<div id='change-name-modal' class='modal'>" +
+        "<div tabindex='-1' id='change-name-modal' class='modal'>" +
             "<form id='change-name-form'>" +
                 "<div id='transfer-mod-form-content'>" +
                     "<label for='player-new-name'>Your name:</label>" +
@@ -201,7 +201,7 @@ export const templates = {
         '</div>',
     ROLE_INFO_MODAL:
         "<div id='role-info-modal-background' class='modal-background'></div>" +
-        "<div id='role-info-modal' class='modal'>" +
+        "<div tabindex='-1' id='role-info-modal' class='modal'>" +
             '<h2>Roles in this game:</h2>' +
             "<div id='game-role-info-container'></div>" +
             "<div class='modal-button-container'>" +
@@ -243,8 +243,8 @@ export const templates = {
                 '</span>' +
             '</button>' +
             '<div id="custom-role-actions" style="display:none">' +
-                '<div class="custom-role-action" id="custom-roles-export">Export</div>' +
-                '<div class="custom-role-action" id="custom-roles-import">Import</div>' +
+                '<div tabindex="0" class="custom-role-action" id="custom-roles-export">Export</div>' +
+                '<div tabindex="0" class="custom-role-action" id="custom-roles-import">Import</div>' +
             '</div>' +
             '<label for="add-card-to-deck-form">Custom Role Box</label>' +
             '<div id="deck-select"></div>' +
@@ -258,9 +258,9 @@ export const templates = {
     DECK_SELECT_ROLE:
         '<div class="deck-select-role-name"></div>' +
         '<div class="deck-select-role-options">' +
-            '<img class="deck-select-include" src="images/add.svg" title="make available" alt="include"/>' +
-            '<img class="deck-select-info" src="images/info.svg" title="info" alt="info"/>' +
-            '<img class="deck-select-edit" src="images/pencil.svg" title="edit" alt="edit"/>' +
-            '<img class="deck-select-remove" src="images/delete.svg" title="remove" alt="remove"/>' +
+            '<img tabindex="0" class="deck-select-include" src="images/add.svg" title="make available" alt="include"/>' +
+            '<img tabindex="0" class="deck-select-info" src="images/info.svg" title="info" alt="info"/>' +
+            '<img tabindex="0" class="deck-select-edit" src="images/pencil.svg" title="edit" alt="edit"/>' +
+            '<img tabindex="0" class="deck-select-remove" src="images/delete.svg" title="remove" alt="remove"/>' +
         '</div>'
 };

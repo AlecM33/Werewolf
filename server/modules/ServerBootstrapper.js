@@ -3,7 +3,6 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
-const cors = require('cors');
 
 const ServerBootstrapper = {
     processCLIArgs: () => {

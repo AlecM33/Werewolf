@@ -163,8 +163,8 @@ function renderModerationTypeStep (game, containerId, stepNumber) {
     setAttributes(stepContainer, { id: 'step-' + stepNumber, class: 'flex-row-container step' });
 
     stepContainer.innerHTML =
-        "<div id='moderation-dedicated'>I will be the <strong>dedicated mod.</strong> Don't deal me a card.</div>" +
-        "<div id='moderation-self'>The <strong>first person out</strong> will mod. Deal me into the game <span>(mod will be assigned automatically).</span></div>";
+        "<div tabindex=\"0\" id='moderation-dedicated'>I will be the <strong>dedicated mod.</strong> Don't deal me a card.</div>" +
+        "<div tabindex=\"0\" id='moderation-self'>The <strong>first person out</strong> will mod. Deal me into the game <span>(mod will be assigned automatically).</span></div>";
 
     const dedicatedOption = stepContainer.querySelector('#moderation-dedicated');
     if (game.hasDedicatedModerator) {
@@ -175,17 +175,27 @@ function renderModerationTypeStep (game, containerId, stepNumber) {
         selfOption.classList.add('option-selected');
     }
 
-    dedicatedOption.addEventListener('click', () => {
-        dedicatedOption.classList.add('option-selected');
-        selfOption.classList.remove('option-selected');
-        game.hasDedicatedModerator = true;
-    });
+    const dedicatedHandler = (e) => {
+        if (e.type === 'click' || e.code === 'Enter') {
+            dedicatedOption.classList.add('option-selected');
+            selfOption.classList.remove('option-selected');
+            game.hasDedicatedModerator = true;
+        }
+    };
 
-    selfOption.addEventListener('click', () => {
-        selfOption.classList.add('option-selected');
-        dedicatedOption.classList.remove('option-selected');
-        game.hasDedicatedModerator = false;
-    });
+    const tempModHandler = (e) => {
+        if (e.type === 'click' || e.code === 'Enter') {
+            selfOption.classList.add('option-selected');
+            dedicatedOption.classList.remove('option-selected');
+            game.hasDedicatedModerator = false;
+        }
+    };
+
+    dedicatedOption.addEventListener('click', dedicatedHandler);
+    dedicatedOption.addEventListener('keyup', dedicatedHandler);
+
+    selfOption.addEventListener('click', tempModHandler);
+    selfOption.addEventListener('keyup', tempModHandler);
 
     document.getElementById(containerId).appendChild(stepContainer);
 }
@@ -198,16 +208,29 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
     stepContainer.innerHTML += templates.CREATE_GAME_DECK_STATUS;
     stepContainer.innerHTML += templates.CREATE_GAME_DECK;
 
+    const exportHandler = (e) => {
+        if (e.type === 'click' || e.code === 'Enter') {
+            e.preventDefault();
+            deckManager.downloadCustomRoles('play-werewolf-custom-roles', JSON.stringify(
+                deckManager.getCurrentCustomRoleOptions()
+                    .map((option) => (
+                        { role: option.role, team: option.team, description: option.description, custom: option.custom }
+                    ))
+            ));
+        }
+    };
     document.getElementById(containerId).appendChild(stepContainer);
-    document.querySelector('#custom-roles-export').addEventListener('click', (e) => {
-        e.preventDefault();
-        deckManager.downloadCustomRoles('play-werewolf-custom-roles', JSON.stringify(deckManager.getCurrentCustomRoleOptions()));
-    });
+    document.querySelector('#custom-roles-export').addEventListener('click', exportHandler);
+    document.querySelector('#custom-roles-export').addEventListener('keyup', exportHandler);
 
-    document.querySelector('#custom-roles-import').addEventListener('click', (e) => {
-        e.preventDefault();
-        ModalManager.displayModal('upload-custom-roles-modal', 'modal-background', 'close-upload-custom-roles-modal-button');
-    });
+    const importHandler = (e) => {
+        if (e.type === 'click' || e.code === 'Enter') {
+            e.preventDefault();
+            ModalManager.displayModal('upload-custom-roles-modal', 'modal-background', 'close-upload-custom-roles-modal-button');
+        }
+    };
+    document.querySelector('#custom-roles-import').addEventListener('click', importHandler);
+    document.querySelector('#custom-roles-import').addEventListener('keyup', importHandler);
 
     document.getElementById('upload-custom-roles-form').onsubmit = (e) => {
         e.preventDefault();
@@ -351,7 +374,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
     document.querySelector('#create-game')?.remove();
     if (back) {
         const backButton = document.createElement('button');
-        backButton.innerText = '\u25C0';
+        backButton.innerHTML = '<img alt="back" src="../images/caret-back.svg"/>';
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute('id', 'step-back-button');
         backButton.classList.add('cancel');
@@ -361,7 +384,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
 
     if (forward && builtGame === null) {
         const fwdButton = document.createElement('button');
-        fwdButton.innerHTML = '\u25b6';
+        fwdButton.innerHTML = '<img alt="next" src="../images/caret-forward.svg"/>';
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute('id', 'step-forward-button');
         fwdButton.classList.add('app-button');
@@ -428,14 +451,14 @@ function constructCompactDeckBuilderElement (card, deckManager) {
     cardContainer.setAttribute('id', 'card-' + card.role.replaceAll(' ', '-'));
 
     cardContainer.innerHTML =
-        "<div class='compact-card-left'>" +
+        "<div tabindex='0' class='compact-card-left'>" +
             '<p>-</p>' +
         '</div>' +
         "<div class='compact-card-header'>" +
             "<p class='card-role'></p>" +
         "<div class='card-quantity'></div>" +
         '</div>' +
-        "<div class='compact-card-right'>" +
+        "<div tabindex='0' class='compact-card-right'>" +
             '<p>+</p>' +
         '</div>';
 
@@ -447,22 +470,33 @@ function constructCompactDeckBuilderElement (card, deckManager) {
         cardContainer.classList.add('selected-card');
     }
 
-    cardContainer.querySelector('.compact-card-right').addEventListener('click', () => {
-        deckManager.addCopyOfCard(card.role);
-        updateDeckStatus(deckManager);
-        cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
-        if (deckManager.getCard(card.role).quantity > 0) {
-            document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.add('selected-card');
+    const addHandler = (e) => {
+        if (e.type === 'click' || e.code === 'Enter') {
+            deckManager.addCopyOfCard(card.role);
+            updateDeckStatus(deckManager);
+            cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
+            if (deckManager.getCard(card.role).quantity > 0) {
+                document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.add('selected-card');
+            }
         }
-    });
-    cardContainer.querySelector('.compact-card-left').addEventListener('click', () => {
-        deckManager.removeCopyOfCard(card.role);
-        updateDeckStatus(deckManager);
-        cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
-        if (deckManager.getCard(card.role).quantity === 0) {
-            document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.remove('selected-card');
+    };
+
+    const removeHandler = (e) => {
+        if (e.type === 'click' || e.code === 'Enter') {
+            deckManager.removeCopyOfCard(card.role);
+            updateDeckStatus(deckManager);
+            cardContainer.querySelector('.card-quantity').innerText = deckManager.getCard(card.role).quantity;
+            if (deckManager.getCard(card.role).quantity === 0) {
+                document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.remove('selected-card');
+            }
         }
-    });
+    };
+
+    cardContainer.querySelector('.compact-card-right').addEventListener('click', addHandler);
+    cardContainer.querySelector('.compact-card-right').addEventListener('keyup', addHandler);
+    cardContainer.querySelector('.compact-card-left').addEventListener('click', removeHandler);
+    cardContainer.querySelector('.compact-card-left').addEventListener('keyup', removeHandler);
+
     return cardContainer;
 }
 
@@ -560,56 +594,72 @@ function addOptionsToList (deckManager, selectEl) {
 function addCustomRoleEventListeners (deckManager, select) {
     document.querySelectorAll('.deck-select-role').forEach((role) => {
         const name = role.querySelector('.deck-select-role-name').innerText;
-        role.querySelector('.deck-select-include').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!deckManager.getCard(name)) {
-                deckManager.addToDeck(name);
-                const cardEl = constructCompactDeckBuilderElement(deckManager.getCard(name), deckManager);
-                toast('"' + name + '" made available below.', 'success', true, true, 4);
-                if (deckManager.getCard(name).team === globals.ALIGNMENT.GOOD) {
-                    document.getElementById('deck-good').appendChild(cardEl);
-                } else {
-                    document.getElementById('deck-evil').appendChild(cardEl);
-                }
-                updateCustomRoleOptionsList(deckManager, select);
-            } else {
-                toast('"' + select.value + '" already included.', 'error', true, true, 3);
-            }
-        });
-
-        role.querySelector('.deck-select-remove').addEventListener('click', (e) => {
-            if (confirm("Delete the role '" + name + "'?")) {
+        const includeHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
                 e.preventDefault();
-                deckManager.removeFromCustomRoleOptions(name);
-                updateCustomRoleOptionsList(deckManager, select);
+                if (!deckManager.getCard(name)) {
+                    deckManager.addToDeck(name);
+                    const cardEl = constructCompactDeckBuilderElement(deckManager.getCard(name), deckManager);
+                    toast('"' + name + '" made available below.', 'success', true, true, 4);
+                    if (deckManager.getCard(name).team === globals.ALIGNMENT.GOOD) {
+                        document.getElementById('deck-good').appendChild(cardEl);
+                    } else {
+                        document.getElementById('deck-evil').appendChild(cardEl);
+                    }
+                    updateCustomRoleOptionsList(deckManager, select);
+                } else {
+                    toast('"' + select.value + '" already included.', 'error', true, true, 3);
+                }
             }
-        });
+        };
+        role.querySelector('.deck-select-include').addEventListener('click', includeHandler);
+        role.querySelector('.deck-select-include').addEventListener('keyup', includeHandler);
 
-        role.querySelector('.deck-select-info').addEventListener('click', (e) => {
-            const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
-            alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
-            alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
-            e.preventDefault();
-            const option = deckManager.getCustomRoleOption(name);
-            document.getElementById('custom-role-info-modal-name').innerText = name;
-            alignmentEl.classList.add(option.team);
-            document.getElementById('custom-role-info-modal-description').innerText = option.description;
-            alignmentEl.innerText = option.team;
-            ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
-        });
+        const removeHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                if (confirm("Delete the role '" + name + "'?")) {
+                    e.preventDefault();
+                    deckManager.removeFromCustomRoleOptions(name);
+                    updateCustomRoleOptionsList(deckManager, select);
+                }
+            }
+        };
+        role.querySelector('.deck-select-remove').addEventListener('click', removeHandler);
+        role.querySelector('.deck-select-remove').addEventListener('keyup', removeHandler);
 
-        role.querySelector('.deck-select-edit').addEventListener('click', (e) => {
-            e.preventDefault();
-            const option = deckManager.getCustomRoleOption(name);
-            document.getElementById('role-name').value = option.role;
-            document.getElementById('role-alignment').value = option.team;
-            document.getElementById('role-description').value = option.description;
-            deckManager.createMode = false;
-            deckManager.currentlyEditingRoleName = option.role;
-            const createBtn = document.getElementById('create-role-button');
-            createBtn.setAttribute('value', 'Update');
-            ModalManager.displayModal('role-modal', 'modal-background', 'close-modal-button');
-        });
+        const infoHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
+                alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+                e.preventDefault();
+                const option = deckManager.getCustomRoleOption(name);
+                document.getElementById('custom-role-info-modal-name').innerText = name;
+                alignmentEl.classList.add(option.team);
+                document.getElementById('custom-role-info-modal-description').innerText = option.description;
+                alignmentEl.innerText = option.team;
+                ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
+            }
+        };
+        role.querySelector('.deck-select-info').addEventListener('click', infoHandler);
+        role.querySelector('.deck-select-info').addEventListener('keyup', infoHandler);
+
+        const editHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                e.preventDefault();
+                const option = deckManager.getCustomRoleOption(name);
+                document.getElementById('role-name').value = option.role;
+                document.getElementById('role-alignment').value = option.team;
+                document.getElementById('role-description').value = option.description;
+                deckManager.createMode = false;
+                deckManager.currentlyEditingRoleName = option.role;
+                const createBtn = document.getElementById('create-role-button');
+                createBtn.setAttribute('value', 'Update');
+                ModalManager.displayModal('role-modal', 'modal-background', 'close-modal-button');
+            }
+        };
+        role.querySelector('.deck-select-edit').addEventListener('click', editHandler);
+        role.querySelector('.deck-select-edit').addEventListener('keyup', editHandler);
     });
 }
 

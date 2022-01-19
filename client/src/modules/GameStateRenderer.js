@@ -46,11 +46,15 @@ export class GameStateRenderer {
         const linkDiv = document.createElement('div');
         linkDiv.innerText = window.location;
         gameLinkContainer.prepend(linkDiv);
-        gameLinkContainer.addEventListener('click', () => {
-            navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
-                toast('Link copied!', 'success', true);
-            });
-        });
+        const linkCopyHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
+                    toast('Link copied!', 'success', true);
+                });
+            }
+        };
+        gameLinkContainer.addEventListener('click', linkCopyHandler);
+        gameLinkContainer.addEventListener('keyup', linkCopyHandler);
         const copyImg = document.createElement('img');
         copyImg.setAttribute('src', '../images/copy.svg');
         gameLinkContainer.appendChild(copyImg);
@@ -250,15 +254,19 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
         if ((member.out || member.userType === globals.USER_TYPES.SPECTATOR) && !(member.id === gameState.client.id)) {
             const container = document.createElement('div');
             container.classList.add('potential-moderator');
+            container.setAttribute("tabindex", "0");
             container.dataset.pointer = member.id;
             container.innerText = member.name;
-            transferModHandlers[member.id] = () => {
-                if (confirm('Transfer moderator powers to ' + member.name + '?')) {
-                    socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, gameState.accessCode, member.id);
+            transferModHandlers[member.id] = (e) => {
+                if (e.type === 'click' || e.code === 'Enter') {
+                    if (confirm('Transfer moderator powers to ' + member.name + '?')) {
+                        socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, gameState.accessCode, member.id);
+                    }
                 }
             };
 
             container.addEventListener('click', transferModHandlers[member.id]);
+            container.addEventListener('keyup', transferModHandlers[member.id]);
             modalContent.appendChild(container);
         }
     }

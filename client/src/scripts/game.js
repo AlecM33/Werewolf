@@ -17,7 +17,7 @@ const game = () => {
         toast('Disconnected. Attempting reconnect...', 'error', true, false);
     });
     socket.on('connect', () => {
-        console.log("connect event fired");
+        console.log('connect event fired');
         socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function (returnedEnvironment) {
             prepareGamePage(returnedEnvironment, socket, timerWorker);
         });

@@ -49,7 +49,9 @@
 }
 
 #game-state-container h2 {
-    margin: 0.5em 0;
+    margin: 1em 0;
+    text-align: center;
+    max-width: 17em;
 }
 
 #lobby-header {
@@ -82,6 +84,7 @@ h1 {
 #end-of-game-header {
     display: flex;
     flex-wrap: wrap;
+    margin: 0 !important;
     align-items: center;
 }
 
@@ -188,7 +191,7 @@ h1 {
 
 #role-info-modal h2 {
     color: #d7d7d7;
-    font-family: diavlo, sans-serif;
+    font-family: signika-negative, sans-serif;
     font-weight: normal;
 }
 
@@ -302,7 +305,7 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 20px;
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     width: 95%;
     text-align: center;
     white-space: nowrap;
@@ -360,7 +363,7 @@ h1 {
 
 #client-name {
     color: whitesmoke;
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     font-size: 30px;
     margin: 0.25em 2em 0.25em 0;
 }
@@ -377,7 +380,7 @@ h1 {
 }
 
 label[for='moderator'] {
-    font-family: 'diavlo', sans-serif;
+    font-family: 'signika-negative', sans-serif;
     color: lightgray;
     filter: drop-shadow(2px 2px 4px black);
     font-size: 30px;

@@ -175,21 +175,21 @@ function renderModerationTypeStep (game, containerId, stepNumber) {
         selfOption.classList.add('option-selected');
     }
 
-    let dedicatedHandler = (e) => {
+    const dedicatedHandler = (e) => {
         if (e.type === 'click' || e.code === 'Enter') {
             dedicatedOption.classList.add('option-selected');
             selfOption.classList.remove('option-selected');
             game.hasDedicatedModerator = true;
         }
-    }
+    };
 
-    let tempModHandler = (e) => {
+    const tempModHandler = (e) => {
         if (e.type === 'click' || e.code === 'Enter') {
             selfOption.classList.add('option-selected');
             dedicatedOption.classList.remove('option-selected');
             game.hasDedicatedModerator = false;
         }
-    }
+    };
 
     dedicatedOption.addEventListener('click', dedicatedHandler);
     dedicatedOption.addEventListener('keyup', dedicatedHandler);
@@ -214,11 +214,11 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
             deckManager.downloadCustomRoles('play-werewolf-custom-roles', JSON.stringify(
                 deckManager.getCurrentCustomRoleOptions()
                     .map((option) => (
-                        {role: option.role, team: option.team, description: option.description, custom: option.custom}
+                        { role: option.role, team: option.team, description: option.description, custom: option.custom }
                     ))
             ));
         }
-    }
+    };
     document.getElementById(containerId).appendChild(stepContainer);
     document.querySelector('#custom-roles-export').addEventListener('click', exportHandler);
     document.querySelector('#custom-roles-export').addEventListener('keyup', exportHandler);
@@ -228,7 +228,7 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
             e.preventDefault();
             ModalManager.displayModal('upload-custom-roles-modal', 'modal-background', 'close-upload-custom-roles-modal-button');
         }
-    }
+    };
     document.querySelector('#custom-roles-import').addEventListener('click', importHandler);
     document.querySelector('#custom-roles-import').addEventListener('keyup', importHandler);
 
@@ -490,7 +490,7 @@ function constructCompactDeckBuilderElement (card, deckManager) {
                 document.getElementById('card-' + card.role.replaceAll(' ', '-')).classList.remove('selected-card');
             }
         }
-    }
+    };
 
     cardContainer.querySelector('.compact-card-right').addEventListener('click', addHandler);
     cardContainer.querySelector('.compact-card-right').addEventListener('keyup', addHandler);
@@ -611,7 +611,7 @@ function addCustomRoleEventListeners (deckManager, select) {
                     toast('"' + select.value + '" already included.', 'error', true, true, 3);
                 }
             }
-        }
+        };
         role.querySelector('.deck-select-include').addEventListener('click', includeHandler);
         role.querySelector('.deck-select-include').addEventListener('keyup', includeHandler);
 
@@ -623,7 +623,7 @@ function addCustomRoleEventListeners (deckManager, select) {
                     updateCustomRoleOptionsList(deckManager, select);
                 }
             }
-        }
+        };
         role.querySelector('.deck-select-remove').addEventListener('click', removeHandler);
         role.querySelector('.deck-select-remove').addEventListener('keyup', removeHandler);
 
@@ -640,7 +640,7 @@ function addCustomRoleEventListeners (deckManager, select) {
                 alignmentEl.innerText = option.team;
                 ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
             }
-        }
+        };
         role.querySelector('.deck-select-info').addEventListener('click', infoHandler);
         role.querySelector('.deck-select-info').addEventListener('keyup', infoHandler);
 
@@ -657,7 +657,7 @@ function addCustomRoleEventListeners (deckManager, select) {
                 createBtn.setAttribute('value', 'Update');
                 ModalManager.displayModal('role-modal', 'modal-background', 'close-modal-button');
             }
-        }
+        };
         role.querySelector('.deck-select-edit').addEventListener('click', editHandler);
         role.querySelector('.deck-select-edit').addEventListener('keyup', editHandler);
     });

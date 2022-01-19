@@ -52,7 +52,7 @@ export class GameStateRenderer {
                     toast('Link copied!', 'success', true);
                 });
             }
-        }
+        };
         gameLinkContainer.addEventListener('click', linkCopyHandler);
         gameLinkContainer.addEventListener('keyup', linkCopyHandler);
         const copyImg = document.createElement('img');

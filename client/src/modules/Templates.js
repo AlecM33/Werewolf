@@ -75,7 +75,7 @@ export const templates = {
     '</div>',
     MODERATOR_GAME_VIEW:
     "<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>" +
-    "<div id='transfer-mod-modal' class='modal' style='display: none'>" +
+    "<div tabindex='-1' id='transfer-mod-modal' class='modal' style='display: none'>" +
         '<h3>Transfer Mod Powers &#128081;</h3>' +
         "<div id='transfer-mod-modal-content'></div>" +
         "<div class='modal-button-container'>" +

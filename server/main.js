@@ -24,14 +24,6 @@ app.set('port', args.port);
 
 const inGameSocketServer = ServerBootstrapper.createSocketServer(main, app, args.port);
 
-inGameSocketServer.on('connection', function (socket) {
-    socket.on('disconnecting', (reason) => {
-        logger.trace('client socket disconnecting because: ' + reason);
-        gameManager.removeClientFromLobbyIfApplicable(socket);
-    });
-    gameManager.addGameSocketHandlers(inGameSocketServer, socket);
-});
-
 let gameManager;
 
 /* Instantiate the singleton game manager */
@@ -40,6 +32,16 @@ if (process.env.NODE_ENV.trim() === 'development') {
 } else {
     gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
 }
+
+gameManager.namespace = inGameSocketServer;
+
+inGameSocketServer.on('connection', function (socket) {
+    socket.on('disconnecting', (reason) => {
+        logger.trace('client socket disconnecting because: ' + reason);
+        gameManager.removeClientFromLobbyIfApplicable(socket);
+    });
+    gameManager.addGameSocketHandlers(inGameSocketServer, socket);
+});
 
 /* api endpoints */
 const games = require('./api/GamesAPI');

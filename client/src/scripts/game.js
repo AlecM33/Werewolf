@@ -8,82 +8,105 @@ import { ModalManager } from '../modules/ModalManager.js';
 import { stateBucket } from '../modules/StateBucket.js';
 import { io } from 'socket.io-client';
 import { injectNavbar } from '../modules/Navbar.js';
+import { XHRUtility } from '../modules/XHRUtility.js';
 
 const game = () => {
     injectNavbar();
-    const timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
-    const socket = io('/in-game');
-    socket.on('disconnect', () => {
-        toast('Disconnected. Attempting reconnect...', 'error', true, false);
-    });
-    socket.on('connect', () => {
-        console.log('connect event fired');
-        socket.emit(globals.COMMANDS.GET_ENVIRONMENT, function (returnedEnvironment) {
-            prepareGamePage(returnedEnvironment, socket, timerWorker);
+    XHRUtility.xhr(
+        '/api/games/environment',
+        'GET',
+        null,
+        null
+    )
+        .then((res) => {
+            joinGame(res);
+        }).catch((res) => {
+            toast(res.content, 'error', true);
         });
-    });
 };
 
-function prepareGamePage (environment, socket, timerWorker) {
-    let userId = UserUtility.validateAnonUserSignature(environment);
+function joinGame (environmentResponse) {
+    let cookie = UserUtility.validateAnonUserSignature(environmentResponse.content);
     const splitUrl = window.location.href.split('/game/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-        socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, userId, function (gameState) {
-            stateBucket.currentGameState = gameState;
-            document.querySelector('.spinner-container')?.remove();
-            document.querySelector('.spinner-background')?.remove();
-
-            if (gameState === null) {
-                window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-            } else {
-                document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
-                toast('You are connected.', 'success', true, true, 2);
-                userId = gameState.client.cookie;
-                UserUtility.setAnonymousUserId(userId, environment);
+        XHRUtility.xhr(
+            '/api/games/' + accessCode + '/players',
+            'PATCH',
+            null,
+            JSON.stringify({ cookie: cookie })
+        )
+            .then((res) => {
+                cookie = res.content;
+                UserUtility.setAnonymousUserId(res.content, environmentResponse.content);
+                const timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
+                const socket = io('/in-game');
+                const gameTimerManager = new GameTimerManager(stateBucket, socket);
                 const gameStateRenderer = new GameStateRenderer(stateBucket, socket);
-                let gameTimerManager;
-                if (stateBucket.currentGameState.timerParams) {
-                    gameTimerManager = new GameTimerManager(stateBucket, socket);
+                socket.on('disconnect', () => {
+                    toast('Disconnected. Attempting reconnect...', 'error', true, false);
+                });
+                socket.on('connect', () => {
+                    prepareGamePage(
+                        environmentResponse.content,
+                        socket,
+                        timerWorker,
+                        cookie,
+                        accessCode,
+                        gameStateRenderer,
+                        gameTimerManager
+                    );
+                });
+                setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
+            }).catch((res) => {
+                if (res.status === 404) {
+                    window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
+                } else if (res.status >= 500) {
+                    toast(
+                        'The server is experiencing problems. Please try again later',
+                        'error',
+                        true
+                    );
                 }
-                initializeGame(stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager);
-
-                if (!gameState.client.hasEnteredName) {
-                    document.getElementById('prompt').innerHTML = templates.NAME_CHANGE_MODAL;
-                    document.getElementById('change-name-form').onsubmit = (e) => {
-                        e.preventDefault();
-                        const name = document.getElementById('player-new-name').value;
-                        if (validateName(name)) {
-                            socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, {
-                                name: name,
-                                personId: gameState.client.id
-                            }, (result) => {
-                                switch (result) {
-                                    case 'taken':
-                                        toast('This name is already taken.', 'error', true, true, 8);
-                                        break;
-                                    case 'changed':
-                                        ModalManager.dispelModal('change-name-modal', 'change-name-modal-background');
-                                        toast('Name set.', 'success', true, true, 5);
-                                        propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
-                                        processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
-                                }
-                            });
-                        } else {
-                            toast('Name must be between 1 and 30 characters.', 'error', true, true, 8);
-                        }
-                    };
-                }
-            }
-        });
-    } else {
-        window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
+            });
     }
 }
 
-function initializeGame (stateBucket, socket, timerWorker, userId, gameStateRenderer, gameTimerManager) {
-    setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
-    processGameState(stateBucket.currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker);
+function prepareGamePage (environment, socket, timerWorker, cookie, accessCode, gameStateRenderer, gameTimerManager) {
+    socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, cookie, function (gameState) {
+        stateBucket.currentGameState = gameState;
+        document.querySelector('.spinner-container')?.remove();
+        document.querySelector('.spinner-background')?.remove();
+        document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
+        toast('You are connected.', 'success', true, true, 2);
+        processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+        if (!gameState.client.hasEnteredName) {
+            document.getElementById('prompt').innerHTML = templates.NAME_CHANGE_MODAL;
+            document.getElementById('change-name-form').onsubmit = (e) => {
+                e.preventDefault();
+                const name = document.getElementById('player-new-name').value;
+                if (validateName(name)) {
+                    socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, {
+                        name: name,
+                        personId: gameState.client.id
+                    }, (result) => {
+                        switch (result) {
+                            case 'taken':
+                                toast('This name is already taken.', 'error', true, true, 8);
+                                break;
+                            case 'changed':
+                                ModalManager.dispelModal('change-name-modal', 'change-name-modal-background');
+                                toast('Name set.', 'success', true, true, 5);
+                                propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
+                                processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+                        }
+                    });
+                } else {
+                    toast('Name must be between 1 and 30 characters.', 'error', true, true, 8);
+                }
+            };
+        }
+    });
 }
 
 function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker, refreshPrompt = true) {
@@ -163,79 +186,72 @@ function displayClientInfo (name, userType) {
 }
 
 function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager) {
-    if (!socket.hasListeners(globals.EVENTS.PLAYER_JOINED)) {
-        socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
-            toast(player.name + ' joined!', 'success', false, true, 3);
-            stateBucket.currentGameState.people.push(player);
-            stateBucket.currentGameState.isFull = gameIsFull;
+    socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
+        toast(player.name + ' joined!', 'success', false, true, 3);
+        stateBucket.currentGameState.people.push(player);
+        stateBucket.currentGameState.isFull = gameIsFull;
+        gameStateRenderer.renderLobbyPlayers();
+        if (
+            gameIsFull
+            && (
+                stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            )
+        ) {
+            displayStartGamePromptForModerators(stateBucket.currentGameState, gameStateRenderer);
+        }
+    });
+
+    socket.on(globals.EVENTS.PLAYER_LEFT, (player) => {
+        removeStartGameFunctionalityIfPresent(gameStateRenderer);
+        toast(player.name + ' has left!', 'error', false, true, 3);
+        const index = stateBucket.currentGameState.people.findIndex(person => person.id === player.id);
+        if (index >= 0) {
+            stateBucket.currentGameState.people.splice(
+                index,
+                1
+            );
             gameStateRenderer.renderLobbyPlayers();
-            if (
-                gameIsFull
-                && (
-                    stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                    || stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-                )
-            ) {
-                displayStartGamePromptForModerators(stateBucket.currentGameState, gameStateRenderer);
-            }
-        });
-    }
+        }
+    });
 
-    if (!socket.hasListeners(globals.EVENTS.PLAYER_LEFT)) {
-        socket.on(globals.EVENTS.PLAYER_LEFT, (player) => {
-            removeStartGameFunctionalityIfPresent(gameStateRenderer);
-            toast(player.name + ' has left!', 'error', false, true, 3);
-            const index = stateBucket.currentGameState.people.findIndex(person => person.id === player.id);
-            if (index >= 0) {
-                stateBucket.currentGameState.people.splice(
-                    index,
-                    1
+    socket.on(globals.EVENTS.START_GAME, () => {
+        socket.emit(
+            globals.COMMANDS.FETCH_GAME_STATE,
+            stateBucket.currentGameState.accessCode,
+            stateBucket.currentGameState.client.cookie,
+            function (gameState) {
+                stateBucket.currentGameState = gameState;
+                processGameState(
+                    stateBucket.currentGameState,
+                    gameState.client.cookie,
+                    socket,
+                    gameStateRenderer,
+                    gameTimerManager,
+                    timerWorker
                 );
-                gameStateRenderer.renderLobbyPlayers();
             }
-        });
-    }
+        );
+    });
 
-    if (!socket.hasListeners(globals.EVENTS.START_GAME)) {
-        socket.on(globals.EVENTS.START_GAME, () => {
-            socket.emit(
-                globals.COMMANDS.FETCH_IN_PROGRESS_STATE,
-                stateBucket.currentGameState.accessCode,
-                stateBucket.currentGameState.client.cookie,
-                function (gameState) {
-                    stateBucket.currentGameState = gameState;
-                    processGameState(
-                        stateBucket.currentGameState,
-                        gameState.client.cookie,
-                        socket,
-                        gameStateRenderer,
-                        gameTimerManager,
-                        timerWorker
-                    );
-                }
-            );
-        });
-    }
-    if (!socket.hasListeners(globals.EVENTS.SYNC_GAME_STATE)) {
-        socket.on(globals.EVENTS.SYNC_GAME_STATE, () => {
-            socket.emit(
-                globals.COMMANDS.FETCH_IN_PROGRESS_STATE,
-                stateBucket.currentGameState.accessCode,
-                stateBucket.currentGameState.client.cookie,
-                function (gameState) {
-                    stateBucket.currentGameState = gameState;
-                    processGameState(
-                        stateBucket.currentGameState,
-                        gameState.client.cookie,
-                        socket,
-                        gameStateRenderer,
-                        gameTimerManager,
-                        timerWorker
-                    );
-                }
-            );
-        });
-    }
+    socket.on(globals.EVENTS.SYNC_GAME_STATE, () => {
+        socket.emit(
+            globals.COMMANDS.FETCH_GAME_STATE,
+            stateBucket.currentGameState.accessCode,
+            stateBucket.currentGameState.client.cookie,
+            function (gameState) {
+                stateBucket.currentGameState = gameState;
+                processGameState(
+                    stateBucket.currentGameState,
+                    gameState.client.cookie,
+                    socket,
+                    gameStateRenderer,
+                    gameTimerManager,
+                    timerWorker
+                );
+            }
+        );
+    });
 
     if (timerWorker && gameTimerManager) {
         gameTimerManager.attachTimerSocketListeners(socket, timerWorker, gameStateRenderer);

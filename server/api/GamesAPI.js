@@ -35,9 +35,9 @@ router.post('/create', function (req, res) {
     });
 });
 
-router.get('/availability/:code', function (req, res) {
-    const joinGamePromise = gameManager.joinGame(req.params.code);
-    joinGamePromise.then((result) => {
+router.get('/:code/availability', function (req, res) {
+    const availabilityPromise = gameManager.checkAvailability(req.params.code);
+    availabilityPromise.then((result) => {
         if (result === 404) {
             res.status(404).send();
         } else if (result instanceof Error) {
@@ -49,6 +49,28 @@ router.get('/availability/:code', function (req, res) {
             res.status(500).send();
         }
     });
+});
+
+router.patch('/:code/players', function (req, res) {
+    console.log(typeof req.body.cookie);
+    console.log(req.body.cookie);
+    if (
+        req.body === null
+        || req.body.cookie === null
+        || (typeof req.body.cookie !== 'string' && req.body.cookie !== false)
+        || (req.body.cookie.length !== globals.USER_SIGNATURE_LENGTH && req.body.cookie !== false)
+    ) {
+        res.status(400).send();
+    }
+    gameManager.joinGame(req.body.cookie, req.params.code).then((data) => {
+        res.status(200).send(data);
+    }).catch((code) => {
+        res.status(code).send();
+    });
+});
+
+router.get('/environment', function (req, res) {
+    res.status(200).send(gameManager.environment);
 });
 
 module.exports = router;

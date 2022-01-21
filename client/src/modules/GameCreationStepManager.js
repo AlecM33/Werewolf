@@ -105,6 +105,10 @@ export class GameCreationStepManager {
                                 window.location = ('/game/' + res.content);
                             }
                         }).catch((e) => {
+                            let button = document.getElementById("create-game");
+                            button.innerText = "Create Game";
+                            button.classList.remove('submitted');
+                            button.addEventListener('click', this.steps["4"].forwardHandler);
                             if (e.status === 429) {
                                 toast('You\'ve sent this request too many times.', 'error', true, true, 6);
                             }
@@ -395,6 +399,9 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
         createButton.setAttribute('id', 'create-game');
         createButton.classList.add('app-button');
         createButton.addEventListener('click', () => {
+            createButton.removeEventListener('click', forwardHandler);
+            createButton.classList.add('submitted');
+            createButton.innerText = 'Creating...'
             forwardHandler(
                 builtGame.deck.filter((card) => card.quantity > 0),
                 builtGame.hasTimer,

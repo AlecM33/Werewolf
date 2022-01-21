@@ -5,6 +5,7 @@ const logger = require('../modules/Logger')(debugMode);
 const GameManager = require('../modules/GameManager.js');
 const rateLimit = require('express-rate-limit').default;
 const globals = require('../config/globals');
+const cors = require('cors');
 
 const gameManager = new GameManager().getInstance();
 
@@ -14,6 +15,20 @@ const apiLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false
 });
+
+const corsOptions = process.env.NODE_ENV.trim() === 'development'
+    ? {
+        origin: '*',
+        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    }
+    : {
+        origin: 'https://playwerewolf.uk.r.appspot.com',
+        optionsSuccessStatus: 200
+    }
+
+router.use(cors(corsOptions));
+router.options('/:code/players', cors(corsOptions)) // enable pre-flight request for DELETE
+
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);
@@ -52,8 +67,6 @@ router.get('/:code/availability', function (req, res) {
 });
 
 router.patch('/:code/players', function (req, res) {
-    console.log(typeof req.body.cookie);
-    console.log(req.body.cookie);
     if (
         req.body === null
         || req.body.cookie === null

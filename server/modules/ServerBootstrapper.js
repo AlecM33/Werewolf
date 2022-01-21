@@ -65,15 +65,11 @@ const ServerBootstrapper = {
         let io;
         if (process.env.NODE_ENV.trim() === 'development') {
             io = require('socket.io')(main, {
-                cors: { origin: 'http://localhost:' + port },
-                pingTimeout: 5000,
-                pingInterval: 5000
+                cors: { origin: 'http://localhost:' + port }
             });
         } else {
             io = require('socket.io')(main, {
-                cors: { origin: 'https://playwerewolf.uk.r.appspot.com' },
-                pingTimeout: 5000,
-                pingInterval: 5000
+                cors: { origin: 'https://playwerewolf.uk.r.appspot.com' }
             });
         }
 

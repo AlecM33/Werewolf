@@ -21,7 +21,7 @@ function roomCodeIsValid (code) {
 
 function attemptToJoinGame (code) {
     XHRUtility.xhr(
-        '/api/games/availability/' + code.toLowerCase().trim(),
+        '/api/games/' + code.toLowerCase().trim() + 'availability',
         'GET',
         null,
         null

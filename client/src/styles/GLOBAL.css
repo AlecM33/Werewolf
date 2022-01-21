@@ -11,10 +11,6 @@ th, thead, tr, tt, u, ul, var {
     border: 0;
     background: transparent;
 }
-@font-face {
-    font-family: 'signika-negative';
-    src: url("../webfonts/Diavlo_LIGHT_II_37.woff2") format("woff2");
-}
 
 @font-face {
     font-family: 'signika-negative';
@@ -162,6 +158,11 @@ button {
 .cancel:hover {
     background-color: #623232 !important;
     border: 2px solid #8a1c1c !important;
+}
+
+.submitted {
+    filter: opacity(0.5);
+    pointer-events: none;
 }
 
 .container {

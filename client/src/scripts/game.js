@@ -263,7 +263,6 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
         gameTimerManager.attachTimerSocketListeners(socket, timerWorker, gameStateRenderer);
     }
 
-
     socket.on(globals.EVENTS.KILL_PLAYER, (id) => {
         const killedPerson = stateBucket.currentGameState.people.find((person) => person.id === id);
         if (killedPerson) {

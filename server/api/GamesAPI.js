@@ -24,11 +24,10 @@ const corsOptions = process.env.NODE_ENV.trim() === 'development'
     : {
         origin: 'https://playwerewolf.uk.r.appspot.com',
         optionsSuccessStatus: 200
-    }
+    };
 
 router.use(cors(corsOptions));
-router.options('/:code/players', cors(corsOptions)) // enable pre-flight request for DELETE
-
+router.options('/:code/players', cors(corsOptions)); // enable pre-flight request for DELETE
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);

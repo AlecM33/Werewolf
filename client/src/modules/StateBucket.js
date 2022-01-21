@@ -3,6 +3,8 @@
     Now several components can read a shared game state.
  */
 export const stateBucket = {
+    joinRequestInFlight: true,
+    accessCode: null,
     currentGameState: null,
-    timerWorker: null
+    environment: null
 };

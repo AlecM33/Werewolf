@@ -14,9 +14,9 @@ class GameManager {
     }
 
     addGameSocketHandlers = (namespace, socket) => {
-        socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, (accessCode, personId, ackFn) => {
+        socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, async (accessCode, personId, ackFn) => {
             this.logger.trace('request for game state for accessCode: ' + accessCode + ' from socket: ' + socket.id + ' with cookie: ' + personId);
-            this.handleRequestForGameState(
+            await this.handleRequestForGameState(
                 this.namespace,
                 this.logger,
                 this.activeGameRunner,
@@ -253,59 +253,55 @@ class GameManager {
         }
     };
 
-    joinGame = (cookie, accessCode) => {
-        const game = this.activeGameRunner.activeGames[accessCode];
-        if (game) {
-            const person = findPersonByField(game, 'cookie', cookie);
-            if (person) {
-                return Promise.resolve(person.cookie);
-            } else {
-                const unassignedPerson = game.moderator.assigned === false
-                    ? game.moderator
-                    : game.people.find((person) => person.assigned === false);
-                if (unassignedPerson) {
-                    this.logger.trace('request from client to join game. Assigning: ' + unassignedPerson.name);
-                    unassignedPerson.assigned = true;
-                    game.isFull = isGameFull(game);
-                    this.namespace.in(game.accessCode).emit(
-                        globals.EVENTS.PLAYER_JOINED,
-                        GameStateCurator.mapPerson(unassignedPerson),
-                        game.isFull
-                    );
-                    return Promise.resolve(unassignedPerson.cookie);
-                } else { // if the game is full, make them a spectator.
-                    const spectator = new Person(
-                        createRandomId(),
-                        createRandomId(),
-                        UsernameGenerator.generate(),
-                        globals.USER_TYPES.SPECTATOR
-                    );
-                    this.logger.trace('new spectator: ' + spectator.name);
-                    game.spectators.push(spectator);
-                    return Promise.resolve(spectator.cookie);
-                }
-            }
-        } else {
-            return Promise.reject(404);
+    joinGame = (game) => {
+        const unassignedPerson = game.moderator.assigned === false
+            ? game.moderator
+            : game.people.find((person) => person.assigned === false);
+        if (unassignedPerson) {
+            this.logger.trace('request from client to join game. Assigning: ' + unassignedPerson.name);
+            unassignedPerson.assigned = true;
+            game.isFull = isGameFull(game);
+            this.namespace.in(game.accessCode).emit(
+                globals.EVENTS.PLAYER_JOINED,
+                GameStateCurator.mapPerson(unassignedPerson),
+                game.isFull
+            );
+            return unassignedPerson;
+        } else { // if the game is full, make them a spectator.
+            const spectator = new Person(
+                createRandomId(),
+                createRandomId(),
+                UsernameGenerator.generate(),
+                globals.USER_TYPES.SPECTATOR
+            );
+            this.logger.trace('new spectator: ' + spectator.name);
+            game.spectators.push(spectator);
+            return spectator;
         }
     };
 
-    handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) => {
+    handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
             const matchingPerson = findPersonByField(game, 'cookie', personCookie);
             if (matchingPerson) {
-                if (matchingPerson.socketId === socket.id) {
+                if (matchingPerson.socketId === clientSocket.id) {
                     logger.trace('matching person found with an established connection to the room: ' + matchingPerson.name);
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
                 } else {
                     logger.trace('matching person found with a new connection to the room: ' + matchingPerson.name);
-                    socket.join(accessCode);
-                    matchingPerson.socketId = socket.id;
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
+                    clientSocket.join(accessCode);
+                    matchingPerson.socketId = clientSocket.id;
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
                 }
             } else {
-                rejectClientRequestForGameState(ackFn);
+                const namespaceSockets = await namespace.in(accessCode).fetchSockets();
+                if (!namespaceSockets.find((namespaceSocket) => namespaceSocket.id === clientSocket.id)) {
+                    let newlyAssignedPerson = this.joinGame(game);
+                    clientSocket.join(accessCode);
+                    newlyAssignedPerson.socketId = clientSocket.id;
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, newlyAssignedPerson, gameRunner, clientSocket, logger));
+                }
             }
         } else {
             rejectClientRequestForGameState(ackFn);

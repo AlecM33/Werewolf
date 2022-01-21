@@ -19,7 +19,7 @@ const apiLimiter = rateLimit({
 const corsOptions = process.env.NODE_ENV.trim() === 'development'
     ? {
         origin: '*',
-        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        optionsSuccessStatus: 200
     }
     : {
         origin: 'https://playwerewolf.uk.r.appspot.com',
@@ -27,7 +27,7 @@ const corsOptions = process.env.NODE_ENV.trim() === 'development'
     };
 
 router.use(cors(corsOptions));
-router.options('/:code/players', cors(corsOptions)); // enable pre-flight request for DELETE
+//router.options('/:code/players', cors(corsOptions));
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);
@@ -65,21 +65,21 @@ router.get('/:code/availability', function (req, res) {
     });
 });
 
-router.patch('/:code/players', function (req, res) {
-    if (
-        req.body === null
-        || req.body.cookie === null
-        || (typeof req.body.cookie !== 'string' && req.body.cookie !== false)
-        || (req.body.cookie.length !== globals.USER_SIGNATURE_LENGTH && req.body.cookie !== false)
-    ) {
-        res.status(400).send();
-    }
-    gameManager.joinGame(req.body.cookie, req.params.code).then((data) => {
-        res.status(200).send(data);
-    }).catch((code) => {
-        res.status(code).send();
-    });
-});
+// router.patch('/:code/players', function (req, res) {
+//     if (
+//         req.body === null
+//         || req.body.cookie === null
+//         || (typeof req.body.cookie !== 'string' && req.body.cookie !== false)
+//         || (req.body.cookie.length !== globals.USER_SIGNATURE_LENGTH && req.body.cookie !== false)
+//     ) {
+//         res.status(400).send();
+//     }
+//     gameManager.joinGame(req.body.cookie, req.params.code).then((data) => {
+//         res.status(200).send(data);
+//     }).catch((code) => {
+//         res.status(code).send();
+//     });
+// });
 
 router.get('/environment', function (req, res) {
     res.status(200).send(gameManager.environment);

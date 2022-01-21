@@ -12,26 +12,6 @@ import { XHRUtility } from '../modules/XHRUtility.js';
 
 const game = () => {
     injectNavbar();
-    const socket = io('/in-game');
-    const timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
-    const gameTimerManager = new GameTimerManager(stateBucket, socket);
-    const gameStateRenderer = new GameStateRenderer(stateBucket, socket);
-    socket.on('disconnect', () => {
-        toast('Disconnected. Attempting reconnect...', 'error', true, false);
-    });
-    socket.on('connect', () => {
-        if (!stateBucket.joinRequestInFlight) {
-            prepareGamePage(
-                stateBucket,
-                stateBucket.accessCode,
-                gameTimerManager,
-                gameStateRenderer,
-                timerWorker,
-                socket,
-                UserUtility.validateAnonUserSignature(stateBucket.environment)
-            );
-        }
-    });
     XHRUtility.xhr(
         '/api/games/environment',
         'GET',
@@ -40,79 +20,72 @@ const game = () => {
     )
         .then((res) => {
             stateBucket.environment = res.content;
-            joinGame(res, gameTimerManager, gameStateRenderer, socket, timerWorker);
+            const socket = io('/in-game');
+            const timerWorker = new Worker(new URL('../modules/Timer.js', import.meta.url));
+            const gameTimerManager = new GameTimerManager(stateBucket, socket);
+            const gameStateRenderer = new GameStateRenderer(stateBucket, socket);
+            socket.on('connect', () => {
+                syncWithGame(
+                    stateBucket,
+                    gameTimerManager,
+                    gameStateRenderer,
+                    timerWorker,
+                    socket,
+                    UserUtility.validateAnonUserSignature(res.content)
+                );
+            });
+            socket.on('disconnect', () => {
+                toast('Disconnected. Attempting reconnect...', 'error', true, false);
+            });
+            setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
         }).catch((res) => {
             toast(res.content, 'error', true);
         });
 };
 
-function joinGame (environmentResponse, gameTimerManager, gameStateRenderer, socket, timerWorker) {
-    let cookie = UserUtility.validateAnonUserSignature(environmentResponse.content);
+function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWorker, socket, cookie) {
     const splitUrl = window.location.href.split('/game/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-        XHRUtility.xhr(
-            '/api/games/' + accessCode + '/players',
-            'PATCH',
-            null,
-            JSON.stringify({ cookie: cookie })
-        )
-            .then((res) => {
-                UserUtility.setAnonymousUserId(res.content, environmentResponse.content);
-                stateBucket.accessCode = accessCode;
-                stateBucket.joinRequestInFlight = false;
-                cookie = res.content;
-                setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
-                prepareGamePage(stateBucket, accessCode, gameTimerManager, gameStateRenderer, timerWorker, socket, cookie);
-            }).catch((res) => {
-                if (res.status === 404) {
-                    window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-                } else if (res.status >= 500) {
-                    toast(
-                        'The server is experiencing problems. Please try again later',
-                        'error',
-                        true
-                    );
-                }
-            });
+        socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, cookie, function (gameState) {
+            cookie = gameState.client.cookie;
+            UserUtility.setAnonymousUserId(cookie, stateBucket.environment);
+            stateBucket.currentGameState = gameState;
+            document.querySelector('.spinner-container')?.remove();
+            document.querySelector('.spinner-background')?.remove();
+            document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
+            toast('You are connected.', 'success', true, true, 2);
+            processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+            if (!gameState.client.hasEnteredName) {
+                document.getElementById('prompt').innerHTML = templates.NAME_CHANGE_MODAL;
+                document.getElementById('change-name-form').onsubmit = (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('player-new-name').value;
+                    if (validateName(name)) {
+                        socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, {
+                            name: name,
+                            personId: gameState.client.id
+                        }, (result) => {
+                            switch (result) {
+                                case 'taken':
+                                    toast('This name is already taken.', 'error', true, true, 8);
+                                    break;
+                                case 'changed':
+                                    ModalManager.dispelModal('change-name-modal', 'change-name-modal-background');
+                                    toast('Name set.', 'success', true, true, 5);
+                                    propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
+                                    processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+                            }
+                        });
+                    } else {
+                        toast('Name must be between 1 and 30 characters.', 'error', true, true, 8);
+                    }
+                };
+            }
+        });
+    } else {
+        window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
     }
-}
-
-function prepareGamePage (stateBucket, accessCode, gameTimerManager, gameStateRenderer, timerWorker, socket, cookie) {
-    socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, cookie, function (gameState) {
-        stateBucket.currentGameState = gameState;
-        document.querySelector('.spinner-container')?.remove();
-        document.querySelector('.spinner-background')?.remove();
-        document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
-        toast('You are connected.', 'success', true, true, 2);
-        processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
-        if (!gameState.client.hasEnteredName) {
-            document.getElementById('prompt').innerHTML = templates.NAME_CHANGE_MODAL;
-            document.getElementById('change-name-form').onsubmit = (e) => {
-                e.preventDefault();
-                const name = document.getElementById('player-new-name').value;
-                if (validateName(name)) {
-                    socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, {
-                        name: name,
-                        personId: gameState.client.id
-                    }, (result) => {
-                        switch (result) {
-                            case 'taken':
-                                toast('This name is already taken.', 'error', true, true, 8);
-                                break;
-                            case 'changed':
-                                ModalManager.dispelModal('change-name-modal', 'change-name-modal-background');
-                                toast('Name set.', 'success', true, true, 5);
-                                propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
-                                processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
-                        }
-                    });
-                } else {
-                    toast('Name must be between 1 and 30 characters.', 'error', true, true, 8);
-                }
-            };
-        }
-    });
 }
 
 function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker, refreshPrompt = true) {

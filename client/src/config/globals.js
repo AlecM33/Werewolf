@@ -9,7 +9,6 @@ export const globals = {
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
-        GET_ENVIRONMENT: 'getEnvironment',
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',
         RESUME_TIMER: 'resumeTimer',
@@ -18,8 +17,7 @@ export const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
-        END_GAME: 'endGame',
-        FETCH_IN_PROGRESS_STATE: 'fetchInitialInProgressState'
+        END_GAME: 'endGame'
     },
     STATUS: {
         LOBBY: 'lobby',

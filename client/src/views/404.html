@@ -1,68 +1,68 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create A Game</title>
-    <meta name="description" content="This resource was not found.">
-    <meta property="og:title" content="Not Found">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://playwerewolf.uk.r.appspot.com/not-found">
-    <meta property="og:description" content="The page you are looking for could not be found.">
-    <meta property="og:image" content="image.png">
-    <link rel="icon" href="/favicon.ico">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="stylesheet" href="/styles/GLOBAL.css">
-    <link rel="stylesheet" href="/styles/create.css">
-    <link rel="stylesheet" href="/styles/modal.css">
-    <link rel="stylesheet" href="/styles/hamburgers.css">
-</head>
-<body>
-<div id="mobile-menu-background-overlay"></div>
-<div id="navbar"></div>
-<span>
-    <h1>404</h1>
-    <h3>The game or other resource that you are looking for could not be found, or you don't have permission to access it.
-        If this error is unexpected, the application may have restarted.</h3>
-</span>
-<style>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Not Found</title>
+        <meta name="description" content="This resource was not found.">
+        <meta property="og:title" content="Not Found">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://playwerewolf.uk.r.appspot.com/not-found">
+        <meta property="og:description" content="The page you are looking for could not be found.">
+        <meta property="og:image" content="image.png">
+        <link rel="icon" href="/favicon.ico">
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <link rel="stylesheet" href="/styles/GLOBAL.css">
+        <link rel="stylesheet" href="/styles/create.css">
+        <link rel="stylesheet" href="/styles/modal.css">
+        <link rel="stylesheet" href="/styles/hamburgers.css">
+        <style>
 
-    h1 {
-        margin: 0 auto;
-    }
+            h1 {
+                margin: 0 auto;
+            }
 
-    h3 {
-        max-width: 40em;
-        font-size: 20px;
-        padding: 1em;
-        margin: 0 auto;
-    }
+            h3 {
+                max-width: 40em;
+                font-size: 20px;
+                padding: 1em;
+                margin: 0 auto;
+            }
 
-    html, body {
-        height: 100%;
-    }
+            html, body {
+                height: 100%;
+            }
 
-    span {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 0 auto;
-    }
+            #not-found-container {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                margin: 0 auto;
+            }
 
-    @media(min-width: 701px) {
-        h1 {
-            font-size: 75px;
-        }
-    }
-    @media(max-width: 700px) {
-        h1 {
-            font-size: 40px;
-        }
-    }
-</style>
-<script src="/dist/notFound-bundle.js"></script>
-</body>
+            @media(min-width: 701px) {
+                h1 {
+                    font-size: 75px;
+                }
+            }
+            @media(max-width: 700px) {
+                h1 {
+                    font-size: 40px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="mobile-menu-background-overlay"></div>
+        <div id="navbar"></div>
+        <div id="not-found-container">
+            <h1>404</h1>
+            <h3>The game or other resource that you are looking for could not be found, or you don't have permission to access it.
+                If this error is unexpected, the application may have restarted.</h3>
+        </div>
+        <script src="/dist/notFound-bundle.js"></script>
+    </body>
 </html>

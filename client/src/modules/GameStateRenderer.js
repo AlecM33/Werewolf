@@ -254,7 +254,7 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
         if ((member.out || member.userType === globals.USER_TYPES.SPECTATOR) && !(member.id === gameState.client.id)) {
             const container = document.createElement('div');
             container.classList.add('potential-moderator');
-            container.setAttribute("tabindex", "0");
+            container.setAttribute('tabindex', '0');
             container.dataset.pointer = member.id;
             container.innerText = member.name;
             transferModHandlers[member.id] = (e) => {

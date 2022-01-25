@@ -77,7 +77,7 @@ router.patch('/:code/players', function (req, res) {
     } else {
         const game = gameManager.activeGameRunner.activeGames[req.body.accessCode];
         if (game) {
-            let inUseCookie = gameManager.environment === globals.ENVIRONMENT.PRODUCTION ? req.body.localCookie : req.body.sessionCookie
+            const inUseCookie = gameManager.environment === globals.ENVIRONMENT.PRODUCTION ? req.body.localCookie : req.body.sessionCookie;
             gameManager.joinGame(game, req.body.playerName, inUseCookie).then((data) => {
                 res.status(200).send({ cookie: data, environment: gameManager.environment });
             }).catch((code) => {
@@ -98,7 +98,7 @@ function validateName (name) {
 }
 
 function validateCookie (cookie) {
-    return cookie === null || cookie === false || (typeof cookie === 'string' && cookie.length === globals.USER_SIGNATURE_LENGTH)
+    return cookie === null || cookie === false || (typeof cookie === 'string' && cookie.length === globals.USER_SIGNATURE_LENGTH);
 }
 
 function validateAccessCode (accessCode) {

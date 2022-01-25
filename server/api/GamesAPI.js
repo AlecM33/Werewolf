@@ -66,23 +66,43 @@ router.get('/:code/availability', function (req, res) {
 });
 
 router.patch('/:code/players', function (req, res) {
+    console.log(req.body);
     if (
         req.body === null
-        || req.body.cookie === null
-        || (typeof req.body.cookie !== 'string' && req.body.cookie !== false)
-        || (req.body.cookie.length !== globals.USER_SIGNATURE_LENGTH && req.body.cookie !== false)
+        || !validateAccessCode(req.body.accessCode)
+        || !validateName(req.body.playerName)
     ) {
         res.status(400).send();
+    } else {
+        const game = gameManager.activeGameRunner.activeGames[req.body.accessCode];
+        if (game) {
+            gameManager.joinGame(game, req.body.playerName).then((data) => {
+                res.status(200).send({ cookie: data, environment: gameManager.environment });
+            }).catch((code) => {
+                res.status(code).send();
+            });
+        } else {
+            res.status(404).send();
+        }
     }
-    gameManager.joinGame(req.body.cookie, req.params.code).then((data) => {
-        res.status(200).send(data);
-    }).catch((code) => {
-        res.status(code).send();
-    });
 });
 
 router.get('/environment', function (req, res) {
     res.status(200).send(gameManager.environment);
 });
+
+function validateName(name) {
+    return typeof name === 'string' && name.length > 0 && name.length <= 30;
+}
+
+function validateCookie(cookie) {
+    return cookie === null
+        || (typeof cookie !== 'string' && cookie !== false)
+        || (cookie.length !== globals.USER_SIGNATURE_LENGTH && cookie !== false)
+}
+
+function validateAccessCode(accessCode) {
+    return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH
+}
 
 module.exports = router;

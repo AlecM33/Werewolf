@@ -28,7 +28,7 @@ function attemptToJoinGame (code) {
     )
         .then((res) => {
             if (res.status === 200) {
-                window.location = '/game/' + res.content;
+                window.location = '/join/' + res.content;
             }
         }).catch((res) => {
             if (res.status === 404) {

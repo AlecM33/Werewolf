@@ -43,18 +43,7 @@ export class GameStateRenderer {
         title.innerText = 'Lobby';
         document.getElementById('game-title').appendChild(title);
         const gameLinkContainer = document.getElementById('game-link');
-        const linkDiv = document.createElement('div');
-        linkDiv.innerText = window.location;
-        gameLinkContainer.prepend(linkDiv);
-        const linkCopyHandler = (e) => {
-            if (e.type === 'click' || e.code === 'Enter') {
-                navigator.clipboard.writeText(gameLinkContainer.innerText).then(() => {
-                    toast('Link copied!', 'success', true);
-                });
-            }
-        };
-        gameLinkContainer.addEventListener('click', linkCopyHandler);
-        gameLinkContainer.addEventListener('keyup', linkCopyHandler);
+
         const copyImg = document.createElement('img');
         copyImg.setAttribute('src', '../images/copy.svg');
         gameLinkContainer.appendChild(copyImg);
@@ -63,8 +52,8 @@ export class GameStateRenderer {
         const playerCount = document.getElementById('game-player-count');
         playerCount.innerText = getGameSize(this.stateBucket.currentGameState.deck) + ' Players';
 
+        let timeString = '';
         if (this.stateBucket.currentGameState.timerParams) {
-            let timeString = '';
             const hours = this.stateBucket.currentGameState.timerParams.hours;
             const minutes = this.stateBucket.currentGameState.timerParams.minutes;
             if (hours) {
@@ -79,8 +68,30 @@ export class GameStateRenderer {
             }
             time.innerText = timeString;
         } else {
-            time.innerText = 'untimed';
+            timeString = 'untimed'
+            time.innerText = timeString;
         }
+
+        let link = window.location.protocol + "//" + window.location.host
+            + '/join/' + this.stateBucket.currentGameState.accessCode
+            + '?playerCount=' + getGameSize(this.stateBucket.currentGameState.deck)
+            + '&timer=' + encodeURIComponent(timeString);
+
+        const linkCopyHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                navigator.clipboard.writeText(link)
+                .then(() => {
+                    toast('Link copied!', 'success', true);
+                });
+            }
+        };
+        gameLinkContainer.addEventListener('click', linkCopyHandler);
+        gameLinkContainer.addEventListener('keyup', linkCopyHandler);
+
+        const linkDiv = document.createElement('div');
+        linkDiv.innerText = link;
+
+        gameLinkContainer.prepend(linkDiv);
     }
 
     renderLobbyFooter () {

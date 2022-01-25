@@ -10,6 +10,10 @@ router.get('/create', function (request, response) {
     response.sendFile(path.join(__dirname, '../../client/src/views/create.html'));
 });
 
+router.get('/join/:code', function (request, response) {
+    response.sendFile(path.join(__dirname, '../../client/src/views/join.html'));
+});
+
 router.get('/how-to-use', function (request, response) {
     response.sendFile(path.join(__dirname, '../../client/src/views/how-to-use.html'));
 });

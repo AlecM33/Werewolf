@@ -35,7 +35,12 @@ const joinHandler = (e) => {
             '/api/games/' + accessCode + '/players',
             'PATCH',
             null,
-            JSON.stringify({ playerName: name, accessCode: accessCode })
+            JSON.stringify({
+                playerName: name,
+                accessCode: accessCode,
+                sessionCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.LOCAL),
+                localCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.PRODUCTION)
+            })
         )
             .then((res) => {
                 const json = JSON.parse(res.content);

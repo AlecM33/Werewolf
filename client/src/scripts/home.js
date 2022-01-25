@@ -28,7 +28,7 @@ function attemptToJoinGame (code) {
     )
         .then((res) => {
             if (res.status === 200) {
-                let json = JSON.parse(res.content);
+                const json = JSON.parse(res.content);
                 window.location = window.location.protocol + '//' + window.location.host +
                     '/join/' + encodeURIComponent(json.accessCode) +
                     '?playerCount=' + encodeURIComponent(json.playerCount) +
@@ -45,7 +45,7 @@ function attemptToJoinGame (code) {
         });
 }
 
-function getTimeString(timerParams) {
+function getTimeString (timerParams) {
     let timeString = '';
     if (timerParams) {
         const hours = timerParams.hours;

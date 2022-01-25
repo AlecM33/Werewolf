@@ -295,7 +295,6 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
     };
 
     const clickHandler = () => {
-        console.log('fired');
         const actions = document.getElementById('custom-role-actions');
         if (actions.style.display !== 'none') {
             actions.style.display = 'none';

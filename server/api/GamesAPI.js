@@ -27,7 +27,7 @@ const corsOptions = process.env.NODE_ENV.trim() === 'development'
     };
 
 router.use(cors(corsOptions));
-// router.options('/:code/players', cors(corsOptions));
+router.options('/:code/players', cors(corsOptions));
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);
@@ -50,7 +50,6 @@ router.post('/create', function (req, res) {
 });
 
 router.get('/:code/availability', function (req, res) {
-    console.log(req.params.code);
     const availabilityPromise = gameManager.checkAvailability(req.params.code);
     availabilityPromise.then((result) => {
         if (result === 404) {
@@ -67,17 +66,19 @@ router.get('/:code/availability', function (req, res) {
 });
 
 router.patch('/:code/players', function (req, res) {
-    console.log(req.body);
     if (
         req.body === null
         || !validateAccessCode(req.body.accessCode)
         || !validateName(req.body.playerName)
+        || !validateCookie(req.body.localCookie)
+        || !validateCookie(req.body.sessionCookie)
     ) {
         res.status(400).send();
     } else {
         const game = gameManager.activeGameRunner.activeGames[req.body.accessCode];
         if (game) {
-            gameManager.joinGame(game, req.body.playerName).then((data) => {
+            let inUseCookie = gameManager.environment === globals.ENVIRONMENT.PRODUCTION ? req.body.localCookie : req.body.sessionCookie
+            gameManager.joinGame(game, req.body.playerName, inUseCookie).then((data) => {
                 res.status(200).send({ cookie: data, environment: gameManager.environment });
             }).catch((code) => {
                 res.status(code).send();
@@ -96,11 +97,9 @@ function validateName (name) {
     return typeof name === 'string' && name.length > 0 && name.length <= 30;
 }
 
-// function validateCookie (cookie) {
-//     return cookie === null
-//         || (typeof cookie !== 'string' && cookie !== false)
-//         || (cookie.length !== globals.USER_SIGNATURE_LENGTH && cookie !== false);
-// }
+function validateCookie (cookie) {
+    return cookie === null || cookie === false || (typeof cookie === 'string' && cookie.length === globals.USER_SIGNATURE_LENGTH)
+}
 
 function validateAccessCode (accessCode) {
     return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH;

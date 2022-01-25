@@ -3,7 +3,6 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
-const secure = require('express-force-https');
 
 const ServerBootstrapper = {
     processCLIArgs: () => {
@@ -56,8 +55,15 @@ const ServerBootstrapper = {
             }
         } else {
             logger.warn('starting main in PRODUCTION mode. This should not be used for local development.');
-            app.use(secure);
             main = http.createServer(app);
+            app.use(function(req,res,next) {
+                const schema = (req.headers['x-forwarded-proto'] || '').toLowerCase();
+                if (!req.path.includes('/_ah/start') && req.headers.host.indexOf('localhost')<0 && schema!=='https') {
+                    res.redirect('https://' + req.headers.host + req.url);
+                } else {
+                    next();
+                }
+            });
         }
 
         return main;

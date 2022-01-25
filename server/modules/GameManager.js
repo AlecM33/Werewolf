@@ -254,7 +254,11 @@ class GameManager {
         }
     };
 
-    joinGame = (game, name) => {
+    joinGame = (game, name, cookie) => {
+        const matchingPerson = findPersonByField(game, 'cookie', cookie);
+        if (matchingPerson) {
+            return Promise.resolve(matchingPerson.cookie);
+        }
         if (isNameTaken(game, name)) {
             return Promise.reject(400);
         }

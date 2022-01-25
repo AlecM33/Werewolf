@@ -27,7 +27,7 @@ const corsOptions = process.env.NODE_ENV.trim() === 'development'
     };
 
 router.use(cors(corsOptions));
-//router.options('/:code/players', cors(corsOptions));
+// router.options('/:code/players', cors(corsOptions));
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);
@@ -50,13 +50,14 @@ router.post('/create', function (req, res) {
 });
 
 router.get('/:code/availability', function (req, res) {
+    console.log(req.params.code);
     const availabilityPromise = gameManager.checkAvailability(req.params.code);
     availabilityPromise.then((result) => {
         if (result === 404) {
             res.status(404).send();
         } else if (result instanceof Error) {
             res.status(400).send(result.message);
-        } else if (typeof result === 'string') {
+        } else if (typeof result === 'object') {
             logger.debug(result);
             res.status(200).send(result);
         } else {
@@ -91,18 +92,18 @@ router.get('/environment', function (req, res) {
     res.status(200).send(gameManager.environment);
 });
 
-function validateName(name) {
+function validateName (name) {
     return typeof name === 'string' && name.length > 0 && name.length <= 30;
 }
 
-function validateCookie(cookie) {
-    return cookie === null
-        || (typeof cookie !== 'string' && cookie !== false)
-        || (cookie.length !== globals.USER_SIGNATURE_LENGTH && cookie !== false)
-}
+// function validateCookie (cookie) {
+//     return cookie === null
+//         || (typeof cookie !== 'string' && cookie !== false)
+//         || (cookie.length !== globals.USER_SIGNATURE_LENGTH && cookie !== false);
+// }
 
-function validateAccessCode(accessCode) {
-    return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH
+function validateAccessCode (accessCode) {
+    return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH;
 }
 
 module.exports = router;

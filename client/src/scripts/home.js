@@ -16,19 +16,23 @@ const home = () => {
 };
 
 function roomCodeIsValid (code) {
-    return typeof code === 'string' && /^[a-z0-9]{6}$/.test(code.toLowerCase());
+    return typeof code === 'string' && /^[A-Z0-9]{6}$/.test(code.toUpperCase().trim());
 }
 
 function attemptToJoinGame (code) {
     XHRUtility.xhr(
-        '/api/games/' + code.toLowerCase().trim() + 'availability',
+        '/api/games/' + code.toUpperCase().trim() + '/availability',
         'GET',
         null,
         null
     )
         .then((res) => {
             if (res.status === 200) {
-                window.location = '/join/' + res.content;
+                let json = JSON.parse(res.content);
+                window.location = window.location.protocol + '//' + window.location.host +
+                    '/join/' + encodeURIComponent(json.accessCode) +
+                    '?playerCount=' + encodeURIComponent(json.playerCount) +
+                    '&timer=' + encodeURIComponent(getTimeString(json.timerParams));
             }
         }).catch((res) => {
             if (res.status === 404) {
@@ -39,6 +43,29 @@ function attemptToJoinGame (code) {
                 toast('An unknown error occurred. Please try again later.', 'error', true);
             }
         });
+}
+
+function getTimeString(timerParams) {
+    let timeString = '';
+    if (timerParams) {
+        const hours = timerParams.hours;
+        const minutes = timerParams.minutes;
+        if (hours) {
+            timeString += hours > 1
+                ? hours + ' hours '
+                : hours + ' hour ';
+        }
+        if (minutes) {
+            timeString += minutes > 1
+                ? minutes + ' minutes '
+                : minutes + ' minute ';
+        }
+
+        return timeString;
+    } else {
+        timeString = 'untimed';
+        return timeString;
+    }
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

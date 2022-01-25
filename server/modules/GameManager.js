@@ -187,13 +187,13 @@ class GameManager {
     };
 
     checkAvailability = (code) => {
-        const game = this.activeGameRunner.activeGames[code];
+        const game = this.activeGameRunner.activeGames[code.toUpperCase()];
         if (game) {
             const unassignedPerson = game.people.find((person) => person.assigned === false);
             if (!unassignedPerson) {
                 return Promise.resolve(new Error(globals.ERROR_MESSAGE.GAME_IS_FULL));
             } else {
-                return Promise.resolve(code);
+                return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
             }
         } else {
             return Promise.resolve(404);
@@ -300,13 +300,7 @@ class GameManager {
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
                 }
             } else {
-                const namespaceSockets = await namespace.in(accessCode).fetchSockets();
-                if (!namespaceSockets.find((namespaceSocket) => namespaceSocket.id === clientSocket.id)) {
-                    let newlyAssignedPerson = this.joinGame(game);
-                    clientSocket.join(accessCode);
-                    newlyAssignedPerson.socketId = clientSocket.id;
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, newlyAssignedPerson, gameRunner, clientSocket, logger));
-                }
+                rejectClientRequestForGameState(ackFn);
             }
         } else {
             rejectClientRequestForGameState(ackFn);
@@ -459,6 +453,15 @@ function pruneStaleGames (activeGames, timerThreads, logger) {
             }
         }
     }
+}
+
+function getGameSize (cards) {
+    let quantity = 0;
+    for (const card of cards) {
+        quantity += card.quantity;
+    }
+
+    return quantity;
 }
 
 class Singleton {

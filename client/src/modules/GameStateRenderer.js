@@ -68,21 +68,21 @@ export class GameStateRenderer {
             }
             time.innerText = timeString;
         } else {
-            timeString = 'untimed'
+            timeString = 'untimed';
             time.innerText = timeString;
         }
 
-        let link = window.location.protocol + "//" + window.location.host
-            + '/join/' + this.stateBucket.currentGameState.accessCode
-            + '?playerCount=' + getGameSize(this.stateBucket.currentGameState.deck)
-            + '&timer=' + encodeURIComponent(timeString);
+        const link = window.location.protocol + '//' + window.location.host +
+            '/join/' + this.stateBucket.currentGameState.accessCode +
+            '?playerCount=' + getGameSize(this.stateBucket.currentGameState.deck) +
+            '&timer=' + encodeURIComponent(timeString);
 
         const linkCopyHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
                 navigator.clipboard.writeText(link)
-                .then(() => {
-                    toast('Link copied!', 'success', true);
-                });
+                    .then(() => {
+                        toast('Link copied!', 'success', true);
+                    });
             }
         };
         gameLinkContainer.addEventListener('click', linkCopyHandler);

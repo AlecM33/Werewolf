@@ -5,7 +5,7 @@ import { XHRUtility } from './XHRUtility.js';
 import { globals } from '../config/globals.js';
 import { templates } from './Templates.js';
 import { defaultCards } from '../config/defaultCards';
-import {UserUtility} from "./UserUtility";
+import { UserUtility } from './UserUtility';
 
 export class GameCreationStepManager {
     constructor (deckManager) {
@@ -91,7 +91,7 @@ export class GameCreationStepManager {
                 title: 'Enter your name:',
                 forwardHandler: (e) => {
                     if (e.type === 'click' || e.code === 'Enter') {
-                        let name = document.getElementById("moderator-name").value;
+                        const name = document.getElementById('moderator-name').value;
                         if (validateName(name)) {
                             this.currentGame.moderatorName = name;
                             this.removeStepElementsFromDOM(this.step);
@@ -122,8 +122,8 @@ export class GameCreationStepManager {
                             && Object.prototype.hasOwnProperty.call(res, 'content')
                             && typeof res.content === 'string'
                             ) {
-                                let json = JSON.parse(res.content);
-                                UserUtility.setAnonymousUserId(json.cookie, json.environment)
+                                const json = JSON.parse(res.content);
+                                UserUtility.setAnonymousUserId(json.cookie, json.environment);
                                 window.location = ('/game/' + json.accessCode);
                             }
                         }).catch((e) => {
@@ -188,15 +188,15 @@ export class GameCreationStepManager {
     }
 }
 
-function renderNameStep(containerId, step, game, steps) {
+function renderNameStep (containerId, step, game, steps) {
     const stepContainer = document.createElement('div');
     setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container step' });
 
     stepContainer.innerHTML = templates.ENTER_NAME_STEP;
     document.getElementById(containerId).appendChild(stepContainer);
-    let nameInput = document.querySelector('#moderator-name');
+    const nameInput = document.querySelector('#moderator-name');
     nameInput.value = game.moderatorName;
-    nameInput.addEventListener('keyup', steps["4"].forwardHandler)
+    nameInput.addEventListener('keyup', steps['4'].forwardHandler);
     nameInput.focus();
 }
 
@@ -397,7 +397,7 @@ function renderReviewAndCreateStep (containerId, stepNumber, game) {
         div.querySelector('#roles-option').appendChild(roleEl);
     }
 
-    div.querySelector("#mod-name").innerText = game.moderatorName;
+    div.querySelector('#mod-name').innerText = game.moderatorName;
 
     document.getElementById(containerId).appendChild(div);
 }

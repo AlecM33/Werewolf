@@ -39,8 +39,8 @@ const game = () => {
             });
             setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
         }).catch((res) => {
-        toast(res.content, 'error', true);
-    });
+            toast(res.content, 'error', true);
+        });
 };
 
 function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWorker, socket, cookie) {
@@ -296,10 +296,6 @@ function displayStartGamePromptForModerators (gameState, gameStateRenderer) {
     div.innerHTML = templates.START_GAME_PROMPT;
     div.querySelector('#start-game-button').addEventListener('click', gameStateRenderer.startGameHandler);
     document.body.appendChild(div);
-}
-
-function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 30;
 }
 
 function removeStartGameFunctionalityIfPresent (gameStateRenderer) {

@@ -4,7 +4,7 @@ export class Game {
         this.hasTimer = hasTimer;
         this.timerParams = timerParams;
         this.hasDedicatedModerator = hasDedicatedModerator;
-        this.moderatorName = moderatorName
+        this.moderatorName = moderatorName;
         this.accessCode = null;
     }
 }

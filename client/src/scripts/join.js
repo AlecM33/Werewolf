@@ -1,37 +1,36 @@
-import {injectNavbar} from "../modules/Navbar.js";
-import {toast} from "../modules/Toast.js";
-import {XHRUtility} from "../modules/XHRUtility.js";
-import {UserUtility} from "../modules/UserUtility.js";
-import {globals} from "../config/globals.js";
+import { injectNavbar } from '../modules/Navbar.js';
+import { toast } from '../modules/Toast.js';
+import { XHRUtility } from '../modules/XHRUtility.js';
+import { UserUtility } from '../modules/UserUtility.js';
+import { globals } from '../config/globals.js';
 
 const join = () => {
     injectNavbar();
     const splitUrl = window.location.pathname.split('/join/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-        document.getElementById("game-code").innerText = accessCode;
-        document.getElementById("game-time").innerText
-            = decodeURIComponent((new URL(document.location)).searchParams.get('timer'));
-        document.getElementById("game-player-count").innerText
-            = decodeURIComponent((new URL(document.location)).searchParams.get('playerCount')) + ' Players';
-        let playerCount = decodeURIComponent((new URL(document.location)).searchParams.get('playerCount'))
-        let form = document.getElementById('join-game-form');
-        document.getElementById("player-new-name").focus();
+        document.getElementById('game-code').innerText = accessCode;
+        document.getElementById('game-time').innerText =
+            decodeURIComponent((new URL(document.location)).searchParams.get('timer'));
+        document.getElementById('game-player-count').innerText =
+            decodeURIComponent((new URL(document.location)).searchParams.get('playerCount')) + ' Players';
+        const form = document.getElementById('join-game-form');
+        document.getElementById('player-new-name').focus();
         form.onsubmit = joinHandler;
     } else {
         window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
     }
-}
+};
 
-const joinHandler =  (e) => {
+const joinHandler = (e) => {
     const splitUrl = window.location.pathname.split('/join/');
     const accessCode = splitUrl[1];
     e.preventDefault();
     const name = document.getElementById('player-new-name').value;
     if (validateName(name)) {
         document.getElementById('join-game-form').onsubmit = null;
-        document.getElementById("submit-new-name").classList.add('submitted');
-        document.getElementById("submit-new-name").setAttribute('value', 'Joining...');
+        document.getElementById('submit-new-name').classList.add('submitted');
+        document.getElementById('submit-new-name').setAttribute('value', 'Joining...');
         XHRUtility.xhr(
             '/api/games/' + accessCode + '/players',
             'PATCH',
@@ -39,13 +38,13 @@ const joinHandler =  (e) => {
             JSON.stringify({ playerName: name, accessCode: accessCode })
         )
             .then((res) => {
-                let json = JSON.parse(res.content);
+                const json = JSON.parse(res.content);
                 UserUtility.setAnonymousUserId(json.cookie, json.environment);
                 window.location = '/game/' + accessCode;
             }).catch((res) => {
                 document.getElementById('join-game-form').onsubmit = joinHandler;
-            document.getElementById("submit-new-name").classList.remove('submitted');
-            document.getElementById("submit-new-name").setAttribute('value', 'Join Game');
+                document.getElementById('submit-new-name').classList.remove('submitted');
+                document.getElementById('submit-new-name').setAttribute('value', 'Join Game');
                 if (res.status === 404) {
                     toast('This game was not found.', 'error', true, true, 8);
                 } else if (res.status === 400) {

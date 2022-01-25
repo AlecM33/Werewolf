@@ -14,9 +14,9 @@ class GameManager {
     }
 
     addGameSocketHandlers = (namespace, socket) => {
-        socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, (accessCode, personId, ackFn) => {
+        socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, async (accessCode, personId, ackFn) => {
             this.logger.trace('request for game state for accessCode: ' + accessCode + ' from socket: ' + socket.id + ' with cookie: ' + personId);
-            this.handleRequestForGameState(
+            await this.handleRequestForGameState(
                 this.namespace,
                 this.logger,
                 this.activeGameRunner,
@@ -285,22 +285,28 @@ class GameManager {
         }
     };
 
-    handleRequestForGameState = (namespace, logger, gameRunner, accessCode, personCookie, ackFn, socket) => {
+    handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
             const matchingPerson = findPersonByField(game, 'cookie', personCookie);
             if (matchingPerson) {
-                if (matchingPerson.socketId === socket.id) {
+                if (matchingPerson.socketId === clientSocket.id) {
                     logger.trace('matching person found with an established connection to the room: ' + matchingPerson.name);
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
                 } else {
                     logger.trace('matching person found with a new connection to the room: ' + matchingPerson.name);
-                    socket.join(accessCode);
-                    matchingPerson.socketId = socket.id;
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, socket, logger));
+                    clientSocket.join(accessCode);
+                    matchingPerson.socketId = clientSocket.id;
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
                 }
             } else {
-                rejectClientRequestForGameState(ackFn);
+                const namespaceSockets = await namespace.in(accessCode).fetchSockets();
+                if (!namespaceSockets.find((namespaceSocket) => namespaceSocket.id === clientSocket.id)) {
+                    let newlyAssignedPerson = this.joinGame(game);
+                    clientSocket.join(accessCode);
+                    newlyAssignedPerson.socketId = clientSocket.id;
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, newlyAssignedPerson, gameRunner, clientSocket, logger));
+                }
             }
         } else {
             rejectClientRequestForGameState(ackFn);

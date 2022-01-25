@@ -19,7 +19,7 @@ const apiLimiter = rateLimit({
 const corsOptions = process.env.NODE_ENV.trim() === 'development'
     ? {
         origin: '*',
-        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        optionsSuccessStatus: 200
     }
     : {
         origin: 'https://playwerewolf.uk.r.appspot.com',
@@ -27,7 +27,7 @@ const corsOptions = process.env.NODE_ENV.trim() === 'development'
     };
 
 router.use(cors(corsOptions));
-router.options('/:code/players', cors(corsOptions)); // enable pre-flight request for DELETE
+//router.options('/:code/players', cors(corsOptions));
 
 if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
     router.use('/create', apiLimiter);

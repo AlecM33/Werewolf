@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Active Game</title>
+    <meta name="description" content="Join this game of werewolf!">
+    <meta property="og:title" content="Werewolf Utility - Join Game">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Join this game of werewolf!">
+    <meta property="og:image" content="image.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="/styles/GLOBAL.css">
+    <link rel="stylesheet" href="/styles/join.css">
+    <link rel="stylesheet" href="/styles/modal.css">
+    <link rel="stylesheet" href="/styles/hamburgers.css">
+    <link rel="preload" href="/webfonts/SignikaNegative-Light.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+<div id="mobile-menu-background-overlay"></div>
+<div id="prompt"></div>
+<div id="navbar"></div>
+<div id="change-name-modal-background" class="modal-background"></div>
+<div tabindex="-1" id="join-game-modal" class="modal">
+    <div id='game-parameters'>
+        <div>
+            <div>Game <span id='game-code'></span></div>
+        </div>
+        <div>
+            <img alt='clock' src='/images/clock.svg'/>
+            <div id='game-time'></div>
+        </div>
+        <div>
+            <img alt='person' src='/images/person.svg'/>
+            <div id='game-player-count'></div>
+        </div>
+    </div>
+    <form id="join-game-form">
+        <div id="join-game-form-content">
+            <label for="player-new-name">Your name:</label>
+            <input id="player-new-name" autocomplete="given-name" type="text"/>
+        </div>
+        <div class="modal-button-container">
+            <input type="submit" id="submit-new-name" value="Join Game"/>
+        </div>
+    </form>
+</div>
+<script src="/dist/join-bundle.js"></script>
+</body>
+</html>
+

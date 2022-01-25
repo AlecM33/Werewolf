@@ -186,6 +186,23 @@ button {
     color: #00a718;
 }
 
+#game-parameters {
+    font-family: signika-negative, sans-serif;
+    color: #d7d7d7;
+    font-size: 25px;
+    margin: 0.5em;
+}
+
+#game-parameters > div {
+    display: flex;
+    align-items: center;
+}
+
+#game-parameters img {
+    height: 20px;
+    margin-right: 10px;
+}
+
 #how-to-use-container img {
     max-width: 98%;
     border: 1px solid #57566a;

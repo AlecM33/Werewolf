@@ -5,6 +5,7 @@ import { XHRUtility } from './XHRUtility.js';
 import { globals } from '../config/globals.js';
 import { templates } from './Templates.js';
 import { defaultCards } from '../config/defaultCards';
+import { UserUtility } from './UserUtility';
 
 export class GameCreationStepManager {
     constructor (deckManager) {
@@ -50,50 +51,69 @@ export class GameCreationStepManager {
             },
             3: {
                 title: 'Set an optional timer:',
-                forwardHandler: () => {
-                    const hours = parseInt(document.getElementById('game-hours').value);
-                    const minutes = parseInt(document.getElementById('game-minutes').value);
-                    if ((isNaN(hours) && isNaN(minutes))
-                        || (isNaN(hours) && minutes > 0 && minutes < 60)
-                        || (isNaN(minutes) && hours > 0 && hours < 6)
-                        || (hours === 0 && minutes > 0 && minutes < 60)
-                        || (minutes === 0 && hours > 0 && hours < 6)
-                        || (hours > 0 && hours < 6 && minutes >= 0 && minutes < 60)
-                    ) {
-                        if (hasTimer(hours, minutes)) {
-                            this.currentGame.hasTimer = true;
-                            this.currentGame.timerParams = {
-                                hours: hours,
-                                minutes: minutes
-                            };
+                forwardHandler: (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        const hours = parseInt(document.getElementById('game-hours').value);
+                        const minutes = parseInt(document.getElementById('game-minutes').value);
+                        if ((isNaN(hours) && isNaN(minutes))
+                            || (isNaN(hours) && minutes > 0 && minutes < 60)
+                            || (isNaN(minutes) && hours > 0 && hours < 6)
+                            || (hours === 0 && minutes > 0 && minutes < 60)
+                            || (minutes === 0 && hours > 0 && hours < 6)
+                            || (hours > 0 && hours < 6 && minutes >= 0 && minutes < 60)
+                        ) {
+                            if (hasTimer(hours, minutes)) {
+                                this.currentGame.hasTimer = true;
+                                this.currentGame.timerParams = {
+                                    hours: hours,
+                                    minutes: minutes
+                                };
+                            } else {
+                                this.currentGame.hasTimer = false;
+                                this.currentGame.timerParams = null;
+                            }
+                            cancelCurrentToast();
+                            this.removeStepElementsFromDOM(this.step);
+                            this.incrementStep();
+                            this.renderStep('creation-step-container', this.step);
                         } else {
-                            this.currentGame.hasTimer = false;
-                            this.currentGame.timerParams = null;
-                        }
-                        cancelCurrentToast();
-                        this.removeStepElementsFromDOM(this.step);
-                        this.incrementStep();
-                        this.renderStep('creation-step-container', this.step);
-                    } else {
-                        if (hours === 0 && minutes === 0) {
-                            toast('You must enter a non-zero amount of time.', 'error', true);
-                        } else {
-                            toast('Invalid timer options. Hours can be a max of 5, Minutes a max of 59.', 'error', true);
+                            if (hours === 0 && minutes === 0) {
+                                toast('You must enter a non-zero amount of time.', 'error', true);
+                            } else {
+                                toast('Invalid timer options. Hours can be a max of 5, Minutes a max of 59.', 'error', true);
+                            }
                         }
                     }
                 },
                 backHandler: this.defaultBackHandler
             },
             4: {
+                title: 'Enter your name:',
+                forwardHandler: (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        const name = document.getElementById('moderator-name').value;
+                        if (validateName(name)) {
+                            this.currentGame.moderatorName = name;
+                            this.removeStepElementsFromDOM(this.step);
+                            this.incrementStep();
+                            this.renderStep('creation-step-container', this.step);
+                        } else {
+                            toast('Name must be between 1 and 30 characters.', 'error', true);
+                        }
+                    }
+                },
+                backHandler: this.defaultBackHandler
+            },
+            5: {
                 title: 'Review and submit:',
                 backHandler: this.defaultBackHandler,
-                forwardHandler: (deck, hasTimer, hasDedicatedModerator, timerParams) => {
+                forwardHandler: (deck, hasTimer, hasDedicatedModerator, moderatorName, timerParams) => {
                     XHRUtility.xhr(
                         '/api/games/create',
                         'POST',
                         null,
                         JSON.stringify(
-                            new Game(deck, hasTimer, hasDedicatedModerator, timerParams)
+                            new Game(deck, hasTimer, hasDedicatedModerator, moderatorName, timerParams)
                         )
                     )
                         .then((res) => {
@@ -102,7 +122,9 @@ export class GameCreationStepManager {
                             && Object.prototype.hasOwnProperty.call(res, 'content')
                             && typeof res.content === 'string'
                             ) {
-                                window.location = ('/game/' + res.content);
+                                const json = JSON.parse(res.content);
+                                UserUtility.setAnonymousUserId(json.cookie, json.environment);
+                                window.location = ('/game/' + json.accessCode);
                             }
                         }).catch((e) => {
                             const button = document.getElementById('create-game');
@@ -144,10 +166,14 @@ export class GameCreationStepManager {
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
                 break;
             case 3:
-                renderTimerStep(containerId, step, this.currentGame);
+                renderTimerStep(containerId, step, this.currentGame, this.steps);
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
                 break;
             case 4:
+                renderNameStep(containerId, step, this.currentGame, this.steps);
+                showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
+                break;
+            case 5:
                 renderReviewAndCreateStep(containerId, step, this.currentGame);
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler, this.currentGame);
                 break;
@@ -160,6 +186,18 @@ export class GameCreationStepManager {
     removeStepElementsFromDOM (stepNumber) {
         document.getElementById('step-' + stepNumber)?.remove();
     }
+}
+
+function renderNameStep (containerId, step, game, steps) {
+    const stepContainer = document.createElement('div');
+    setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container step' });
+
+    stepContainer.innerHTML = templates.ENTER_NAME_STEP;
+    document.getElementById(containerId).appendChild(stepContainer);
+    const nameInput = document.querySelector('#moderator-name');
+    nameInput.value = game.moderatorName;
+    nameInput.addEventListener('keyup', steps['4'].forwardHandler);
+    nameInput.focus();
 }
 
 function renderModerationTypeStep (game, containerId, stepNumber) {
@@ -277,7 +315,7 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
     initializeRemainingEventListeners(deckManager);
 }
 
-function renderTimerStep (containerId, stepNumber, game) {
+function renderTimerStep (containerId, stepNumber, game, steps) {
     const div = document.createElement('div');
     div.setAttribute('id', 'step-' + stepNumber);
     div.classList.add('step');
@@ -290,6 +328,7 @@ function renderTimerStep (containerId, stepNumber, game) {
     hoursLabel.setAttribute('for', 'game-hours');
     hoursLabel.innerText = 'Hours (max 5)';
     const hours = document.createElement('input');
+    hours.addEventListener('keyup', steps[stepNumber].forwardHandler);
     setAttributes(hours, { type: 'number', id: 'game-hours', name: 'game-hours', min: '0', max: '5', value: game.timerParams?.hours });
 
     const minutesDiv = document.createElement('div');
@@ -297,6 +336,7 @@ function renderTimerStep (containerId, stepNumber, game) {
     minsLabel.setAttribute('for', 'game-minutes');
     minsLabel.innerText = 'Minutes';
     const minutes = document.createElement('input');
+    minutes.addEventListener('keyup', steps[stepNumber].forwardHandler);
     setAttributes(minutes, { type: 'number', id: 'game-minutes', name: 'game-minutes', min: '1', max: '60', value: game.timerParams?.minutes });
 
     hoursDiv.appendChild(hoursLabel);
@@ -317,6 +357,10 @@ function renderReviewAndCreateStep (containerId, stepNumber, game) {
 
     div.innerHTML =
         '<div>' +
+            "<label for='mod-name'>Your name</label>" +
+            "<div id='mod-name' class='review-option'></div>" +
+        '</div>' +
+        '<div>' +
             "<label for='mod-option'>Moderation</label>" +
             "<div id='mod-option' class='review-option'></div>" +
         '</div>' +
@@ -330,8 +374,8 @@ function renderReviewAndCreateStep (containerId, stepNumber, game) {
         '</div>';
 
     div.querySelector('#mod-option').innerText = game.hasDedicatedModerator
-        ? "I will be the dedicated mod. Don't deal me a card."
-        : 'The first person out will mod. Deal me into the game.';
+        ? "Dedicated Moderator - don't deal me a card."
+        : 'Temporary Moderator - deal me into the game.';
 
     if (game.hasTimer) {
         const formattedHours = !isNaN(game.timerParams.hours)
@@ -352,6 +396,8 @@ function renderReviewAndCreateStep (containerId, stepNumber, game) {
         roleEl.innerText = card.quantity + 'x ' + card.role;
         div.querySelector('#roles-option').appendChild(roleEl);
     }
+
+    div.querySelector('#mod-name').innerText = game.moderatorName;
 
     document.getElementById(containerId).appendChild(div);
 }
@@ -406,6 +452,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
                 builtGame.deck.filter((card) => card.quantity > 0),
                 builtGame.hasTimer,
                 builtGame.hasDedicatedModerator,
+                builtGame.moderatorName,
                 builtGame.timerParams
             );
         });
@@ -700,4 +747,8 @@ function updateDeckStatus (deckManager) {
 
 function hasTimer (hours, minutes) {
     return (!isNaN(hours) || !isNaN(minutes));
+}
+
+function validateName (name) {
+    return typeof name === 'string' && name.length > 0 && name.length <= 30;
 }

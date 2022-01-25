@@ -6,7 +6,9 @@ module.exports = {
         game: './client/src/scripts/game.js',
         home: './client/src/scripts/home.js',
         create: './client/src/scripts/create.js',
-        notFound: './client/src/scripts/notFound.js'
+        notFound: './client/src/scripts/notFound.js',
+        howToUse: './client/src/scripts/howToUse.js',
+        join: './client/src/scripts/join.js'
     },
     output: {
         path: path.resolve(__dirname, '../dist'),

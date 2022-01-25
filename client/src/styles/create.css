@@ -231,7 +231,7 @@ option {
     cursor: pointer;
 }
 
-#step-4 > div {
+#step-5 > div {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -242,7 +242,19 @@ option {
     max-width: 95%;
 }
 
-#step-4 > div label {
+#step-4 {
+    width: 95%;
+    max-width: 25em;
+    margin: 0 auto;
+}
+
+#step-4 input {
+    padding: 15px 5px;
+    width: 95%;
+    font-size: 20px;
+}
+
+#step-5 > div label {
     width: 100%;
 }
 

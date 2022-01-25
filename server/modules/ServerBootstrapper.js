@@ -3,6 +3,7 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
+const secure = require('express-force-https');
 
 const ServerBootstrapper = {
     processCLIArgs: () => {
@@ -55,6 +56,7 @@ const ServerBootstrapper = {
             }
         } else {
             logger.warn('starting main in PRODUCTION mode. This should not be used for local development.');
+            app.use(secure);
             main = http.createServer(app);
         }
 

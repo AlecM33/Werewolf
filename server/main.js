@@ -38,7 +38,6 @@ gameManager.namespace = inGameSocketServer;
 inGameSocketServer.on('connection', function (socket) {
     socket.on('disconnecting', (reason) => {
         logger.trace('client socket disconnecting because: ' + reason);
-        gameManager.removeClientFromLobbyIfApplicable(socket);
     });
     gameManager.addGameSocketHandlers(inGameSocketServer, socket);
 });

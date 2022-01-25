@@ -48,39 +48,15 @@ function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWo
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
         socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, cookie, function (gameState) {
-            cookie = gameState.client.cookie;
-            UserUtility.setAnonymousUserId(cookie, stateBucket.environment);
-            stateBucket.currentGameState = gameState;
-            document.querySelector('.spinner-container')?.remove();
-            document.querySelector('.spinner-background')?.remove();
-            document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
-            toast('You are connected.', 'success', true, true, 2);
-            processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
-            if (!gameState.client.hasEnteredName) {
-                document.getElementById('prompt').innerHTML = templates.NAME_CHANGE_MODAL;
-                document.getElementById('change-name-form').onsubmit = (e) => {
-                    e.preventDefault();
-                    const name = document.getElementById('player-new-name').value;
-                    if (validateName(name)) {
-                        socket.emit(globals.COMMANDS.CHANGE_NAME, gameState.accessCode, {
-                            name: name,
-                            personId: gameState.client.id
-                        }, (result) => {
-                            switch (result) {
-                                case 'taken':
-                                    toast('This name is already taken.', 'error', true, true, 8);
-                                    break;
-                                case 'changed':
-                                    ModalManager.dispelModal('change-name-modal', 'change-name-modal-background');
-                                    toast('Name set.', 'success', true, true, 5);
-                                    propagateNameChange(stateBucket.currentGameState, name, stateBucket.currentGameState.client.id);
-                                    processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
-                            }
-                        });
-                    } else {
-                        toast('Name must be between 1 and 30 characters.', 'error', true, true, 8);
-                    }
-                };
+            if (gameState === null) {
+                window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
+            } else {
+                stateBucket.currentGameState = gameState;
+                document.querySelector('.spinner-container')?.remove();
+                document.querySelector('.spinner-background')?.remove();
+                document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
+                toast('You are connected.', 'success', true, true, 2);
+                processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
             }
         });
     } else {
@@ -320,10 +296,6 @@ function displayStartGamePromptForModerators (gameState, gameStateRenderer) {
     div.innerHTML = templates.START_GAME_PROMPT;
     div.querySelector('#start-game-button').addEventListener('click', gameStateRenderer.startGameHandler);
     document.body.appendChild(div);
-}
-
-function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 30;
 }
 
 function removeStartGameFunctionalityIfPresent (gameStateRenderer) {

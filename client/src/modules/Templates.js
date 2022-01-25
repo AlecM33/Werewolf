@@ -2,7 +2,7 @@ export const templates = {
     LOBBY:
     "<div id='lobby-header'>" +
         '<div>' +
-            "<label for='game-link'>Share Link</label>" +
+            "<label for='game-link'>Copy Share Link</label>" +
             "<div tabindex='0' id='game-link'></div>" +
         '</div>' +
         "<div id='game-parameters'>" +
@@ -28,6 +28,12 @@ export const templates = {
             "<div id='game-deck'></div>" +
         '</div>' +
     '</div>',
+    ENTER_NAME_STEP:
+    `<div id='step-4'>
+        <div>
+            <input type="text" id="moderator-name" autocomplete='given-name' placeholder="enter your name...">
+        </div>
+    </div>`,
     START_GAME_PROMPT:
     "<div id='start-game-prompt'>" +
         "<button id='start-game-button'>Start Game</button>" +

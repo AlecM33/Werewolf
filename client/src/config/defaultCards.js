@@ -40,7 +40,7 @@ export const defaultCards = [
         description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.'
     },
     {
-        role: 'Hunter',
+        role: 'Brutal Hunter',
         team: 'good',
         description: 'When you are eliminated, choose another player to go with you.'
     }

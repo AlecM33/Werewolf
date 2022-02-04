@@ -17,7 +17,7 @@
 
 #lobby-players {
     overflow-y: auto;
-    max-height: 30em;
+    max-height: 44em;
     overflow-x: hidden;
     padding: 0 10px;
     border-radius: 3px;

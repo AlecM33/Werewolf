@@ -53,21 +53,21 @@ Run `npm install` from the root directory to install the necessary dependencies.
 These instructions assume you are somewhat familiar with Node.js and npm. At this point, we will use some of the run
 commands defined in `package.json`.
 
-First, start a terminal in the root directory. Execute `npm run build:dev`. This uses <a href="https://webpack.js.org/">
-Webpack</a> to bundle javascript from the `client/src` directory and place it in the `client/dist` directory, which is ignored by Git.
-If you look at this command as defined in `package.json`, it uses the `--watch` flag, which means the process will continue
-to run in this terminal, watching for changes to JavaScript within the `client/src` directory and re-bundling automatically. You 
-definitely want this if making frequent JavaScript changes to client-side source code. Any other changes, such as to HTML or CSS
-files, are not bundled, and thus your changes will be picked up simply by refreshing the browser.
-
-Next, in a separate terminal, we will start the application:
+If you simply want to run the app on the default port of **5000**:
 
 `npm run start:dev` (if developing on a linux machine)<br>
 `npm run start:dev:windows` (if developing on a windows machine)
 
-This will start the application and serve it on the default port of **5000**. This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
+This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
 to listen for changes to **server-side code** (Node.js modules) and automatically restart the server. If you do not want 
 this, run instead `npm run start:dev:no-hot-reload` or `npm run start:dev:windows:no-hot-reload`. 
+
+If you are developing as well, in a separate terminal, execute `npm run build:dev`. This uses <a href="https://webpack.js.org/">
+Webpack</a> to bundle javascript from the `client/src` directory and place it in the `client/dist` directory, which is ignored by Git.
+This command uses the `--watch` flag, which means the process will continue
+to run in this terminal, watching for changes to JavaScript within the `client/src` directory and re-bundling automatically. You 
+definitely want this if making frequent JavaScript changes to client-side source code. Any other changes, such as to HTML or CSS
+files, are not bundled, and thus your changes will be picked up simply by refreshing the browser.
 
 And there we go! You should be able to navigate to and use the application on localhost. There are additional CLI arguments
 you can provide to the run commands that specify things such as port, HTTP vs HTTPS, or the log level. I **highly recommend**

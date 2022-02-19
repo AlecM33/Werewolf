@@ -128,6 +128,16 @@ h1 {
     transition: background-color 0.2s;
     max-width: 20em;
 }
+#game-code {
+    color: whitesmoke;
+    margin-top: 5px;
+}
+
+#game-code span {
+    font-family: "Courier New", monospace;
+    color: #21ba45;
+    font-size: 20px;
+}
 
 #game-link > div {
     white-space: nowrap;

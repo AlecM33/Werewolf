@@ -50,7 +50,9 @@ export class GameStateRenderer {
 
         const time = document.getElementById('game-time');
         const playerCount = document.getElementById('game-player-count');
+        const gameCode = document.getElementById('game-code');
         playerCount.innerText = getGameSize(this.stateBucket.currentGameState.deck) + ' Players';
+        gameCode.innerHTML = 'Or enter this code on the homepage: <span>' + this.stateBucket.currentGameState.accessCode + '</span>';
 
         let timeString = '';
         if (this.stateBucket.currentGameState.timerParams) {

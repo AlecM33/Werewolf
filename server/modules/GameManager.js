@@ -215,7 +215,6 @@ class GameManager {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
             logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
             if (game.moderator === person) {
-                logger.debug('temp mod killed themselves');
                 person.userType = globals.USER_TYPES.MODERATOR;
             } else {
                 if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {

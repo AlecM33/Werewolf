@@ -14,7 +14,8 @@
     "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node server/main.js",
     "start": "NODE_ENV=production node server/main.js -- loglevel=trace port=8080",
     "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
-    "test": "jasmine"
+    "test": "jasmine",
+    "e2etest": "chromedriver && jasmine-browser-runner runSpecs"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -35,6 +36,7 @@
     "express-rate-limit": "^6.0.1",
     "jasmine": "^3.5.0",
     "open": "^7.0.3",
+    "puppeteer": "^13.4.0",
     "socket.io": "^4.4.0",
     "socket.io-client": "^4.4.0",
     "webpack": "^5.65.0",
@@ -44,10 +46,14 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/eslint-parser": "^7.16.5",
+    "chromedriver": "^98.0.1",
     "eslint": "^8.6.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0"
+    "eslint-plugin-promise": "^6.0.0",
+    "jasmine-browser-runner": "^1.0.0",
+    "jasmine-core": "^4.0.1",
+    "selenium-webdriver": "^4.1.1"
   },
   "nodemonConfig": {
     "ignore": [

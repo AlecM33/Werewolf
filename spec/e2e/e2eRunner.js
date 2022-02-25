@@ -1,10 +1,7 @@
+const jasmineBrowser = require('jasmine-browser-runner');
 
 
-var path = require('path'),
-    jasmineBrowser = require('jasmine-browser-runner'),
-    jasmineCore = require('jasmine-core');
-
-var config = require('../support/jasmine-browser.json');
+const config = require('../support/jasmine-browser.json');
 jasmineBrowser.startServer(config, { port: 4321 });
 
 const puppeteer = require('puppeteer');

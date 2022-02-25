@@ -16,6 +16,7 @@ describe('GameManager', function () {
         gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
         let inObj = { emit: () => {} }
         namespace = { in: () => { return inObj }};
+        gameManager.namespace = namespace;
     });
 
     beforeEach(function () {
@@ -213,6 +214,58 @@ describe('GameManager', function () {
                 .toHaveBeenCalledWith(gameRunner.activeGames["abc"], player, gameRunner, socket, logger);
             expect(player.socketId).toEqual(socket.id);
             expect(socket.join).toHaveBeenCalled();
+        });
+    });
+
+    describe('#joinGame', function () {
+        it('should mark the game as full when all players have been assigned', () => {
+            let person = new Person("1", "123", "Placeholder", USER_TYPES.KILLED_PLAYER);
+            let moderator = new Person("3", "789", "Jack", USER_TYPES.MODERATOR);
+            moderator.assigned = true;
+            let game = new Game(
+                "abc",
+                globals.STATUS.IN_PROGRESS,
+                [ person ],
+                [],
+                false,
+                moderator
+            );
+
+            gameManager.joinGame(game, "Jill", "x")
+
+
+            expect(game.isFull).toEqual(true);
+            expect(game.people[0].name).toEqual("Jill");
+            expect(game.people[0].assigned).toEqual(true);
+        });
+
+        it('should create a spectator if the game is already full and broadcast it to the room', () => {
+            let person = new Person("1", "123", "AlreadyJoined", USER_TYPES.KILLED_PLAYER);
+            let moderator = new Person("3", "789", "AlreadyTheModerator", USER_TYPES.MODERATOR);
+            moderator.assigned = true;
+            person.assigned = true;
+            let game = new Game(
+                "abc",
+                globals.STATUS.IN_PROGRESS,
+                [ person ],
+                [],
+                false,
+                moderator
+            );
+            game.isFull = true;
+
+            spyOn(gameManager.namespace.in(), 'emit');
+
+            gameManager.joinGame(game, "Jane", "x")
+
+
+            expect(game.isFull).toEqual(true);
+            expect(game.people[0].name).toEqual("AlreadyJoined");
+            expect(game.moderator.name).toEqual("AlreadyTheModerator");
+            expect(game.spectators.length).toEqual(1);
+            expect(game.spectators[0].name).toEqual("Jane");
+            expect(game.spectators[0].userType).toEqual(USER_TYPES.SPECTATOR);
+            expect(gameManager.namespace.in().emit).toHaveBeenCalledWith(globals.EVENTS.NEW_SPECTATOR, jasmine.anything())
         });
     });
 });

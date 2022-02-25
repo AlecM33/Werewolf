@@ -157,6 +157,10 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
         }
     });
 
+    socket.on(globals.EVENTS.NEW_SPECTATOR, (spectator) => {
+        stateBucket.currentGameState.spectators.push(spectator);
+    });
+
     socket.on(globals.EVENTS.PLAYER_LEFT, (player) => {
         removeStartGameFunctionalityIfPresent(gameStateRenderer);
         toast(player.name + ' has left!', 'error', false, true, 3);

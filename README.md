@@ -33,7 +33,7 @@ The application prioritizes responsiveness. A key scenario would be when a group
 ## Tech Stack
 
 This is a Node.js application. It is written purely using JavaScript/HTML/CSS. The main dependencies are
-<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>.
+<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It is currently cloud hosted using the <a href='https://cloud.google.com/appengine'>Google App Engine</a>.
 
 ## Contributing and Developers' Guide
 

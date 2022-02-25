@@ -679,8 +679,12 @@ label[for='moderator'] {
 }
 
 @media(max-width: 500px) {
+    label {
+        font-size: 18px;
+    }
+
     #client-name {
-        font-size: 25px;
+        font-size: 20px;
     }
 
     #client-user-type, #game-parameters {
@@ -709,8 +713,13 @@ label[for='moderator'] {
     }
 
     #game-timer {
+        padding: 5px;
         font-size: 30px;
-        height: 38px;
+        height: 30px;
+    }
+
+    #role-info-button {
+        padding: 7px;
     }
 
     #players-alive-label {
@@ -727,8 +736,8 @@ label[for='moderator'] {
     }
 
     #game-role, #game-role-back {
-        height: 20em;
-        max-width: 15em;
+        height: 18em;
+        max-width: 13em;
     }
 
     #client-container {
@@ -740,11 +749,20 @@ label[for='moderator'] {
     }
 
     #game-role-back h4 {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     h2 {
         font-size: 18px;
+    }
+
+    #role-description {
+        font-size: 14px;
+        max-height: 7em;
+    }
+
+    #role-image {
+        width: 70%;
     }
 }
 

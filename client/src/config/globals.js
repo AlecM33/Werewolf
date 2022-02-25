@@ -39,7 +39,8 @@ export const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         CHANGE_NAME: 'changeName',
         START_GAME: 'startGame',
-        PLAYER_LEFT: 'playerLeft'
+        PLAYER_LEFT: 'playerLeft',
+        NEW_SPECTATOR: 'newSpectator'
     },
     USER_TYPES: {
         MODERATOR: 'moderator',

@@ -284,6 +284,10 @@ class GameManager {
             );
             this.logger.trace('new spectator: ' + spectator.name);
             game.spectators.push(spectator);
+            this.namespace.in(game.accessCode).emit(
+                globals.EVENTS.NEW_SPECTATOR,
+                GameStateCurator.mapPerson(spectator)
+            );
             return Promise.resolve(spectator.cookie);
         }
     };

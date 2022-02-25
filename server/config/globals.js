@@ -38,7 +38,8 @@ const globals = {
     EVENTS: {
         PLAYER_JOINED: 'playerJoined',
         PLAYER_LEFT: 'playerLeft',
-        SYNC_GAME_STATE: 'syncGameState'
+        SYNC_GAME_STATE: 'syncGameState',
+        NEW_SPECTATOR: 'newSpectator'
     },
     ENVIRONMENT: {
         LOCAL: 'local',

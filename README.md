@@ -2,6 +2,8 @@
   <img width="300" src="/client/src/images/logo.gif"/>
 </p>
 
+[![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
+
 Find the latest deployment here: https://playwerewolf.uk.r.appspot.com/.
 
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>

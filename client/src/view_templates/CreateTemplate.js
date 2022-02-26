@@ -59,6 +59,6 @@ const template =
         </div>
         <div class="animated-placeholder animated-placeholder-long"></div>
         <div class="animated-placeholder animated-placeholder-long"></div>
-    </div>`
+    </div>`;
 
 export default template;

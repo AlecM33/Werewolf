@@ -66,6 +66,7 @@ class ServerTimer {
     }
 
     stopTimer () {
+        this.logger.debug('STOPPING TIMER');
         if (this.ticking) {
             clearTimeout(this.ticking);
         }

@@ -7,10 +7,10 @@ const GameManager = require('../../../../server/modules/GameManager.js');
 const GameStateCurator = require('../../../../server/modules/GameStateCurator');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
-describe('GameManager', function () {
+describe('GameManager', () => {
     let gameManager, namespace;
 
-    beforeAll(function () {
+    beforeAll(() => {
         spyOn(logger, 'debug');
         spyOn(logger, 'error');
         gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
@@ -19,10 +19,10 @@ describe('GameManager', function () {
         gameManager.namespace = namespace;
     });
 
-    beforeEach(function () {
+    beforeEach(() => {
     });
 
-    describe('#transferModerator', function () {
+    describe('#transferModerator', () => {
         it('Should transfer successfully from a dedicated moderator to a killed player', () => {
             const personToTransferTo = new Person('1', '123', 'Joe', USER_TYPES.KILLED_PLAYER);
             personToTransferTo.out = true;
@@ -100,7 +100,7 @@ describe('GameManager', function () {
         });
     });
 
-    describe('#killPlayer', function () {
+    describe('#killPlayer', () => {
         it('Should mark a player as out and broadcast it, and should not transfer moderators if the moderator is a dedicated mod.', () => {
             spyOn(namespace.in(), 'emit');
             spyOn(gameManager, 'transferModeratorPowers');
@@ -142,7 +142,7 @@ describe('GameManager', function () {
         });
     });
 
-    describe('#handleRequestForGameState', function () {
+    describe('#handleRequestForGameState', () => {
         it('should send the game state to a matching person with an active connection to the room', () => {
             const player = new Person('1', '123', 'Joe', USER_TYPES.PLAYER);
             const socket = { id: 'socket1' };
@@ -211,7 +211,7 @@ describe('GameManager', function () {
         });
     });
 
-    describe('#joinGame', function () {
+    describe('#joinGame', () => {
         it('should mark the game as full when all players have been assigned', () => {
             const person = new Person('1', '123', 'Placeholder', USER_TYPES.KILLED_PLAYER);
             const moderator = new Person('3', '789', 'Jack', USER_TYPES.MODERATOR);

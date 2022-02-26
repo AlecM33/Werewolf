@@ -1,6 +1,6 @@
 const template =
-    `<div id="modal-background" class="modal-background" style="display: none"></div>
-    <div tabindex="-1" id="role-modal" class="modal" style="display: none">
+    `<div id="modal-background" class="modal-background"></div>
+    <div tabindex="-1" id="role-modal" class="modal">
         <form id="role-form">
             <div>
                 <label for="role-name">Role Name</label>
@@ -15,7 +15,7 @@ const template =
             </div>
             <div>
                 <label for="role-description">Description</label>
-                <textarea style="resize:none" id="role-description" rows="4" cols="1" placeholder="Describe your role..." required></textarea>
+                <textarea id="role-description" rows="4" cols="1" placeholder="Describe your role..." required></textarea>
             </div>
             <div class="modal-button-container">
                 <button id="close-modal-button" class="cancel app-button">Close</button>
@@ -23,7 +23,7 @@ const template =
             </div>
         </form>
     </div>
-    <div tabindex="-1" id="upload-custom-roles-modal" class="modal" style="display:none">
+    <div tabindex="-1" id="upload-custom-roles-modal" class="modal">
         <h3>Import Custom Roles</h3>
         <form id="upload-custom-roles-form">
             <input type="file" id="upload-custom-roles" name="Upload Custom Roles" accept="text/plain"/>
@@ -33,7 +33,7 @@ const template =
             </div>
         </form>
     </div>
-    <div tabindex="-1" id="custom-role-info-modal" class="modal" style="display:none">
+    <div tabindex="-1" id="custom-role-info-modal" class="modal">
         <h3 id="custom-role-info-modal-name"></h3>
         <div id="custom-role-info-modal-alignment"></div>
         <div id="custom-role-info-modal-description"></div>

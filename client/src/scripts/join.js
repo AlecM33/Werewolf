@@ -51,9 +51,9 @@ const joinHandler = (e) => {
                 document.getElementById('submit-new-name').classList.remove('submitted');
                 document.getElementById('submit-new-name').setAttribute('value', 'Join Game');
                 if (res.status === 404) {
-                    toast('This game was not found.', 'error', true, true, 8);
+                    toast('This game was not found.', 'error', true, true, 'long');
                 } else if (res.status === 400) {
-                    toast('This name is already taken.', 'error', true, true, 8);
+                    toast('This name is already taken.', 'error', true, true, 'long');
                 } else if (res.status >= 500) {
                     toast(
                         'The server is experiencing problems. Please try again later',
@@ -63,7 +63,7 @@ const joinHandler = (e) => {
                 }
             });
     } else {
-        toast('Name must be between 1 and 30 characters.', 'error', true, true, 8);
+        toast('Name must be between 1 and 30 characters.', 'error', true, true, 'long');
     }
 };
 

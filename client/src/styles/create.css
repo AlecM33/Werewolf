@@ -166,6 +166,7 @@
 }
 
 #custom-role-actions {
+    display: none;
     color: whitesmoke;
     position: absolute;
     top: 38px;

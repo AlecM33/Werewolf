@@ -65,6 +65,53 @@ h3 {
     margin: 0.5em 0;
 }
 
+textarea {
+    resize: none;
+}
+
+.toast-top {
+    top: 2rem;
+}
+
+.toast-bottom {
+    bottom: 90px;
+}
+
+.toast-success {
+    background-color: #bef5cb;
+    border: 3px solid #8ac78a;
+}
+
+.toast-warning {
+    background-color: #fff5b1;
+    border: 3px solid #c7c28a;
+}
+
+.toast-error {
+    background-color: #fdaeb7;
+    border: 3px solid #c78a8a;
+}
+
+.toast-dispel-automatically {
+    animation: fade-in-slide-down-then-exit ease normal forwards;
+}
+
+.toast-not-dispelled-automatically {
+    animation: fade-in-slide-down ease normal forwards;
+}
+
+.toast-short {
+    animation-duration: 3s;
+}
+
+.toast-medium {
+    animation-duration: 5s;
+}
+
+.toast-long {
+    animation-duration: 8s;
+}
+
 #footer {
     bottom: 0;
     width: 100%;
@@ -78,8 +125,12 @@ h3 {
     margin-top: 4em;
     margin-bottom: 0.5em;
 }
-#footer a img {
+#footer a:not([href='https://www.buymeacoffee.com/alecm33']) img {
     width: 32px;
+}
+
+#footer a[href='https://www.buymeacoffee.com/alecm33'] img {
+    width: 200px;
 }
 
 #footer a {

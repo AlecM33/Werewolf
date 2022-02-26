@@ -219,10 +219,10 @@ h1 {
 }
 
 #game-role {
+    display: none;
     position: relative;
     border: 5px solid transparent;
     background-color: #e7e7e7;
-    display: flex;
     flex-direction: column;
     cursor: pointer;
     justify-content: space-between;

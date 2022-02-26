@@ -53,7 +53,7 @@ export const HTMLFragments = {
             <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
         </div>
     </div>
-    <div id='game-role' style='display:none'>
+    <div id='game-role'>
         <h4 id='role-name'></h4>
         <img alt='role' id='role-image'/>
         <p id='role-description'></p>
@@ -81,8 +81,8 @@ export const HTMLFragments = {
         <div id='game-player-list'></div>
     </div>`,
     MODERATOR_GAME_VIEW:
-    `<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>
-    <div tabindex='-1' id='transfer-mod-modal' class='modal' style='display: none'>
+    `<div id='transfer-mod-modal-background' class='modal-background'></div>
+    <div tabindex='-1' id='transfer-mod-modal' class='modal'>
         <h3>Transfer Mod Powers &#128081;</h3>
         <div id='transfer-mod-modal-content'></div>
         <div class='modal-button-container'>
@@ -116,8 +116,8 @@ export const HTMLFragments = {
         </div>
     </div>`,
     TEMP_MOD_GAME_VIEW:
-    `<div id='transfer-mod-modal-background' class='modal-background' style='display: none'></div>
-        <div id='transfer-mod-modal' class='modal' style='display: none'>
+    `<div id='transfer-mod-modal-background' class='modal-background'></div>
+        <div id='transfer-mod-modal' class='modal'>
             <form id='transfer-mod-form'>
                 <div id='transfer-mod-form-content'>
                     <h3>Transfer Mod Powers &#128081;</h3>
@@ -139,7 +139,7 @@ export const HTMLFragments = {
                 <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
             </div>
         </div>
-        <div id='game-role' style='display:none'>
+        <div id='game-role'>
             <h4 id='role-name'></h4>
             <img alt='role' id='role-image'/>
             <p id='role-description'></p>
@@ -249,7 +249,7 @@ export const HTMLFragments = {
                     <span class="hamburger-inner"></span>
                 </span>
             </button>
-            <div id="custom-role-actions" style="display:none">
+            <div id="custom-role-actions">
                 <div tabindex="0" class="custom-role-action" id="custom-roles-export">Export</div>
                 <div tabindex="0" class="custom-role-action" id="custom-roles-import">Import</div>
             </div>

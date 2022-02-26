@@ -55,7 +55,7 @@ function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWo
                 document.querySelector('.spinner-container')?.remove();
                 document.querySelector('.spinner-background')?.remove();
                 document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
-                toast('You are connected.', 'success', true, true, 2);
+                toast('You are connected.', 'success', true, true, 'short');
                 processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
             }
         });
@@ -142,7 +142,7 @@ function displayClientInfo (name, userType) {
 
 function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager) {
     socket.on(globals.EVENTS.PLAYER_JOINED, (player, gameIsFull) => {
-        toast(player.name + ' joined!', 'success', false, true, 3);
+        toast(player.name + ' joined!', 'success', false, true, 'short');
         stateBucket.currentGameState.people.push(player);
         stateBucket.currentGameState.isFull = gameIsFull;
         gameStateRenderer.renderLobbyPlayers();
@@ -163,7 +163,7 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
 
     socket.on(globals.EVENTS.PLAYER_LEFT, (player) => {
         removeStartGameFunctionalityIfPresent(gameStateRenderer);
-        toast(player.name + ' has left!', 'error', false, true, 3);
+        toast(player.name + ' has left!', 'error', false, true, 'short');
         const index = stateBucket.currentGameState.people.findIndex(person => person.id === player.id);
         if (index >= 0) {
             stateBucket.currentGameState.people.splice(
@@ -221,7 +221,7 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
         if (killedPerson) {
             killedPerson.out = true;
             if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
-                toast(killedPerson.name + ' killed.', 'success', true, true, 6);
+                toast(killedPerson.name + ' killed.', 'success', true, true, 'medium');
                 gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo(stateBucket.currentGameState.status === globals.STATUS.ENDED);
             } else {
                 if (killedPerson.id === stateBucket.currentGameState.client.id) {
@@ -230,9 +230,9 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
                         clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
                     }
                     gameStateRenderer.updatePlayerCardToKilledState();
-                    toast('You have been killed!', 'warning', true, true, 6);
+                    toast('You have been killed!', 'warning', true, true, 'medium');
                 } else {
-                    toast(killedPerson.name + ' was killed!', 'warning', true, true, 6);
+                    toast(killedPerson.name + ' was killed!', 'warning', true, true, 'medium');
                 }
                 if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                     gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
@@ -250,13 +250,13 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
             revealedPerson.gameRole = revealData.gameRole;
             revealedPerson.alignment = revealData.alignment;
             if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
-                toast(revealedPerson.name + ' revealed.', 'success', true, true, 6);
+                toast(revealedPerson.name + ' revealed.', 'success', true, true, 'medium');
                 gameStateRenderer.renderPlayersWithRoleAndAlignmentInfo(stateBucket.currentGameState.status === globals.STATUS.ENDED);
             } else {
                 if (revealedPerson.id === stateBucket.currentGameState.client.id) {
-                    toast('Your role has been revealed!', 'warning', true, true, 6);
+                    toast('Your role has been revealed!', 'warning', true, true, 'medium');
                 } else {
-                    toast(revealedPerson.name + ' was revealed as a ' + revealedPerson.gameRole + '!', 'warning', true, true, 6);
+                    toast(revealedPerson.name + ' was revealed as a ' + revealedPerson.gameRole + '!', 'warning', true, true, 'medium');
                 }
                 if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                     gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);

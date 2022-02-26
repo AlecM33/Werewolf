@@ -132,7 +132,7 @@ export class GameCreationStepManager {
                             button.classList.remove('submitted');
                             button.addEventListener('click', this.steps['4'].forwardHandler);
                             if (e.status === 429) {
-                                toast('You\'ve sent this request too many times.', 'error', true, true, 6);
+                                toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
                             }
                         });
                 }
@@ -280,23 +280,23 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
         if (fileList.length > 0) {
             const file = fileList[0];
             if (file.size > 1000000) {
-                toast('Your file is too large (max 1MB)', 'error', true, true, 5);
+                toast('Your file is too large (max 1MB)', 'error', true, true, 'medium');
                 return;
             }
             if (file.type !== 'text/plain') {
-                toast('Your file must be a text file', 'error', true, true, 5);
+                toast('Your file must be a text file', 'error', true, true, 'medium');
                 return;
             }
 
             deckManager.loadCustomRolesFromFile(file, updateCustomRoleOptionsList, loadDefaultCards, showIncludedCards);
         } else {
-            toast('You must upload a text file', 'error', true, true, 5);
+            toast('You must upload a text file', 'error', true, true, 'medium');
         }
     };
 
     const clickHandler = () => {
         const actions = document.getElementById('custom-role-actions');
-        if (actions.style.display !== 'none') {
+        if (window.getComputedStyle(actions, null).display !== 'none') {
             actions.style.display = 'none';
         } else {
             actions.style.display = 'block';
@@ -563,7 +563,7 @@ function initializeRemainingEventListeners (deckManager) {
             if (!deckManager.getCustomRoleOption(name) && !deckManager.getCard(name)) { // confirm there is no existing custom role with the same name
                 processNewCustomRoleSubmission(name, description, team, deckManager, false);
             } else {
-                toast('There is already a role with this name', 'error', true, true, 3);
+                toast('There is already a role with this name', 'error', true, true, 'short');
             }
         } else {
             const option = deckManager.getCustomRoleOption(deckManager.currentlyEditingRoleName);
@@ -573,7 +573,7 @@ function initializeRemainingEventListeners (deckManager) {
                 if (!deckManager.getCustomRoleOption(name) && !deckManager.getCard(name)) {
                     processNewCustomRoleSubmission(name, description, team, deckManager, true, option);
                 } else {
-                    toast('There is already a role with this name', 'error', true, true, 3);
+                    toast('There is already a role with this name', 'error', true, true, 'short');
                 }
             }
         }
@@ -653,7 +653,7 @@ function addCustomRoleEventListeners (deckManager, select) {
                 if (!deckManager.getCard(name)) {
                     deckManager.addToDeck(name);
                     const cardEl = constructCompactDeckBuilderElement(deckManager.getCard(name), deckManager);
-                    toast('"' + name + '" made available below.', 'success', true, true, 4);
+                    toast('"' + name + '" made available below.', 'success', true, true, 'medium');
                     if (deckManager.getCard(name).team === globals.ALIGNMENT.GOOD) {
                         document.getElementById('deck-good').appendChild(cardEl);
                     } else {
@@ -661,7 +661,7 @@ function addCustomRoleEventListeners (deckManager, select) {
                     }
                     updateCustomRoleOptionsList(deckManager, select);
                 } else {
-                    toast('"' + select.value + '" already included.', 'error', true, true, 3);
+                    toast('"' + select.value + '" already included.', 'error', true, true, 'short');
                 }
             }
         };

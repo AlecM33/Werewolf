@@ -10,7 +10,7 @@ module.exports = function(config) {
             { pattern: 'client/src/view_templates/*.js', type: 'module', included: true, served: true }
         ],
         reporters: ['progress'],
-        port: 9876
+        port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
         browsers: ['ChromeHeadless'],

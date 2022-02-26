@@ -2,6 +2,11 @@
     border-left: 5px solid #b1afcd;
     animation: entrance 0.5s forwards;
     transform-origin: center;
+    display: block;
+}
+
+#player-new-name {
+    max-width: 17em;
 }
 
 #game-parameters div:nth-child(1) {

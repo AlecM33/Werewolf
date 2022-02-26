@@ -14,9 +14,11 @@
     font-family: sans-serif;
     flex-direction: column;
     padding: 1em;
+    display: none;
 }
 
 .modal-background {
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -50,7 +52,6 @@
 }
 
 #custom-role-info-modal {
-    display: flex;
     color: #d7d7d7;
     text-align: left;
     font-family: signika-negative, sans-serif;

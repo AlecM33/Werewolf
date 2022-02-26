@@ -148,6 +148,11 @@ class GameManager {
             const game = this.activeGameRunner.activeGames[accessCode];
             if (game) {
                 game.status = globals.STATUS.ENDED;
+                if (this.activeGameRunner.timerThreads[accessCode]) {
+                    this.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + accessCode);
+                    this.activeGameRunner.timerThreads[accessCode].kill();
+                    delete this.activeGameRunner.timerThreads[accessCode];
+                }
                 for (const person of game.people) {
                     person.revealed = true;
                 }

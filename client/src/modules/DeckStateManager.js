@@ -36,7 +36,7 @@ export class DeckStateManager {
         if (option) {
             this.customRoleOptions.splice(this.customRoleOptions.indexOf(option), 1);
             localStorage.setItem('play-werewolf-custom-roles', JSON.stringify(this.customRoleOptions.concat(this.deck.filter(card => card.custom === true))));
-            toast('"' + name + '" deleted.', 'error', true, true, 3);
+            toast('"' + name + '" deleted.', 'error', true, true, 'short');
         }
     }
 
@@ -88,7 +88,7 @@ export class DeckStateManager {
     loadCustomRolesFromFile (file, updateRoleListFunction, loadDefaultCardsFn, showIncludedCardsFn) {
         const reader = new FileReader();
         reader.onerror = (e) => {
-            toast(reader.error.message, 'error', true, true, 5);
+            toast(reader.error.message, 'error', true, true, 'medium');
         };
         reader.onload = (e) => {
             let string;
@@ -100,13 +100,19 @@ export class DeckStateManager {
             if (validateCustomRoleCookie(string)) {
                 this.customRoleOptions = JSON.parse(string); // we know it is valid JSON from the validate function
                 ModalManager.dispelModal('upload-custom-roles-modal', 'modal-background');
-                toast('Roles imported successfully', 'success', true, true, 3);
+                toast('Roles imported successfully', 'success', true, true, 'short');
                 localStorage.setItem('play-werewolf-custom-roles', JSON.stringify(this.customRoleOptions));
                 updateRoleListFunction(this, document.getElementById('deck-select'));
                 // loadDefaultCardsFn(this);
                 // showIncludedCardsFn(this);
             } else {
-                toast('Invalid formatting. Make sure you import the file as downloaded from this page.', 'error', true, true, 5);
+                toast(
+                    'Invalid formatting. Make sure you import the file as downloaded from this page.',
+                    'error',
+                    true,
+                    true,
+                    'medium'
+                );
             }
         };
         reader.readAsText(file);

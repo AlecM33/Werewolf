@@ -3,6 +3,7 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const ServerBootstrapper = {
     processCLIArgs: () => {
@@ -63,6 +64,15 @@ const ServerBootstrapper = {
                 } else {
                     next();
                 }
+            });
+            app.use(function (req, res, next) {
+                const nonce = crypto.randomBytes(16).toString('base64');
+                res.setHeader(
+                    'Content-Security-Policy',
+                    "default-src 'self'; font-src 'self' https://fonts.gstatic.com/; img-src 'self' https://img.buymeacoffee.com;" +
+                    " script-src 'self' https://cdnjs.buymeacoffee.com; style-src 'self' https://cdnjs.buymeacoffee.com https://fonts.googleapis.com/ 'nonce-" + nonce + "'; frame-src 'self'"
+                );
+                next();
             });
         }
 

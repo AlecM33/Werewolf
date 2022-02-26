@@ -1,28 +1,27 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
-  },
-  "extends": [
-    "standard"
-  ],
-  "ignorePatterns": ["/client/dist/*", "client/certs/*", "client/favicon_package/*", "client/webpack/*", "node_modules/*"],
-  "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "requireConfigFile": false,
-    "ecmaVersion": 12,
-    "sourceType": "module"
-  },
-  "rules": {
-    "indent": ["error", 4, { "SwitchCase": 1 }],
-    "semi": [2, "always"],
-    "operator-linebreak": [2, "after", { "overrides": { "?": "before", ":": "before", "&&": "before", "||": "before", "+": "after" } }],
-    "no-void": ["error", { "allowAsStatement": true }],
-    "no-prototype-builtins": "off",
-    "no-undef": "off",
-    "no-return-assign": "warn",
-    "prefer-promise-reject-errors": "warn",
-    "no-trailing-spaces": "off"
-  }
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "standard"
+    ],
+    "ignorePatterns": ["/client/dist/*", "client/certs/*", "client/favicon_package/*", "client/webpack/*", "node_modules/*"],
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "semi": [2, "always"],
+        "operator-linebreak": [2, "after", { "overrides": { "?": "before", ":": "before", "&&": "before", "||": "before", "+": "after" } }],
+        "no-void": ["error", { "allowAsStatement": true }],
+        "no-prototype-builtins": "off",
+        "no-undef": "off",
+        "no-return-assign": "warn",
+        "prefer-promise-reject-errors": "warn",
+        "no-trailing-spaces": "off"
+    }
 }

@@ -1,6 +1,6 @@
 import { globals } from '../config/globals.js';
 import { toast } from './Toast.js';
-import { templates } from './Templates.js';
+import { HTMLFragments } from './HTMLFragments.js';
 import { ModalManager } from './ModalManager.js';
 
 export class GameStateRenderer {
@@ -343,9 +343,9 @@ function renderGroupOfPlayers (
         container.classList.add('game-player');
         if (moderatorType) {
             container.dataset.pointer = player.id;
-            container.innerHTML = templates.MODERATOR_PLAYER;
+            container.innerHTML = HTMLFragments.MODERATOR_PLAYER;
         } else {
-            container.innerHTML = templates.GAME_PLAYER;
+            container.innerHTML = HTMLFragments.GAME_PLAYER;
         }
         container.querySelector('.game-player-name').innerText = player.name;
         const roleElement = container.querySelector('.game-player-role');
@@ -492,7 +492,7 @@ function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {
 function createEndGamePromptComponent (socket, stateBucket) {
     if (document.querySelector('#end-game-prompt') === null) {
         const div = document.createElement('div');
-        div.innerHTML = templates.END_GAME_PROMPT;
+        div.innerHTML = HTMLFragments.END_GAME_PROMPT;
         div.querySelector('#end-game-button').addEventListener('click', (e) => {
             e.preventDefault();
             if (confirm('End the game?')) {

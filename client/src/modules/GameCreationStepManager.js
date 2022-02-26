@@ -3,9 +3,9 @@ import { cancelCurrentToast, toast } from './Toast.js';
 import { ModalManager } from './ModalManager.js';
 import { XHRUtility } from './XHRUtility.js';
 import { globals } from '../config/globals.js';
-import { templates } from './Templates.js';
-import { defaultCards } from '../config/defaultCards';
-import { UserUtility } from './UserUtility';
+import { HTMLFragments } from './HTMLFragments.js';
+import { defaultCards } from '../config/defaultCards.js';
+import { UserUtility } from './UserUtility.js';
 
 export class GameCreationStepManager {
     constructor (deckManager) {
@@ -192,7 +192,7 @@ function renderNameStep (containerId, step, game, steps) {
     const stepContainer = document.createElement('div');
     setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container step' });
 
-    stepContainer.innerHTML = templates.ENTER_NAME_STEP;
+    stepContainer.innerHTML = HTMLFragments.ENTER_NAME_STEP;
     document.getElementById(containerId).appendChild(stepContainer);
     const nameInput = document.querySelector('#moderator-name');
     nameInput.value = game.moderatorName;
@@ -246,9 +246,9 @@ function renderRoleSelectionStep (game, containerId, step, deckManager) {
     const stepContainer = document.createElement('div');
     setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container-left-align step' });
 
-    stepContainer.innerHTML = templates.CREATE_GAME_CUSTOM_ROLES;
-    stepContainer.innerHTML += templates.CREATE_GAME_DECK_STATUS;
-    stepContainer.innerHTML += templates.CREATE_GAME_DECK;
+    stepContainer.innerHTML = HTMLFragments.CREATE_GAME_CUSTOM_ROLES;
+    stepContainer.innerHTML += HTMLFragments.CREATE_GAME_DECK_STATUS;
+    stepContainer.innerHTML += HTMLFragments.CREATE_GAME_DECK;
 
     const exportHandler = (e) => {
         if (e.type === 'click' || e.code === 'Enter') {
@@ -633,7 +633,7 @@ function addOptionsToList (deckManager, selectEl) {
     });
     for (let i = 0; i < options.length; i++) {
         const optionEl = document.createElement('div');
-        optionEl.innerHTML = templates.DECK_SELECT_ROLE;
+        optionEl.innerHTML = HTMLFragments.DECK_SELECT_ROLE;
         optionEl.classList.add('deck-select-role');
         const alignmentClass = options[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL;
         optionEl.classList.add(alignmentClass);

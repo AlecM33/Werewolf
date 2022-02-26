@@ -1,5 +1,3 @@
-import { globals } from '../config/globals.js';
-
 export const toast = (message, type, positionAtTop = true, dispelAutomatically = true, duration = null) => {
     if (message && type) {
         buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration);

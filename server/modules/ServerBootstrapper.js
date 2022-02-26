@@ -66,7 +66,7 @@ const ServerBootstrapper = {
                 }
             });
             app.use(function (req, res, next) {
-                let nonce = crypto.randomBytes(16).toString('base64');
+                const nonce = crypto.randomBytes(16).toString('base64');
                 res.setHeader(
                     'Content-Security-Policy',
                     "default-src 'self'; font-src 'self' https://fonts.gstatic.com/; img-src 'self' https://img.buymeacoffee.com;" +

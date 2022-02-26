@@ -1,12 +1,12 @@
 // TODO: clean up these deep relative paths? jsconfig.json is not working...
-const LOG_LEVEL = require("../../../../server/config/globals.js").LOG_LEVEL;
+const LOG_LEVEL = require('../../../../server/config/globals.js').LOG_LEVEL;
 const ServerTimer = require('../../../../server/modules/ServerTimer.js');
 const logger = require('../../../../server/modules/Logger.js')(LOG_LEVEL.DEBUG);
 
 describe('ServerTimer', () => {
     let serverTimer;
 
-    it ('should run a timer for the specified time', async () => {
+    it('should run a timer for the specified time', async () => {
         serverTimer = new ServerTimer(0, 0.001, 10, logger);
         spyOn(global, 'clearTimeout');
         await serverTimer.runTimer(false).then(() => {
@@ -17,7 +17,7 @@ describe('ServerTimer', () => {
         });
     });
 
-    it ('should stop the timer', () => {
+    it('should stop the timer', () => {
         serverTimer = new ServerTimer(1, 0, 10, logger);
         spyOn(global, 'clearTimeout');
         serverTimer.runTimer(false).then(() => {
@@ -29,7 +29,7 @@ describe('ServerTimer', () => {
         expect(clearTimeout).toHaveBeenCalledWith(serverTimer.ticking);
     });
 
-    it ('should stop and resume the timer', async () => {
+    it('should stop and resume the timer', async () => {
         serverTimer = new ServerTimer(0, 1, 10, logger);
         spyOn(global, 'clearTimeout');
         serverTimer.runTimer(false).then(() => {
@@ -41,7 +41,7 @@ describe('ServerTimer', () => {
         await new Promise(function (resolve) {
             setTimeout(function () {
                 serverTimer.stopTimer();
-                let timeRemainingWhenStopped = serverTimer.currentTimeInMillis;
+                const timeRemainingWhenStopped = serverTimer.currentTimeInMillis;
                 serverTimer.resumeTimer();
 
                 expect(clearTimeout).toHaveBeenCalledTimes(1);

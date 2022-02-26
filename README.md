@@ -81,8 +81,11 @@ before serving the application over HTTPS - otherwise it will revert to HTTP. Us
 
 ## Testing
 
-Unit tests are written using <a href="https://jasmine.github.io/">Jasmine</a>. Execute them by running `npm run test`. 
-They reside in the `spec/unit` directory, which maps 1:1 to the application directory structure - i.e. unit tests for 
+Tests are written using <a href="https://jasmine.github.io/">Jasmine</a>. End-to-end tests are run using <a href='https://karma-runner.github.io/latest/index.html'>Karma</a>.
+
+Execute unit tests by running `npm run test:unit`. Execute end-to-end tests by running `npm run test:e2e`. 
+
+Unit tests map 1:1 to the application directory structure - i.e. unit tests for 
 `server/modules/GameManager` are found in `spec/unit/server/modules/GameManager_Spec.js`
 
 ## Code Formatting

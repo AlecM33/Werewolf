@@ -72,7 +72,7 @@ class ServerTimer {
     }
 
     resumeTimer () {
-        this.logger.debug('RESUMING TIMER FOR ' + this.currentTimeInMillis + 'ms');
+        this.logger.trace('RESUMING TIMER FOR ' + this.currentTimeInMillis + 'ms');
         this.start = Date.now();
         this.totalTime = this.currentTimeInMillis;
         const expected = Date.now() + this.tickInterval;

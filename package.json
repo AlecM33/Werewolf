@@ -14,7 +14,7 @@
     "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node server/main.js",
     "start": "NODE_ENV=production node server/main.js -- loglevel=trace port=8080",
     "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
-    "test": "jasmine",
+    "test:unit": "jasmine",
     "test:e2e": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
   "engines": {

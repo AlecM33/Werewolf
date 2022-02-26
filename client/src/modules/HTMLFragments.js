@@ -1,4 +1,4 @@
-export const templates = {
+export const HTMLFragments = {
     LOBBY:
     `<div id='lobby-header'>
         <div>

@@ -1,6 +1,6 @@
 import { globals } from '../config/globals.js';
 import { toast } from './Toast.js';
-import { ModalManager } from './ModalManager';
+import { ModalManager } from './ModalManager.js';
 
 export class DeckStateManager {
     constructor () {

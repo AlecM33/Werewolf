@@ -1,6 +1,6 @@
 import { UserUtility } from '../modules/UserUtility.js';
 import { globals } from '../config/globals.js';
-import { templates } from '../modules/Templates.js';
+import { HTMLFragments } from '../modules/HTMLFragments.js';
 import { GameStateRenderer } from '../modules/GameStateRenderer.js';
 import { toast } from '../modules/Toast.js';
 import { GameTimerManager } from '../modules/GameTimerManager.js';
@@ -54,7 +54,7 @@ function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWo
                 stateBucket.currentGameState = gameState;
                 document.querySelector('.spinner-container')?.remove();
                 document.querySelector('.spinner-background')?.remove();
-                document.getElementById('game-content').innerHTML = templates.INITIAL_GAME_DOM;
+                document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
                 toast('You are connected.', 'success', true, true, 2);
                 processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
             }
@@ -72,7 +72,7 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
     }
     switch (currentGameState.status) {
         case globals.STATUS.LOBBY:
-            document.getElementById('game-state-container').innerHTML = templates.LOBBY;
+            document.getElementById('game-state-container').innerHTML = HTMLFragments.LOBBY;
             gameStateRenderer.renderLobbyHeader();
             gameStateRenderer.renderLobbyPlayers();
             if (
@@ -90,24 +90,24 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
             gameStateRenderer.renderGameHeader();
             switch (currentGameState.client.userType) {
                 case globals.USER_TYPES.PLAYER:
-                    document.getElementById('game-state-container').innerHTML = templates.PLAYER_GAME_VIEW;
+                    document.getElementById('game-state-container').innerHTML = HTMLFragments.PLAYER_GAME_VIEW;
                     gameStateRenderer.renderPlayerView();
                     break;
                 case globals.USER_TYPES.KILLED_PLAYER:
 
-                    document.getElementById('game-state-container').innerHTML = templates.PLAYER_GAME_VIEW;
+                    document.getElementById('game-state-container').innerHTML = HTMLFragments.PLAYER_GAME_VIEW;
                     gameStateRenderer.renderPlayerView(true);
                     break;
                 case globals.USER_TYPES.MODERATOR:
-                    document.getElementById('game-state-container').innerHTML = templates.MODERATOR_GAME_VIEW;
+                    document.getElementById('game-state-container').innerHTML = HTMLFragments.MODERATOR_GAME_VIEW;
                     gameStateRenderer.renderModeratorView();
                     break;
                 case globals.USER_TYPES.TEMPORARY_MODERATOR:
-                    document.getElementById('game-state-container').innerHTML = templates.TEMP_MOD_GAME_VIEW;
+                    document.getElementById('game-state-container').innerHTML = HTMLFragments.TEMP_MOD_GAME_VIEW;
                     gameStateRenderer.renderTempModView();
                     break;
                 case globals.USER_TYPES.SPECTATOR:
-                    document.getElementById('game-state-container').innerHTML = templates.SPECTATOR_GAME_VIEW;
+                    document.getElementById('game-state-container').innerHTML = HTMLFragments.SPECTATOR_GAME_VIEW;
                     gameStateRenderer.renderSpectatorView();
                     break;
                 default:
@@ -122,7 +122,7 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
             break;
         case globals.STATUS.ENDED: {
             const container = document.getElementById('game-state-container');
-            container.innerHTML = templates.END_OF_GAME_VIEW;
+            container.innerHTML = HTMLFragments.END_OF_GAME_VIEW;
             container.classList.add('vertical-flex');
             gameStateRenderer.renderEndOfGame();
             break;
@@ -297,7 +297,7 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
 
 function displayStartGamePromptForModerators (gameState, gameStateRenderer) {
     const div = document.createElement('div');
-    div.innerHTML = templates.START_GAME_PROMPT;
+    div.innerHTML = HTMLFragments.START_GAME_PROMPT;
     div.querySelector('#start-game-button').addEventListener('click', gameStateRenderer.startGameHandler);
     document.body.appendChild(div);
 }
@@ -354,7 +354,7 @@ function activateRoleInfoButton (deck) {
     });
     document.getElementById('role-info-button').addEventListener('click', (e) => {
         e.preventDefault();
-        document.getElementById('prompt').innerHTML = templates.ROLE_INFO_MODAL;
+        document.getElementById('prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
         const modalContent = document.getElementById('game-role-info-container');
         for (const card of deck) {
             const roleDiv = document.createElement('div');

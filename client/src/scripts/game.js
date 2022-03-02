@@ -34,9 +34,15 @@ const game = () => {
                     UserUtility.validateAnonUserSignature(res.content)
                 );
             });
+            socket.on("connect_error", (err) => {
+                toast('Connection error: ' + err, 'error', true, false);
+            });
             socket.on('disconnect', () => {
                 toast('Disconnected. Attempting reconnect...', 'error', true, false);
             });
+            socket.emit('hey');
+            socket.emit('hey');
+            socket.emit('hey');
             setClientSocketHandlers(stateBucket, gameStateRenderer, socket, timerWorker, gameTimerManager);
         }).catch((res) => {
             toast(res.content, 'error', true);

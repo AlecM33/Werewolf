@@ -68,6 +68,13 @@ img[src='../images/logo_cropped.gif'] {
     margin: 3em 0 1em 0;
 }
 
+#logo-container {
+    max-width: 400px;
+    width: 63vw;
+    min-width: 250px;
+    margin: 3em 0 1em 0;
+}
+
 form > div {
     margin: 15px 0;
 }

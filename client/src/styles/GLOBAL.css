@@ -149,6 +149,12 @@ textarea {
     display: flex;
 }
 
+.teaser {
+    text-align:center;
+    color:gray;
+    margin-bottom:3em;
+}
+
 #footer > div, #footer > a {
     margin: 0.5em;
 }

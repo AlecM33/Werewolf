@@ -13,10 +13,10 @@ describe('GameManager', () => {
     beforeAll(() => {
         spyOn(logger, 'debug');
         spyOn(logger, 'error');
-        gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
+
         const inObj = { emit: () => {} };
         namespace = { in: () => { return inObj; } };
-        gameManager.namespace = namespace;
+        gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, namespace).getInstance();
     });
 
     beforeEach(() => {

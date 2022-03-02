@@ -36,6 +36,7 @@
     "jasmine": "^3.5.0",
     "karma-jasmine": "^4.0.1",
     "open": "^7.0.3",
+    "rate-limiter-flexible": "^2.3.6",
     "socket.io": "^4.4.0",
     "socket.io-client": "^4.4.0",
     "webpack": "^5.65.0",

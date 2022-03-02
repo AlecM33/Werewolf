@@ -97,14 +97,14 @@ const ServerBootstrapper = {
         return io;
     },
 
-    createGameSocketNamespace(server, logger) {
+    createGameSocketNamespace (server, logger) {
         const namespace = server.of('/in-game');
         registerRateLimiter(namespace, logger);
         return server.of('/in-game');
     }
 };
 
-function registerRateLimiter(server, logger) {
+function registerRateLimiter (server, logger) {
     const rateLimiter = new RateLimiterMemory(
         {
             points: 10,
@@ -116,8 +116,8 @@ function registerRateLimiter(server, logger) {
             await rateLimiter.consume(socket.handshake.address);
             logger.trace('consumed point from ' + socket.handshake.address);
             next();
-        } catch(rejection) {
-            next(new Error("Your connection has been blocked."));
+        } catch (rejection) {
+            next(new Error('Your connection has been blocked.'));
         }
     });
 }

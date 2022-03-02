@@ -34,7 +34,7 @@ const game = () => {
                     UserUtility.validateAnonUserSignature(res.content)
                 );
             });
-            socket.on("connect_error", (err) => {
+            socket.on('connect_error', (err) => {
                 toast(err, 'error', true, false);
             });
             socket.on('disconnect', () => {

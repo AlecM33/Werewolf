@@ -35,7 +35,7 @@ const game = () => {
                 );
             });
             socket.on("connect_error", (err) => {
-                toast('Connection error: ' + err, 'error', true, false);
+                toast(err, 'error', true, false);
             });
             socket.on('disconnect', () => {
                 toast('Disconnected. Attempting reconnect...', 'error', true, false);

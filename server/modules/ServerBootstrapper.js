@@ -4,6 +4,7 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 const ServerBootstrapper = {
     processCLIArgs: () => {
@@ -79,7 +80,7 @@ const ServerBootstrapper = {
         return main;
     },
 
-    createSocketServer: (main, app, port) => {
+    createSocketServer: (main, app, port, logger) => {
         let io;
         if (process.env.NODE_ENV.trim() === 'development') {
             io = require('socket.io')(main, {
@@ -91,8 +92,34 @@ const ServerBootstrapper = {
             });
         }
 
-        return io.of('/in-game');
+        registerRateLimiter(io, logger);
+
+        return io;
+    },
+
+    createGameSocketNamespace (server, logger) {
+        const namespace = server.of('/in-game');
+        registerRateLimiter(namespace, logger);
+        return server.of('/in-game');
     }
 };
+
+function registerRateLimiter (server, logger) {
+    const rateLimiter = new RateLimiterMemory(
+        {
+            points: 10,
+            duration: 1
+        });
+
+    server.use(async (socket, next) => {
+        try {
+            await rateLimiter.consume(socket.handshake.address);
+            logger.trace('consumed point from ' + socket.handshake.address);
+            next();
+        } catch (rejection) {
+            next(new Error('Your connection has been blocked.'));
+        }
+    });
+}
 
 module.exports = ServerBootstrapper;

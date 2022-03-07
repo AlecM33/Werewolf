@@ -6,11 +6,11 @@ const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
 
 class GameManager {
-    constructor (logger, environment) {
+    constructor (logger, environment, namespace) {
         this.logger = logger;
         this.environment = environment;
         this.activeGameRunner = new ActiveGameRunner(logger).getInstance();
-        this.namespace = null;
+        this.namespace = namespace;
     }
 
     addGameSocketHandlers = (namespace, socket) => {
@@ -477,10 +477,10 @@ function getGameSize (cards) {
 }
 
 class Singleton {
-    constructor (logger, environment) {
+    constructor (logger, environment, namespace) {
         if (!Singleton.instance) {
             logger.info('CREATING SINGLETON GAME MANAGER');
-            Singleton.instance = new GameManager(logger, environment);
+            Singleton.instance = new GameManager(logger, environment, namespace);
         }
     }
 

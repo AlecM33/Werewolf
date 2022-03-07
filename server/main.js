@@ -22,24 +22,23 @@ const main = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.us
 
 app.set('port', args.port);
 
-const inGameSocketServer = ServerBootstrapper.createSocketServer(main, app, args.port);
+const inGameSocketServer = ServerBootstrapper.createSocketServer(main, app, args.port, logger);
+const gameNamespace = ServerBootstrapper.createGameSocketNamespace(inGameSocketServer, logger);
 
 let gameManager;
 
 /* Instantiate the singleton game manager */
 if (process.env.NODE_ENV.trim() === 'development') {
-    gameManager = new GameManager(logger, globals.ENVIRONMENT.LOCAL).getInstance();
+    gameManager = new GameManager(logger, globals.ENVIRONMENT.LOCAL, gameNamespace).getInstance();
 } else {
-    gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
+    gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, gameNamespace).getInstance();
 }
 
-gameManager.namespace = inGameSocketServer;
-
-inGameSocketServer.on('connection', function (socket) {
+gameNamespace.on('connection', function (socket) {
     socket.on('disconnecting', (reason) => {
         logger.trace('client socket disconnecting because: ' + reason);
     });
-    gameManager.addGameSocketHandlers(inGameSocketServer, socket);
+    gameManager.addGameSocketHandlers(gameNamespace, socket);
 });
 
 /* api endpoints */

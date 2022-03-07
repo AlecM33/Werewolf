@@ -34,6 +34,9 @@ const game = () => {
                     UserUtility.validateAnonUserSignature(res.content)
                 );
             });
+            socket.on('connect_error', (err) => {
+                toast(err, 'error', true, false);
+            });
             socket.on('disconnect', () => {
                 toast('Disconnected. Attempting reconnect...', 'error', true, false);
             });

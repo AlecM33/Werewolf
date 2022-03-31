@@ -171,7 +171,10 @@ class GameManager {
         } else {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
             pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
-            const newAccessCode = this.generateAccessCode();
+            const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
+            if (newAccessCode === null) {
+                return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
+            }
             const moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
             moderator.assigned = true;
             if (gameParams.timerParams !== null) {
@@ -205,15 +208,23 @@ class GameManager {
         }
     };
 
-    generateAccessCode = () => {
-        const numLetters = globals.ACCESS_CODE_CHAR_POOL.length;
-        const codeDigits = [];
-        let iterations = globals.ACCESS_CODE_LENGTH;
-        while (iterations > 0) {
-            iterations--;
-            codeDigits.push(globals.ACCESS_CODE_CHAR_POOL[getRandomInt(numLetters)]);
+    generateAccessCode = (charPool) => {
+        const charCount = charPool.length;
+        let codeDigits, accessCode;
+        let attempts = 0;
+        while (!accessCode || (this.activeGameRunner.activeGames[accessCode] && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
+            codeDigits = [];
+            let iterations = globals.ACCESS_CODE_LENGTH;
+            while (iterations > 0) {
+                iterations--;
+                codeDigits.push(charPool[getRandomInt(charCount)]);
+            }
+            accessCode = codeDigits.join('');
+            attempts ++;
         }
-        return codeDigits.join('');
+        return this.activeGameRunner.activeGames[accessCode]
+            ? null
+            : accessCode;
     };
 
     transferModeratorPowers = (game, person, namespace, logger) => {

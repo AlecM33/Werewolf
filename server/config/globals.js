@@ -1,6 +1,7 @@
 const globals = {
     ACCESS_CODE_CHAR_POOL: 'BCDFGHJKLMNPQRSTVWXYZ0123456789',
-    ACCESS_CODE_LENGTH: 6,
+    ACCESS_CODE_LENGTH: 4,
+    ACCESS_CODE_GENERATION_ATTEMPTS: 50,
     CLOCK_TICK_INTERVAL_MILLIS: 10,
     STALE_GAME_HOURS: 12,
     CLIENT_COMMANDS: {
@@ -33,7 +34,8 @@ const globals = {
     },
     ERROR_MESSAGE: {
         GAME_IS_FULL: 'This game is full',
-        BAD_CREATE_REQUEST: 'Game has invalid options.'
+        BAD_CREATE_REQUEST: 'Game has invalid options.',
+        NO_UNIQUE_ACCESS_CODE: 'Could not generate a unique access code.'
     },
     EVENTS: {
         PLAYER_JOINED: 'playerJoined',

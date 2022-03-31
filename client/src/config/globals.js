@@ -4,7 +4,7 @@ export const globals = {
     MAX_CUSTOM_ROLE_NAME_LENGTH: 30,
     MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 500,
     TOAST_DURATION_DEFAULT: 6,
-    ACCESS_CODE_LENGTH: 6,
+    ACCESS_CODE_LENGTH: 4,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id',
     ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     COMMANDS: {

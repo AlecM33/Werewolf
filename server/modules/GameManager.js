@@ -171,7 +171,10 @@ class GameManager {
         } else {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
             pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
-            const newAccessCode = this.generateAccessCode();
+            const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
+            if (newAccessCode === null) {
+                return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
+            }
             const moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
             moderator.assigned = true;
             if (gameParams.timerParams !== null) {
@@ -205,15 +208,23 @@ class GameManager {
         }
     };
 
-    generateAccessCode = () => {
-        const numLetters = globals.ACCESS_CODE_CHAR_POOL.length;
-        const codeDigits = [];
-        let iterations = globals.ACCESS_CODE_LENGTH;
-        while (iterations > 0) {
-            iterations--;
-            codeDigits.push(globals.ACCESS_CODE_CHAR_POOL[getRandomInt(numLetters)]);
+    generateAccessCode = (charPool) => {
+        const charCount = charPool.length;
+        let codeDigits, accessCode;
+        let attempts = 0;
+        while (!accessCode || (this.activeGameRunner.activeGames[accessCode] && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
+            codeDigits = [];
+            let iterations = globals.ACCESS_CODE_LENGTH;
+            while (iterations > 0) {
+                iterations --;
+                codeDigits.push(charPool[getRandomInt(charCount)]);
+            }
+            accessCode = codeDigits.join('');
+            attempts ++;
         }
-        return codeDigits.join('');
+        return this.activeGameRunner.activeGames[accessCode]
+            ? null
+            : accessCode;
     };
 
     transferModeratorPowers = (game, person, namespace, logger) => {
@@ -362,9 +373,9 @@ function initializePeopleForGame (uniqueCards, moderator) {
     let cards = []; // this will contain copies of each card equal to the quantity.
     let numberOfRoles = 0;
     for (const card of uniqueCards) {
-        for (let i = 0; i < card.quantity; i++) {
+        for (let i = 0; i < card.quantity; i ++) {
             cards.push(card);
-            numberOfRoles++;
+            numberOfRoles ++;
         }
     }
 
@@ -377,7 +388,7 @@ function initializePeopleForGame (uniqueCards, moderator) {
         moderator.gameRoleDescription = cards[j].description;
         moderator.alignment = cards[j].team;
         people.push(moderator);
-        j++;
+        j ++;
     }
 
     while (j < numberOfRoles) {
@@ -393,14 +404,14 @@ function initializePeopleForGame (uniqueCards, moderator) {
         person.customRole = cards[j].custom;
         person.hasEnteredName = false;
         people.push(person);
-        j++;
+        j ++;
     }
 
     return people;
 }
 
 function shuffleArray (array) {
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i ++) {
         const randIndex = Math.floor(Math.random() * i);
         const temp = array[i];
         array[i] = array[randIndex];
@@ -411,7 +422,7 @@ function shuffleArray (array) {
 
 function createRandomId () {
     let id = '';
-    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i++) {
+    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i ++) {
         id += globals.ACCESS_CODE_CHAR_POOL[Math.floor(Math.random() * globals.ACCESS_CODE_CHAR_POOL.length)];
     }
     return id;

@@ -260,4 +260,24 @@ describe('GameManager', () => {
             expect(gameManager.namespace.in().emit).toHaveBeenCalledWith(globals.EVENTS.NEW_SPECTATOR, jasmine.anything());
         });
     });
+
+    describe('#generateAccessCode', () => {
+        it('should continue to generate access codes up to the max attempts when the generated code is already in use by another game', () => {
+            gameManager.activeGameRunner.activeGames = {
+                AAAA: {}
+            };
+
+            const accessCode = gameManager.generateAccessCode(['A']);
+            expect(accessCode).toEqual(null); // we might the max generation attempts of 50.
+        });
+
+        it('should generate and return a unique access code', () => {
+            gameManager.activeGameRunner.activeGames = {
+                AAAA: {}
+            };
+
+            const accessCode = gameManager.generateAccessCode(['B']);
+            expect(accessCode).toEqual('BBBB');
+        });
+    });
 });

@@ -56,7 +56,7 @@ export const UserUtility = {
 
 function createRandomUserId () {
     let id = '';
-    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i++) {
+    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i ++) {
         id += globals.ACCESS_CODE_CHAR_POOL[Math.floor(Math.random() * globals.ACCESS_CODE_CHAR_POOL.length)];
     }
     return id;

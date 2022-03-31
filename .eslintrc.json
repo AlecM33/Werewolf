@@ -23,6 +23,15 @@
     "no-undef": "off",
     "no-return-assign": "warn",
     "prefer-promise-reject-errors": "warn",
-    "no-trailing-spaces": "off"
+    "no-trailing-spaces": "off",
+    "space-unary-ops": [
+      2, {
+        "words": true,
+        "nonwords": false,
+        "overrides": {
+          "--": true,
+          "++": true
+        }
+      }]
   }
 }

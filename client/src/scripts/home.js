@@ -16,7 +16,7 @@ const home = () => {
 };
 
 function roomCodeIsValid (code) {
-    return typeof code === 'string' && /^[A-Z0-9]{6}$/.test(code.toUpperCase().trim());
+    return typeof code === 'string' && /^[A-Z0-9]{4}$/.test(code.toUpperCase().trim());
 }
 
 function attemptToJoinGame (code) {

@@ -25,6 +25,8 @@
   "dependencies": {
     "@babel/plugin-transform-object-assign": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
     "acorn": "^8.6.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.3",
@@ -44,8 +46,6 @@
     "webpack-remove-debug": "^0.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@babel/eslint-parser": "^7.16.5",
     "eslint": "^8.6.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",

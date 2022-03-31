@@ -728,7 +728,13 @@ function updateDeckStatus (deckManager) {
         if (document.getElementById('deck-list-placeholder')) {
             document.getElementById('deck-list-placeholder').remove();
         }
-        for (const card of deckManager.getCurrentDeck()) {
+        const sortedDeck = deckManager.getCurrentDeck().sort((a, b) => {
+            if (a.team !== b.team) {
+                return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+            }
+            return a.role.localeCompare(b.role);
+        });
+        for (const card of sortedDeck) {
             if (card.quantity > 0) {
                 const roleEl = document.createElement('div');
                 roleEl.classList.add('deck-role');

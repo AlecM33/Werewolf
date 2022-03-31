@@ -6,7 +6,6 @@ export const globals = {
     TOAST_DURATION_DEFAULT: 6,
     ACCESS_CODE_LENGTH: 4,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id',
-    ACCESS_CODE_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         START_GAME: 'startGame',

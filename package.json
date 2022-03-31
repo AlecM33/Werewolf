@@ -18,7 +18,7 @@
     "test:e2e": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": "14.15.3"
   },
   "author": "",
   "license": "ISC",

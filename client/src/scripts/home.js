@@ -10,7 +10,7 @@ const home = () => {
         if (roomCodeIsValid(userCode)) {
             attemptToJoinGame(userCode);
         } else {
-            toast('Invalid code. Codes are 6 numbers or letters.', 'error', true, true);
+            toast('Invalid code. Codes are 4 numbers or letters.', 'error', true, true);
         }
     };
 };

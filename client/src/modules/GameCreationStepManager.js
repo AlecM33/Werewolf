@@ -174,7 +174,7 @@ export class GameCreationStepManager {
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
                 break;
             case 5:
-                renderReviewAndCreateStep(containerId, step, this.currentGame);
+                renderReviewAndCreateStep(containerId, step, this.currentGame, this.deckManager);
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler, this.currentGame);
                 break;
             default:
@@ -349,7 +349,7 @@ function renderTimerStep (containerId, stepNumber, game, steps) {
     document.getElementById(containerId).appendChild(div);
 }
 
-function renderReviewAndCreateStep (containerId, stepNumber, game) {
+function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) {
     const div = document.createElement('div');
     div.setAttribute('id', 'step-' + stepNumber);
     div.classList.add('step');
@@ -368,7 +368,7 @@ function renderReviewAndCreateStep (containerId, stepNumber, game) {
             "<div id='timer-option' class='review-option'></div>" +
         '</div>' +
         '<div>' +
-            "<label for='roles-option'>Game Deck</label>" +
+            "<label id='roles-option-label' for='roles-option'>Game Deck</label>" +
             "<div id='roles-option' class='review-option'></div>" +
         '</div>';
 
@@ -393,9 +393,15 @@ function renderReviewAndCreateStep (containerId, stepNumber, game) {
     for (const card of game.deck) {
         const roleEl = document.createElement('div');
         roleEl.innerText = card.quantity + 'x ' + card.role;
+        if (card.team === globals.ALIGNMENT.GOOD) {
+            roleEl.classList.add(globals.ALIGNMENT.GOOD);
+        } else {
+            roleEl.classList.add(globals.ALIGNMENT.EVIL);
+        }
         div.querySelector('#roles-option').appendChild(roleEl);
     }
 
+    div.querySelector('#roles-option-label').innerText += ' (' + deckManager.getDeckSize() + ' Players)';
     div.querySelector('#mod-name').innerText = game.moderatorName;
 
     document.getElementById(containerId).appendChild(div);

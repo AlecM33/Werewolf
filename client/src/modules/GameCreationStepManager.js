@@ -462,7 +462,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
 // Display a widget for each default card that allows copies of it to be added/removed. Set initial deck state.
 function showIncludedCards (deckManager) {
     document.querySelectorAll('.compact-card').forEach((el) => { el.remove(); });
-    for (let i = 0; i < deckManager.getCurrentDeck().length; i++) {
+    for (let i = 0; i < deckManager.getCurrentDeck().length; i ++) {
         const card = deckManager.getCurrentDeck()[i];
         const cardEl = constructCompactDeckBuilderElement(card, deckManager);
         if (card.team === globals.ALIGNMENT.GOOD) {
@@ -487,7 +487,7 @@ function loadDefaultCards (deckManager) {
         return a.role.localeCompare(b.role);
     });
     const deck = [];
-    for (let i = 0; i < defaultCards.length; i++) {
+    for (let i = 0; i < defaultCards.length; i ++) {
         const card = defaultCards[i];
         card.quantity = 0;
         deck.push(card);
@@ -631,7 +631,7 @@ function addOptionsToList (deckManager, selectEl) {
         }
         return a.role.localeCompare(b.role);
     });
-    for (let i = 0; i < options.length; i++) {
+    for (let i = 0; i < options.length; i ++) {
         const optionEl = document.createElement('div');
         optionEl.innerHTML = HTMLFragments.DECK_SELECT_ROLE;
         optionEl.classList.add('deck-select-role');

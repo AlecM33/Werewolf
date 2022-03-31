@@ -264,7 +264,7 @@ describe('GameManager', () => {
     describe('#generateAccessCode', () => {
         it('should continue to generate access codes up to the max attempts when the generated code is already in use by another game', () => {
             gameManager.activeGameRunner.activeGames = {
-                'AAAA': {}
+                AAAA: {}
             };
 
             const accessCode = gameManager.generateAccessCode(['A']);
@@ -273,11 +273,11 @@ describe('GameManager', () => {
 
         it('should generate and return a unique access code', () => {
             gameManager.activeGameRunner.activeGames = {
-                'AAAA': {}
+                AAAA: {}
             };
 
             const accessCode = gameManager.generateAccessCode(['B']);
             expect(accessCode).toEqual('BBBB');
         });
-    })
+    });
 });

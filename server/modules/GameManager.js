@@ -216,7 +216,7 @@ class GameManager {
             codeDigits = [];
             let iterations = globals.ACCESS_CODE_LENGTH;
             while (iterations > 0) {
-                iterations--;
+                iterations --;
                 codeDigits.push(charPool[getRandomInt(charCount)]);
             }
             accessCode = codeDigits.join('');
@@ -373,9 +373,9 @@ function initializePeopleForGame (uniqueCards, moderator) {
     let cards = []; // this will contain copies of each card equal to the quantity.
     let numberOfRoles = 0;
     for (const card of uniqueCards) {
-        for (let i = 0; i < card.quantity; i++) {
+        for (let i = 0; i < card.quantity; i ++) {
             cards.push(card);
-            numberOfRoles++;
+            numberOfRoles ++;
         }
     }
 
@@ -388,7 +388,7 @@ function initializePeopleForGame (uniqueCards, moderator) {
         moderator.gameRoleDescription = cards[j].description;
         moderator.alignment = cards[j].team;
         people.push(moderator);
-        j++;
+        j ++;
     }
 
     while (j < numberOfRoles) {
@@ -404,14 +404,14 @@ function initializePeopleForGame (uniqueCards, moderator) {
         person.customRole = cards[j].custom;
         person.hasEnteredName = false;
         people.push(person);
-        j++;
+        j ++;
     }
 
     return people;
 }
 
 function shuffleArray (array) {
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i ++) {
         const randIndex = Math.floor(Math.random() * i);
         const temp = array[i];
         array[i] = array[randIndex];
@@ -422,7 +422,7 @@ function shuffleArray (array) {
 
 function createRandomId () {
     let id = '';
-    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i++) {
+    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i ++) {
         id += globals.ACCESS_CODE_CHAR_POOL[Math.floor(Math.random() * globals.ACCESS_CODE_CHAR_POOL.length)];
     }
     return id;

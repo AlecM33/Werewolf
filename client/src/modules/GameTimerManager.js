@@ -135,6 +135,7 @@ export class GameTimerManager {
         const playBtn = document.createElement('img');
         playBtn.setAttribute('src', '../images/play-button.svg');
         playBtn.addEventListener('click', this.playListener);
+        document.querySelector('#play-pause-placeholder')?.remove();
         document.getElementById('play-pause').appendChild(playBtn);
     }
 

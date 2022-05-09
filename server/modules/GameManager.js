@@ -187,6 +187,7 @@ class GameManager {
                 gameParams.deck,
                 gameParams.hasTimer,
                 moderator,
+                gameParams.hasDedicatedModerator,
                 gameParams.timerParams
             );
             this.activeGameRunner.activeGames[newAccessCode].createTime = new Date().toJSON();
@@ -308,6 +309,36 @@ class GameManager {
         }
     };
 
+    restartGame = async (game, namespace) => {
+        if (this.activeGameRunner.timerThreads[game.accessCode]) {
+            this.logger.info('KILLING STALE TIMER PROCESS FOR ' + accessCode);
+            this.activeGameRunner.timerThreads[game.accessCode].kill();
+            delete this.activeGameRunner.timerThreads[game.accessCode];
+        }
+        game.status = globals.STATUS.IN_PROGRESS;
+        let cards = []; // this will contain copies of each card equal to the quantity.
+        for (const card of game.deck) {
+            for (let i = 0; i < card.quantity; i ++) {
+                cards.push(card);
+            }
+        }
+        for (let i = 0; i < game.people.length; i ++) {
+            console.log(game.people[i].name);
+            console.log(cards[i].role);
+            if (game.people[i].out) {
+                game.people[i].out = false;
+            }
+            game.people[i].gameRole = cards[i].role;
+            game.people[i].gameRoleDescription = cards[i].description;
+            game.people[i].alignment = cards[i].team;
+        }
+        if (game.hasTimer) {
+            game.timerParams.paused = true;
+            this.activeGameRunner.runGame(game, namespace);
+        }
+        namespace.in(game.accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
+    }
+
     handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
@@ -379,7 +410,7 @@ function initializePeopleForGame (uniqueCards, moderator) {
         }
     }
 
-    cards = shuffleArray(cards); // The deck should probably be shuffled, ey?.
+    cards = shuffle(cards); // The deck should probably be shuffled, ey?.
 
     let j = 0;
     if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.
@@ -410,13 +441,20 @@ function initializePeopleForGame (uniqueCards, moderator) {
     return people;
 }
 
-function shuffleArray (array) {
-    for (let i = 0; i < array.length; i ++) {
-        const randIndex = Math.floor(Math.random() * i);
-        const temp = array[i];
-        array[i] = array[randIndex];
-        array[randIndex] = temp;
+/*
+-- To shuffle an array a of n elements (indices 0..n-1):
+for i from n−1 downto 1 do
+     j ← random integer such that 0 ≤ j ≤ i
+     exchange a[j] and a[i]
+ */
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i --) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = array[j];
+        array[j] = array[i];
+        array[i] = temp;
     }
+
     return array;
 }
 

@@ -89,6 +89,29 @@ router.patch('/:code/players', function (req, res) {
     }
 });
 
+router.patch('/:code/restart', function (req, res) {
+    if (
+        req.body === null
+        || !validateAccessCode(req.body.accessCode)
+        || !validateName(req.body.playerName)
+        || !validateCookie(req.body.localCookie)
+        || !validateCookie(req.body.sessionCookie)
+    ) {
+        res.status(400).send();
+    } else {
+        const game = gameManager.activeGameRunner.activeGames[req.body.accessCode];
+        if (game) {
+            gameManager.restartGame(game, gameManager.namespace).then((data) => {
+                res.status(200).send();
+            }).catch((code) => {
+                res.status(code).send();
+            });
+        } else {
+            res.status(404).send();
+        }
+    }
+});
+
 router.get('/environment', function (req, res) {
     res.status(200).send(gameManager.environment);
 });

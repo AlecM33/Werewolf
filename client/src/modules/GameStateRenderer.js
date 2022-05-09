@@ -2,6 +2,8 @@ import { globals } from '../config/globals.js';
 import { toast } from './Toast.js';
 import { HTMLFragments } from './HTMLFragments.js';
 import { ModalManager } from './ModalManager.js';
+import {XHRUtility} from "./XHRUtility";
+import {UserUtility} from "./UserUtility";
 
 export class GameStateRenderer {
     constructor (stateBucket, socket) {
@@ -256,7 +258,33 @@ export class GameStateRenderer {
         }
     }
 
-    renderEndOfGame () {
+    renderEndOfGame (gameState) {
+        if (
+            gameState.client.userType === globals.USER_TYPES.MODERATOR
+            || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+        ) {
+            let div = document.createElement('div');
+            div.innerHTML = HTMLFragments.RESTART_GAME_BUTTON;
+            div.querySelector('#restart-game').addEventListener('click', () => {
+                XHRUtility.xhr(
+                    '/api/games/' + gameState.accessCode + '/restart',
+                    'PATCH',
+                    null,
+                    JSON.stringify({
+                        playerName: gameState.client.name,
+                        accessCode: gameState.accessCode,
+                        sessionCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.LOCAL),
+                        localCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.PRODUCTION)
+                    })
+                )
+                    .then((res) => {
+
+                    }).catch((res) => {
+
+                });
+            })
+            document.getElementById('end-of-game-buttons').appendChild(div);
+        }
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }
 }

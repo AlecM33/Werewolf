@@ -59,7 +59,7 @@ function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWo
                 document.querySelector('.spinner-background')?.remove();
                 document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
                 toast('You are connected.', 'success', true, true, 'short');
-                processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker);
+                processGameState(stateBucket.currentGameState, cookie, socket, gameStateRenderer, gameTimerManager, timerWorker, true, true);
             }
         });
     } else {
@@ -67,7 +67,28 @@ function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWo
     }
 }
 
-function processGameState (currentGameState, userId, socket, gameStateRenderer, gameTimerManager, timerWorker, refreshPrompt = true) {
+function processGameState (
+    currentGameState,
+    userId,
+    socket,
+    gameStateRenderer,
+    gameTimerManager,
+    timerWorker,
+    refreshPrompt = true,
+    animateContainer= false
+) {
+    const containerAnimation = document.getElementById('game-state-container').animate(
+        [
+            { opacity: '0', transform: 'translateY(10px)' },
+            { opacity: '1', transform: 'translateY(0px)' }
+        ], {
+            duration: 500,
+            easing: 'ease-in-out',
+            fill: 'both'
+        });
+    if (animateContainer) {
+        containerAnimation.play();
+    }
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
     if (refreshPrompt) {
         removeStartGameFunctionalityIfPresent(gameStateRenderer);
@@ -126,8 +147,7 @@ function processGameState (currentGameState, userId, socket, gameStateRenderer, 
         case globals.STATUS.ENDED: {
             const container = document.getElementById('game-state-container');
             container.innerHTML = HTMLFragments.END_OF_GAME_VIEW;
-            container.classList.add('vertical-flex');
-            gameStateRenderer.renderEndOfGame();
+            gameStateRenderer.renderEndOfGame(currentGameState);
             break;
         }
         default:
@@ -190,7 +210,9 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
                     socket,
                     gameStateRenderer,
                     gameTimerManager,
-                    timerWorker
+                    timerWorker,
+                    true,
+                    true
                 );
             }
         );
@@ -209,7 +231,9 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
                     socket,
                     gameStateRenderer,
                     gameTimerManager,
-                    timerWorker
+                    timerWorker,
+                    true,
+                    true
                 );
             }
         );
@@ -280,6 +304,7 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
             gameStateRenderer,
             gameTimerManager,
             timerWorker,
+            false,
             false
         );
     });
@@ -293,7 +318,9 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
             socket,
             gameStateRenderer,
             gameTimerManager,
-            timerWorker
+            timerWorker,
+            true,
+            true
         );
     });
 }

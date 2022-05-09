@@ -316,18 +316,18 @@ class GameManager {
             delete this.activeGameRunner.timerThreads[game.accessCode];
         }
         game.status = globals.STATUS.IN_PROGRESS;
-        let cards = []; // this will contain copies of each card equal to the quantity.
+        let cards = [];
         for (const card of game.deck) {
             for (let i = 0; i < card.quantity; i ++) {
                 cards.push(card);
             }
         }
+        shuffle(cards);
         for (let i = 0; i < game.people.length; i ++) {
-            console.log(game.people[i].name);
-            console.log(cards[i].role);
             if (game.people[i].out) {
                 game.people[i].out = false;
             }
+            game.people[i].revealed = false;
             game.people[i].gameRole = cards[i].role;
             game.people[i].gameRoleDescription = cards[i].description;
             game.people[i].alignment = cards[i].team;
@@ -335,6 +335,11 @@ class GameManager {
         if (game.hasTimer) {
             game.timerParams.paused = true;
             this.activeGameRunner.runGame(game, namespace);
+        }
+        /* If the game was originally set up with a temporary moderator and the game has gone far enough to establish
+        a dedicated moderator, make the current moderator a temp mod for the restarting of the same game. */
+        if (!game.hasDedicatedModerator && game.moderator.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
+            game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
         }
         namespace.in(game.accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
     }
@@ -396,12 +401,12 @@ function initializeModerator (name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
-    return new Person(createRandomId(), createRandomId(), name, userType); ;
+    return new Person(createRandomId(), createRandomId(), name, userType);
 }
 
 function initializePeopleForGame (uniqueCards, moderator) {
     const people = [];
-    let cards = []; // this will contain copies of each card equal to the quantity.
+    let cards = [];
     let numberOfRoles = 0;
     for (const card of uniqueCards) {
         for (let i = 0; i < card.quantity; i ++) {
@@ -410,7 +415,7 @@ function initializePeopleForGame (uniqueCards, moderator) {
         }
     }
 
-    cards = shuffle(cards); // The deck should probably be shuffled, ey?.
+    shuffle(cards);
 
     let j = 0;
     if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.

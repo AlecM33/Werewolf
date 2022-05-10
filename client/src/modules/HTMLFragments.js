@@ -17,7 +17,7 @@ export const HTMLFragments = {
         </div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
     </div>
     <div>
@@ -50,7 +50,7 @@ export const HTMLFragments = {
             <div id='game-timer'></div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
     </div>
     <div id='game-role'>
@@ -73,7 +73,7 @@ export const HTMLFragments = {
             <div id='game-timer'></div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
     </div>
     <div id='game-people-container'>
@@ -102,7 +102,7 @@ export const HTMLFragments = {
         </div>
         <button id='mod-transfer-button' class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>
         <div>
-            <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
     </div>
     <div>
@@ -128,7 +128,7 @@ export const HTMLFragments = {
                 <div id='play-pause'> </div>
             </div>
             <div>
-                <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+                <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
             </div>
         </div>
         <div id='game-role'>
@@ -212,7 +212,7 @@ export const HTMLFragments = {
             <h2>&#x1F3C1; The moderator has ended the game. Roles are revealed.</h2>
             <div id="end-of-game-buttons">
                 <div>
-                    <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+                    <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
                 </div>
                 <div>
                     <a href='/'>

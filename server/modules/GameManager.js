@@ -459,7 +459,7 @@ function initializePeopleForGame (uniqueCards, moderator, shuffle) {
         }
     }
 
-    shuffle(cards);
+    shuffle(cards); // this shuffles in-place.
 
     let j = 0;
     if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.

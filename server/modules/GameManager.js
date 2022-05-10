@@ -183,10 +183,12 @@ class GameManager {
             this.activeGameRunner.activeGames[newAccessCode] = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(gameParams.deck, moderator),
+                initializePeopleForGame(gameParams.deck, moderator, this.shuffle),
                 gameParams.deck,
                 gameParams.hasTimer,
                 moderator,
+                gameParams.hasDedicatedModerator,
+                moderator.id,
                 gameParams.timerParams
             );
             this.activeGameRunner.activeGames[newAccessCode].createTime = new Date().toJSON();
@@ -308,6 +310,67 @@ class GameManager {
         }
     };
 
+    restartGame = async (game, namespace) => {
+        // kill any outstanding timer threads
+        if (this.activeGameRunner.timerThreads[game.accessCode]) {
+            this.logger.info('KILLING STALE TIMER PROCESS FOR ' + game.accessCode);
+            this.activeGameRunner.timerThreads[game.accessCode].kill();
+            delete this.activeGameRunner.timerThreads[game.accessCode];
+        }
+
+        // re-shuffle the deck
+        const cards = [];
+        for (const card of game.deck) {
+            for (let i = 0; i < card.quantity; i ++) {
+                cards.push(card);
+            }
+        }
+
+        this.shuffle(cards);
+
+        // make sure no players are marked as out or revealed, and give them new cards.
+        for (let i = 0; i < game.people.length; i ++) {
+            if (game.people[i].out) {
+                game.people[i].out = false;
+            }
+            if (game.people[i].userType === globals.USER_TYPES.KILLED_PLAYER) {
+                game.people[i].userType = globals.USER_TYPES.PLAYER;
+            }
+            game.people[i].revealed = false;
+            game.people[i].gameRole = cards[i].role;
+            game.people[i].gameRoleDescription = cards[i].description;
+            game.people[i].alignment = cards[i].team;
+        }
+
+        /* If the game was originally set up with a TEMP mod and the game has gone far enough to establish
+        a DEDICATED mod, make the current mod a TEMP mod for the restart. */
+        if (!game.hasDedicatedModerator && game.moderator.userType === globals.USER_TYPES.MODERATOR) {
+            game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
+        }
+
+        /* If the game was originally set up with a DEDICATED moderator and the current mod is DIFFERENT from that mod
+            (i.e. they transferred their powers at some point), check if the current mod was once a player (i.e. they have
+            a game role). If they were once a player, make them a temp mod for the restart. Otherwise, they were a
+            spectator, and we want to leave them as a dedicated moderator.
+         */
+        if (game.hasDedicatedModerator && game.moderator.id !== game.originalModeratorId) {
+            if (game.moderator.gameRole) {
+                game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
+            } else {
+                game.moderator.userType = globals.USER_TYPES.MODERATOR;
+            }
+        }
+
+        // start the new game
+        game.status = globals.STATUS.IN_PROGRESS;
+        if (game.hasTimer) {
+            game.timerParams.paused = true;
+            this.activeGameRunner.runGame(game, namespace);
+        }
+
+        namespace.in(game.accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
+    };
+
     handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
@@ -355,6 +418,23 @@ class GameManager {
             }
         });
     }
+
+    /*
+    -- To shuffle an array a of n elements (indices 0..n-1):
+    for i from n−1 downto 1 do
+        j ← random integer such that 0 ≤ j ≤ i
+        exchange a[j] and a[i]
+    */
+    shuffle = (array) => {
+        for (let i = array.length - 1; i > 0; i --) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[j];
+            array[j] = array[i];
+            array[i] = temp;
+        }
+
+        return array;
+    };
 }
 
 function getRandomInt (max) {
@@ -365,12 +445,12 @@ function initializeModerator (name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
-    return new Person(createRandomId(), createRandomId(), name, userType); ;
+    return new Person(createRandomId(), createRandomId(), name, userType);
 }
 
-function initializePeopleForGame (uniqueCards, moderator) {
+function initializePeopleForGame (uniqueCards, moderator, shuffle) {
     const people = [];
-    let cards = []; // this will contain copies of each card equal to the quantity.
+    const cards = [];
     let numberOfRoles = 0;
     for (const card of uniqueCards) {
         for (let i = 0; i < card.quantity; i ++) {
@@ -379,7 +459,7 @@ function initializePeopleForGame (uniqueCards, moderator) {
         }
     }
 
-    cards = shuffle(cards); // The deck should probably be shuffled, ey?.
+    shuffle(cards); // this shuffles in-place.
 
     let j = 0;
     if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.
@@ -408,23 +488,6 @@ function initializePeopleForGame (uniqueCards, moderator) {
     }
 
     return people;
-}
-
-/*
--- To shuffle an array a of n elements (indices 0..n-1):
-for i from n−1 downto 1 do
-     j ← random integer such that 0 ≤ j ≤ i
-     exchange a[j] and a[i]
- */
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i --) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = array[j];
-        array[j] = array[i];
-        array[i] = temp;
-    }
-
-    return array;
 }
 
 function createRandomId () {

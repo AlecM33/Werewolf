@@ -47,12 +47,26 @@
     display: flex;
     width: 95%;
     margin: 1em auto 100px auto;
+    animation: fade-in-slide-up 2s;
 }
 
 #game-state-container h2 {
-    margin: 1em 0;
-    text-align: center;
+    margin: 0.5em 0;
     max-width: 17em;
+}
+
+#restart-game {
+    background-color: #0078D7;
+    min-width: 10em;
+}
+
+#play-pause-placeholder {
+    width: 60px;
+    height: 60px;
+}
+
+#restart-game:hover {
+    border-color: whitesmoke;
 }
 
 #lobby-header {
@@ -84,6 +98,7 @@ h1 {
 
 #end-of-game-header {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     margin: 0 !important;
     align-items: center;
@@ -91,6 +106,7 @@ h1 {
 
 #end-of-game-header button {
     margin: 0.5em;
+    min-width: 10em;
 }
 .potential-moderator {
     display: flex;
@@ -494,12 +510,19 @@ label[for='moderator'] {
     align-items: flex-start;
 }
 
-.timer-container-moderator {
+#game-header button {
+    min-width: 10em;
+}
+
+#timer-container-moderator {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     margin-bottom: 1em;
+    padding: 0.5em;
+    border-radius: 3px;
+    background-color: #333243;
 }
 
 .game-player {
@@ -517,7 +540,7 @@ label[for='moderator'] {
 
 .game-player-name {
     position: relative;
-    width: 10em;
+    min-width: 6em;
     overflow: hidden;
     white-space: nowrap;
     font-weight: bold;

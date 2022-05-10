@@ -107,13 +107,23 @@ export class GameCreationStepManager {
             5: {
                 title: 'Review and submit:',
                 backHandler: this.defaultBackHandler,
-                forwardHandler: (deck, hasTimer, hasDedicatedModerator, moderatorName, timerParams) => {
+                forwardHandler: () => {
+                    const button = document.getElementById('create-game');
+                    button.removeEventListener('click', this.steps['5'].forwardHandler);
+                    button.classList.add('submitted');
+                    button.innerText = 'Creating';
                     XHRUtility.xhr(
                         '/api/games/create',
                         'POST',
                         null,
                         JSON.stringify(
-                            new Game(deck, hasTimer, hasDedicatedModerator, moderatorName, timerParams)
+                            new Game(
+                                this.currentGame.deck.filter((card) => card.quantity > 0),
+                                this.currentGame.hasTimer,
+                                this.currentGame.hasDedicatedModerator,
+                                this.currentGame.moderatorName,
+                                this.currentGame.timerParams
+                            )
                         )
                     )
                         .then((res) => {
@@ -128,9 +138,10 @@ export class GameCreationStepManager {
                             }
                         }).catch((e) => {
                             const button = document.getElementById('create-game');
-                            button.innerText = 'Create Game';
+                            button.innerText = 'Create';
                             button.classList.remove('submitted');
-                            button.addEventListener('click', this.steps['4'].forwardHandler);
+                            button.addEventListener('click', this.steps['5'].forwardHandler);
+                            toast(e.content, 'error', true, true, 'medium');
                             if (e.status === 429) {
                                 toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
                             }
@@ -449,18 +460,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
         createButton.innerText = 'Create';
         createButton.setAttribute('id', 'create-game');
         createButton.classList.add('app-button');
-        createButton.addEventListener('click', () => {
-            createButton.removeEventListener('click', forwardHandler);
-            createButton.classList.add('submitted');
-            createButton.innerText = 'Creating...';
-            forwardHandler(
-                builtGame.deck.filter((card) => card.quantity > 0),
-                builtGame.hasTimer,
-                builtGame.hasDedicatedModerator,
-                builtGame.moderatorName,
-                builtGame.timerParams
-            );
-        });
+        createButton.addEventListener('click', forwardHandler);
         document.getElementById('tracker-container').appendChild(createButton);
     }
 }

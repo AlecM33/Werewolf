@@ -107,7 +107,7 @@
 #deck-status-container {
     width: 20em;
     max-width: 95%;
-    height: 13em;
+    height: 10em;
     overflow-y: auto;
     position: relative;
 }
@@ -356,7 +356,7 @@ input[type="number"] {
 #deck-select {
     margin: 0.5em 1em 1.5em 0;
     overflow-y: auto;
-    height: 15em;
+    height: 12em;
 }
 
 .deck-select-role {

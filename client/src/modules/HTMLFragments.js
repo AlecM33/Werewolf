@@ -80,7 +80,7 @@ export const HTMLFragments = {
         <label id='players-alive-label'></label>
         <div id='game-player-list'></div>
     </div>`,
-    MODERATOR_GAME_VIEW:
+    TRANSFER_MOD_MODAL:
     `<div id='transfer-mod-modal-background' class='modal-background'></div>
     <div tabindex='-1' id='transfer-mod-modal' class='modal'>
         <h3>Transfer Mod Powers &#128081;</h3>
@@ -88,14 +88,17 @@ export const HTMLFragments = {
         <div class='modal-button-container'>
             <button id='close-mod-transfer-modal-button' class='app-button cancel'>Cancel</button>
         </div>
-    </div>
-    <div id='game-header'>
-        <div class='timer-container-moderator'>
+    </div>`,
+    MODERATOR_GAME_VIEW:
+    `<div id='game-header'>
+        <div id='timer-container-moderator'>
             <div>
                 <label for='game-timer'>Time Remaining</label>
                 <div id='game-timer'></div>
             </div>
-            <div id='play-pause'> </div>
+            <div id='play-pause'>
+                <div id="play-pause-placeholder"></div>
+            </div>
         </div>
         <button id='mod-transfer-button' class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>
         <div>
@@ -116,19 +119,8 @@ export const HTMLFragments = {
         </div>
     </div>`,
     TEMP_MOD_GAME_VIEW:
-    `<div id='transfer-mod-modal-background' class='modal-background'></div>
-        <div id='transfer-mod-modal' class='modal'>
-            <form id='transfer-mod-form'>
-                <div id='transfer-mod-form-content'>
-                    <h3>Transfer Mod Powers &#128081;</h3>
-                </div>
-                <div class='modal-button-container'>
-                    <button id='close-modal-button' class='cancel app-button'>Cancel</button>
-                </div>
-            </form>
-        </div>
-        <div id='game-header'>
-            <div class='timer-container-moderator'>
+    `<div id='game-header'>
+            <div id='timer-container-moderator'>
                 <div>
                     <label for='game-timer'>Time Remaining</label>
                     <div id='game-timer'></div>
@@ -216,20 +208,26 @@ export const HTMLFragments = {
             </div>
         </div>`,
     END_OF_GAME_VIEW:
-        `<h2>The moderator has ended the game. Roles are revealed.</h2>
-        <div id='end-of-game-header'>
-            <div>
-                <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
-            </div>
-            <div>
-                <a href='/'>
-                    <button class='app-button'>Go Home \uD83C\uDFE0</button>
-                </a>
+        `<div id='end-of-game-header'>
+            <h2>&#x1F3C1; The moderator has ended the game. Roles are revealed.</h2>
+            <div id="end-of-game-buttons">
+                <div>
+                    <button id='role-info-button' class='app-button'>View Role Info <img src='/images/info.svg'/></button>
+                </div>
+                <div>
+                    <a href='/'>
+                        <button class='app-button'>Go Home \uD83C\uDFE0</button>
+                    </a>
+                </div>
             </div>
         </div>
         <div id='game-people-container'>
             <label id='players-alive-label'></label>
             <div id='game-player-list'></div>
+        </div>`,
+    RESTART_GAME_BUTTON:
+        `<div>
+            <button id='restart-game' class='app-button'>Run it back 🔄</button>
         </div>`,
     CREATE_GAME_DECK:
         `<div id='deck-container'>

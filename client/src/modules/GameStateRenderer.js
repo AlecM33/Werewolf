@@ -2,6 +2,8 @@ import { globals } from '../config/globals.js';
 import { toast } from './Toast.js';
 import { HTMLFragments } from './HTMLFragments.js';
 import { ModalManager } from './ModalManager.js';
+import { XHRUtility } from './XHRUtility.js';
+import { UserUtility } from './UserUtility.js';
 
 export class GameStateRenderer {
     constructor (stateBucket, socket) {
@@ -10,11 +12,39 @@ export class GameStateRenderer {
         this.killPlayerHandlers = {};
         this.revealRoleHandlers = {};
         this.transferModHandlers = {};
-        this.startGameHandler = (e) => {
+        this.startGameHandler = (e) => { // TODO: prevent multiple emissions of this event (recommend converting to XHR)
             e.preventDefault();
             if (confirm('Start the game and deal roles?')) {
                 socket.emit(globals.COMMANDS.START_GAME, this.stateBucket.currentGameState.accessCode);
             }
+        };
+        this.restartGameHandler = (e) => {
+            e.preventDefault();
+            const button = document.getElementById('restart-game');
+            button.removeEventListener('click', this.restartGameHandler);
+            button.classList.add('submitted');
+            button.innerText = 'Restarting...';
+            XHRUtility.xhr(
+                '/api/games/' + this.stateBucket.currentGameState.accessCode + '/restart',
+                'PATCH',
+                null,
+                JSON.stringify({
+                    playerName: this.stateBucket.currentGameState.client.name,
+                    accessCode: this.stateBucket.currentGameState.accessCode,
+                    sessionCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.LOCAL),
+                    localCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.PRODUCTION)
+                })
+            )
+                .then((res) => {
+                    toast('Game restarted!', 'success', true, true, 'medium');
+                })
+                .catch((res) => {
+                    const button = document.getElementById('restart-game');
+                    button.innerText = 'Run it back 🔄';
+                    button.classList.remove('submitted');
+                    button.addEventListener('click', this.restartGameHandler);
+                    toast(res.content, 'error', true, true, 'medium');
+                });
         };
     }
 
@@ -256,7 +286,17 @@ export class GameStateRenderer {
         }
     }
 
-    renderEndOfGame () {
+    renderEndOfGame (gameState) {
+        if (
+            gameState.client.userType === globals.USER_TYPES.MODERATOR
+            || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+        ) {
+            const restartGameContainer = document.createElement('div');
+            restartGameContainer.innerHTML = HTMLFragments.RESTART_GAME_BUTTON;
+            const button = restartGameContainer.querySelector('#restart-game');
+            button.addEventListener('click', this.restartGameHandler);
+            document.getElementById('end-of-game-buttons').appendChild(restartGameContainer);
+        }
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }
 }
@@ -273,6 +313,10 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
             transferModHandlers[member.id] = (e) => {
                 if (e.type === 'click' || e.code === 'Enter') {
                     if (confirm('Transfer moderator powers to ' + member.name + '?')) {
+                        const transferPrompt = document.getElementById('transfer-mod-prompt');
+                        if (transferPrompt !== null) {
+                            transferPrompt.innerHTML = '';
+                        }
                         socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, gameState.accessCode, member.id);
                     }
                 }

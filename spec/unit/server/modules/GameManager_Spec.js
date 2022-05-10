@@ -2,6 +2,7 @@
 const Game = require('../../../../server/model/Game');
 const globals = require('../../../../server/config/globals');
 const USER_TYPES = globals.USER_TYPES;
+const STATUS = globals.STATUS;
 const Person = require('../../../../server/model/Person');
 const GameManager = require('../../../../server/modules/GameManager.js');
 const GameStateCurator = require('../../../../server/modules/GameStateCurator');
@@ -278,6 +279,148 @@ describe('GameManager', () => {
 
             const accessCode = gameManager.generateAccessCode(['B']);
             expect(accessCode).toEqual('BBBB');
+        });
+    });
+
+    describe('#restartGame', () => {
+        let person1,
+            person2,
+            person3,
+            shuffleSpy,
+            game,
+            moderator;
+
+        beforeEach(() => {
+            person1 = new Person('1', '123', 'Placeholder1', USER_TYPES.KILLED_PLAYER);
+            person2 = new Person('2', '456', 'Placeholder2', USER_TYPES.PLAYER);
+            person3 = new Person('3', '789', 'Placeholder3', USER_TYPES.PLAYER);
+            moderator = new Person('4', '000', 'Jack', USER_TYPES.MODERATOR);
+            person1.out = true;
+            person2.revealed = true;
+            moderator.assigned = true;
+            shuffleSpy = spyOn(gameManager, 'shuffle').and.stub();
+            game = new Game(
+                'test',
+                STATUS.ENDED,
+                [person1, person2, person3],
+                [
+                    { role: 'Villager', description: 'test', team: 'good', quantity: 1 },
+                    { role: 'Seer', description: 'test', team: 'good', quantity: 1 },
+                    { role: 'Werewolf', description: 'test', team: 'evil', quantity: 1 }
+                ],
+                false,
+                moderator,
+                true,
+                '4',
+                null
+            );
+        });
+
+        it('should reset all relevant game parameters', async () => {
+            const emitSpy = spyOn(namespace.in(), 'emit');
+
+            await gameManager.restartGame(game, namespace);
+
+            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.moderator.id).toEqual('4');
+            expect(game.moderator.userType).toEqual(USER_TYPES.MODERATOR);
+            expect(person1.out).toEqual(false);
+            expect(person2.revealed).toEqual(false);
+            for (const person of game.people) {
+                expect(person.gameRole).toBeDefined();
+            }
+            expect(shuffleSpy).toHaveBeenCalled();
+            expect(emitSpy).toHaveBeenCalledWith(globals.CLIENT_COMMANDS.START_GAME);
+        });
+
+        it('should reset all relevant game parameters, including when the game has a timer', async () => {
+            game.timerParams = { hours: 2, minutes: 2, paused: false };
+            game.hasTimer = true;
+            gameManager.activeGameRunner.timerThreads = { test: { kill: () => {} } };
+
+            const threadKillSpy = spyOn(gameManager.activeGameRunner.timerThreads.test, 'kill');
+            const runGameSpy = spyOn(gameManager.activeGameRunner, 'runGame').and.stub();
+            const emitSpy = spyOn(namespace.in(), 'emit');
+
+            await gameManager.restartGame(game, namespace);
+
+            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.timerParams.paused).toBeTrue();
+            expect(game.moderator.id).toEqual('4');
+            expect(game.moderator.userType).toEqual(USER_TYPES.MODERATOR);
+            expect(person1.out).toEqual(false);
+            expect(person2.revealed).toEqual(false);
+            for (const person of game.people) {
+                expect(person.gameRole).toBeDefined();
+            }
+            expect(threadKillSpy).toHaveBeenCalled();
+            expect(runGameSpy).toHaveBeenCalled();
+            expect(Object.keys(gameManager.activeGameRunner.timerThreads).length).toEqual(0);
+            expect(shuffleSpy).toHaveBeenCalled();
+            expect(emitSpy).toHaveBeenCalledWith(globals.CLIENT_COMMANDS.START_GAME);
+        });
+
+        it('should reset all relevant game parameters and preserve temporary moderator', async () => {
+            const emitSpy = spyOn(namespace.in(), 'emit');
+            game.moderator = game.people[0];
+            game.moderator.userType = USER_TYPES.TEMPORARY_MODERATOR;
+            game.hasDedicatedModerator = false;
+
+            await gameManager.restartGame(game, namespace);
+
+            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.moderator.id).toEqual('1');
+            expect(game.moderator.userType).toEqual(USER_TYPES.TEMPORARY_MODERATOR);
+            expect(game.moderator.gameRole).toBeDefined();
+            expect(person1.out).toEqual(false);
+            expect(person2.revealed).toEqual(false);
+            for (const person of game.people) {
+                expect(person.gameRole).toBeDefined();
+            }
+            expect(shuffleSpy).toHaveBeenCalled();
+            expect(emitSpy).toHaveBeenCalledWith(globals.CLIENT_COMMANDS.START_GAME);
+        });
+
+        it('should reset all relevant game parameters and restore a temporary moderator from a dedicated moderator', async () => {
+            const emitSpy = spyOn(namespace.in(), 'emit');
+            game.moderator = game.people[0];
+            game.moderator.userType = USER_TYPES.MODERATOR;
+            game.hasDedicatedModerator = false;
+
+            await gameManager.restartGame(game, namespace);
+
+            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.moderator.id).toEqual('1');
+            expect(game.moderator.userType).toEqual(USER_TYPES.TEMPORARY_MODERATOR);
+            expect(game.moderator.gameRole).toBeDefined();
+            expect(person1.out).toEqual(false);
+            expect(person2.revealed).toEqual(false);
+            for (const person of game.people) {
+                expect(person.gameRole).toBeDefined();
+            }
+            expect(shuffleSpy).toHaveBeenCalled();
+            expect(emitSpy).toHaveBeenCalledWith(globals.CLIENT_COMMANDS.START_GAME);
+        });
+
+        it('should reset all relevant game parameters and create a temporary mod if a dedicated mod transferred to a killed player', async () => {
+            const emitSpy = spyOn(namespace.in(), 'emit');
+            game.moderator = game.people[0];
+            game.moderator.userType = USER_TYPES.MODERATOR;
+            game.hasDedicatedModerator = true;
+
+            await gameManager.restartGame(game, namespace);
+
+            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.moderator.id).toEqual('1');
+            expect(game.moderator.userType).toEqual(USER_TYPES.TEMPORARY_MODERATOR);
+            expect(game.moderator.gameRole).toBeDefined();
+            expect(person1.out).toEqual(false);
+            expect(person2.revealed).toEqual(false);
+            for (const person of game.people) {
+                expect(person.gameRole).toBeDefined();
+            }
+            expect(shuffleSpy).toHaveBeenCalled();
+            expect(emitSpy).toHaveBeenCalledWith(globals.CLIENT_COMMANDS.START_GAME);
         });
     });
 });

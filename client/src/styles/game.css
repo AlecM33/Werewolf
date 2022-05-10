@@ -510,12 +510,19 @@ label[for='moderator'] {
     align-items: flex-start;
 }
 
-.timer-container-moderator {
+#game-header button {
+    min-width: 10em;
+}
+
+#timer-container-moderator {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     margin-bottom: 1em;
+    padding: 0.5em;
+    border-radius: 3px;
+    background-color: #333243;
 }
 
 .game-player {
@@ -533,7 +540,7 @@ label[for='moderator'] {
 
 .game-player-name {
     position: relative;
-    width: 10em;
+    min-width: 6em;
     overflow: hidden;
     white-space: nowrap;
     font-weight: bold;

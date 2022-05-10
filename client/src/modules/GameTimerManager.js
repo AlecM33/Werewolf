@@ -149,6 +149,7 @@ export class GameTimerManager {
         const pauseBtn = document.createElement('img');
         pauseBtn.setAttribute('src', '../images/pause-button.svg');
         pauseBtn.addEventListener('click', this.pauseListener);
+        document.querySelector('#play-pause-placeholder')?.remove();
         document.getElementById('play-pause').appendChild(pauseBtn);
     }
 }

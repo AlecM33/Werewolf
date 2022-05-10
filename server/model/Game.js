@@ -1,5 +1,15 @@
 class Game {
-    constructor (accessCode, status, people, deck, hasTimer, moderator, hasDedicatedModerator, timerParams = null) {
+    constructor (
+        accessCode,
+        status,
+        people,
+        deck,
+        hasTimer,
+        moderator,
+        hasDedicatedModerator,
+        originalModeratorId,
+        timerParams = null
+    ) {
         this.accessCode = accessCode;
         this.status = status;
         this.moderator = moderator;
@@ -7,6 +17,7 @@ class Game {
         this.deck = deck;
         this.hasTimer = hasTimer;
         this.hasDedicatedModerator = hasDedicatedModerator;
+        this.originalModeratorId = originalModeratorId;
         this.timerParams = timerParams;
         this.isFull = false;
         this.timeRemaining = null;

@@ -75,7 +75,7 @@ function processGameState (
     gameTimerManager,
     timerWorker,
     refreshPrompt = true,
-    animateContainer= false
+    animateContainer = false
 ) {
     const containerAnimation = document.getElementById('game-state-container').animate(
         [
@@ -123,10 +123,12 @@ function processGameState (
                     gameStateRenderer.renderPlayerView(true);
                     break;
                 case globals.USER_TYPES.MODERATOR:
+                    document.getElementById('transfer-mod-prompt').innerHTML = HTMLFragments.TRANSFER_MOD_MODAL;
                     document.getElementById('game-state-container').innerHTML = HTMLFragments.MODERATOR_GAME_VIEW;
                     gameStateRenderer.renderModeratorView();
                     break;
                 case globals.USER_TYPES.TEMPORARY_MODERATOR:
+                    document.getElementById('transfer-mod-prompt').innerHTML = HTMLFragments.TRANSFER_MOD_MODAL;
                     document.getElementById('game-state-container').innerHTML = HTMLFragments.TEMP_MOD_GAME_VIEW;
                     gameStateRenderer.renderTempModView();
                     break;
@@ -141,6 +143,7 @@ function processGameState (
                 socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode);
             } else {
                 document.querySelector('#game-timer')?.remove();
+                document.querySelector('#timer-container-moderator')?.remove();
                 document.querySelector('label[for="game-timer"]')?.remove();
             }
             break;
@@ -384,7 +387,7 @@ function activateRoleInfoButton (deck) {
     });
     document.getElementById('role-info-button').addEventListener('click', (e) => {
         e.preventDefault();
-        document.getElementById('prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
+        document.getElementById('role-info-prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
         const modalContent = document.getElementById('game-role-info-container');
         for (const card of deck) {
             const roleDiv = document.createElement('div');

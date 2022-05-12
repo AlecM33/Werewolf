@@ -2,11 +2,11 @@
   <img width="300" src="/client/src/images/logo.gif"/>
 </p>
 
-- [Features](https://github.com/AlecM33/Werewolf#features)
-- [Tech Stack](https://github.com/AlecM33/Werewolf/blob/master/README.md#tech-stack)
-- [Contributing and Developers' Guide](https://github.com/AlecM33/Werewolf/blob/master/README.md#contributing-and-developers-guide)
-- [Testing](https://github.com/AlecM33/Werewolf/blob/master/README.md#testing)
-- [Code Formatting](https://github.com/AlecM33/Werewolf/blob/master/README.md#code-formatting)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Contributing and Developers' Guide](#contributing-and-developers-guide)
+- [Testing](#testing)
+- [Code Formatting](#code-formatting)
 
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
 

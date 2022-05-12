@@ -2,15 +2,15 @@
   <img width="300" src="/client/src/images/logo.gif"/>
 </p>
 
+[![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
+
+Find the latest production deployment at: https://play-werewolf.app/
+
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Contributing and Developers' Guide](#contributing-and-developers-guide)
 - [Testing](#testing)
 - [Code Formatting](#code-formatting)
-
-[![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
-
-Find the latest production deployment at: https://play-werewolf.app/
 
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, player statuses, etc). 

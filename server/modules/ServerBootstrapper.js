@@ -18,7 +18,7 @@ const ServerBootstrapper = {
                 .map((arg) => {
                     return /port=(\d+)/.exec(arg)[1];
                 })[0] || 5000;
-            const logLevel = process.env.LOG_LEVEL || args
+            const logLevel = args
                 .filter((arg) => {
                     return /loglevel=[a-zA-Z]+/.test(arg);
                 })

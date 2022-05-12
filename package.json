@@ -8,18 +8,19 @@
     "prestart": "npm run bundle",
     "gcp-build": "webpack --config client/webpack/webpack-prod.config.js",
     "build:dev": "webpack --watch --config client/webpack/webpack-dev.config.js --mode=development",
-    "start:dev": "NODE_ENV=development nodemon server/main.js",
-    "start:dev:no-hot-reload": "NODE_ENV=development && node server/main.js",
-    "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
-    "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node server/main.js",
-    "start": "NODE_ENV=production node server/main.js -- loglevel=trace port=8080",
-    "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
+    "start:dev": "NODE_ENV=development nodemon index.js",
+    "start:dev:no-hot-reload": "NODE_ENV=development && node index.js",
+    "start:dev:windows": "SET NODE_ENV=development && nodemon index.js",
+    "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node index.js",
+    "start": "NODE_ENV=production node index.js -- loglevel=info",
+    "start:windows": "SET NODE_ENV=production && node index.js -- loglevel=warn port=8080",
     "test": "jasmine && karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "test:unit": "jasmine",
     "test:e2e": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
+  "main": "index.js",
   "engines": {
-    "node": "14.15.3"
+    "node": ">= 14.0.0"
   },
   "author": "",
   "license": "ISC",

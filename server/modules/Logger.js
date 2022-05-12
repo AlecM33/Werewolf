@@ -37,7 +37,7 @@ module.exports = function (logLevel = globals.LOG_LEVEL.INFO) {
                 || logLevel === globals.LOG_LEVEL.WARN
                 || logLevel === globals.LOG_LEVEL.DEBUG
                 || logLevel === globals.LOG_LEVEL.ERROR
-            ) { return; }
+            ) return;
 
             const now = new Date();
             console.error('TRACE ', now.toGMTString(), ': ', message);

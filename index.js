@@ -4,9 +4,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
-const GameManager = require('./modules/GameManager.js');
-const globals = require('./config/globals');
-const ServerBootstrapper = require('./modules/ServerBootstrapper');
+const GameManager = require('./server/modules/GameManager.js');
+const globals = require('./server/config/globals');
+const ServerBootstrapper = require('./server/modules/ServerBootstrapper');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -15,14 +15,14 @@ app.use(bodyParser.urlencoded({
 
 const args = ServerBootstrapper.processCLIArgs();
 
-const logger = require('./modules/Logger')(args.logLevel);
+const logger = require('./server/modules/Logger')(args.logLevel);
 logger.info('LOG LEVEL IS: ' + args.logLevel);
 
-const main = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, args.port, logger);
+const index = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, args.port, logger);
 
-app.set('port', args.port);
+app.set('port', parseInt(process.env.PORT) || args.port || 8080);
 
-const inGameSocketServer = ServerBootstrapper.createSocketServer(main, app, args.port, logger);
+const inGameSocketServer = ServerBootstrapper.createSocketServer(index, app, args.port, logger);
 const gameNamespace = ServerBootstrapper.createGameSocketNamespace(inGameSocketServer, logger);
 
 let gameManager;
@@ -42,35 +42,35 @@ gameNamespace.on('connection', function (socket) {
 });
 
 /* api endpoints */
-const games = require('./api/GamesAPI');
+const games = require('./server/api/GamesAPI');
 app.use('/api/games', games);
 
 /* serve all the app's pages */
 app.use('/manifest.json', (req, res) => {
-    res.sendFile(path.join(__dirname, '../manifest.json'));
+    res.sendFile(path.join(__dirname, './manifest.json'));
 });
 
 app.use('/favicon.ico', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/favicon_package/favicon.ico'));
+    res.sendFile(path.join(__dirname, './client/favicon_package/favicon.ico'));
 });
 
-const router = require('./routes/router');
+const router = require('./server/routes/router');
 app.use('', router);
 
-app.use('/dist', express.static(path.join(__dirname, '../client/dist')));
+app.use('/dist', express.static(path.join(__dirname, './client/dist')));
 
 // set up routing for static content that isn't being bundled.
-app.use('/images', express.static(path.join(__dirname, '../client/src/images')));
-app.use('/styles', express.static(path.join(__dirname, '../client/src/styles')));
-app.use('/webfonts', express.static(path.join(__dirname, '../client/src/webfonts')));
+app.use('/images', express.static(path.join(__dirname, './client/src/images')));
+app.use('/styles', express.static(path.join(__dirname, './client/src/styles')));
+app.use('/webfonts', express.static(path.join(__dirname, './client/src/webfonts')));
 app.use('/robots.txt', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/robots.txt'));
+    res.sendFile(path.join(__dirname, './client/robots.txt'));
 });
 
 app.use(function (req, res) {
-    res.sendFile(path.join(__dirname, '../client/src/views/404.html'));
+    res.sendFile(path.join(__dirname, './client/src/views/404.html'));
 });
 
-main.listen(args.port, function () {
-    logger.info(`Starting server on port ${args.port}`);
+index.listen(app.get('port'), function () {
+    logger.info(`Starting server on port ${app.get('port')}`);
 });

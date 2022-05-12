@@ -2,6 +2,12 @@
   <img width="300" src="/client/src/images/logo.gif"/>
 </p>
 
+- [Features](https://github.com/AlecM33/Werewolf#features)
+- [Tech Stack]
+- [Contributing and Developers' Guide]
+- [Testing]
+- [Code Formatting]
+
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
 
 Find the latest production deployment at: https://play-werewolf.app/

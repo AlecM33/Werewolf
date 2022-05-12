@@ -33,7 +33,7 @@ You can:
 - restart the same game setup any number of times
 
 This is meant to facilitate a game through a shared game state and various utilities - not to control
-every aspect of the game flow. The app provides a host the ability to construct a deck with a custom distribution
+every aspect of the game flow i.e. it doesn't run day and night for you and doesn't implement any role abilities.
 
 The application prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 

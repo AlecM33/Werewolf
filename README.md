@@ -3,10 +3,10 @@
 </p>
 
 - [Features](https://github.com/AlecM33/Werewolf#features)
-- [Tech Stack]
-- [Contributing and Developers' Guide]
-- [Testing]
-- [Code Formatting]
+- [Tech Stack](https://github.com/AlecM33/Werewolf/blob/master/README.md#tech-stack)
+- [Contributing and Developers' Guide](https://github.com/AlecM33/Werewolf/blob/master/README.md#contributing-and-developers-guide)
+- [Testing](https://github.com/AlecM33/Werewolf/blob/master/README.md#testing)
+- [Code Formatting](https://github.com/AlecM33/Werewolf/blob/master/README.md#code-formatting)
 
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
 

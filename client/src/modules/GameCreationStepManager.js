@@ -217,7 +217,7 @@ function renderModerationTypeStep (game, containerId, stepNumber) {
 
     stepContainer.innerHTML =
         "<div tabindex=\"0\" id='moderation-dedicated'>I will be the <strong>dedicated mod.</strong> Don't deal me a card.</div>" +
-        "<div tabindex=\"0\" id='moderation-self'>The <strong>first person out</strong> will mod. Deal me into the game <span>(mod will be assigned automatically).</span></div>";
+        "<div tabindex=\"0\" id='moderation-self'>The <strong>first person out</strong> will mod. Deal me into the game.</div>";
 
     const dedicatedOption = stepContainer.querySelector('#moderation-dedicated');
     if (game.hasDedicatedModerator) {

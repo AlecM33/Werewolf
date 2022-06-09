@@ -52,7 +52,7 @@ h1 {
 }
 
 h2 {
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 25px;
     font-weight: bold;
 }
@@ -197,7 +197,7 @@ button {
     padding: 10px;
     background-color: #13762b;
     border-radius: 3px;
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 18px;
     cursor: pointer;
     border: 2px solid transparent;
@@ -312,7 +312,7 @@ input {
     padding: 5px 0;
     width: 100%;
     background-color: #333243;
-    height: 51px;
+    height: 45px;
     z-index: 53000;
 }
 
@@ -381,7 +381,7 @@ input {
 
 .hamburger-light {
     min-width: auto;
-    color: whitesmoke;
+    color: #e7e7e7;
 }
 
 .hamburger-dark {

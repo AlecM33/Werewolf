@@ -9,7 +9,40 @@ body {
 
 button#home-create-button {
     padding: 20px;
-    margin-bottom: 1em;
+}
+
+#framed-phone-screenshot {
+    max-width: 250px;
+    width: 40vw;
+    min-width: 175px;
+    margin: 0;
+}
+
+#about-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 1em;
+    margin-top: 25px;
+}
+
+#join-container form {
+    margin: 0;
+}
+
+#about-container h2 {
+    max-width: 17em;
+    font-size: 22px;
+}
+
+#about-container img {
+    margin-bottom: 20px;
+}
+
+#homepage-logos {
+    display: flex;
+    align-items: center;
 }
 
 #home-page-top-section {
@@ -40,7 +73,7 @@ a button {
     min-width: 6em;
     max-height: 3em;
     background-color: #1c8a36;
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 16px;
 }
 
@@ -50,7 +83,7 @@ a button {
 }
 
 #join-form div:nth-child(1) {
-    margin-right: 1em;
+    margin-right: 0.5em;
 }
 
 h3 {
@@ -62,24 +95,38 @@ h3 {
 }
 
 img[src='../images/logo_cropped.gif'] {
-    max-width: 400px;
-    width: 63vw;
+    max-width: 360px;
+    width: 50vw;
     min-width: 250px;
-    margin: 3em 0 1em 0;
+    margin: 1em 0 1em 0;
 }
 
 form > div {
     margin: 15px 0;
 }
 
+#create-join {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-bottom: 1em;
+}
+
 #join-container {
     max-width: 90%;
+    background-color: #0f0f10;
+    padding: 0.5em;
+    border-radius: 3px;
+    margin: 20px;
 }
 
 #join-container > label {
     font-size: 35px;
     font-family: 'signika-negative', sans-serif;
-    color: #b1afcd;
+    color: #e7e7e7;
     filter: drop-shadow(2px 2px 4px black);
 }
 
@@ -96,9 +143,18 @@ label[for="room-code"], label[for="player-name"] {
 @media (max-width: 701px) {
     button#home-create-button {
         font-size: 5vw;
+        padding: 15px;
+    }
+
+    #join-container > label {
+        font-size: 26px;
     }
 
     #room-code {
         max-width: 9em;
+    }
+
+    #about-container h2 {
+        font-size: 18px;
     }
 }

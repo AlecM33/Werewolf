@@ -141,7 +141,7 @@
 }
 
 #custom-role-hamburger .hamburger-inner, #custom-role-hamburger .hamburger-inner::before, #custom-role-hamburger .hamburger-inner::after {
-    background-color: whitesmoke;
+    background-color: #e7e7e7;
     width: 28px;
     height: 3px;
 }
@@ -167,7 +167,7 @@
 
 #custom-role-actions {
     display: none;
-    color: whitesmoke;
+    color: #e7e7e7;
     position: absolute;
     top: 38px;
     right: 29px;
@@ -325,7 +325,7 @@ select {
 }
 
 label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 20px;
     border-radius: 3px;
     margin-bottom: 10px;
@@ -343,7 +343,7 @@ input[type="number"] {
 
 #create-game {
     background-color: #1c8a36;
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 30px;
     padding: 10px 50px;
 }
@@ -413,12 +413,12 @@ input[type="number"] {
     height: 20px;
     background-color: transparent;
     border-radius: 50%;
-    border: 2px solid whitesmoke;
+    border: 2px solid #e7e7e7;
     margin: 0 0.5em;
 }
 
 .creation-step-filled {
-    background-color: whitesmoke;
+    background-color: #e7e7e7;
 }
 
 #creation-step-container {
@@ -496,7 +496,7 @@ input[type="number"] {
 
 #step-1 div {
     background-color: #191920;
-    color: whitesmoke;
+    color: #e7e7e7;
     padding: 1em;
     max-width: 20em;
     margin: 0.5em;
@@ -507,7 +507,7 @@ input[type="number"] {
 }
 
 #step-1 div.option-selected {
-    border: 2px solid whitesmoke;
+    border: 2px solid #e7e7e7;
     background-color: #3a3c46;
 }
 
@@ -516,13 +516,13 @@ input[type="number"] {
 }
 
 #step-1 div:hover {
-    border: 2px solid whitesmoke;
+    border: 2px solid #e7e7e7;
 }
 
 .review-option {
     background-color: #191920;
     border: 2px solid #333243;
-    color: whitesmoke;
+    color: #e7e7e7;
     padding: 10px;
     font-size: 18px;
     width: fit-content;

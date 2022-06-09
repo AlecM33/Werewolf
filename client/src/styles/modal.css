@@ -61,6 +61,8 @@
     margin: 2em 0;
     max-height: 10em;
     overflow: auto;
+    padding-top: 10px;
+    border-top: 1px solid whitesmoke
 }
 
 #custom-role-info-modal-name {

@@ -455,7 +455,6 @@ input {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
 }
 
 .animated-placeholder {

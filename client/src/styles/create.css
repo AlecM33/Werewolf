@@ -13,6 +13,28 @@
     height: 55px;
 }
 
+.role-category-button {
+    background-color: transparent;
+    color: #b1afcd;
+    border: 1px solid #b1afcd;
+    border-radius: 25px;
+    font-size: 16px;
+    padding: 5px 10px;
+    margin: 5px;
+    font-family: 'signika-negative', sans-serif !important;
+    cursor: pointer;
+}
+
+.role-category-button-selected {
+    color: black;
+    background-color: #b1afcd;
+}
+
+#role-category-buttons {
+    margin-top: 10px;
+    display: flex;
+}
+
 .compact-card h1 {
     display: flex;
     align-items: center;
@@ -107,7 +129,7 @@
 #deck-status-container {
     width: 20em;
     max-width: 95%;
-    height: 10em;
+    height: 20em;
     overflow-y: auto;
     position: relative;
 }
@@ -169,6 +191,7 @@
     display: none;
     color: #e7e7e7;
     position: absolute;
+    z-index: 25;
     top: 38px;
     right: 29px;
     background-color: #333243;
@@ -353,13 +376,13 @@ input[type="number"] {
     border: 2px solid #1c8a36;
 }
 
-#deck-select {
+#role-select {
     margin: 0.5em 1em 1.5em 0;
     overflow-y: auto;
-    height: 12em;
+    height: 16em;
 }
 
-.deck-select-role {
+.default-role, .custom-role, .added-role {
     display: flex;
     justify-content: space-between;
     background-color: black;
@@ -371,23 +394,23 @@ input[type="number"] {
     font-size: 16px;
 }
 
-.deck-select-role-name {
+.role-name {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
 }
 
-.deck-select-role:hover {
+.default-role:hover, .custom-role:hover, .added-role:hover {
     border: 1px solid #d7d7d7;
 }
 
-.deck-select-role-options {
+.role-options {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-#deck-select img {
+#role-select img, #deck-status-container img {
     height: 20px;
     margin: 0 8px;
     cursor: pointer;
@@ -395,11 +418,11 @@ input[type="number"] {
     border-radius: 3px;
 }
 
-#deck-select img:nth-child(4) {
+#role-select img:nth-child(4) {
     height: 18px;
 }
 
-#deck-select img:hover {
+#role-select img:hover, #deck-status-container img:hover {
     filter: brightness(1.5);
     background-color: #8080804d;
 }
@@ -540,6 +563,9 @@ input[type="number"] {
 }
 
 @media(max-width: 550px) {
+    #custom-roles-container, #deck-status-container {
+        min-width: 90%;
+    }
     h1 {
         font-size: 35px;
     }
@@ -558,7 +584,7 @@ input[type="number"] {
         font-size: 16px;
     }
 
-    .deck-select-role-name {
+    .role-name {
         font-size: 13px;
         font-weight: bold;
     }

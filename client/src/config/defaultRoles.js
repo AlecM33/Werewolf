@@ -1,4 +1,4 @@
-export const defaultCards = [
+export const defaultRoles = [
     {
         role: 'Villager',
         team: 'good',
@@ -20,7 +20,7 @@ export const defaultCards = [
         description: 'Each night, learn if a chosen person is the Seer.'
     },
     {
-        role: 'Minion',
+        role: 'Knowing Minion',
         team: 'evil',
         description: 'You are an evil Villager, and you know who the Werewolves are.'
     },

@@ -248,11 +248,15 @@ export const HTMLFragments = {
                 </span>
             </button>
             <div id="custom-role-actions">
-                <div tabindex="0" class="custom-role-action" id="custom-roles-export">Export</div>
-                <div tabindex="0" class="custom-role-action" id="custom-roles-import">Import</div>
+                <div tabindex="0" class="custom-role-action" id="custom-roles-export">Export Roles</div>
+                <div tabindex="0" class="custom-role-action" id="custom-roles-import">Import Roles</div>
             </div>
-            <label for="add-card-to-deck-form">Custom Role Box</label>
-            <div id="deck-select"></div>
+            <label for="add-card-to-deck-form">Role Box</label>
+            <div id="role-category-buttons">
+                <button id="role-category-default" class="role-category-button role-category-button-selected">Default Roles</button>
+                <button id="role-category-custom" class="role-category-button">Custom Roles</button>
+            </div>
+            <div id="role-select"></div>
             <button id="custom-role-btn" class="app-button">+ Create Custom Role</button>
         </div>`,
     CREATE_GAME_DECK_STATUS:
@@ -261,11 +265,22 @@ export const HTMLFragments = {
             <div id="deck-list"></div>
         </div>`,
     DECK_SELECT_ROLE:
-        `<div class="deck-select-role-name"></div>
-        <div class="deck-select-role-options">
-            <img tabindex="0" class="deck-select-include" src="images/add.svg" title="make available" alt="include"/>
-            <img tabindex="0" class="deck-select-info" src="images/info.svg" title="info" alt="info"/>
-            <img tabindex="0" class="deck-select-edit" src="images/pencil.svg" title="edit" alt="edit"/>
-            <img tabindex="0" class="deck-select-remove" src="images/delete.svg" title="remove" alt="remove"/>
+        `<div class="role-name"></div>
+        <div class="role-options">
+            <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
+            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-edit" src="images/pencil.svg" title="edit" alt="edit"/>
+            <img tabindex="0" class="role-remove" src="images/delete.svg" title="remove" alt="remove"/>
+        </div>`,
+    DECK_SELECT_ROLE_DEFAULT:
+        `<div class="role-name"></div>
+        <div class="role-options">
+            <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
+            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
+        </div>`,
+    DECK_SELECT_ROLE_ADDED_TO_DECK:
+        `<div class="role-name"></div>
+        <div class="role-options">
+            <img tabindex="0" class="role-remove" src="images/remove.svg" title="remove one" alt="remove one"/>
         </div>`
 };

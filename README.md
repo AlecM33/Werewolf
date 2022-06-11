@@ -4,7 +4,7 @@
 
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
 
-Find the latest deployment here: https://playwerewolf.uk.r.appspot.com/.
+Find the latest production deployment at: https://play-werewolf.app/
 
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, player statuses, etc). 
@@ -19,27 +19,35 @@ Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/
 
 ## Features
 
+You can:
+
+- build your desired game with default or custom roles.
+- join a game with two clicks via a shareable link, or via a 4-character code entered on the homepage.
+- automatically deal cards to everyone's device.
+- create a game as a "dedicated moderator", who is not dealt in, or as a "temporary moderator", who is dealt in and
+  then has their powers automatically delegated. 
+- transfer your mod powers to someone else that is out of the game if you can no longer mod.
+- run a shared timer that can be paused by the moderator.
+- reference helpful info during the game including what roles are in the game and who has been killed or revealed.
+- choose to reveal a player without killing them, or kill them without revealing them. 
+- restart the same game setup any number of times
+
 This is meant to facilitate a game through a shared game state and various utilities - not to control
-every aspect of the game flow. The app provides a host the ability to construct a deck with a custom distribution
-of roles. Players can join a game with one click and are then dealt a role to their device. The app features a concealable 
-role card, an optional shared timer (which the moderator can play/pause), a reference for roles in the game, and status 
-information for players including who is alive/dead and who has had their role revealed. The app also provides the 
-option for a "dedicated moderator" or a "temporary moderator." Dedicated moderators will never be dealt in, and will 
-have all controls and information from the beginning of the game. Temporary moderators _will_ be dealt a role and will
-have some moderator powers, but will only exist until the first player is out, at which point that player will be made 
-the game's dedicated moderator. A dedicated moderator can transfer their powers to another player that is out of the 
-game at any time. 
+every aspect of the game flow i.e. it doesn't run day and night for you and doesn't implement any role abilities.
 
 The application prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 
 ## Tech Stack
 
 This is a Node.js application. It is written purely using JavaScript/HTML/CSS. The main dependencies are
-<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It is currently cloud hosted using the <a href='https://cloud.google.com/appengine'>Google App Engine</a>.
+<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It runs as a containerized application
+via <a href='https://cloud.google.com/run'>Google Cloud Run</a>.
 
 ## Contributing and Developers' Guide
 
 ### Running Locally
+
+The entrypoint for the application is `index.js` at the root. 
 
 If you haven't already, install <a href="https://nodejs.org/en/">Node.js.</a> This should include the node package 
 manager, <a href="https://www.npmjs.com/">npm</a>.

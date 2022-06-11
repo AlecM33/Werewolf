@@ -135,6 +135,7 @@ export class GameTimerManager {
         const playBtn = document.createElement('img');
         playBtn.setAttribute('src', '../images/play-button.svg');
         playBtn.addEventListener('click', this.playListener);
+        document.querySelector('#play-pause-placeholder')?.remove();
         document.getElementById('play-pause').appendChild(playBtn);
     }
 
@@ -148,6 +149,7 @@ export class GameTimerManager {
         const pauseBtn = document.createElement('img');
         pauseBtn.setAttribute('src', '../images/pause-button.svg');
         pauseBtn.addEventListener('click', this.pauseListener);
+        document.querySelector('#play-pause-placeholder')?.remove();
         document.getElementById('play-pause').appendChild(pauseBtn);
     }
 }

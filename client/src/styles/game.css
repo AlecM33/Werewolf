@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: space-between;
     background-color: black;
-    color: whitesmoke;
+    color: #e7e7e7;
     padding: 10px;
     border-radius: 3px;
     font-size: 17px;
@@ -47,12 +47,26 @@
     display: flex;
     width: 95%;
     margin: 1em auto 100px auto;
+    animation: fade-in-slide-up 2s;
 }
 
 #game-state-container h2 {
-    margin: 1em 0;
-    text-align: center;
+    margin: 0.5em 0;
     max-width: 17em;
+}
+
+#restart-game {
+    background-color: #0078D7;
+    min-width: 10em;
+}
+
+#play-pause-placeholder {
+    width: 60px;
+    height: 60px;
+}
+
+#restart-game:hover {
+    border-color: #e7e7e7;
 }
 
 #lobby-header {
@@ -84,6 +98,7 @@ h1 {
 
 #end-of-game-header {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     margin: 0 !important;
     align-items: center;
@@ -91,6 +106,7 @@ h1 {
 
 #end-of-game-header button {
     margin: 0.5em;
+    min-width: 10em;
 }
 .potential-moderator {
     display: flex;
@@ -122,14 +138,14 @@ h1 {
     border-radius: 3px;
     background-color: #121314;
     border: 2px solid #333243;
-    color: whitesmoke;
+    color: #e7e7e7;
     align-items: center;
     display: flex;
     transition: background-color 0.2s;
     max-width: 20em;
 }
 #game-code {
-    color: whitesmoke;
+    color: #e7e7e7;
     margin-top: 5px;
 }
 
@@ -293,7 +309,7 @@ h1 {
     padding: 10px;
     margin-top: 5px;
     background-color: #262626;
-    color: whitesmoke;
+    color: #e7e7e7;
     border-radius: 3px;
     font-size: 35px;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
@@ -374,7 +390,7 @@ h1 {
 }
 
 #client-name {
-    color: whitesmoke;
+    color: #e7e7e7;
     font-family: 'signika-negative', sans-serif;
     font-size: 30px;
     margin: 0.25em 2em 0.25em 0;
@@ -430,7 +446,7 @@ label[for='moderator'] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
     border-radius: 3px;
-    color: whitesmoke;
+    color: #e7e7e7;
     cursor: pointer;
     border: 2px solid transparent;
     transition: background-color, border 0.3s ease-out;
@@ -494,12 +510,19 @@ label[for='moderator'] {
     align-items: flex-start;
 }
 
-.timer-container-moderator {
+#game-header button {
+    min-width: 10em;
+}
+
+#timer-container-moderator {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     margin-bottom: 1em;
+    padding: 0.5em;
+    border-radius: 3px;
+    background-color: #333243;
 }
 
 .game-player {
@@ -517,7 +540,7 @@ label[for='moderator'] {
 
 .game-player-name {
     position: relative;
-    width: 10em;
+    min-width: 6em;
     overflow: hidden;
     white-space: nowrap;
     font-weight: bold;
@@ -528,7 +551,7 @@ label[for='moderator'] {
 .kill-player-button, .reveal-role-button {
     font-family: 'signika-negative', sans-serif !important;
     border-radius: 3px;
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 16px;
     cursor: pointer;
     border: 2px solid transparent;

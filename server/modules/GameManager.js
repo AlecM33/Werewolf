@@ -6,11 +6,11 @@ const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
 
 class GameManager {
-    constructor (logger, environment) {
+    constructor (logger, environment, namespace) {
         this.logger = logger;
         this.environment = environment;
         this.activeGameRunner = new ActiveGameRunner(logger).getInstance();
-        this.namespace = null;
+        this.namespace = namespace;
     }
 
     addGameSocketHandlers = (namespace, socket) => {
@@ -171,7 +171,10 @@ class GameManager {
         } else {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
             pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
-            const newAccessCode = this.generateAccessCode();
+            const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
+            if (newAccessCode === null) {
+                return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
+            }
             const moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
             moderator.assigned = true;
             if (gameParams.timerParams !== null) {
@@ -180,10 +183,12 @@ class GameManager {
             this.activeGameRunner.activeGames[newAccessCode] = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(gameParams.deck, moderator),
+                initializePeopleForGame(gameParams.deck, moderator, this.shuffle),
                 gameParams.deck,
                 gameParams.hasTimer,
                 moderator,
+                gameParams.hasDedicatedModerator,
+                moderator.id,
                 gameParams.timerParams
             );
             this.activeGameRunner.activeGames[newAccessCode].createTime = new Date().toJSON();
@@ -205,15 +210,23 @@ class GameManager {
         }
     };
 
-    generateAccessCode = () => {
-        const numLetters = globals.ACCESS_CODE_CHAR_POOL.length;
-        const codeDigits = [];
-        let iterations = globals.ACCESS_CODE_LENGTH;
-        while (iterations > 0) {
-            iterations--;
-            codeDigits.push(globals.ACCESS_CODE_CHAR_POOL[getRandomInt(numLetters)]);
+    generateAccessCode = (charPool) => {
+        const charCount = charPool.length;
+        let codeDigits, accessCode;
+        let attempts = 0;
+        while (!accessCode || (this.activeGameRunner.activeGames[accessCode] && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
+            codeDigits = [];
+            let iterations = globals.ACCESS_CODE_LENGTH;
+            while (iterations > 0) {
+                iterations --;
+                codeDigits.push(charPool[getRandomInt(charCount)]);
+            }
+            accessCode = codeDigits.join('');
+            attempts ++;
         }
-        return codeDigits.join('');
+        return this.activeGameRunner.activeGames[accessCode]
+            ? null
+            : accessCode;
     };
 
     transferModeratorPowers = (game, person, namespace, logger) => {
@@ -297,6 +310,67 @@ class GameManager {
         }
     };
 
+    restartGame = async (game, namespace) => {
+        // kill any outstanding timer threads
+        if (this.activeGameRunner.timerThreads[game.accessCode]) {
+            this.logger.info('KILLING STALE TIMER PROCESS FOR ' + game.accessCode);
+            this.activeGameRunner.timerThreads[game.accessCode].kill();
+            delete this.activeGameRunner.timerThreads[game.accessCode];
+        }
+
+        // re-shuffle the deck
+        const cards = [];
+        for (const card of game.deck) {
+            for (let i = 0; i < card.quantity; i ++) {
+                cards.push(card);
+            }
+        }
+
+        this.shuffle(cards);
+
+        // make sure no players are marked as out or revealed, and give them new cards.
+        for (let i = 0; i < game.people.length; i ++) {
+            if (game.people[i].out) {
+                game.people[i].out = false;
+            }
+            if (game.people[i].userType === globals.USER_TYPES.KILLED_PLAYER) {
+                game.people[i].userType = globals.USER_TYPES.PLAYER;
+            }
+            game.people[i].revealed = false;
+            game.people[i].gameRole = cards[i].role;
+            game.people[i].gameRoleDescription = cards[i].description;
+            game.people[i].alignment = cards[i].team;
+        }
+
+        /* If the game was originally set up with a TEMP mod and the game has gone far enough to establish
+        a DEDICATED mod, make the current mod a TEMP mod for the restart. */
+        if (!game.hasDedicatedModerator && game.moderator.userType === globals.USER_TYPES.MODERATOR) {
+            game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
+        }
+
+        /* If the game was originally set up with a DEDICATED moderator and the current mod is DIFFERENT from that mod
+            (i.e. they transferred their powers at some point), check if the current mod was once a player (i.e. they have
+            a game role). If they were once a player, make them a temp mod for the restart. Otherwise, they were a
+            spectator, and we want to leave them as a dedicated moderator.
+         */
+        if (game.hasDedicatedModerator && game.moderator.id !== game.originalModeratorId) {
+            if (game.moderator.gameRole) {
+                game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
+            } else {
+                game.moderator.userType = globals.USER_TYPES.MODERATOR;
+            }
+        }
+
+        // start the new game
+        game.status = globals.STATUS.IN_PROGRESS;
+        if (game.hasTimer) {
+            game.timerParams.paused = true;
+            this.activeGameRunner.runGame(game, namespace);
+        }
+
+        namespace.in(game.accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
+    };
+
     handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
         const game = gameRunner.activeGames[accessCode];
         if (game) {
@@ -344,6 +418,23 @@ class GameManager {
             }
         });
     }
+
+    /*
+    -- To shuffle an array a of n elements (indices 0..n-1):
+    for i from n−1 downto 1 do
+        j ← random integer such that 0 ≤ j ≤ i
+        exchange a[j] and a[i]
+    */
+    shuffle = (array) => {
+        for (let i = array.length - 1; i > 0; i --) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[j];
+            array[j] = array[i];
+            array[i] = temp;
+        }
+
+        return array;
+    };
 }
 
 function getRandomInt (max) {
@@ -354,21 +445,21 @@ function initializeModerator (name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
         ? globals.USER_TYPES.MODERATOR
         : globals.USER_TYPES.TEMPORARY_MODERATOR;
-    return new Person(createRandomId(), createRandomId(), name, userType); ;
+    return new Person(createRandomId(), createRandomId(), name, userType);
 }
 
-function initializePeopleForGame (uniqueCards, moderator) {
+function initializePeopleForGame (uniqueCards, moderator, shuffle) {
     const people = [];
-    let cards = []; // this will contain copies of each card equal to the quantity.
+    const cards = [];
     let numberOfRoles = 0;
     for (const card of uniqueCards) {
-        for (let i = 0; i < card.quantity; i++) {
+        for (let i = 0; i < card.quantity; i ++) {
             cards.push(card);
-            numberOfRoles++;
+            numberOfRoles ++;
         }
     }
 
-    cards = shuffleArray(cards); // The deck should probably be shuffled, ey?.
+    shuffle(cards); // this shuffles in-place.
 
     let j = 0;
     if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) { // temporary moderators should be dealt in.
@@ -377,7 +468,7 @@ function initializePeopleForGame (uniqueCards, moderator) {
         moderator.gameRoleDescription = cards[j].description;
         moderator.alignment = cards[j].team;
         people.push(moderator);
-        j++;
+        j ++;
     }
 
     while (j < numberOfRoles) {
@@ -393,25 +484,15 @@ function initializePeopleForGame (uniqueCards, moderator) {
         person.customRole = cards[j].custom;
         person.hasEnteredName = false;
         people.push(person);
-        j++;
+        j ++;
     }
 
     return people;
 }
 
-function shuffleArray (array) {
-    for (let i = 0; i < array.length; i++) {
-        const randIndex = Math.floor(Math.random() * i);
-        const temp = array[i];
-        array[i] = array[randIndex];
-        array[randIndex] = temp;
-    }
-    return array;
-}
-
 function createRandomId () {
     let id = '';
-    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i++) {
+    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i ++) {
         id += globals.ACCESS_CODE_CHAR_POOL[Math.floor(Math.random() * globals.ACCESS_CODE_CHAR_POOL.length)];
     }
     return id;
@@ -477,10 +558,10 @@ function getGameSize (cards) {
 }
 
 class Singleton {
-    constructor (logger, environment) {
+    constructor (logger, environment, namespace) {
         if (!Singleton.instance) {
             logger.info('CREATING SINGLETON GAME MANAGER');
-            Singleton.instance = new GameManager(logger, environment);
+            Singleton.instance = new GameManager(logger, environment, namespace);
         }
     }
 

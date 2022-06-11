@@ -18,8 +18,6 @@ describe('Create page', function () {
         gameCreationStepManager.renderStep('creation-step-container', 1);
     });
 
-    beforeEach(function () {});
-
     describe('deck builder page', function () {
         beforeAll(function () {
             document.getElementById('moderation-dedicated').click();
@@ -27,70 +25,74 @@ describe('Create page', function () {
         });
 
         beforeEach(function () {
-            document.querySelectorAll('.deck-select-role').forEach((roleEl) => {
-                roleEl
-                    .querySelector('.deck-select-role-options')
-                    .querySelector('.deck-select-remove')
-                    .click();
-            });
+            for (const card of gameCreationStepManager.deckManager.deck) {
+                card.quantity = 0;
+            }
+            gameCreationStepManager.roleBox.customRoles = [];
+            gameCreationStepManager.deckManager.updateDeckStatus();
         });
 
-        it('should increment a widget when the plus button is clicked and have it show up in the included cards', () => {
-            const card = gameCreationStepManager.deckManager.getCurrentDeck()[0];
-            const widget = document.getElementById('card-' + card.role.replaceAll(' ', '-'));
-            const plusElement = widget.querySelector('.compact-card-right');
+        it('should include a copy of a role in the deck for the game', () => {
+            document.getElementById('role-category-default').click();
+            const card = gameCreationStepManager.roleBox.defaultRoles[0];
+            const role = document.querySelectorAll('.default-role')[0];
+            const plusElement = role.querySelector('.role-include');
             plusElement.click();
-
-            expect(card.quantity).toEqual(1);
-            expect(document.getElementsByClassName('deck-role').length).toEqual(1);
+            expect(gameCreationStepManager.deckManager.deck.find((card) => card.id === role.dataset.roleId).quantity).toEqual(1);
+            expect(document.querySelector('#deck-status-container [data-role-id="' + card.id + '"]')).toBeDefined();
         });
 
-        it('should decrement a widget when the minus button is clicked and remove the role from the included cards', () => {
-            const card = gameCreationStepManager.deckManager.getCurrentDeck()[0];
-            card.quantity = 1;
-            const widget = document.getElementById('card-' + card.role.replaceAll(' ', '-'));
-            const plusElement = widget.querySelector('.compact-card-left');
+        it('should remove a copy of a role in the deck for the game', () => {
+            document.getElementById('role-category-default').click();
+            const card = gameCreationStepManager.roleBox.defaultRoles[0];
+            const role = document.querySelectorAll('.default-role')[0];
+            const plusElement = role.querySelector('.role-include');
             plusElement.click();
+            const minusElement = document.querySelector('#deck-status-container [data-role-id="' + card.id + '"]')
+                .querySelector('.role-remove');
+            minusElement.click();
 
-            expect(card.quantity).toEqual(0);
-            expect(document.getElementsByClassName('deck-role').length).toEqual(0);
+            expect(gameCreationStepManager.deckManager.deck.length).toEqual(0);
+            expect(document.querySelector('#deck-status-container [data-role-id="' + card.id + '"]')).toBeNull();
         });
 
-        it('should create a role and display it in the custom role box', () => {
+        it('should create a role and display it in the custom role list', () => {
+            document.getElementById('role-category-custom').click();
             document.getElementById('custom-role-btn').click();
             document.getElementById('role-name').value = 'Test name';
             document.getElementById('role-description').value = 'Test description';
             document.getElementById('create-role-button').click();
 
-            expect(document.getElementsByClassName('deck-select-role').length).toEqual(1);
+            expect(document.getElementsByClassName('custom-role').length).toEqual(1);
             expect(
-                document.getElementsByClassName('deck-select-role')[0]
-                    .querySelector('.deck-select-role-name').innerText
+                document.getElementsByClassName('custom-role')[0]
+                    .querySelector('.role-name').innerText
             )
                 .toEqual('Test name');
         });
 
-        it('should successfully update role information', () => {
+        it('should successfully update custom role information after creating it', () => {
+            document.getElementById('role-category-custom').click();
             document.getElementById('custom-role-btn').click();
             document.getElementById('role-name').value = 'Test name';
             document.getElementById('role-description').value = 'Test description';
             document.getElementById('create-role-button').click();
-            document.getElementsByClassName('deck-select-role')[0]
-                .querySelector('.deck-select-role-options')
-                .querySelector('.deck-select-edit')
+            document.getElementsByClassName('custom-role')[0]
+                .querySelector('.role-options')
+                .querySelector('.role-edit')
                 .click();
             document.getElementById('role-name').value = 'Test name edited';
             document.getElementById('create-role-button').click();
 
-            expect(document.getElementsByClassName('deck-select-role').length).toEqual(1);
+            expect(document.getElementsByClassName('custom-role').length).toEqual(1);
             expect(
-                document.getElementsByClassName('deck-select-role')[0]
-                    .querySelector('.deck-select-role-name').innerText
+                document.getElementsByClassName('custom-role')[0]
+                    .querySelector('.role-name').innerText
             )
                 .toEqual('Test name edited');
-            expect(gameCreationStepManager.deckManager.getCustomRoleOption(
-                document.getElementsByClassName('deck-select-role')[0]
-                    .querySelector('.deck-select-role-name').innerText
+            expect(gameCreationStepManager.roleBox.getCustomRole(
+                document.getElementsByClassName('custom-role')[0]
+                    .querySelector('.role-name').innerText
             ).role).toEqual('Test name edited');
         });
     });

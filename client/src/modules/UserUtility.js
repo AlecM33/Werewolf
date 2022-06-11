@@ -6,27 +6,6 @@ import { globals } from '../config/globals.js';
  */
 export const UserUtility = {
 
-    createNewAnonymousUserId (force = true, environment) {
-        let newId, currentId;
-
-        if (environment === globals.ENVIRONMENT.LOCAL) {
-            currentId = sessionStorage.getItem(globals.PLAYER_ID_COOKIE_KEY);
-        } else {
-            currentId = localStorage.getItem(globals.PLAYER_ID_COOKIE_KEY);
-        }
-        if (currentId !== null && !force) {
-            newId = currentId;
-        } else {
-            newId = createRandomUserId();
-            if (environment === globals.ENVIRONMENT.LOCAL) {
-                sessionStorage.setItem(globals.PLAYER_ID_COOKIE_KEY, newId);
-            } else {
-                localStorage.setItem(globals.PLAYER_ID_COOKIE_KEY, newId);
-            }
-        }
-        return newId;
-    },
-
     setAnonymousUserId (id, environment) {
         if (environment === globals.ENVIRONMENT.LOCAL) {
             sessionStorage.setItem(globals.PLAYER_ID_COOKIE_KEY, id);
@@ -53,11 +32,3 @@ export const UserUtility = {
     }
 
 };
-
-function createRandomUserId () {
-    let id = '';
-    for (let i = 0; i < globals.USER_SIGNATURE_LENGTH; i++) {
-        id += globals.ACCESS_CODE_CHAR_POOL[Math.floor(Math.random() * globals.ACCESS_CODE_CHAR_POOL.length)];
-    }
-    return id;
-}

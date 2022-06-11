@@ -8,21 +8,25 @@
     "prestart": "npm run bundle",
     "gcp-build": "webpack --config client/webpack/webpack-prod.config.js",
     "build:dev": "webpack --watch --config client/webpack/webpack-dev.config.js --mode=development",
-    "start:dev": "NODE_ENV=development nodemon server/main.js",
-    "start:dev:no-hot-reload": "NODE_ENV=development && node server/main.js",
-    "start:dev:windows": "SET NODE_ENV=development && nodemon server/main.js",
-    "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node server/main.js",
-    "start": "NODE_ENV=production node server/main.js -- loglevel=trace port=8080",
-    "start:windows": "SET NODE_ENV=production && node server/main.js -- loglevel=warn port=8080",
+    "start:dev": "NODE_ENV=development nodemon index.js",
+    "start:dev:no-hot-reload": "NODE_ENV=development && node index.js",
+    "start:dev:windows": "SET NODE_ENV=development && nodemon index.js",
+    "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && node index.js",
+    "start": "NODE_ENV=production node index.js -- loglevel=info",
+    "start:windows": "SET NODE_ENV=production && node index.js -- loglevel=warn port=8080",
+    "test": "jasmine && karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "test:unit": "jasmine",
     "test:e2e": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
+  "main": "index.js",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">= 14.0.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.16.5",
     "@babel/plugin-transform-object-assign": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "acorn": "^8.6.0",
@@ -36,6 +40,7 @@
     "jasmine": "^3.5.0",
     "karma-jasmine": "^4.0.1",
     "open": "^7.0.3",
+    "rate-limiter-flexible": "^2.3.6",
     "socket.io": "^4.4.0",
     "socket.io-client": "^4.4.0",
     "webpack": "^5.65.0",
@@ -43,8 +48,6 @@
     "webpack-remove-debug": "^0.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@babel/eslint-parser": "^7.16.5",
     "eslint": "^8.6.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.4",

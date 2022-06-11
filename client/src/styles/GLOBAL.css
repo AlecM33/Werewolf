@@ -52,7 +52,7 @@ h1 {
 }
 
 h2 {
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 25px;
     font-weight: bold;
 }
@@ -149,6 +149,12 @@ textarea {
     display: flex;
 }
 
+.teaser {
+    text-align:center;
+    color:gray;
+    margin-bottom:3em;
+}
+
 #footer > div, #footer > a {
     margin: 0.5em;
 }
@@ -191,7 +197,7 @@ button {
     padding: 10px;
     background-color: #13762b;
     border-radius: 3px;
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 18px;
     cursor: pointer;
     border: 2px solid transparent;
@@ -306,7 +312,7 @@ input {
     padding: 5px 0;
     width: 100%;
     background-color: #333243;
-    height: 51px;
+    height: 45px;
     z-index: 53000;
 }
 
@@ -375,7 +381,7 @@ input {
 
 .hamburger-light {
     min-width: auto;
-    color: whitesmoke;
+    color: #e7e7e7;
 }
 
 .hamburger-dark {
@@ -449,7 +455,6 @@ input {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
 }
 
 .animated-placeholder {
@@ -601,7 +606,7 @@ input {
     left: 0;
     width: 100%;
     height: calc(100% + 100px);
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 50;
 }
 

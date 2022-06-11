@@ -76,10 +76,10 @@ export class RoleBox {
                 // If any imported roles match a default role, exclude them.
                 this.customRoles = this.customRoles.filter((entry) => !this.defaultRoles
                     .find((defaultEntry) => defaultEntry.role.toLowerCase().trim() === entry.role.toLowerCase().trim()));
-                let message = this.customRoles.length === initialLength
+                const message = this.customRoles.length === initialLength
                     ? 'All roles imported successfully!'
-                    : 'Success, but one or more roles were excluded because their names match default roles.'
-                let messageType = this.customRoles.length === initialLength ? 'success' : 'warning'
+                    : 'Success, but one or more roles were excluded because their names match default roles.';
+                const messageType = this.customRoles.length === initialLength ? 'success' : 'warning';
                 ModalManager.dispelModal('upload-custom-roles-modal', 'modal-background');
                 toast(message, messageType, true, true, 'medium');
                 document.getElementById('custom-role-actions').style.display = 'none';

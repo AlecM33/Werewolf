@@ -1,0 +1,342 @@
+import { HTMLFragments } from './HTMLFragments.js';
+import { globals } from '../config/globals.js';
+import { defaultRoles } from '../config/defaultRoles.js';
+import { toast } from './Toast.js';
+import { ModalManager } from './ModalManager.js';
+
+export class RoleBox {
+    constructor (container, deckManager) {
+        this.createMode = false;
+        this.currentlyEditingRoleName = null;
+        this.category = 'default';
+        this.deckManager = deckManager;
+        this.defaultRoles = [];
+        console.log('hi');
+        this.customRoles = [];
+        container.innerHTML += HTMLFragments.CREATE_GAME_CUSTOM_ROLES;
+        this.defaultButton = document.getElementById('role-category-default');
+        this.customButton = document.getElementById('role-category-custom');
+        this.defaultButton.addEventListener('click', () => { this.changeRoleCategory('default'); });
+        this.customButton.addEventListener('click', () => { this.changeRoleCategory('custom'); });
+        this.categoryTransition = document.getElementById('role-select').animate(
+            [
+                { opacity: 0 },
+                { opacity: 1 }
+            ], {
+                fill: 'forwards',
+                easing: 'linear',
+                duration: 500
+            });
+    }
+
+    render = () => {
+
+    };
+
+    loadDefaultRoles = () => {
+        this.defaultRoles = defaultRoles.sort((a, b) => {
+            if (a.team !== b.team) {
+                return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+            }
+            return a.role.localeCompare(b.role);
+        }).map((role) => {
+            role.id = createRandomId();
+            return role;
+        });
+    };
+
+    loadCustomRolesFromCookies () {
+        const customRoles = localStorage.getItem('play-werewolf-custom-roles');
+        if (customRoles !== null && validateCustomRoleCookie(customRoles)) {
+            this.customRoles = JSON.parse(customRoles).map((role) => {
+                role.id = createRandomId();
+                return role;
+            }); // we know it is valid JSON from the validate function
+        }
+    }
+
+    loadCustomRolesFromFile (file) {
+        const reader = new FileReader();
+        reader.onerror = (e) => {
+            toast(reader.error.message, 'error', true, true, 'medium');
+        };
+        reader.onload = (e) => {
+            let string;
+            if (typeof e.target.result !== 'string') {
+                string = new TextDecoder('utf-8').decode(e.target.result);
+            } else {
+                string = e.target.result;
+            }
+            if (validateCustomRoleCookie(string)) {
+                this.customRoles = JSON.parse(string).map((role) => {
+                    role.id = createRandomId();
+                    return role;
+                }); // we know it is valid JSON from the validate function
+                const initialLength = this.customRoles.length;
+                // If any imported roles match a default role, exclude them.
+                this.customRoles = this.customRoles.filter((entry) => !this.defaultRoles
+                    .find((defaultEntry) => defaultEntry.role.toLowerCase().trim() === entry.role.toLowerCase().trim()));
+                const message = this.customRoles.length === initialLength
+                    ? 'All roles imported successfully!'
+                    : 'Success, but one or more roles were excluded because their names match default roles.';
+                const messageType = this.customRoles.length === initialLength ? 'success' : 'warning';
+                ModalManager.dispelModal('upload-custom-roles-modal', 'modal-background');
+                toast(message, messageType, true, true, 'medium');
+                document.getElementById('custom-role-actions').style.display = 'none';
+                localStorage.setItem('play-werewolf-custom-roles', JSON.stringify(this.customRoles));
+                this.changeRoleCategory('custom');
+                this.displayCustomRoles(document.getElementById('role-select'));
+                for (const card of this.deckManager.deck) {
+                    card.quantity = 0;
+                }
+                this.deckManager.updateDeckStatus();
+            } else {
+                toast(
+                    'Invalid formatting. Make sure you import the file as downloaded from this page.',
+                    'error',
+                    true,
+                    true,
+                    'medium'
+                );
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // via https://stackoverflow.com/a/18197341
+    downloadCustomRoles = (filename, text) => {
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    };
+
+    changeRoleCategory = (category) => {
+        this.category = category;
+        if (category === 'default') {
+            this.displayDefaultRoles(document.getElementById('role-select'));
+            if (this.defaultButton) {
+                this.defaultButton.classList.add('role-category-button-selected');
+            }
+            if (this.customButton) {
+                this.customButton.classList.remove('role-category-button-selected');
+            }
+        } else if (category === 'custom') {
+            this.displayCustomRoles(document.getElementById('role-select'));
+            if (this.customButton) {
+                this.customButton.classList.add('role-category-button-selected');
+            }
+            if (this.defaultButton) {
+                this.defaultButton.classList.remove('role-category-button-selected');
+            }
+        }
+    };
+
+    displayDefaultRoles = (selectEl) => {
+        document.querySelectorAll('#role-select .default-role, #role-select .custom-role').forEach(e => e.remove());
+        this.categoryTransition.play();
+        for (let i = 0; i < this.defaultRoles.length; i ++) {
+            const defaultRole = document.createElement('div');
+            defaultRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE_DEFAULT;
+            defaultRole.classList.add('default-role');
+            defaultRole.dataset.roleId = this.defaultRoles[i].id;
+            const alignmentClass = this.defaultRoles[i].team === globals.ALIGNMENT.GOOD
+                ? globals.ALIGNMENT.GOOD
+                : globals.ALIGNMENT.EVIL;
+            defaultRole.classList.add(alignmentClass);
+            defaultRole.querySelector('.role-name').innerText = this.defaultRoles[i].role;
+            selectEl.appendChild(defaultRole);
+        }
+
+        this.addRoleEventListeners(selectEl, true, true, false, false, false);
+    };
+
+    displayCustomRoles = (selectEl) => {
+        document.querySelectorAll('#role-select .default-role, #role-select .custom-role').forEach(e => e.remove());
+        this.categoryTransition.play();
+        this.customRoles.sort((a, b) => {
+            if (a.team !== b.team) {
+                return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+            }
+            return a.role.localeCompare(b.role);
+        });
+
+        for (let i = 0; i < this.customRoles.length; i ++) {
+            const customRole = document.createElement('div');
+            customRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE;
+            customRole.classList.add('custom-role');
+            customRole.dataset.roleId = this.customRoles[i].id;
+            const alignmentClass = this.customRoles[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL;
+            customRole.classList.add(alignmentClass);
+            customRole.querySelector('.role-name').innerText = this.customRoles[i].role;
+            selectEl.appendChild(customRole);
+        }
+
+        this.addRoleEventListeners(selectEl, true, true, true, true, true);
+    };
+
+    addRoleEventListeners = (select, addOne, info, edit, remove, isCustom) => {
+        const elements = isCustom
+            ? document.querySelectorAll('#role-select .custom-role')
+            : document.querySelectorAll('#role-select .default-role');
+        elements.forEach((role) => {
+            if (addOne) {
+                const plusOneHandler = (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        e.preventDefault();
+                        if (!this.deckManager.hasRole(name)) {
+                            if (isCustom) {
+                                this.deckManager.addToDeck(this.getCustomRole(name));
+                            } else {
+                                this.deckManager.addToDeck(this.getDefaultRole(name));
+                            }
+                        } else {
+                            this.deckManager.addCopyOfCard(name);
+                        }
+                        this.deckManager.updateDeckStatus();
+                    }
+                };
+                role.querySelector('.role-include').addEventListener('click', plusOneHandler);
+                role.querySelector('.role-include').addEventListener('keyup', plusOneHandler);
+            }
+            const name = role.querySelector('.role-name').innerText;
+
+            if (remove) {
+                const removeHandler = (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        if (confirm("Delete the role '" + name + "'?")) {
+                            e.preventDefault();
+                            this.removeFromCustomRoles(name);
+                            if (this.category === 'custom') {
+                                this.displayCustomRoles(document.getElementById('role-select'));
+                            }
+                        }
+                    }
+                };
+                role.querySelector('.role-remove').addEventListener('click', removeHandler);
+                role.querySelector('.role-remove').addEventListener('keyup', removeHandler);
+            }
+            if (info) {
+                const infoHandler = (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                        alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
+                        alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+                        e.preventDefault();
+                        let role;
+                        if (isCustom) {
+                            role = this.getCustomRole(name);
+                        } else {
+                            role = this.getDefaultRole(name);
+                        }
+                        document.getElementById('custom-role-info-modal-name').innerText = name;
+                        alignmentEl.classList.add(role.team);
+                        document.getElementById('custom-role-info-modal-description').innerText = role.description;
+                        alignmentEl.innerText = role.team;
+                        ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
+                    }
+                };
+                role.querySelector('.role-info').addEventListener('click', infoHandler);
+                role.querySelector('.role-info').addEventListener('keyup', infoHandler);
+            }
+
+            if (edit) {
+                const editHandler = (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        e.preventDefault();
+                        const entry = this.getCustomRole(name);
+                        document.getElementById('role-name').value = entry.role;
+                        document.getElementById('role-alignment').value = entry.team;
+                        document.getElementById('role-description').value = entry.description;
+                        this.createMode = false;
+                        this.currentlyEditingRoleName = entry.role;
+                        const createBtn = document.getElementById('create-role-button');
+                        createBtn.setAttribute('value', 'Update');
+                        ModalManager.displayModal('role-modal', 'modal-background', 'close-modal-button');
+                    }
+                };
+                role.querySelector('.role-edit').addEventListener('click', editHandler);
+                role.querySelector('.role-edit').addEventListener('keyup', editHandler);
+            }
+        });
+    };
+
+    removeFromCustomRoles = (name) => {
+        const role = this.customRoles.find((entry) => entry.role === name);
+        if (role) {
+            this.customRoles.splice(this.customRoles.indexOf(role), 1);
+            this.deckManager.removeRoleEntirelyFromDeck(role);
+            localStorage.setItem('play-werewolf-custom-roles', JSON.stringify(this.customRoles));
+            toast('"' + name + '" deleted.', 'error', true, true, 'short');
+        }
+    };
+
+    getCustomRole (name) {
+        return this.customRoles.find(
+            (entry) => entry.role.toLowerCase().trim() === name.toLowerCase().trim()
+        );
+    };
+
+    addCustomRole (role) {
+        role.id = createRandomId();
+        this.customRoles.push(role);
+        localStorage.setItem('play-werewolf-custom-roles', JSON.stringify(this.customRoles));
+    }
+
+    updateCustomRole (entry, name, description, team) {
+        entry.role = name;
+        entry.description = description;
+        entry.team = team;
+        this.deckManager.updateDeckStatus();
+        localStorage.setItem('play-werewolf-custom-roles', JSON.stringify(this.customRoles));
+    }
+
+    getDefaultRole (name) {
+        return this.defaultRoles.find(
+            (entry) => entry.role.toLowerCase().trim() === name.toLowerCase().trim()
+        );
+    };
+}
+
+function createRandomId () {
+    let id = '';
+    for (let i = 0; i < 25; i ++) {
+        id += globals.CHAR_POOL[Math.floor(Math.random() * globals.CHAR_POOL.length)];
+    }
+    return id;
+}
+
+// this is user-supplied, so we should validate it fully
+function validateCustomRoleCookie (cookie) {
+    const valid = false;
+    if (typeof cookie === 'string' && new Blob([cookie]).size <= 1000000) {
+        try {
+            const cookieJSON = JSON.parse(cookie);
+            if (Array.isArray(cookieJSON)) {
+                for (const entry of cookieJSON) {
+                    if (typeof entry === 'object') {
+                        if (typeof entry.role !== 'string' || entry.role.length > globals.MAX_CUSTOM_ROLE_NAME_LENGTH
+                            || typeof entry.team !== 'string' || (entry.team !== globals.ALIGNMENT.GOOD && entry.team !== globals.ALIGNMENT.EVIL)
+                            || typeof entry.description !== 'string' || entry.description.length > globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
+                        ) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } catch (e) {
+            return false;
+        }
+    }
+
+    return valid;
+}

@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: space-between;
     background-color: black;
-    color: whitesmoke;
+    color: #e7e7e7;
     padding: 10px;
     border-radius: 3px;
     font-size: 17px;
@@ -66,7 +66,7 @@
 }
 
 #restart-game:hover {
-    border-color: whitesmoke;
+    border-color: #e7e7e7;
 }
 
 #lobby-header {
@@ -138,14 +138,14 @@ h1 {
     border-radius: 3px;
     background-color: #121314;
     border: 2px solid #333243;
-    color: whitesmoke;
+    color: #e7e7e7;
     align-items: center;
     display: flex;
     transition: background-color 0.2s;
     max-width: 20em;
 }
 #game-code {
-    color: whitesmoke;
+    color: #e7e7e7;
     margin-top: 5px;
 }
 
@@ -309,7 +309,7 @@ h1 {
     padding: 10px;
     margin-top: 5px;
     background-color: #262626;
-    color: whitesmoke;
+    color: #e7e7e7;
     border-radius: 3px;
     font-size: 35px;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
@@ -390,7 +390,7 @@ h1 {
 }
 
 #client-name {
-    color: whitesmoke;
+    color: #e7e7e7;
     font-family: 'signika-negative', sans-serif;
     font-size: 30px;
     margin: 0.25em 2em 0.25em 0;
@@ -446,7 +446,7 @@ label[for='moderator'] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
     border-radius: 3px;
-    color: whitesmoke;
+    color: #e7e7e7;
     cursor: pointer;
     border: 2px solid transparent;
     transition: background-color, border 0.3s ease-out;
@@ -551,7 +551,7 @@ label[for='moderator'] {
 .kill-player-button, .reveal-role-button {
     font-family: 'signika-negative', sans-serif !important;
     border-radius: 3px;
-    color: whitesmoke;
+    color: #e7e7e7;
     font-size: 16px;
     cursor: pointer;
     border: 2px solid transparent;

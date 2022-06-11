@@ -1,4 +1,5 @@
 export const globals = {
+    CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     USER_SIGNATURE_LENGTH: 25,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
     MAX_CUSTOM_ROLE_NAME_LENGTH: 30,

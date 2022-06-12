@@ -1,6 +1,6 @@
 import { globals } from '../config/globals.js';
 import { HTMLFragments } from './HTMLFragments.js';
-import {toast} from "./Toast";
+import { toast } from './Toast';
 
 export class DeckStateManager {
     constructor () {
@@ -40,7 +40,7 @@ export class DeckStateManager {
         );
     }
 
-    getQuantityOfRole(role) {
+    getQuantityOfRole (role) {
         return this.deck.find(
             (card) => card.role.toLowerCase().trim() === role.toLowerCase().trim()
         )?.quantity;
@@ -88,8 +88,8 @@ export class DeckStateManager {
                             if (e.type === 'click' || e.code === 'Enter') {
                                 e.preventDefault();
                                 toast(
-                                    `<span class='toast-minus-one'>-1</span>`
-                                    + sortedDeck[i].role + ' (<span class="toast-minus-role-quantity">' + (sortedDeck[i].quantity - 1).toString() + '</span>)',
+                                    '<span class=\'toast-minus-one\'>-1</span>' +
+                                    sortedDeck[i].role + ' (<span class="toast-minus-role-quantity">' + (sortedDeck[i].quantity - 1).toString() + '</span>)',
                                     'neutral',
                                     true,
                                     true,

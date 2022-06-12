@@ -200,8 +200,8 @@ export class RoleBox {
                             this.deckManager.addCopyOfCard(name);
                         }
                         toast(
-                            '<span class="toast-plus-one">+1 </span>'
-                            + name + ' (<span class="toast-plus-role-quantity">' + this.deckManager.getQuantityOfRole(name) + '</span>)',
+                            '<span class="toast-plus-one">+1 </span>' +
+                            name + ' (<span class="toast-plus-role-quantity">' + this.deckManager.getQuantityOfRole(name) + '</span>)',
                             'neutral',
                             true,
                             true,

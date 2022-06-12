@@ -1,10 +1,16 @@
-export const toast = (message, type, positionAtTop = true, dispelAutomatically = true, duration = null) => {
+export const toast = (
+    message,
+    type, positionAtTop = true,
+    dispelAutomatically = true,
+    duration = null,
+    innerHTML = false
+) => {
     if (message && type) {
-        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration);
+        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration, innerHTML);
     }
 };
 
-function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration) {
+function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, innerHTML) {
     cancelCurrentToast();
     const messageEl = document.createElement('div');
     messageEl.classList.add('info-message');
@@ -19,6 +25,9 @@ function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutom
             break;
         case 'success':
             messageEl.classList.add('toast-success');
+            break;
+        case 'neutral':
+            messageEl.classList.add('toast-neutral');
             break;
     }
 
@@ -47,7 +56,11 @@ function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutom
     }
 
     messageEl.setAttribute('id', 'current-info-message');
-    messageEl.innerText = message;
+    if (innerHTML) {
+        messageEl.innerHTML = message;
+    } else {
+        messageEl.innerText = message;
+    }
 
     document.body.prepend(messageEl);
 }

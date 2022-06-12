@@ -92,6 +92,11 @@ textarea {
     border: 3px solid #c78a8a;
 }
 
+.toast-neutral {
+    background-color: #dbdbdb;
+    border: 3px solid #c4c4c4;
+}
+
 .toast-dispel-automatically {
     animation: fade-in-slide-down-then-exit ease normal forwards;
 }
@@ -110,6 +115,30 @@ textarea {
 
 .toast-long {
     animation-duration: 8s;
+}
+
+.toast-plus-one {
+    color: #1c8a36;
+    font-weight: bold;
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+.toast-minus-one {
+    font-size: 20px;
+    margin-right: 5px;
+    color: #e73333;
+    font-weight: bold;
+}
+
+.toast-plus-role-quantity {
+    color: #1c8a36;
+    font-weight: bold;
+}
+
+.toast-minus-role-quantity {
+    color: #e73333;
+    font-weight: bold;
 }
 
 #footer {

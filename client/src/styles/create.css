@@ -416,6 +416,11 @@ input[type="number"] {
     cursor: pointer;
     padding: 5px;
     border-radius: 3px;
+    border: 1px solid transparent;
+}
+
+#role-select img:active, #deck-status-container img:active {
+    border: 1px solid whitesmoke;
 }
 
 #role-select img:nth-child(4) {

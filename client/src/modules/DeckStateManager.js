@@ -1,5 +1,6 @@
 import { globals } from '../config/globals.js';
 import { HTMLFragments } from './HTMLFragments.js';
+import {toast} from "./Toast";
 
 export class DeckStateManager {
     constructor () {
@@ -37,6 +38,12 @@ export class DeckStateManager {
         return this.deck.find(
             (card) => card.role.toLowerCase().trim() === role.toLowerCase().trim()
         );
+    }
+
+    getQuantityOfRole(role) {
+        return this.deck.find(
+            (card) => card.role.toLowerCase().trim() === role.toLowerCase().trim()
+        )?.quantity;
     }
 
     getDeckSize () {
@@ -80,6 +87,15 @@ export class DeckStateManager {
                         const minusOneHandler = (e) => {
                             if (e.type === 'click' || e.code === 'Enter') {
                                 e.preventDefault();
+                                toast(
+                                    `<span class='toast-minus-one'>-1</span>`
+                                    + sortedDeck[i].role + ' (<span class="toast-minus-role-quantity">' + (sortedDeck[i].quantity - 1).toString() + '</span>)',
+                                    'neutral',
+                                    true,
+                                    true,
+                                    'short',
+                                    true
+                                );
                                 this.removeCopyOfCard(sortedDeck[i].role);
                                 this.updateDeckStatus();
                             }

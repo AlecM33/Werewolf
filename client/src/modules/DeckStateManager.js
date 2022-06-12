@@ -1,6 +1,6 @@
 import { globals } from '../config/globals.js';
 import { HTMLFragments } from './HTMLFragments.js';
-import { toast } from './Toast';
+import { toast } from './Toast.js';
 
 export class DeckStateManager {
     constructor () {

@@ -59,7 +59,7 @@ export class DeckStateManager {
         placeholder.setAttribute('id', 'deck-list-placeholder');
         placeholder.innerText = 'Add a card from the role box.';
         document.getElementById('deck-list').appendChild(placeholder);
-    }
+    };
 
     updateDeckStatus = () => {
         document.getElementById('deck-count').innerText = this.getDeckSize() + ' Players';

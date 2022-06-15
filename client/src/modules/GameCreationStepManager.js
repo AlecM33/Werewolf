@@ -466,11 +466,11 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
         document.getElementById('tracker-container').appendChild(createButton);
     }
 
-    insertPlaceHolderButtonsIfNeeded(back, forward);
+    insertPlaceHolderButtonsIfNeeded(back);
 }
 
-function insertPlaceHolderButtonsIfNeeded(back, forward) {
-    let placeholder = document.createElement('div');
+function insertPlaceHolderButtonsIfNeeded (back) {
+    const placeholder = document.createElement('div');
     placeholder.classList.add('tracker-placeholder');
     if (!back) {
         document.getElementById('tracker-container').prepend(placeholder);

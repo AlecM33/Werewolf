@@ -436,6 +436,7 @@ function updateTracker (step) {
 }
 
 function showButtons (back, forward, forwardHandler, backHandler, builtGame = null) {
+    document.querySelectorAll('.tracker-placeholder').forEach((el) => el.remove());
     document.querySelector('#step-back-button')?.remove();
     document.querySelector('#step-forward-button')?.remove();
     document.querySelector('#create-game')?.remove();
@@ -463,6 +464,16 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
         createButton.classList.add('app-button');
         createButton.addEventListener('click', forwardHandler);
         document.getElementById('tracker-container').appendChild(createButton);
+    }
+
+    insertPlaceHolderButtonsIfNeeded(back);
+}
+
+function insertPlaceHolderButtonsIfNeeded (back) {
+    const placeholder = document.createElement('div');
+    placeholder.classList.add('tracker-placeholder');
+    if (!back) {
+        document.getElementById('tracker-container').prepend(placeholder);
     }
 }
 

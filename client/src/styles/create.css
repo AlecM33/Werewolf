@@ -339,8 +339,16 @@ select {
     font-size: 25px;
 }
 
+#game-time label {
+    display: block;
+    width: 6em;
+    text-align: center;
+}
+
 #game-time div {
     margin: 0.5em;
+    display: flex;
+    align-items: center;
 }
 
 #role-alignment {
@@ -481,7 +489,7 @@ input[type="number"] {
 #tracker-container {
     display: flex;
     align-items: center;
-    margin-top: 2em;
+    margin-top: 1em;
     justify-content: center;
     width: 100%;
 }
@@ -511,6 +519,14 @@ input[type="number"] {
     background-color: #66666657 !important;
     padding: 0 !important;
     width: 50px;
+    height: 44px;
+}
+
+.tracker-placeholder {
+    width: 50px;
+    height: 44px;
+    background-color: transparent;
+    border: none;
 }
 
 #step-forward-button, #create-game {
@@ -572,7 +588,7 @@ input[type="number"] {
         min-width: 90%;
     }
     h1 {
-        font-size: 35px;
+        font-size: 32px;
     }
 
     #step-1 div {
@@ -601,6 +617,10 @@ input[type="number"] {
 
     .compact-card {
         min-width: 130px;
+    }
+
+    #step-title {
+        font-size: 21px;
     }
 }
 

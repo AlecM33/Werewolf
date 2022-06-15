@@ -54,6 +54,13 @@ export class DeckStateManager {
         return total;
     }
 
+    displayDeckPlaceHolder = () => {
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('id', 'deck-list-placeholder');
+        placeholder.innerText = 'Add a card from the role box.';
+        document.getElementById('deck-list').appendChild(placeholder);
+    }
+
     updateDeckStatus = () => {
         document.getElementById('deck-count').innerText = this.getDeckSize() + ' Players';
         if (this.deck.length > 0) {
@@ -119,11 +126,10 @@ export class DeckStateManager {
                 });
             }
             if (this.deck.length === 0) {
-                const placeholder = document.createElement('div');
-                placeholder.setAttribute('id', 'deck-list-placeholder');
-                placeholder.innerText = 'Add a card from the role box.';
-                document.getElementById('deck-list').appendChild(placeholder);
+                this.displayDeckPlaceHolder();
             }
+        } else {
+            this.displayDeckPlaceHolder();
         }
     };
 }

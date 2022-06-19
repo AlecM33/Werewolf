@@ -119,7 +119,7 @@
 
 #deck-template-container {
     margin: 1em 0;
-    max-height: 64vh;
+    max-height: 59vh;
     overflow-y: auto;
     padding: 0 0.5em;
 }

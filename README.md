@@ -28,7 +28,7 @@ Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/
 You can:
 
 - build your desired game with default or custom roles.
-- join a game with two clicks via a shareable link, or via a 4-character code entered on the homepage.
+- join a game with two clicks via a shareable link, a 4-character code entered on the homepage, or by scanning a QR code.
 - automatically deal cards to everyone's device.
 - create a game as a "dedicated moderator", who is not dealt in, or as a "temporary moderator", who is dealt in and
   then has their powers automatically delegated. 

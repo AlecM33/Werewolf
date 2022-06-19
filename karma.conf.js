@@ -5,6 +5,7 @@ module.exports = function(config) {
         files: [
             { pattern: 'spec/e2e/*.js', type: 'module' },
             { pattern: 'client/src/modules/*.js', type: 'module', included: true, served: true },
+            { pattern: 'client/src/modules/third_party/*.js', type: 'module', included: true, served: true },
             { pattern: 'client/src/config/*.js', type: 'module', included: true, served: true },
             { pattern: 'client/src/model/*.js', type: 'module', included: true, served: true },
             { pattern: 'client/src/view_templates/*.js', type: 'module', included: true, served: true }

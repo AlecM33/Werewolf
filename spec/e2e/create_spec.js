@@ -95,5 +95,14 @@ describe('Create page', function () {
                     .querySelector('.role-name').innerText
             ).role).toEqual('Test name edited');
         });
+
+        it('should load a deck template', () => {
+            document.getElementById('role-category-default').click();
+            document.getElementById('deck-template-button').click();
+            document.querySelectorAll('.template-option')[0].click();
+
+            expect(gameCreationStepManager.deckManager.deck.length).toEqual(5);
+            expect(document.querySelectorAll('.added-role').length).toEqual(5);
+        });
     });
 });

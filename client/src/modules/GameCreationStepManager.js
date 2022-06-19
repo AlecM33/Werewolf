@@ -198,6 +198,7 @@ export class GameCreationStepManager {
     }
 
     renderRoleSelectionStep = (game, containerId, step, deckManager) => {
+
         const stepContainer = document.createElement('div');
 
         setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container-left-align step' });
@@ -205,10 +206,13 @@ export class GameCreationStepManager {
         stepContainer.innerHTML += HTMLFragments.CREATE_GAME_DECK_STATUS;
 
         document.getElementById(containerId).appendChild(stepContainer);
+
         this.roleBox = new RoleBox(stepContainer, deckManager);
         this.roleBox.loadDefaultRoles();
         this.roleBox.loadCustomRolesFromCookies();
         this.roleBox.displayDefaultRoles(document.getElementById('role-select'));
+
+        deckManager.loadDeckTemplates(this.roleBox);
 
         const exportHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
@@ -502,6 +506,13 @@ function initializeRemainingEventListeners (deckManager, roleBox) {
             }
         }
     };
+    document.getElementById('deck-template-button').addEventListener('click', () => {
+        ModalManager.displayModal(
+            'deck-template-modal',
+            'modal-background',
+            'close-deck-template-modal-button'
+        );
+    });
     document.getElementById('custom-role-btn').addEventListener(
         'click', () => {
             const createBtn = document.getElementById('create-role-button');

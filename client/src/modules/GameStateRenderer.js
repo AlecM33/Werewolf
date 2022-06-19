@@ -234,7 +234,9 @@ export class GameStateRenderer {
             });
         }
         document.querySelectorAll('.game-player').forEach((el) => el.remove());
-        sortPeopleByStatus(this.stateBucket.currentGameState.people);
+        /* TODO: UX issue - it's easier to parse visually when players are sorted this way,
+          but shifting players around when they are killed or revealed is bad UX for the moderator. */
+        // sortPeopleByStatus(this.stateBucket.currentGameState.people);
         const modType = tempMod ? this.stateBucket.currentGameState.moderator.userType : null;
         renderGroupOfPlayers(
             this.stateBucket.currentGameState.people,

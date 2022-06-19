@@ -100,7 +100,7 @@ export const HTMLFragments = {
                 <div id="play-pause-placeholder"></div>
             </div>
         </div>
-        <button id='mod-transfer-button' class='moderator-player-button make-mod-button'>Transfer Mod Powers \uD83D\uDD00</button>
+        <button id='mod-transfer-button' class='moderator-player-button make-mod-button app-button'>Transfer Mod Powers \uD83D\uDD00</button>
         <div>
             <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
@@ -238,6 +238,9 @@ export const HTMLFragments = {
                 <div id='deck-evil'></div>
             </div>
         </div>`,
+    DECK_TEMPLATE:
+        `<div class='template-option-name'></div>
+        <div class='template-option-roles'></div>`,
     CREATE_GAME_CUSTOM_ROLES:
         `<div id="custom-roles-container">
             <button id="custom-role-hamburger" class="hamburger hamburger--collapse" type="button">
@@ -259,7 +262,10 @@ export const HTMLFragments = {
         </div>`,
     CREATE_GAME_DECK_STATUS:
         `<div id="deck-status-container">
-            <div id="deck-count">0 Players</div>
+            <div id="deck-status-header">
+                <div id="deck-count">0 Players</div>
+                <button id="deck-template-button" class="app-button">Use Template</button>
+            </div>
             <div id="deck-list"></div>
         </div>`,
     DECK_SELECT_ROLE:

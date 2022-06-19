@@ -101,6 +101,42 @@
     width: fit-content;
 }
 
+.template-option {
+    color: #d7d7d7;
+    display: flex;
+    justify-content: space-between;
+    background-color: #0f0f10;
+    border: 2px solid #333243;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    height: 4em;
+    margin: 10px 0;
+}
+
+#deck-template-container {
+    margin: 1em 0;
+    max-height: 30em;
+    overflow-y: auto;
+}
+
+.template-option-name {
+    font-size: 20px;
+}
+
+.template-option:hover, .template-option:active {
+    border: 2px solid #e7e7e7;
+    background-color: #33343c;
+    cursor: pointer;
+}
+
+#deck-template-modal h2 {
+    font-size: 20px;
+}
+
 #custom-roles-container {
     width: 95%;
     max-width: 25em;
@@ -136,13 +172,18 @@
 
 #deck-count {
     font-size: 30px;
-    position: sticky;
-    top: 0;
-    left: 5px;
     background-color: #333243;
     width: fit-content;
     padding: 0 5px;
     border-radius: 3px;
+}
+
+#deck-status-header {
+    position: sticky;
+    z-index: 25;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
 }
 
 #deck-list {
@@ -484,6 +525,10 @@ input[type="number"] {
     width: 95%;
     position: relative;
     margin-bottom: 4em;
+}
+
+#step-2 .app-button {
+    padding: 5px;
 }
 
 #tracker-container {

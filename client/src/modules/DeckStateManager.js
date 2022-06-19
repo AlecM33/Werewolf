@@ -1,10 +1,43 @@
 import { globals } from '../config/globals.js';
 import { HTMLFragments } from './HTMLFragments.js';
 import { toast } from './Toast.js';
+import {ModalManager} from "./ModalManager.js";
 
 export class DeckStateManager {
     constructor () {
         this.deck = [];
+        this.templates = {
+            '5 Players': {
+                'Villager': 1,
+                'Werewolf': 1,
+                'Sorceress': 1,
+                'Parity Hunter': 1,
+                'Seer': 1
+            },
+            '7 Players': {
+                'Villager': 6,
+                'Werewolf': 1
+            },
+            '9 Players': {
+                'Villager': 7,
+                'Werewolf': 2
+            },
+            '11 Players': {
+                'Villager': 8,
+                'Werewolf': 2,
+                'Seer': 1
+            },
+            '13 Players': {
+                'Villager': 10,
+                'Werewolf': 2,
+                'Seer': 1
+            },
+            '15 Players': {
+                'Villager': 12,
+                'Werewolf': 2,
+                'Seer': 1
+            }
+        }
     }
 
     addToDeck (role) {
@@ -54,6 +87,46 @@ export class DeckStateManager {
         return total;
     }
 
+    loadDeckTemplates = (roleBox) => {
+        if (document.querySelectorAll('.template-option').length === 0) {
+            for (let templateName of Object.keys(this.templates)) {
+                let templateOption = document.createElement('div');
+                templateOption.classList.add('template-option');
+                templateOption.innerHTML = HTMLFragments.DECK_TEMPLATE;
+                templateOption.querySelector('.template-option-name').innerText = templateName;
+                for (let i = 0; i < Object.keys(this.templates[templateName]).length; i++) {
+                    let role = Object.keys(this.templates[templateName])[i];
+                    let roleEl = document.createElement('span');
+                    roleEl.innerText = this.templates[templateName][role] + ' ' + role;
+                    if (i < Object.keys(this.templates[templateName]).length - 1) { // construct comma-delimited list
+                        roleEl.innerText += ', ';
+                    }
+                    roleEl.classList.add(roleBox.defaultRoles.find((entry) => entry.role === role).team);
+                    templateOption.querySelector('.template-option-roles').appendChild(roleEl);
+                }
+                templateOption.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    for (let card of this.deck) {
+                        card.quantity = 0;
+                    }
+                    for (let role of Object.keys(this.templates[templateName])) {
+                        let roleObj = roleBox.getDefaultRole(role);
+                        if (!this.hasRole(roleObj.role)) {
+                            this.addToDeck(roleObj);
+                        }
+                        for (let i = roleObj.quantity; i < this.templates[templateName][role]; i++) {
+                            this.addCopyOfCard(roleObj.role);
+                        }
+                    }
+                    this.updateDeckStatus();
+                    ModalManager.dispelModal('deck-template-modal', 'modal-background');
+                    toast('Template loaded', 'success', true, true, 'short');
+                });
+                document.getElementById('deck-template-container').appendChild(templateOption);
+            }
+        }
+    }
+
     displayDeckPlaceHolder = () => {
         const placeholder = document.createElement('div');
         placeholder.setAttribute('id', 'deck-list-placeholder');
@@ -69,7 +142,7 @@ export class DeckStateManager {
             }
             const sortedDeck = this.deck.sort((a, b) => {
                 if (a.team !== b.team) {
-                    return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+                    return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
                 }
                 return a.role.localeCompare(b.role);
             });

@@ -383,7 +383,7 @@ function updateDOMWithNameChange (gameState, gameStateRenderer) {
 
 function activateRoleInfoButton (deck) {
     deck.sort((a, b) => {
-        return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+        return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
     });
     document.getElementById('role-info-button').addEventListener('click', (e) => {
         e.preventDefault();

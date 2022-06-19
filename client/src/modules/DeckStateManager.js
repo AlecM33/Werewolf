@@ -1,43 +1,43 @@
 import { globals } from '../config/globals.js';
 import { HTMLFragments } from './HTMLFragments.js';
 import { toast } from './Toast.js';
-import {ModalManager} from "./ModalManager.js";
+import { ModalManager } from './ModalManager.js';
 
 export class DeckStateManager {
     constructor () {
         this.deck = [];
         this.templates = {
             '5 Players': {
-                'Villager': 1,
-                'Werewolf': 1,
-                'Sorceress': 1,
+                Villager: 1,
+                Werewolf: 1,
+                Sorceress: 1,
                 'Parity Hunter': 1,
-                'Seer': 1
+                Seer: 1
             },
             '7 Players': {
-                'Villager': 6,
-                'Werewolf': 1
+                Villager: 6,
+                Werewolf: 1
             },
             '9 Players': {
-                'Villager': 7,
-                'Werewolf': 2
+                Villager: 7,
+                Werewolf: 2
             },
             '11 Players': {
-                'Villager': 8,
-                'Werewolf': 2,
-                'Seer': 1
+                Villager: 8,
+                Werewolf: 2,
+                Seer: 1
             },
             '13 Players': {
-                'Villager': 10,
-                'Werewolf': 2,
-                'Seer': 1
+                Villager: 10,
+                Werewolf: 2,
+                Seer: 1
             },
             '15 Players': {
-                'Villager': 12,
-                'Werewolf': 2,
-                'Seer': 1
+                Villager: 12,
+                Werewolf: 2,
+                Seer: 1
             }
-        }
+        };
     }
 
     addToDeck (role) {
@@ -89,14 +89,14 @@ export class DeckStateManager {
 
     loadDeckTemplates = (roleBox) => {
         if (document.querySelectorAll('.template-option').length === 0) {
-            for (let templateName of Object.keys(this.templates)) {
-                let templateOption = document.createElement('div');
+            for (const templateName of Object.keys(this.templates)) {
+                const templateOption = document.createElement('div');
                 templateOption.classList.add('template-option');
                 templateOption.innerHTML = HTMLFragments.DECK_TEMPLATE;
                 templateOption.querySelector('.template-option-name').innerText = templateName;
-                for (let i = 0; i < Object.keys(this.templates[templateName]).length; i++) {
-                    let role = Object.keys(this.templates[templateName])[i];
-                    let roleEl = document.createElement('span');
+                for (let i = 0; i < Object.keys(this.templates[templateName]).length; i ++) {
+                    const role = Object.keys(this.templates[templateName])[i];
+                    const roleEl = document.createElement('span');
                     roleEl.innerText = this.templates[templateName][role] + ' ' + role;
                     if (i < Object.keys(this.templates[templateName]).length - 1) { // construct comma-delimited list
                         roleEl.innerText += ', ';
@@ -106,15 +106,15 @@ export class DeckStateManager {
                 }
                 templateOption.addEventListener('click', (e) => {
                     e.preventDefault();
-                    for (let card of this.deck) {
+                    for (const card of this.deck) {
                         card.quantity = 0;
                     }
-                    for (let role of Object.keys(this.templates[templateName])) {
-                        let roleObj = roleBox.getDefaultRole(role);
+                    for (const role of Object.keys(this.templates[templateName])) {
+                        const roleObj = roleBox.getDefaultRole(role);
                         if (!this.hasRole(roleObj.role)) {
                             this.addToDeck(roleObj);
                         }
-                        for (let i = roleObj.quantity; i < this.templates[templateName][role]; i++) {
+                        for (let i = roleObj.quantity; i < this.templates[templateName][role]; i ++) {
                             this.addCopyOfCard(roleObj.role);
                         }
                     }
@@ -125,7 +125,7 @@ export class DeckStateManager {
                 document.getElementById('deck-template-container').appendChild(templateOption);
             }
         }
-    }
+    };
 
     displayDeckPlaceHolder = () => {
         const placeholder = document.createElement('div');
@@ -182,6 +182,22 @@ export class DeckStateManager {
                         };
                         roleEl.querySelector('.role-remove').addEventListener('click', minusOneHandler);
                         roleEl.querySelector('.role-remove').addEventListener('keyup', minusOneHandler);
+
+                        const infoHandler = (e) => {
+                            if (e.type === 'click' || e.code === 'Enter') {
+                                const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                                alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
+                                alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+                                e.preventDefault();
+                                document.getElementById('custom-role-info-modal-name').innerText = sortedDeck[i].role;
+                                alignmentEl.classList.add(sortedDeck[i].team);
+                                document.getElementById('custom-role-info-modal-description').innerText = sortedDeck[i].description;
+                                alignmentEl.innerText = sortedDeck[i].team;
+                                ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
+                            }
+                        };
+                        roleEl.querySelector('.role-info').addEventListener('click', infoHandler);
+                        roleEl.querySelector('.role-info').addEventListener('keyup', infoHandler);
                     }
                 } else {
                     sortedDeck[i].markedForRemoval = true;

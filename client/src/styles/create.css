@@ -119,8 +119,9 @@
 
 #deck-template-container {
     margin: 1em 0;
-    max-height: 30em;
+    max-height: 64vh;
     overflow-y: auto;
+    padding: 0 0.5em;
 }
 
 .template-option-name {

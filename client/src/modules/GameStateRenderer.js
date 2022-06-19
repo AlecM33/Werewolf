@@ -345,19 +345,6 @@ function renderLobbyPerson (name, userType) {
     return el;
 }
 
-function sortPeopleByStatus (people) {
-    people.sort((a, b) => {
-        if (a.out !== b.out) {
-            return a.out ? 1 : -1;
-        } else {
-            if (a.revealed !== b.revealed) {
-                return a.revealed ? -1 : 1;
-            }
-            return a.name >= b.name ? 1 : -1;
-        }
-    });
-}
-
 function getGameSize (cards) {
     let quantity = 0;
     for (const card of cards) {

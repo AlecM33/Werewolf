@@ -198,7 +198,6 @@ export class GameCreationStepManager {
     }
 
     renderRoleSelectionStep = (game, containerId, step, deckManager) => {
-
         const stepContainer = document.createElement('div');
 
         setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container-left-align step' });
@@ -208,6 +207,7 @@ export class GameCreationStepManager {
         document.getElementById(containerId).appendChild(stepContainer);
 
         this.roleBox = new RoleBox(stepContainer, deckManager);
+        deckManager.roleBox = this.roleBox;
         this.roleBox.loadDefaultRoles();
         this.roleBox.loadCustomRolesFromCookies();
         this.roleBox.displayDefaultRoles(document.getElementById('role-select'));

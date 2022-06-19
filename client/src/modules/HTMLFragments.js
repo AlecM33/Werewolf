@@ -286,5 +286,6 @@ export const HTMLFragments = {
         `<div class="role-name"></div>
         <div class="role-options">
             <img tabindex="0" class="role-remove" src="images/remove.svg" title="remove one" alt="remove one"/>
+            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
         </div>`
 };

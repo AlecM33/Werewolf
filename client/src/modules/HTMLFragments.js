@@ -226,9 +226,7 @@ export const HTMLFragments = {
             <div id='game-player-list'></div>
         </div>`,
     RESTART_GAME_BUTTON:
-        `<div>
-            <button id='restart-game' class='app-button'>Run it back 🔄</button>
-        </div>`,
+        '<button id=\'restart-game\' class=\'app-button\'>Run it back 🔄</button>',
     CREATE_GAME_DECK:
         `<div id='deck-container'>
             <div>

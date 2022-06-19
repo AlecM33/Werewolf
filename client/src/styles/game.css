@@ -104,9 +104,17 @@ h1 {
     align-items: center;
 }
 
+#end-of-game-header h2 {
+    border: 1px solid #333243;
+    border-radius: 5px;
+    background-color: #1a1726;
+    padding: 7px;
+    margin: 0.5em;
+}
+
 #end-of-game-header button {
     margin: 0.5em;
-    min-width: 10em;
+    min-width: 12em;
 }
 .potential-moderator {
     display: flex;

@@ -4,6 +4,8 @@ import { HTMLFragments } from './HTMLFragments.js';
 import { ModalManager } from './ModalManager.js';
 import { XHRUtility } from './XHRUtility.js';
 import { UserUtility } from './UserUtility.js';
+// QRCode module via: https://github.com/soldair/node-qrcode
+import { QRCode } from './third_party/qrcode.js';
 
 export class GameStateRenderer {
     constructor (stateBucket, socket) {
@@ -69,9 +71,6 @@ export class GameStateRenderer {
 
     renderLobbyHeader () {
         removeExistingTitle();
-        const title = document.createElement('h1');
-        title.innerText = 'Lobby';
-        document.getElementById('game-title').appendChild(title);
         const gameLinkContainer = document.getElementById('game-link');
 
         const copyImg = document.createElement('img');
@@ -108,6 +107,11 @@ export class GameStateRenderer {
             '/join/' + this.stateBucket.currentGameState.accessCode +
             '?playerCount=' + getGameSize(this.stateBucket.currentGameState.deck) +
             '&timer=' + encodeURIComponent(timeString);
+
+        QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 3 }, function (error) {
+            if (error) console.error(error);
+            console.log('success!');
+        });
 
         const linkCopyHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {

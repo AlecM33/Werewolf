@@ -6,6 +6,7 @@ export const HTMLFragments = {
             <div tabindex='0' id='game-link'></div>
             <div id='game-code'></div>
         </div>
+        <canvas id="canvas"></canvas>
         <div id='game-parameters'>
             <div>
                 <img alt='clock' src='/images/clock.svg'/>

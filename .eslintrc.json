@@ -7,7 +7,7 @@
   "extends": [
     "standard"
   ],
-  "ignorePatterns": ["/client/dist/*", "client/certs/*", "client/favicon_package/*", "client/webpack/*", "node_modules/*"],
+  "ignorePatterns": ["/client/dist/*", "client/certs/*", "client/favicon_package/*", "client/webpack/*", "node_modules/*", "client/src/modules/third_party/*"],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
     "requireConfigFile": false,

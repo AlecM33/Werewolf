@@ -41,6 +41,13 @@ const template =
             <button id="close-custom-role-info-modal-button" class="cancel app-button">Close</button>
         </div>
     </div>
+    <div tabindex='-1' id='deck-template-modal' class='modal'>
+        <h2>Choose a pre-built game:</h2>
+        <div id='deck-template-container'></div>
+        <div class='modal-button-container'>
+            <button id='close-deck-template-modal-button' class='cancel app-button'>Close</button>
+        </div>
+    </div>
     <h1>Create A Game</h1>
     <div id="tracker-container">
         <div id="creation-step-tracker">

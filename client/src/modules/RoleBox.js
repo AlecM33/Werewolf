@@ -11,7 +11,6 @@ export class RoleBox {
         this.category = 'default';
         this.deckManager = deckManager;
         this.defaultRoles = [];
-        console.log('hi');
         this.customRoles = [];
         container.innerHTML += HTMLFragments.CREATE_GAME_CUSTOM_ROLES;
         this.defaultButton = document.getElementById('role-category-default');
@@ -36,7 +35,7 @@ export class RoleBox {
     loadDefaultRoles = () => {
         this.defaultRoles = defaultRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+                return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
             }
             return a.role.localeCompare(b.role);
         }).map((role) => {
@@ -162,7 +161,7 @@ export class RoleBox {
         this.categoryTransition.play();
         this.customRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === globals.ALIGNMENT.GOOD ? 1 : -1;
+                return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
             }
             return a.role.localeCompare(b.role);
         });

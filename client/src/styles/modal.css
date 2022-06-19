@@ -11,7 +11,7 @@
     align-items: center;
     justify-content: center;
     max-width: 25em;
-    font-family: sans-serif;
+    font-family: 'signika-negative', sans-serif;
     flex-direction: column;
     padding: 1em;
     display: none;

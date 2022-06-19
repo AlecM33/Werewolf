@@ -505,6 +505,7 @@ label[for='moderator'] {
 
 .paused {
     animation: pulse 0.75s linear infinite alternate;
+    border: 1px solid #ffc83d !important;
 }
 
 .paused-low {
@@ -515,11 +516,11 @@ label[for='moderator'] {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 }
 
 #game-header button {
-    min-width: 10em;
+    min-width: 12em;
 }
 
 #timer-container-moderator {
@@ -595,7 +596,7 @@ label[for='moderator'] {
     background-color: #586a6e;
 }
 
-.reveal-role-button:hover, #mod-transfer-button:hover {
+.reveal-role-button:hover {
     background-color: #4e5664;
 }
 
@@ -627,15 +628,15 @@ label[for='moderator'] {
     align-items: center;
 }
 
-.make-mod-button {
-    background-color: #3f5256;
-    font-size: 18px;
-    padding: 10px;
-    border: 2px transparent;
-    border-radius: 3px;
-    color: #d7d7d7;
-    font-family: signika-negative, sans-serif;
-}
+/*.make-mod-button {*/
+/*    background-color: #3f5256;*/
+/*    font-size: 18px;*/
+/*    padding: 10px;*/
+/*    border: 2px transparent;*/
+/*    border-radius: 3px;*/
+/*    color: #d7d7d7;*/
+/*    font-family: signika-negative, sans-serif;*/
+/*}*/
 
 .make-mod-button:hover {
     cursor: pointer;
@@ -734,10 +735,10 @@ label[for='moderator'] {
         width: 45px;
     }
 
-    .make-mod-button {
-        font-size: 16px;
-        padding: 5px;
-    }
+    /*.make-mod-button {*/
+    /*    font-size: 16px;*/
+    /*    padding: 5px;*/
+    /*}*/
 
     .game-player-name {
         font-size: 16px;
@@ -749,7 +750,7 @@ label[for='moderator'] {
         height: 30px;
     }
 
-    #role-info-button {
+    #role-info-button, #mod-transfer-button {
         padding: 7px;
     }
 

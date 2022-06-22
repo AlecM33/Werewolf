@@ -15,7 +15,6 @@ const join = () => {
         document.getElementById('game-player-count').innerText =
             decodeURIComponent((new URL(document.location)).searchParams.get('playerCount')) + ' Players';
         const form = document.getElementById('join-game-form');
-        document.getElementById('player-new-name').focus();
         form.onsubmit = joinHandler;
     } else {
         window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');

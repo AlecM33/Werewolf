@@ -3,6 +3,7 @@
     animation: entrance 0.5s forwards;
     transform-origin: center;
     display: block;
+    z-index: 1 !important;
 }
 
 #player-new-name {
@@ -28,6 +29,5 @@
     }
     100% {
         opacity: 1;
-        transform: translate(-50%, -50%);
     }
 }

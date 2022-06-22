@@ -21,10 +21,10 @@ Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/
 <br><br>
 <p align="center">
   <kbd>
-    <img width="600" src="./client/src/images/screenshots/player.PNG"/>
+    <img width="500" src="./client/src/images/screenshots/player.PNG"/>
   </kbd>
   <kbd>
-    <img width="250" src="./client/src/images/screenshots/play-werewolf.app_game_VR8Z(Samsung Galaxy S8+).png"/>
+    <img width="225" src="./client/src/images/screenshots/play-werewolf.app_game_VR8Z(Samsung Galaxy S8+).png"/>
   </kbd>
 </p>
 

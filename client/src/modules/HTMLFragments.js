@@ -60,8 +60,8 @@ export const HTMLFragments = {
         <p id='role-description'></p>
     </div>
     <div id='game-role-back'>
-        <h4>Click to show your role</h4>
-        <p>(click again to hide)</p>
+        <h4>Double-tap here to show your role</h4>
+        <p>(Double-tap here again to hide)</p>
     </div>
     <div id='game-people-container'>
         <label id='players-alive-label'></label>
@@ -138,8 +138,8 @@ export const HTMLFragments = {
             <p id='role-description'></p>
         </div>
         <div id='game-role-back'>
-            <h4>Click to show your role</h4>
-            <p>(click again to hide)</p>
+            <h4>Double-tap here to show your role</h4>
+            <p>(Double-tap here again to hide)</p>
         </div>
         <div id='game-people-container'>
             <label id='players-alive-label'></label>
@@ -205,7 +205,7 @@ export const HTMLFragments = {
             <h2>Roles in this game:</h2>
             <div id='game-role-info-container'></div>
             <div class='modal-button-container'>
-                <button id='close-role-info-modal-button' class='app-button'>Close</button>
+                <button id='close-role-info-modal-button' class='app-button cancel'>Close</button>
             </div>
         </div>`,
     END_OF_GAME_VIEW:

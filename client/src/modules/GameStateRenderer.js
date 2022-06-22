@@ -485,12 +485,12 @@ function renderPlayerRole (gameState) {
 
     document.querySelector('#role-description').innerText = gameState.client.gameRoleDescription;
 
-    document.getElementById('game-role-back').addEventListener('click', () => {
+    document.getElementById('game-role-back').addEventListener('dblclick', () => {
         document.getElementById('game-role').style.display = 'flex';
         document.getElementById('game-role-back').style.display = 'none';
     });
 
-    document.getElementById('game-role').addEventListener('click', () => {
+    document.getElementById('game-role').addEventListener('dblclick', () => {
         document.getElementById('game-role-back').style.display = 'flex';
         document.getElementById('game-role').style.display = 'none';
     });

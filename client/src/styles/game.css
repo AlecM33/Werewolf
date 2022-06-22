@@ -182,10 +182,6 @@ h1 {
     color: #21ba45;
 }
 
-#role-info-button {
-    margin-top: 1em;
-}
-
 #role-info-button img {
     height: 25px;
     margin-left: 10px;
@@ -256,7 +252,7 @@ h1 {
     max-width: 17em;
     border-radius: 3px;
     height: 23em;
-    margin: 0 auto 2em auto;
+    margin: 10px 20px;
     width: 100%;
     box-shadow: 0 1px 1px rgba(0,0,0,0.11),
     0 2px 2px rgba(0,0,0,0.11),
@@ -268,6 +264,13 @@ h1 {
     /*transform-style: preserve-3d;*/
 }
 
+#game-role, #game-role-back {
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
 .game-role-good {
     border: 5px solid #5469c5 !important;
 }
@@ -277,10 +280,6 @@ h1 {
 }
 
 #game-role-back {
-    user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -292,7 +291,7 @@ h1 {
     max-width: 17em;
     border-radius: 3px;
     height: 23em;
-    margin: 0 auto 2em auto;
+    margin: 10px 20px;
     width: 100%;
     box-shadow: 0 1px 1px rgba(0,0,0,0.11),
     0 2px 2px rgba(0,0,0,0.11),
@@ -305,7 +304,7 @@ h1 {
 }
 
 #game-role-back h4 {
-    font-size: 24px;
+    font-size: 30px;
     padding: 0.5em;
     text-align: center;
     color: #e7e7e7;
@@ -313,7 +312,9 @@ h1 {
 
 #game-role-back p {
    color: #c3c3c3;
-    font-size: 20px;
+    font-size: 18px;
+    text-align: center;
+    padding: 10px;
 }
 
 #game-timer {
@@ -330,6 +331,7 @@ h1 {
     justify-content: center;
     align-items: center;
     height: 43px;
+    margin-bottom: 0.5em;
 }
 
 #game-timer.low {
@@ -467,6 +469,7 @@ label[for='moderator'] {
 
 #start-game-button {
     background-color: #1c8a36;
+    animation: shadow-pulse 1.5s infinite ease-out;
 }
 
 #end-game-button {
@@ -520,6 +523,7 @@ label[for='moderator'] {
     flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
+    margin: 1em;
 }
 
 #game-header button {
@@ -692,6 +696,10 @@ canvas {
     width: 100%;
 }
 
+#mod-transfer-button {
+    margin-bottom: 0.5em;
+}
+
 #transfer-mod-form .modal-button-container {
     justify-content: center;
 }
@@ -791,11 +799,11 @@ canvas {
     }
 
     #game-role-back p {
-        font-size: 16px;
+        font-size: 18px;
     }
 
     #game-role-back h4 {
-        font-size: 18px;
+        font-size: 24px;
     }
 
     h2 {
@@ -817,6 +825,20 @@ canvas {
         color: rgba(255, 255, 255, 0.1);
     } to {
         color: rgba(255, 255, 255, 1);
+    }
+}
+
+@keyframes shadow-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(28, 138, 54, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(28, 138, 54, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(28, 138, 54, 0);
     }
 }
 

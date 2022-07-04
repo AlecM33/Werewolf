@@ -4,33 +4,33 @@ const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())
 const logger = require('../modules/Logger')(debugMode);
 const GameManager = require('../modules/GameManager.js');
 const rateLimit = require('express-rate-limit').default;
-const globals = require('../config/globals');
+const globals = require('../config/globals.js');
 const cors = require('cors');
 
 const gameManager = new GameManager().getInstance();
 
 const apiLimiter = rateLimit({
-    windowMs: 600000,
-    max: 5,
+    windowMs: 60000,
+    max: 100,
     standardHeaders: true,
     legacyHeaders: false
 });
 
-const corsOptions = process.env.NODE_ENV.trim() === 'development'
-    ? {
-        origin: '*',
-        optionsSuccessStatus: 200
-    }
-    : {
-        origin: 'https://playwerewolf.uk.r.appspot.com',
-        optionsSuccessStatus: 200
-    };
+const gameEndpointLimiter = rateLimit({ // further limit the rate of game creation to 30 games per 10 minutes.
+    windowMs: 600000,
+    max: 30,
+    standardHeaders: true,
+    legacyHeaders: false
+});
 
-router.use(cors(corsOptions));
-router.options('/:code/players', cors(corsOptions));
+router.use(cors(globals.CORS));
+router.options('/:code/players', cors(globals.CORS));
+router.options('/create', cors(globals.CORS));
+router.options('/restart', cors(globals.CORS));
 
-if (process.env.NODE_ENV.trim() === 'production') { // in prod, limit clients to creating 5 games per 10 minutes.
-    router.use('/create', apiLimiter);
+if (process.env.NODE_ENV.trim() === 'production') {
+    router.use(apiLimiter);
+    router.use('/create', gameEndpointLimiter);
 }
 
 router.post('/create', function (req, res) {

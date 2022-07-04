@@ -5,6 +5,7 @@ const path = require('path');
 const app = express();
 const bodyParser = require('body-parser');
 const GameManager = require('./server/modules/GameManager.js');
+const SocketManager = require('./server/modules/SocketManager.js');
 const globals = require('./server/config/globals');
 const ServerBootstrapper = require('./server/modules/ServerBootstrapper');
 
@@ -34,6 +35,9 @@ if (process.env.NODE_ENV.trim() === 'development') {
     gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, gameNamespace).getInstance();
 }
 
+/* Instantiate the singleton socket manager */
+const socketManager = new SocketManager(logger, inGameSocketServer).getInstance();
+
 gameNamespace.on('connection', function (socket) {
     socket.on('disconnecting', (reason) => {
         logger.trace('client socket disconnecting because: ' + reason);
@@ -43,7 +47,9 @@ gameNamespace.on('connection', function (socket) {
 
 /* api endpoints */
 const games = require('./server/api/GamesAPI');
+const admin = require('./server/api/AdminAPI');
 app.use('/api/games', games);
+app.use('/api/admin', admin);
 
 /* serve all the app's pages */
 app.use('/manifest.json', (req, res) => {

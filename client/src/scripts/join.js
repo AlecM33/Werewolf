@@ -3,9 +3,14 @@ import { toast } from '../modules/Toast.js';
 import { XHRUtility } from '../modules/XHRUtility.js';
 import { UserUtility } from '../modules/UserUtility.js';
 import { globals } from '../config/globals.js';
+import { io } from 'socket.io-client';
 
 const join = () => {
     injectNavbar();
+    const socket = io();
+    socket.on('broadcast', (message) => {
+        toast(message, 'warning', true, false);
+    });
     const splitUrl = window.location.pathname.split('/join/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {

@@ -3,6 +3,15 @@ const globals = {
     ACCESS_CODE_LENGTH: 4,
     ACCESS_CODE_GENERATION_ATTEMPTS: 50,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
+    CORS: process.env.NODE_ENV.trim() === 'development'
+        ? {
+            origin: '*',
+            optionsSuccessStatus: 200
+        }
+        : {
+            origin: 'https://play-werewolf.app',
+            optionsSuccessStatus: 200
+        },
     STALE_GAME_HOURS: 12,
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
@@ -41,7 +50,8 @@ const globals = {
         PLAYER_JOINED: 'playerJoined',
         PLAYER_LEFT: 'playerLeft',
         SYNC_GAME_STATE: 'syncGameState',
-        NEW_SPECTATOR: 'newSpectator'
+        NEW_SPECTATOR: 'newSpectator',
+        BROADCAST: 'broadcast'
     },
     ENVIRONMENT: {
         LOCAL: 'local',
@@ -61,7 +71,8 @@ const globals = {
         PAUSE_TIMER: 'pauseTimer',
         RESUME_TIMER: 'resumeTimer',
         GET_TIME_REMAINING: 'getTimeRemaining'
-    }
+    },
+    MOCK_AUTH: 'mock_auth'
 };
 
 module.exports = globals;

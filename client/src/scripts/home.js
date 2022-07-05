@@ -1,13 +1,8 @@
 import { XHRUtility } from '../modules/XHRUtility.js';
 import { toast } from '../modules/Toast.js';
 import { injectNavbar } from '../modules/Navbar.js';
-import { io } from 'socket.io-client';
 
 const home = () => {
-    const socket = io();
-    socket.on('broadcast', (message) => {
-        toast(message, 'warning', true, false);
-    });
     injectNavbar();
     document.getElementById('join-form').addEventListener('submit', attemptToJoinGame);
 };

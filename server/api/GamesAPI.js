@@ -28,6 +28,16 @@ router.options('/:code/players', cors(globals.CORS));
 router.options('/create', cors(globals.CORS));
 router.options('/restart', cors(globals.CORS));
 
+router.post('/create', (req, res, next) => {
+    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
+});
+router.patch('/players', (req, res, next) => {
+    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
+});
+router.patch('/restart', (req, res, next) => {
+    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
+});
+
 if (process.env.NODE_ENV.trim() === 'production') {
     router.use(apiLimiter);
     router.use('/create', gameEndpointLimiter);

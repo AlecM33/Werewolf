@@ -26,6 +26,7 @@ if (process.env.NODE_ENV.trim() === 'production') {
 router.use(cors(globals.CORS));
 
 router.use((req, res, next) => {
+    req.accepts()
     if (isAuthorized(req)) {
         next();
     } else {
@@ -33,6 +34,14 @@ router.use((req, res, next) => {
     }
 });
 
+router.post('/sockets/broadcast', (req, res, next) => {
+    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
+});
+router.put('/games/state', (req, res, next) => {
+    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
+});
+
+// TODO: implement client-side display of this message.
 router.post('/sockets/broadcast', function (req, res) {
     logger.info('admin user broadcasting message: ' + req.body?.message);
     socketManager.broadcast(req.body?.message);
@@ -44,7 +53,7 @@ router.get('/games/state', function (req, res) {
 });
 
 router.put('/games/state', function (req, res) {
-    // TODO: validate the request body - can break the application if malformed.
+    // TODO: validate the JSON object sent - ones that don't match the expected model could break the application.
     gameManager.activeGameRunner.activeGames = req.body;
     res.status(201).send(gameManager.activeGameRunner.activeGames);
 });

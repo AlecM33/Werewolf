@@ -3,16 +3,12 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const bodyParser = require('body-parser');
 const GameManager = require('./server/modules/GameManager.js');
 const SocketManager = require('./server/modules/SocketManager.js');
 const globals = require('./server/config/globals');
 const ServerBootstrapper = require('./server/modules/ServerBootstrapper');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(express.json());
 
 const args = ServerBootstrapper.processCLIArgs();
 

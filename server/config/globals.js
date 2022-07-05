@@ -13,7 +13,7 @@ const globals = {
             optionsSuccessStatus: 200
         },
     CONTENT_TYPE_VALIDATOR: (req, res, next) => {
-        req.accepts()
+        req.accepts();
         if (req.is('application/json')) {
             next();
         } else {

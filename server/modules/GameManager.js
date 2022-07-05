@@ -199,12 +199,7 @@ class GameManager {
     checkAvailability = (code) => {
         const game = this.activeGameRunner.activeGames[code.toUpperCase()];
         if (game) {
-            const unassignedPerson = game.people.find((person) => person.assigned === false);
-            if (!unassignedPerson) {
-                return Promise.resolve(new Error(globals.ERROR_MESSAGE.GAME_IS_FULL));
-            } else {
-                return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
-            }
+            return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
         } else {
             return Promise.resolve(404);
         }

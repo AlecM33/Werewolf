@@ -271,6 +271,10 @@ h1 {
     -moz-user-select: none;
 }
 
+#game-role:active, #game-role-back:active {
+    filter: brightness(0.85);
+}
+
 .game-role-good {
     border: 5px solid #5469c5 !important;
 }

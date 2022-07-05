@@ -12,6 +12,14 @@ const globals = {
             origin: 'https://play-werewolf.app',
             optionsSuccessStatus: 200
         },
+    CONTENT_TYPE_VALIDATOR: (req, res, next) => {
+        req.accepts();
+        if (req.is('application/json')) {
+            next();
+        } else {
+            res.status(400).send('Request has invalid content type.');
+        }
+    },
     STALE_GAME_HOURS: 12,
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',

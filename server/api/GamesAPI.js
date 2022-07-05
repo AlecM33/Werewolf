@@ -34,7 +34,7 @@ if (process.env.NODE_ENV.trim() === 'production') {
 }
 
 router.post('/create', function (req, res) {
-    logger.trace('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
+    logger.debug('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
     const gameCreationPromise = gameManager.createGame(req.body, false);
     gameCreationPromise.then((result) => {
         if (result instanceof Error) {

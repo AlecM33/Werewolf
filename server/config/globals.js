@@ -3,7 +3,7 @@ const globals = {
     ACCESS_CODE_LENGTH: 4,
     ACCESS_CODE_GENERATION_ATTEMPTS: 50,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
-    CORS: process.env.NODE_ENV.trim() === 'development'
+    CORS: process.env.NODE_ENV?.trim() === 'development'
         ? {
             origin: '*',
             optionsSuccessStatus: 200

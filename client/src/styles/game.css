@@ -58,6 +58,8 @@
 #restart-game {
     background-color: #0078D7;
     min-width: 10em;
+    margin-bottom: 1em !important;
+    animation: shadow-pulse 1.5s infinite ease-out;
 }
 
 #play-pause-placeholder {

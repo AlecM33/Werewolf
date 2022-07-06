@@ -301,7 +301,7 @@ export class GameStateRenderer {
             restartGameContainer.innerHTML = HTMLFragments.RESTART_GAME_BUTTON;
             const button = restartGameContainer.querySelector('#restart-game');
             button.addEventListener('click', this.restartGameHandler);
-            document.getElementById('end-of-game-buttons').appendChild(restartGameContainer);
+            document.getElementById('end-of-game-buttons').prepend(restartGameContainer);
         }
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }

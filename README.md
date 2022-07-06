@@ -50,7 +50,7 @@ The application prioritizes responsiveness. A key scenario would be when a group
 
 ## Tech Stack
 
-This is a Node.js application. It is written purely using JavaScript/HTML/CSS. The main dependencies are
+This is a Node.js application. It is written purely using JavaScript/HTML/CSS, with no front-end framework. The main dependencies are
 <a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It runs as a containerized application
 via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. There is no data persisted in any database. 
 

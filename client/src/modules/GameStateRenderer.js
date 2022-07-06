@@ -42,7 +42,7 @@ export class GameStateRenderer {
                 })
                 .catch((res) => {
                     const button = document.getElementById('restart-game');
-                    button.innerText = 'Run it back 🔄';
+                    button.innerText = 'Restart Game 🔄';
                     button.classList.remove('submitted');
                     button.addEventListener('click', this.restartGameHandler);
                     toast(res.content, 'error', true, true, 'medium');

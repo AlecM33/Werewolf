@@ -26,7 +26,6 @@ if (process.env.NODE_ENV.trim() === 'production') {
 router.use(cors(globals.CORS));
 
 router.use((req, res, next) => {
-    req.accepts();
     if (isAuthorized(req)) {
         next();
     } else {

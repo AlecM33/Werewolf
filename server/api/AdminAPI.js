@@ -58,7 +58,7 @@ router.put('/games/state', function (req, res) {
     res.status(201).send(gameManager.activeGameRunner.activeGames);
 });
 
-/* validates Basic Auth */
+/* validates Bearer Auth */
 function isAuthorized (req) {
     const header = req.headers.authorization;
     if (header) {

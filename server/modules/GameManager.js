@@ -530,7 +530,7 @@ function pruneStaleGames (activeGames, timerThreads, logger) {
     for (const [accessCode, game] of Object.entries(activeGames)) {
         if (game.createTime) {
             const createDate = new Date(game.createTime);
-            if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) { // clear games created more than 12 hours ago
+            if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
                 logger.info('PRUNING STALE GAME ' + accessCode);
                 delete activeGames[accessCode];
                 if (timerThreads[accessCode]) {

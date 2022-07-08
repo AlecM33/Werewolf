@@ -50,7 +50,7 @@ router.post('/create', function (req, res) {
         if (result instanceof Error) {
             res.status(500).send();
         } else {
-            res.send(result); // game was created successfully, and access code was returned
+            res.status(201).send(result); // game was created successfully, and access code was returned
         }
     }).catch((e) => {
         if (e === globals.ERROR_MESSAGE.BAD_CREATE_REQUEST) {

@@ -110,7 +110,12 @@ export class GameCreationStepManager {
                     const button = document.getElementById('create-game');
                     button.removeEventListener('click', this.steps['5'].forwardHandler);
                     button.classList.add('submitted');
-                    button.innerText = 'Creating';
+                    button.innerText = 'Creating...';
+                    const restoreButton = () => {
+                        button.innerText = 'Create';
+                        button.classList.remove('submitted');
+                        button.addEventListener('click', this.steps['5'].forwardHandler);
+                    };
                     XHRUtility.xhr(
                         '/api/games/create',
                         'POST',
@@ -126,20 +131,26 @@ export class GameCreationStepManager {
                         )
                     )
                         .then((res) => {
-                            if (res
-                            && typeof res === 'object'
-                            && Object.prototype.hasOwnProperty.call(res, 'content')
-                            && typeof res.content === 'string'
-                            ) {
-                                const json = JSON.parse(res.content);
-                                UserUtility.setAnonymousUserId(json.cookie, json.environment);
-                                window.location = ('/game/' + json.accessCode);
+                            if (res.status === 201) {
+                                try {
+                                    const json = JSON.parse(res.content);
+                                    UserUtility.setAnonymousUserId(json.cookie, json.environment);
+                                    window.location.replace(
+                                        window.location.protocol + '//' + window.location.host +
+                                        '/game/' + json.accessCode
+                                    );
+                                } catch (e) {
+                                    restoreButton();
+                                    toast(
+                                        'There was a problem creating the game. Please contact the developers.',
+                                        'error',
+                                        true,
+                                        true
+                                    );
+                                }
                             }
                         }).catch((e) => {
-                            const button = document.getElementById('create-game');
-                            button.innerText = 'Create';
-                            button.classList.remove('submitted');
-                            button.addEventListener('click', this.steps['5'].forwardHandler);
+                            restoreButton();
                             toast(e.content, 'error', true, true, 'medium');
                             if (e.status === 429) {
                                 toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');

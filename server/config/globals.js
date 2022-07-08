@@ -20,7 +20,7 @@ const globals = {
             res.status(400).send('Request has invalid content type.');
         }
     },
-    STALE_GAME_HOURS: 12,
+    STALE_GAME_HOURS: 24,
     CLIENT_COMMANDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         START_GAME: 'startGame',

@@ -251,6 +251,12 @@ button {
     pointer-events: none;
 }
 
+.disabled {
+    filter: opacity(0.5) grayscale(1);
+    pointer-events: none;
+    animation: none !important;
+}
+
 .container {
     padding: 5px;
     border-radius: 3px;
@@ -340,7 +346,7 @@ input {
     align-items: center;
     padding: 5px 0;
     width: 100%;
-    background-color: #333243;
+    background-color: #1e1b26;
     height: 45px;
     z-index: 53000;
 }

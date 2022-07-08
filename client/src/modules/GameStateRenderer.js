@@ -108,7 +108,7 @@ export class GameStateRenderer {
             '?playerCount=' + getGameSize(this.stateBucket.currentGameState.deck) +
             '&timer=' + encodeURIComponent(timeString);
 
-        QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 3 }, function (error) {
+        QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 2 }, function (error) {
             if (error) console.error(error);
             console.log('success!');
         });

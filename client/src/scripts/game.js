@@ -99,12 +99,10 @@ function processGameState (
             document.getElementById('game-state-container').innerHTML = HTMLFragments.LOBBY;
             gameStateRenderer.renderLobbyHeader();
             gameStateRenderer.renderLobbyPlayers();
-            if (
-                currentGameState.isFull
-                && (
-                    currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+            if ((
+                currentGameState.client.userType === globals.USER_TYPES.MODERATOR
                     || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-                )
+            )
                 && refreshPrompt
             ) {
                 displayStartGamePromptForModerators(currentGameState, gameStateRenderer);
@@ -172,12 +170,10 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
         stateBucket.currentGameState.people.push(player);
         stateBucket.currentGameState.isFull = gameIsFull;
         gameStateRenderer.renderLobbyPlayers();
-        if (
-            gameIsFull
-            && (
-                stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+        if ((
+            stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
                 || stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-            )
+        )
         ) {
             displayStartGamePromptForModerators(stateBucket.currentGameState, gameStateRenderer);
         }
@@ -329,10 +325,27 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
 }
 
 function displayStartGamePromptForModerators (gameState, gameStateRenderer) {
-    const div = document.createElement('div');
-    div.innerHTML = HTMLFragments.START_GAME_PROMPT;
-    div.querySelector('#start-game-button').addEventListener('click', gameStateRenderer.startGameHandler);
-    document.body.appendChild(div);
+    const existingPrompt = document.getElementById('start-game-prompt');
+    if (existingPrompt) {
+        enableOrDisableStartButton(gameState, existingPrompt, gameStateRenderer.startGameHandler);
+    } else {
+        const newPrompt = document.createElement('div');
+        newPrompt.setAttribute('id', 'start-game-prompt');
+        newPrompt.innerHTML = HTMLFragments.START_GAME_PROMPT;
+
+        document.body.appendChild(newPrompt);
+        enableOrDisableStartButton(gameState, newPrompt, gameStateRenderer.startGameHandler);
+    }
+}
+
+function enableOrDisableStartButton (gameState, buttonContainer, handler) {
+    if (gameState.isFull) {
+        buttonContainer.querySelector('#start-game-button').addEventListener('click', handler);
+        buttonContainer.querySelector('#start-game-button').classList.remove('disabled');
+    } else {
+        buttonContainer.querySelector('#start-game-button').removeEventListener('click', handler);
+        buttonContainer.querySelector('#start-game-button').classList.add('disabled');
+    }
 }
 
 function removeStartGameFunctionalityIfPresent (gameStateRenderer) {

@@ -6,16 +6,18 @@ export const HTMLFragments = {
             <div tabindex='0' id='game-link'></div>
             <div id='game-code'></div>
         </div>
-        <canvas id="canvas"></canvas>
-        <div id='game-parameters'>
-            <div>
-                <img alt='clock' src='/images/clock.svg'/>
-                <div id='game-time'></div>
+        <div>
+            <canvas id="canvas"></canvas>
+            <div id='game-parameters'>
+                <div>
+                    <img alt='clock' src='/images/clock.svg'/>
+                    <div id='game-time'></div>
+                </div>
+                <div>
+                    <img alt='person' src='/images/person.svg'/>
+                    <div id='game-player-count'></div>
+                </div>
             </div>
-            <div>
-                <img alt='person' src='/images/person.svg'/>
-            <div id='game-player-count'></div>
-        </div>
         </div>
         <div>
             <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
@@ -37,8 +39,9 @@ export const HTMLFragments = {
         </div>
     </div>`,
     START_GAME_PROMPT:
-    `<div id='start-game-prompt'>
+    `<div>
         <button id='start-game-button'>Start Game</button>
+        <p>All players must join to start.</p>
     </div>`,
     END_GAME_PROMPT:
     `<div id='end-game-prompt'>
@@ -106,7 +109,7 @@ export const HTMLFragments = {
             <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
     </div>
-    <div>
+    <div id="game-players-container">
         <label id='players-alive-label'></label>
         <div id='game-player-list'>
             <div class='evil-players'>
@@ -152,8 +155,8 @@ export const HTMLFragments = {
             <div class='game-player-role'></div>
         </div>
         <div class='player-action-buttons'>
-            <button class='moderator-player-button kill-player-button'>Kill \uD83D\uDC80</button>
-            <button class='moderator-player-button reveal-role-button'>Reveal <img src='../images/eye.svg'/></button>
+            <button title='Kill' class='moderator-player-button kill-player-button'>\uD83D\uDC80</button>
+            <button title='Reveal' class='moderator-player-button reveal-role-button'><img alt='reveal' src='../images/eye.svg'/></button>
         </div>`,
     GAME_PLAYER:
         `<div>

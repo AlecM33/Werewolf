@@ -17,7 +17,7 @@
 
 #lobby-players {
     overflow-y: auto;
-    max-height: 44em;
+    max-height: 30em;
     overflow-x: hidden;
     padding: 0 10px;
     border-radius: 3px;
@@ -46,7 +46,7 @@
     flex-wrap: wrap;
     display: flex;
     width: 95%;
-    margin: 1em auto 100px auto;
+    margin: 1em auto 140px auto;
     animation: fade-in-slide-up 2s;
 }
 
@@ -81,6 +81,13 @@
 
 #lobby-header > div:nth-child(1) {
     width: 100%;
+}
+
+#lobby-header > div:nth-child(2) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 h1 {
@@ -434,27 +441,38 @@ label[for='moderator'] {
 }
 
 #start-game-prompt, #end-game-prompt {
+    padding: 0.5em 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     position: fixed;
     z-index: 3;
-    border-radius: 3px;
     font-family: 'signika-negative', sans-serif;
     font-weight: 100;
-    box-shadow: 0 -2px 6px 0 rgb(0 0 0 / 45%);
+    box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.5);
     left: 0;
     right: 0;
     bottom: 0;
+    border-radius: 3px;
     /* width: fit-content; */
     font-size: 20px;
-    height: 85px;
+    height: 100px;
     margin: 0 auto;
-    animation: fade-in-slide-up 10s ease;
-    animation-fill-mode: forwards;
-    animation-direction: normal;
-    width: 100%;
-    background-color: #333243;
+    max-width: 100%;
+    background-color: #1b1a24;
+}
+
+#start-game-prompt p {
+    color: whitesmoke;
+    font-size: 15px;
+}
+
+#start-game-prompt > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
 }
 
 #end-game-prompt {
@@ -471,10 +489,15 @@ label[for='moderator'] {
     transition: background-color, border 0.3s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
     font-size: 25px;
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 #start-game-button {
     background-color: #1c8a36;
+    margin-bottom: 10px;
     animation: shadow-pulse 1.5s infinite ease-out;
 }
 
@@ -563,6 +586,7 @@ canvas {
     margin: 0.5em 0;
     position: relative;
     box-shadow: 2px 3px 6px rgb(0 0 0 / 50%);
+    border-radius: 3px;
 }
 
 .game-player-name {
@@ -576,33 +600,44 @@ canvas {
 }
 
 .kill-player-button, .reveal-role-button {
+    background-color: #333243;
     font-family: 'signika-negative', sans-serif !important;
     border-radius: 3px;
     color: #e7e7e7;
+    height: 25px;
     font-size: 16px;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: background-color, border 0.3s ease-out;
+    transition: background-color, border 0.2s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
     margin: 5px 0 5px 25px;
-    width: 117px;
+    width: 65px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.kill-player-button:hover, .reveal-role-button:hover {
+    border: 2px solid #b1afcd;
+}
+
+#game-players-container {
+    width: 27em;
+    max-width: 100%;
 }
 
 .placeholder-button {
     font-family: 'signika-negative', sans-serif !important;
     display: flex;
     justify-content: center;
+    align-items: center;
     border-radius: 3px;
     color: #767676;
     font-weight: bold;
     font-size: 16px;
-    border: 2px solid transparent;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
-    margin: 5px 0 5px 35px;
-    width: 103px;
+    margin: 5px 0 5px 25px;
+    width: 65px;
 }
 
 #game-link:hover {
@@ -610,21 +645,12 @@ canvas {
     border: 2px solid #d7d7d7;
 }
 
-.reveal-role-button {
-    background-color: #586a6e;
-}
-
-.reveal-role-button:hover {
-    background-color: #4e5664;
-}
-
-.kill-player-button:hover {
-    background-color: #b35c5c;
-}
+/*.reveal-role-button {*/
+/*    background-color: #586a6e;*/
+/*}*/
 
 .reveal-role-button img {
     width: 18px;
-    margin-left: 5px;
 }
 
 #game-player-list > .game-player.killed::after {
@@ -660,9 +686,9 @@ canvas {
     cursor: pointer;
 }
 
-.kill-player-button {
-    background-color: #9f4747;
-}
+/*.kill-player-button {*/
+/*    background-color: #9f4747;*/
+/*}*/
 
 .killed-card {
     width: 55% !important;
@@ -720,7 +746,7 @@ canvas {
 
 #lobby-people-container , #game-people-container {
     background-color: #333243;
-    padding: 10px 10px 0 10px;
+    padding: 10px;
     border-radius: 3px;
     min-height: 25em;
     max-width: 35em;
@@ -738,6 +764,14 @@ canvas {
     align-items: center;
 }
 
+@media(max-width: 800px) {
+    #start-game-prompt, #end-game-prompt {
+        border-radius: 0;
+        width: 100%;
+        bottom: 0;
+    }
+}
+
 @media(max-width: 500px) {
     label {
         font-size: 18px;
@@ -752,7 +786,7 @@ canvas {
     }
 
     #game-state-container {
-        margin: 0 auto 85px auto;
+        margin: 0 auto 105px auto;
     }
 
     button {

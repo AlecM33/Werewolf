@@ -419,6 +419,7 @@ input[type="number"] {
     color: #e7e7e7;
     font-size: 30px;
     padding: 10px 50px;
+    width: 100px;
 }
 
 #create-game:hover {
@@ -538,6 +539,7 @@ input[type="number"] {
     margin-top: 1em;
     justify-content: center;
     width: 100%;
+    height: 50px;
 }
 
 #upload-custom-roles-modal input[type='file'] {
@@ -649,6 +651,10 @@ input[type="number"] {
     #step-forward-button, #step-back-button, #create-game {
         padding: 10px 15px;
         font-size: 16px;
+    }
+
+    #create-game {
+        width: 80px;
     }
 
     .role-name {

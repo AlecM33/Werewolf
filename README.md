@@ -101,6 +101,33 @@ Options are whitespace-delimited key-value pairs with the syntax `[key]=[value]`
 before serving the application over HTTPS - otherwise it will revert to HTTP. Using HTTPS is particularly useful if you
   want to make the application public on your home network, which would allow you to test it on your mobile device. **Careful -
   I had to disable my computer's firewall for this to work, which would of course make browsing the internet much riskier.**
+  
+### Admin API
+
+The app exposes an admin API at `/api/admin`, e.g. `localhost:5000/api/admin`.
+
+#### Authorization
+
+The admin api requires Bearer authentication. Locally, the base-64 decoded token is simply `mock_auth`, so for local calls to the admin API, provide the Authorization header with the encoded version of this token: `Authorization: Bearer bW9ja19hdXRoCg==`
+
+Currently, the available operations are:
+
+- **GET /games/state** - returns a JSON object of the currently existing games. Within the object, each game is indexed by its access code. This is equivalent to, on the server-side, the singleton class `ActiveGameRunner`'s `activeGames` property. 
+<p align="center">
+  <kbd>
+    <img width="500" src="https://user-images.githubusercontent.com/24642328/179417269-b6373c6f-4b32-4545-95fe-6a34b5efae1d.png"/>
+  </kbd>
+</p>
+
+- **PUT /games/state** - replaces the current state of existing games with the provided JSON object. **Warning: if you do not provide a valid JSON object (one that aligns with, for example, what's returned from GET /games/state), the application could break.**
+
+- **POST /sockets/broadcast** - broadcasts a message to all connected sockets. This is not currently handled on the front-end, so it will not display anywhere.
+
+##### Example cURL
+```
+curl -XGET -H 'Authorization: Basic bW9ja19hdXRoCg==' 'http://localhost:5000/api/admin/games/state'
+```
+
 
 ## Testing
 

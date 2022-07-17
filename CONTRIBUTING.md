@@ -1,4 +1,4 @@
-To set up the application locally, see the README section [Contributing and Developers' Guide](https://github.com/AlecM33/Werewolf#contributing-and-developers-guide)
+To set up the application locally, see the README section "Contributing and Developers' Guide".
 
 When opening issues, be as descriptive and specific as possible in regards to what you want and why.
 

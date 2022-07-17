@@ -6,159 +6,15 @@ const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
 
 class GameManager {
-    constructor (logger, environment, namespace) {
+    constructor (logger, environment) {
         this.logger = logger;
         this.environment = environment;
         this.activeGameRunner = new ActiveGameRunner(logger).getInstance();
-        this.namespace = namespace;
+        this.namespace = null;
     }
 
-    addGameSocketHandlers = (namespace, socket) => {
-        socket.on(globals.CLIENT_COMMANDS.FETCH_GAME_STATE, async (accessCode, personId, ackFn) => {
-            this.logger.trace('request for game state for accessCode: ' + accessCode + ' from socket: ' + socket.id + ' with cookie: ' + personId);
-            await this.handleRequestForGameState(
-                this.namespace,
-                this.logger,
-                this.activeGameRunner,
-                accessCode,
-                personId,
-                ackFn,
-                socket
-            );
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.START_GAME, (accessCode) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game && game.isFull) {
-                game.status = globals.STATUS.IN_PROGRESS;
-                if (game.hasTimer) {
-                    game.timerParams.paused = true;
-                    this.activeGameRunner.runGame(game, namespace);
-                }
-                namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.PAUSE_TIMER, (accessCode) => {
-            this.logger.trace(accessCode);
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                const thread = this.activeGameRunner.timerThreads[accessCode];
-                if (thread) {
-                    this.logger.debug('Timer thread found for game ' + accessCode);
-                    thread.send({
-                        command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER,
-                        accessCode: game.accessCode,
-                        logLevel: this.logger.logLevel
-                    });
-                }
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.RESUME_TIMER, (accessCode) => {
-            this.logger.trace(accessCode);
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                const thread = this.activeGameRunner.timerThreads[accessCode];
-                if (thread) {
-                    this.logger.debug('Timer thread found for game ' + accessCode);
-                    thread.send({
-                        command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER,
-                        accessCode: game.accessCode,
-                        logLevel: this.logger.logLevel
-                    });
-                }
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.GET_TIME_REMAINING, (accessCode) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                const thread = this.activeGameRunner.timerThreads[accessCode];
-                if (thread) {
-                    thread.send({
-                        command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                        accessCode: accessCode,
-                        socketId: socket.id,
-                        logLevel: this.logger.logLevel
-                    });
-                } else {
-                    if (game.timerParams && game.timerParams.timeRemaining === 0) {
-                        this.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
-                    }
-                }
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.KILL_PLAYER, (accessCode, personId) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                const person = game.people.find((person) => person.id === personId);
-                this.killPlayer(game, person, namespace, this.logger);
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.REVEAL_PLAYER, (accessCode, personId) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                const person = game.people.find((person) => person.id === personId);
-                if (person && !person.revealed) {
-                    this.logger.debug('game ' + accessCode + ': revealing player ' + person.name);
-                    person.revealed = true;
-                    namespace.in(accessCode).emit(
-                        globals.CLIENT_COMMANDS.REVEAL_PLAYER,
-                        {
-                            id: person.id,
-                            gameRole: person.gameRole,
-                            alignment: person.alignment
-                        });
-                }
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.TRANSFER_MODERATOR, (accessCode, personId) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                let person = game.people.find((person) => person.id === personId);
-                if (!person) {
-                    person = game.spectators.find((spectator) => spectator.id === personId);
-                }
-                this.transferModeratorPowers(game, person, namespace, this.logger);
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.CHANGE_NAME, (accessCode, data, ackFn) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                const person = findPersonByField(game, 'id', data.personId);
-                if (person) {
-                    if (!isNameTaken(game, data.name)) {
-                        ackFn('changed');
-                        person.name = data.name.trim();
-                        person.hasEnteredName = true;
-                        namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.CHANGE_NAME, person.id, person.name);
-                    } else {
-                        ackFn('taken');
-                    }
-                }
-            }
-        });
-
-        socket.on(globals.CLIENT_COMMANDS.END_GAME, (accessCode) => {
-            const game = this.activeGameRunner.activeGames[accessCode];
-            if (game) {
-                game.status = globals.STATUS.ENDED;
-                if (this.activeGameRunner.timerThreads[accessCode]) {
-                    this.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + accessCode);
-                    this.activeGameRunner.timerThreads[accessCode].kill();
-                    delete this.activeGameRunner.timerThreads[accessCode];
-                }
-                for (const person of game.people) {
-                    person.revealed = true;
-                }
-                namespace.in(accessCode).emit(globals.CLIENT_COMMANDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
-            }
-        });
+    setGameSocketNamespace = (namespace) => {
+        this.namespace = namespace;
     };
 
     createGame = (gameParams) => {
@@ -196,6 +52,99 @@ class GameManager {
         }
     };
 
+    startGame = (game, namespace) => {
+        if (game.isFull) {
+            game.status = globals.STATUS.IN_PROGRESS;
+            if (game.hasTimer) {
+                game.timerParams.paused = true;
+                this.activeGameRunner.runGame(game, namespace);
+            }
+            namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
+        }
+    };
+
+    pauseTimer = (game, logger) => {
+        const thread = this.activeGameRunner.timerThreads[game.accessCode];
+        if (thread) {
+            this.logger.debug('Timer thread found for game ' + game.accessCode);
+            thread.send({
+                command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                accessCode: game.accessCode,
+                logLevel: this.logger.logLevel
+            });
+        }
+    };
+
+    resumeTimer = (game, logger) => {
+        const thread = this.activeGameRunner.timerThreads[game.accessCode];
+        if (thread) {
+            this.logger.debug('Timer thread found for game ' + game.accessCode);
+            thread.send({
+                command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER,
+                accessCode: game.accessCode,
+                logLevel: this.logger.logLevel
+            });
+        }
+    };
+
+    getTimeRemaining = (game, socket) => {
+        const thread = this.activeGameRunner.timerThreads[game.accessCode];
+        if (thread) {
+            thread.send({
+                command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                accessCode: game.accessCode,
+                socketId: socket.id,
+                logLevel: this.logger.logLevel
+            });
+        } else {
+            if (game.timerParams && game.timerParams.timeRemaining === 0) {
+                this.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+            }
+        }
+    };
+
+    revealPlayer = (game, personId) => {
+        const person = game.people.find((person) => person.id === personId);
+        if (person && !person.revealed) {
+            this.logger.debug('game ' + game.accessCode + ': revealing player ' + person.name);
+            person.revealed = true;
+            this.namespace.in(game.accessCode).emit(
+                globals.EVENT_IDS.REVEAL_PLAYER,
+                {
+                    id: person.id,
+                    gameRole: person.gameRole,
+                    alignment: person.alignment
+                });
+        }
+    };
+
+    changeName = (game, data, ackFn) => {
+        const person = findPersonByField(game, 'id', data.personId);
+        if (person) {
+            if (!isNameTaken(game, data.name)) {
+                ackFn('changed');
+                person.name = data.name.trim();
+                person.hasEnteredName = true;
+                this.namespace.in(game.accessCode).emit(globals.EVENT_IDS.CHANGE_NAME, person.id, person.name);
+            } else {
+                ackFn('taken');
+            }
+        }
+    };
+
+    endGame = (game) => {
+        game.status = globals.STATUS.ENDED;
+        if (this.activeGameRunner.timerThreads[game.accessCode]) {
+            this.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
+            this.activeGameRunner.timerThreads[game.accessCode].kill();
+            delete this.activeGameRunner.timerThreads[game.accessCode];
+        }
+        for (const person of game.people) {
+            person.revealed = true;
+        }
+        this.namespace.in(game.accessCode).emit(globals.EVENT_IDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
+    };
+
     checkAvailability = (code) => {
         const game = this.activeGameRunner.activeGames[code.toUpperCase()];
         if (game) {
@@ -224,7 +173,7 @@ class GameManager {
             : accessCode;
     };
 
-    transferModeratorPowers = (game, person, namespace, logger) => {
+    transferModeratorPowers = (game, person, logger) => {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
             logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
             if (game.moderator === person) {
@@ -247,7 +196,7 @@ class GameManager {
                 game.moderator = person;
             }
 
-            namespace.in(game.accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
+            this.namespace.in(game.accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
         }
     };
 
@@ -258,10 +207,10 @@ class GameManager {
                 person.userType = globals.USER_TYPES.KILLED_PLAYER;
             }
             person.out = true;
-            namespace.in(game.accessCode).emit(globals.CLIENT_COMMANDS.KILL_PLAYER, person.id);
+            namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
             // temporary moderators will transfer their powers automatically to the first person they kill.
             if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                this.transferModeratorPowers(game, person, namespace, logger);
+                this.transferModeratorPowers(game, person, logger);
             }
         }
     };
@@ -363,7 +312,7 @@ class GameManager {
             this.activeGameRunner.runGame(game, namespace);
         }
 
-        namespace.in(game.accessCode).emit(globals.CLIENT_COMMANDS.START_GAME);
+        namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
     };
 
     handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
@@ -553,10 +502,10 @@ function getGameSize (cards) {
 }
 
 class Singleton {
-    constructor (logger, environment, namespace) {
+    constructor (logger, environment) {
         if (!Singleton.instance) {
             logger.info('CREATING SINGLETON GAME MANAGER');
-            Singleton.instance = new GameManager(logger, environment, namespace);
+            Singleton.instance = new GameManager(logger, environment);
         }
     }
 

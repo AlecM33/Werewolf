@@ -17,7 +17,7 @@ export class GameStateRenderer {
         this.startGameHandler = (e) => { // TODO: prevent multiple emissions of this event (recommend converting to XHR)
             e.preventDefault();
             if (confirm('Start the game and deal roles?')) {
-                socket.emit(globals.COMMANDS.START_GAME, this.stateBucket.currentGameState.accessCode);
+                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.START_GAME, stateBucket.currentGameState.accessCode);
             }
         };
         this.restartGameHandler = (e) => {
@@ -110,7 +110,6 @@ export class GameStateRenderer {
 
         QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 2 }, function (error) {
             if (error) console.error(error);
-            console.log('success!');
         });
 
         const linkCopyHandler = (e) => {
@@ -358,7 +357,7 @@ export class GameStateRenderer {
             } else if (!player.out && moderatorType) {
                 killPlayerHandlers[player.id] = () => {
                     if (confirm('KILL ' + player.name + '?')) {
-                        socket.emit(globals.COMMANDS.KILL_PLAYER, accessCode, player.id);
+                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });
                     }
                 };
                 playerEl.querySelector('.kill-player-button').addEventListener('click', killPlayerHandlers[player.id]);
@@ -373,7 +372,7 @@ export class GameStateRenderer {
             } else if (!player.revealed && moderatorType) {
                 revealRoleHandlers[player.id] = () => {
                     if (confirm('REVEAL ' + player.name + '?')) {
-                        socket.emit(globals.COMMANDS.REVEAL_PLAYER, accessCode, player.id);
+                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.REVEAL_PLAYER, accessCode, { personId: player.id });
                     }
                 };
                 playerEl.querySelector('.reveal-role-button').addEventListener('click', revealRoleHandlers[player.id]);
@@ -404,7 +403,7 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                         if (transferPrompt !== null) {
                             transferPrompt.innerHTML = '';
                         }
-                        socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, gameState.accessCode, member.id);
+                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.TRANSFER_MODERATOR, gameState.accessCode, { personId: member.id });
                     }
                 }
             };
@@ -535,7 +534,8 @@ function createEndGamePromptComponent (socket, stateBucket) {
             e.preventDefault();
             if (confirm('End the game?')) {
                 socket.emit(
-                    globals.COMMANDS.END_GAME,
+                    globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    globals.EVENT_IDS.END_GAME,
                     stateBucket.currentGameState.accessCode
                 );
             }

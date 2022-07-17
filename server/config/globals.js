@@ -21,7 +21,10 @@ const globals = {
         }
     },
     STALE_GAME_HOURS: 24,
-    CLIENT_COMMANDS: {
+    SOCKET_EVENTS: {
+        IN_GAME_MESSAGE: 'inGameMessage'
+    },
+    EVENT_IDS: {
         FETCH_GAME_STATE: 'fetchGameState',
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',

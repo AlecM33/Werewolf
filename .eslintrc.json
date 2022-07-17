@@ -21,6 +21,7 @@
     "no-void": ["error", { "allowAsStatement": true }],
     "no-prototype-builtins": "off",
     "no-undef": "off",
+    "no-case-declarations": "off",
     "no-return-assign": "warn",
     "prefer-promise-reject-errors": "warn",
     "no-trailing-spaces": "off",

@@ -4,9 +4,21 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const { RateLimiterMemory } = require('rate-limiter-flexible');
+const SocketManager = require('./SocketManager.js');
+const GameManager = require('./GameManager.js');
+const { ENVIRONMENT } = require('../config/globals.js');
 
 const ServerBootstrapper = {
+
+    singletons: (logger) => {
+        return {
+            socketManager: new SocketManager(logger).getInstance(),
+            gameManager: process.env.NODE_ENV.trim() === 'development'
+                ? new GameManager(logger, ENVIRONMENT.LOCAL).getInstance()
+                : new GameManager(logger, ENVIRONMENT.PRODUCTION).getInstance()
+        };
+    },
+
     processCLIArgs: () => {
         try {
             const args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));
@@ -80,46 +92,43 @@ const ServerBootstrapper = {
         return main;
     },
 
-    createSocketServer: (main, app, port, logger) => {
-        let io;
-        if (process.env.NODE_ENV.trim() === 'development') {
-            io = require('socket.io')(main, {
-                cors: { origin: 'http://localhost:' + port }
-            });
-        } else {
-            io = require('socket.io')(main, {
-                cors: { origin: 'https://playwerewolf.uk.r.appspot.com' }
-            });
-        }
+    establishRouting: (app, express) => {
+        /* api endpoints */
+        const games = require('../api/GamesAPI');
+        const admin = require('../api/AdminAPI');
+        app.use('/api/games', games);
+        app.use('/api/admin', admin);
 
-        registerRateLimiter(io, logger);
-
-        return io;
-    },
-
-    createGameSocketNamespace (server, logger) {
-        const namespace = server.of('/in-game');
-        registerRateLimiter(namespace, logger);
-        return server.of('/in-game');
-    }
-};
-
-function registerRateLimiter (server, logger) {
-    const rateLimiter = new RateLimiterMemory(
-        {
-            points: 10,
-            duration: 1
+        /* serve all the app's pages */
+        app.use('/manifest.json', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../manifest.json'));
         });
 
-    server.use(async (socket, next) => {
-        try {
-            await rateLimiter.consume(socket.handshake.address);
-            logger.trace('consumed point from ' + socket.handshake.address);
-            next();
-        } catch (rejection) {
-            next(new Error('Your connection has been blocked.'));
-        }
-    });
-}
+        app.use('/favicon.ico', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../client/favicon_package/favicon.ico'));
+        });
+
+        app.use('/apple-touch-icon.png', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../client/favicon_package/apple-touch-icon.png'));
+        });
+
+        const router = require('../routes/router');
+        app.use('', router);
+
+        app.use('/dist', express.static(path.join(__dirname, '../../client/dist')));
+
+        // set up routing for static content that isn't being bundled.
+        app.use('/images', express.static(path.join(__dirname, '../../client/src/images')));
+        app.use('/styles', express.static(path.join(__dirname, '../../client/src/styles')));
+        app.use('/webfonts', express.static(path.join(__dirname, '../../client/src/webfonts')));
+        app.use('/robots.txt', (req, res) => {
+            res.sendFile(path.join(__dirname, '../../client/robots.txt'));
+        });
+
+        app.use(function (req, res) {
+            res.sendFile(path.join(__dirname, '../../client/src/views/404.html'));
+        });
+    }
+};
 
 module.exports = ServerBootstrapper;

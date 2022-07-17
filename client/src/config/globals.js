@@ -42,6 +42,21 @@ export const globals = {
         PLAYER_LEFT: 'playerLeft',
         NEW_SPECTATOR: 'newSpectator'
     },
+    SOCKET_EVENTS: {
+        IN_GAME_MESSAGE: 'inGameMessage'
+    },
+    EVENT_IDS: {
+        FETCH_GAME_STATE: 'fetchGameState',
+        START_GAME: 'startGame',
+        PAUSE_TIMER: 'pauseTimer',
+        RESUME_TIMER: 'resumeTimer',
+        GET_TIME_REMAINING: 'getTimeRemaining',
+        KILL_PLAYER: 'killPlayer',
+        REVEAL_PLAYER: 'revealPlayer',
+        TRANSFER_MODERATOR: 'transferModerator',
+        CHANGE_NAME: 'changeName',
+        END_GAME: 'endGame'
+    },
     USER_TYPES: {
         MODERATOR: 'moderator',
         PLAYER: 'player',

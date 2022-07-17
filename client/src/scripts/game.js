@@ -50,7 +50,7 @@ function syncWithGame (stateBucket, gameTimerManager, gameStateRenderer, timerWo
     const splitUrl = window.location.href.split('/game/');
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-        socket.emit(globals.COMMANDS.FETCH_GAME_STATE, accessCode, cookie, function (gameState) {
+        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.FETCH_GAME_STATE, accessCode, { personId: cookie }, function (gameState) {
             if (gameState === null) {
                 window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
             } else {
@@ -138,7 +138,7 @@ function processGameState (
                     break;
             }
             if (currentGameState.timerParams) {
-                socket.emit(globals.COMMANDS.GET_TIME_REMAINING, currentGameState.accessCode);
+                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.GET_TIME_REMAINING, currentGameState.accessCode);
             } else {
                 document.querySelector('#game-timer')?.remove();
                 document.querySelector('#timer-container-moderator')?.remove();
@@ -198,9 +198,10 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
 
     socket.on(globals.EVENTS.START_GAME, () => {
         socket.emit(
-            globals.COMMANDS.FETCH_GAME_STATE,
+            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+            globals.EVENT_IDS.FETCH_GAME_STATE,
             stateBucket.currentGameState.accessCode,
-            stateBucket.currentGameState.client.cookie,
+            { personId: stateBucket.currentGameState.client.cookie },
             function (gameState) {
                 stateBucket.currentGameState = gameState;
                 processGameState(
@@ -219,9 +220,10 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
 
     socket.on(globals.EVENTS.SYNC_GAME_STATE, () => {
         socket.emit(
-            globals.COMMANDS.FETCH_GAME_STATE,
+            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+            globals.EVENT_IDS.FETCH_GAME_STATE,
             stateBucket.currentGameState.accessCode,
-            stateBucket.currentGameState.client.cookie,
+            { personId: stateBucket.currentGameState.client.cookie },
             function (gameState) {
                 stateBucket.currentGameState = gameState;
                 processGameState(
@@ -261,7 +263,7 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
                     toast(killedPerson.name + ' was killed!', 'warning', true, true, 'medium');
                 }
                 if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                    gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+                    gameStateRenderer.removePlayerListEventListeners(false);
                 } else {
                     gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
                 }

@@ -17,7 +17,7 @@ export class GameStateRenderer {
         this.startGameHandler = (e) => { // TODO: prevent multiple emissions of this event (recommend converting to XHR)
             e.preventDefault();
             if (confirm('Start the game and deal roles?')) {
-                socket.emit(globals.COMMANDS.START_GAME, this.stateBucket.currentGameState.accessCode);
+                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.START_GAME, stateBucket.currentGameState.accessCode);
             }
         };
         this.restartGameHandler = (e) => {
@@ -110,7 +110,6 @@ export class GameStateRenderer {
 
         QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 2 }, function (error) {
             if (error) console.error(error);
-            console.log('success!');
         });
 
         const linkCopyHandler = (e) => {
@@ -199,7 +198,7 @@ export class GameStateRenderer {
         });
         const teamGood = this.stateBucket.currentGameState.people.filter((person) => person.alignment === globals.ALIGNMENT.GOOD);
         const teamEvil = this.stateBucket.currentGameState.people.filter((person) => person.alignment === globals.ALIGNMENT.EVIL);
-        renderGroupOfPlayers(
+        this.renderGroupOfPlayers(
             teamEvil,
             this.killPlayerHandlers,
             this.revealRoleHandlers,
@@ -208,7 +207,7 @@ export class GameStateRenderer {
             this.stateBucket.currentGameState.moderator.userType,
             this.socket
         );
-        renderGroupOfPlayers(
+        this.renderGroupOfPlayers(
             teamGood,
             this.killPlayerHandlers,
             this.revealRoleHandlers,
@@ -222,27 +221,33 @@ export class GameStateRenderer {
             this.stateBucket.currentGameState.people.length + ' Alive';
     }
 
+    removePlayerListEventListeners (removeEl = true) {
+        document.querySelectorAll('.game-player').forEach((el) => {
+            const pointer = el.dataset.pointer;
+            if (pointer && this.killPlayerHandlers[pointer]) {
+                el.removeEventListener('click', this.killPlayerHandlers[pointer]);
+                delete this.killPlayerHandlers[pointer];
+            }
+            if (pointer && this.revealRoleHandlers[pointer]) {
+                el.removeEventListener('click', this.revealRoleHandlers[pointer]);
+                delete this.revealRoleHandlers[pointer];
+            }
+            if (removeEl) {
+                el.remove();
+            }
+        });
+    }
+
     renderPlayersWithNoRoleInformationUnlessRevealed (tempMod = false) {
         if (tempMod) {
-            document.querySelectorAll('.game-player').forEach((el) => {
-                const pointer = el.dataset.pointer;
-                if (pointer && this.killPlayerHandlers[pointer]) {
-                    el.removeEventListener('click', this.killPlayerHandlers[pointer]);
-                    delete this.killPlayerHandlers[pointer];
-                }
-                if (pointer && this.revealRoleHandlers[pointer]) {
-                    el.removeEventListener('click', this.revealRoleHandlers[pointer]);
-                    delete this.revealRoleHandlers[pointer];
-                }
-                el.remove();
-            });
+            this.removePlayerListEventListeners();
         }
         document.querySelectorAll('.game-player').forEach((el) => el.remove());
         /* TODO: UX issue - it's easier to parse visually when players are sorted this way,
           but shifting players around when they are killed or revealed is bad UX for the moderator. */
         // sortPeopleByStatus(this.stateBucket.currentGameState.people);
         const modType = tempMod ? this.stateBucket.currentGameState.moderator.userType : null;
-        renderGroupOfPlayers(
+        this.renderGroupOfPlayers(
             this.stateBucket.currentGameState.people,
             this.killPlayerHandlers,
             this.revealRoleHandlers,
@@ -305,6 +310,81 @@ export class GameStateRenderer {
         }
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }
+
+    renderGroupOfPlayers (
+        people,
+        killPlayerHandlers,
+        revealRoleHandlers,
+        accessCode = null,
+        alignment = null,
+        moderatorType,
+        socket = null
+    ) {
+        for (const player of people) {
+            const playerEl = document.createElement('div');
+            playerEl.classList.add('game-player');
+
+            // add a reference to the player's id for each corresponding element in the list
+            if (moderatorType) {
+                playerEl.dataset.pointer = player.id;
+                playerEl.innerHTML = HTMLFragments.MODERATOR_PLAYER;
+            } else {
+                playerEl.innerHTML = HTMLFragments.GAME_PLAYER;
+            }
+
+            playerEl.querySelector('.game-player-name').innerText = player.name;
+            const roleElement = playerEl.querySelector('.game-player-role');
+
+            // Add role/alignment indicators if necessary
+            if (moderatorType === globals.USER_TYPES.MODERATOR || player.revealed || this.stateBucket.currentGameState.status === globals.STATUS.ENDED) {
+                if (alignment === null) {
+                    roleElement.classList.add(player.alignment);
+                } else {
+                    roleElement.classList.add(alignment);
+                }
+                roleElement.innerText = player.gameRole;
+            } else {
+                roleElement.innerText = 'Role Unknown';
+            }
+
+            // Change element based on player's in/out status
+            if (player.out) {
+                playerEl.classList.add('killed');
+                if (moderatorType) {
+                    playerEl.querySelector('.kill-player-button')?.remove();
+                    insertPlaceholderButton(playerEl, false, 'killed');
+                }
+            } else if (!player.out && moderatorType) {
+                killPlayerHandlers[player.id] = () => {
+                    if (confirm('KILL ' + player.name + '?')) {
+                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });
+                    }
+                };
+                playerEl.querySelector('.kill-player-button').addEventListener('click', killPlayerHandlers[player.id]);
+            }
+
+            // change element based on player's revealed/unrevealed status
+            if (player.revealed) {
+                if (moderatorType) {
+                    playerEl.querySelector('.reveal-role-button')?.remove();
+                    insertPlaceholderButton(playerEl, true, 'revealed');
+                }
+            } else if (!player.revealed && moderatorType) {
+                revealRoleHandlers[player.id] = () => {
+                    if (confirm('REVEAL ' + player.name + '?')) {
+                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.REVEAL_PLAYER, accessCode, { personId: player.id });
+                    }
+                };
+                playerEl.querySelector('.reveal-role-button').addEventListener('click', revealRoleHandlers[player.id]);
+            }
+
+            const playerListContainerId = moderatorType === globals.USER_TYPES.MODERATOR
+                ? 'player-list-moderator-team-' + alignment
+                : 'game-player-list';
+
+            document.getElementById(playerListContainerId).appendChild(playerEl);
+        }
+    }
 }
 
 function renderPotentialMods (gameState, group, transferModHandlers, socket) {
@@ -323,7 +403,7 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                         if (transferPrompt !== null) {
                             transferPrompt.innerHTML = '';
                         }
-                        socket.emit(globals.COMMANDS.TRANSFER_MODERATOR, gameState.accessCode, member.id);
+                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.TRANSFER_MODERATOR, gameState.accessCode, { personId: member.id });
                     }
                 }
             };
@@ -362,86 +442,6 @@ function removeExistingTitle () {
     const existingTitle = document.querySelector('#game-title h1');
     if (existingTitle) {
         existingTitle.remove();
-    }
-}
-
-// TODO: refactor to reduce the cyclomatic complexity of this function
-function renderGroupOfPlayers (
-    people,
-    killPlayerHandlers,
-    revealRoleHandlers,
-    accessCode = null,
-    alignment = null,
-    moderatorType,
-    socket = null
-) {
-    for (const player of people) {
-        const container = document.createElement('div');
-        container.classList.add('game-player');
-        if (moderatorType) {
-            container.dataset.pointer = player.id;
-            container.innerHTML = HTMLFragments.MODERATOR_PLAYER;
-        } else {
-            container.innerHTML = HTMLFragments.GAME_PLAYER;
-        }
-        container.querySelector('.game-player-name').innerText = player.name;
-        const roleElement = container.querySelector('.game-player-role');
-
-        if (moderatorType) {
-            roleElement.classList.add(alignment);
-            if (moderatorType === globals.USER_TYPES.MODERATOR) {
-                roleElement.innerText = player.gameRole;
-                document.getElementById('player-list-moderator-team-' + alignment).appendChild(container);
-            } else {
-                if (player.revealed) {
-                    roleElement.innerText = player.gameRole;
-                    roleElement.classList.add(player.alignment);
-                } else {
-                    roleElement.innerText = 'Unknown';
-                }
-                document.getElementById('game-player-list').appendChild(container);
-            }
-        } else if (player.revealed) {
-            roleElement.classList.add(player.alignment);
-            roleElement.innerText = player.gameRole;
-            document.getElementById('game-player-list').appendChild(container);
-        } else {
-            roleElement.innerText = 'Unknown';
-            document.getElementById('game-player-list').appendChild(container);
-        }
-
-        if (player.out) {
-            container.classList.add('killed');
-            if (moderatorType) {
-                container.querySelector('.kill-player-button')?.remove();
-                insertPlaceholderButton(container, false, 'killed');
-            }
-        } else {
-            if (moderatorType) {
-                killPlayerHandlers[player.id] = () => {
-                    if (confirm('KILL ' + player.name + '?')) {
-                        socket.emit(globals.COMMANDS.KILL_PLAYER, accessCode, player.id);
-                    }
-                };
-                container.querySelector('.kill-player-button').addEventListener('click', killPlayerHandlers[player.id]);
-            }
-        }
-
-        if (player.revealed) {
-            if (moderatorType) {
-                container.querySelector('.reveal-role-button')?.remove();
-                insertPlaceholderButton(container, true, 'revealed');
-            }
-        } else {
-            if (moderatorType) {
-                revealRoleHandlers[player.id] = () => {
-                    if (confirm('REVEAL ' + player.name + '?')) {
-                        socket.emit(globals.COMMANDS.REVEAL_PLAYER, accessCode, player.id);
-                    }
-                };
-                container.querySelector('.reveal-role-button').addEventListener('click', revealRoleHandlers[player.id]);
-            }
-        }
     }
 }
 
@@ -534,7 +534,8 @@ function createEndGamePromptComponent (socket, stateBucket) {
             e.preventDefault();
             if (confirm('End the game?')) {
                 socket.emit(
-                    globals.COMMANDS.END_GAME,
+                    globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    globals.EVENT_IDS.END_GAME,
                     stateBucket.currentGameState.accessCode
                 );
             }

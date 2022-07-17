@@ -4,10 +4,10 @@ export class GameTimerManager {
     constructor (stateBucket, socket) {
         this.stateBucket = stateBucket;
         this.playListener = () => {
-            socket.emit(globals.COMMANDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
+            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
         };
         this.pauseListener = () => {
-            socket.emit(globals.COMMANDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
+            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
         };
     }
 

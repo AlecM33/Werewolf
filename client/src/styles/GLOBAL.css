@@ -74,7 +74,7 @@ textarea {
 }
 
 .toast-bottom {
-    bottom: 90px;
+    bottom: 140px;
 }
 
 .toast-success {
@@ -309,6 +309,10 @@ button {
 #how-to-use-container h1 {
     color: #4b6bfa;
     font-family: signika-negative, sans-serif;
+    background-color: #1e1b26;
+    width: fit-content;
+    padding: 0 5px;
+    border-radius: 3px;
 }
 
 input {
@@ -321,7 +325,7 @@ input {
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 55000;
+    z-index: 1000000;
     padding: 10px;
     border-radius: 3px;
     font-family: 'signika-negative', sans-serif;
@@ -355,8 +359,8 @@ input {
     color: #d7d7d7;
     display: flex;
     flex-direction: column;
-    margin: 0 auto;
-    width: 95%;
+    margin: 1em auto 0 auto;
+    width: 90%;
     max-width: 64em;
     line-height: 1.5;
 }
@@ -782,7 +786,7 @@ input {
 
 @media(min-width: 551px) {
     .how-to-use-header {
-        font-size: 40px;
+        font-size: 35px;
     }
     #how-to-use-container h3 {
         font-size: 25px;

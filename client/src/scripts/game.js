@@ -261,7 +261,7 @@ function setClientSocketHandlers (stateBucket, gameStateRenderer, socket, timerW
                     toast(killedPerson.name + ' was killed!', 'warning', true, true, 'medium');
                 }
                 if (stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                    gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(true);
+                    gameStateRenderer.removePlayerListEventListeners(false);
                 } else {
                     gameStateRenderer.renderPlayersWithNoRoleInformationUnlessRevealed(false);
                 }

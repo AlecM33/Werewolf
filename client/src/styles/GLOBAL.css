@@ -321,7 +321,7 @@ input {
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 55000;
+    z-index: 1000000;
     padding: 10px;
     border-radius: 3px;
     font-family: 'signika-negative', sans-serif;

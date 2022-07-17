@@ -13,10 +13,13 @@ Find the latest production deployment at: https://play-werewolf.app/
 - [Code Formatting](#code-formatting)
 
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
-smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, player statuses, etc). 
+smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
+Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities.
+
+The app prioritizes responiveness. A key scenario would be when a group is hanging out with only their phones.
 
 Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
-2020's quarantine. The app is free to use, anonymous, and fully open-source under the MIT license. After a long hiatus I've rewritten a lot of the code and think this version works a lot better. This was (and still is) fundamentally a learning project, so feedback or assistance is appreciated.
+2020's quarantine. The app is free to use, anonymous, and fully open-source under the MIT license. After a long hiatus I've rewritten a lot of the code. This was (and still is) fundamentally a learning project, so feedback or assistance is appreciated.
 
 <br><br>
 <p align="center">
@@ -41,12 +44,7 @@ You can:
 - run a shared timer that can be paused by the moderator.
 - reference helpful info during the game including what roles are in the game and who has been killed or revealed.
 - choose to reveal a player without killing them, or kill them without revealing them. 
-- restart the same game setup any number of times
-
-This is meant to facilitate a game through a shared game state and various utilities - not to control
-every aspect of the game flow i.e. it doesn't run day and night for you and doesn't implement any role abilities.
-
-The application prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
+- restart the same game setup any number of times.
 
 ## Tech Stack
 

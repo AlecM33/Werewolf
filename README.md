@@ -123,7 +123,7 @@ Currently, the available operations are:
 
 ##### Example cURL
 ```
-curl -XGET -H 'Authorization: Basic bW9ja19hdXRoCg==' 'http://localhost:5000/api/admin/games/state'
+curl -XGET -H 'Authorization: Bearer bW9ja19hdXRoCg==' 'http://localhost:5000/api/admin/games/state'
 ```
 
 

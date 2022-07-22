@@ -84,13 +84,11 @@ to run in this terminal, watching for changes within the `client/src` directory 
 definitely want this if making frequent JavaScript changes to client-side source code. Any other changes, such as to HTML or CSS
 files, are not bundled, and thus your changes will be picked up simply by refreshing the browser.
 
-And there we go! You should be able to navigate to and use the application on localhost. There are additional CLI arguments
-you can provide to the run commands that specify things such as port, HTTP vs HTTPS, or the log level. I **highly recommend**
-consulting these below.
+**Note:** in the development environment, cookies are stored using sessionStorage (vs. localStorage in production). This makes it a lot easier to create/run test games, as you can join as different people in different tabs. 
 
 ### CLI Options
 
-These options will be at the end of your run command following two dashes e.g. `npm run start:dev -- [options]`.
+These options will be at the end of your run command following two dashes: `npm run start:dev -- [options]`.
 Options are whitespace-delimited key-value pairs with the syntax `[key]=[value]` e.g. `port=4242`. Options include:
 
 - `port`. Specify an integer port for the application.
@@ -99,6 +97,10 @@ Options are whitespace-delimited key-value pairs with the syntax `[key]=[value]`
 before serving the application over HTTPS - otherwise it will revert to HTTP. Using HTTPS is particularly useful if you
   want to make the application public on your home network, which would allow you to test it on your mobile device. **Careful -
   I had to disable my computer's firewall for this to work, which would of course make browsing the internet much riskier.**
+
+example run command:
+
+`npm run start:dev:windows -- port=4242 loglevel=trace protocol=https`
   
 ### Admin API
 
@@ -111,8 +113,6 @@ The admin api requires Bearer authentication. Locally, the base-64 decoded token
 Currently, the available operations are:
 
 - **GET /games/state** - returns a JSON array of the currently existing games.
-
-- **PUT /games/state** - replaces the current state of existing games with the provided JSON object. **Warning: if you do not provide a valid JSON object (one that aligns with, for example, what's returned from GET /games/state), the application could break.**
 
 - **POST /sockets/broadcast** - broadcasts a message to all connected sockets. This is not currently handled on the front-end, so it will not display anywhere.
 

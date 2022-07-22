@@ -4,7 +4,7 @@ const globals = require('../config/globals');
 
 class ActiveGameRunner {
     constructor (logger) {
-        this.activeGames = {};
+        this.activeGames = new Map();
         this.timerThreads = {};
         this.logger = logger;
     }

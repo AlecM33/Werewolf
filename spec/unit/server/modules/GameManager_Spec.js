@@ -35,7 +35,10 @@ describe('GameManager', () => {
                 [personToTransferTo, new Person('2', '456', 'Jane', USER_TYPES.PLAYER)],
                 [],
                 false,
-                moderator
+                moderator,
+                true,
+                moderator.id,
+                new Date().toJSON()
             );
             gameManager.transferModeratorPowers(game, personToTransferTo, logger);
 
@@ -53,7 +56,10 @@ describe('GameManager', () => {
                 [new Person('2', '456', 'Jane', USER_TYPES.PLAYER)],
                 [],
                 false,
-                moderator
+                moderator,
+                true,
+                moderator.id,
+                new Date().toJSON()
             );
             game.spectators.push(personToTransferTo);
             gameManager.transferModeratorPowers(game, personToTransferTo, logger);
@@ -73,7 +79,10 @@ describe('GameManager', () => {
                 [personToTransferTo, tempMod, new Person('2', '456', 'Jane', USER_TYPES.PLAYER)],
                 [],
                 false,
-                tempMod
+                tempMod,
+                false,
+                tempMod.id,
+                new Date().toJSON()
             );
             gameManager.transferModeratorPowers(game, personToTransferTo, logger);
 
@@ -92,7 +101,10 @@ describe('GameManager', () => {
                 [personToTransferTo, tempMod, new Person('2', '456', 'Jane', USER_TYPES.PLAYER)],
                 [],
                 false,
-                tempMod
+                tempMod,
+                true,
+                tempMod.id,
+                new Date().toJSON()
             );
             gameManager.transferModeratorPowers(game, personToTransferTo, logger);
 
@@ -107,13 +119,17 @@ describe('GameManager', () => {
             spyOn(namespace.in(), 'emit');
             spyOn(gameManager, 'transferModeratorPowers');
             const player = new Person('1', '123', 'Joe', USER_TYPES.PLAYER);
+            const mod = new Person('2', '456', 'Jane', USER_TYPES.MODERATOR);
             const game = new Game(
                 'abc',
                 globals.STATUS.IN_PROGRESS,
                 [player],
                 [],
                 false,
-                new Person('2', '456', 'Jane', USER_TYPES.MODERATOR)
+                mod,
+                true,
+                mod.id,
+                new Date().toJSON()
             );
             gameManager.killPlayer(game, player, namespace, logger);
 
@@ -133,7 +149,10 @@ describe('GameManager', () => {
                 [tempMod],
                 [],
                 false,
-                tempMod
+                tempMod,
+                true,
+                tempMod.id,
+                new Date().toJSON()
             );
             gameManager.killPlayer(game, tempMod, namespace, logger);
 
@@ -145,23 +164,32 @@ describe('GameManager', () => {
     });
 
     describe('#handleRequestForGameState', () => {
-        it('should send the game state to a matching person with an active connection to the room', () => {
-            const player = new Person('1', '123', 'Joe', USER_TYPES.PLAYER);
-            const socket = { id: 'socket1' };
-            spyOn(GameStateCurator, 'getGameStateFromPerspectiveOfPerson');
-            player.socketId = 'socket1';
-            const gameRunner = {
-                activeGames: {
-                    abc: new Game(
+        let gameRunner, mod, player;
+
+        beforeEach(() => {
+            mod = new Person('2', '456', 'Jane', USER_TYPES.MODERATOR);
+            player = new Person('1', '123', 'Joe', USER_TYPES.PLAYER);
+            gameRunner = {
+                activeGames: new Map([
+                    ['abc', new Game(
                         'abc',
                         globals.STATUS.IN_PROGRESS,
                         [player],
                         [],
                         false,
-                        new Person('2', '456', 'Jane', USER_TYPES.MODERATOR)
-                    )
-                }
+                        mod,
+                        true,
+                        mod.id,
+                        new Date().toJSON())
+                    ]
+                ])
             };
+        });
+
+        it('should send the game state to a matching person with an active connection to the room', () => {
+            const socket = { id: 'socket1' };
+            spyOn(GameStateCurator, 'getGameStateFromPerspectiveOfPerson');
+            player.socketId = 'socket1';
             spyOn(namespace.in(), 'emit');
             gameManager.handleRequestForGameState(
                 namespace,
@@ -174,27 +202,14 @@ describe('GameManager', () => {
             );
 
             expect(GameStateCurator.getGameStateFromPerspectiveOfPerson)
-                .toHaveBeenCalledWith(gameRunner.activeGames.abc, player, gameRunner, socket, logger);
+                .toHaveBeenCalledWith(gameRunner.activeGames.get('abc'), player, gameRunner, socket, logger);
         });
 
         it('should send the game state to a matching person who reset their connection', () => {
-            const player = new Person('1', '123', 'Joe', USER_TYPES.PLAYER);
             const socket = { id: 'socket_222222', join: () => {} };
             spyOn(socket, 'join');
             spyOn(GameStateCurator, 'getGameStateFromPerspectiveOfPerson');
             player.socketId = 'socket_111111';
-            const gameRunner = {
-                activeGames: {
-                    abc: new Game(
-                        'abc',
-                        globals.STATUS.IN_PROGRESS,
-                        [player],
-                        [],
-                        false,
-                        new Person('2', '456', 'Jane', USER_TYPES.MODERATOR)
-                    )
-                }
-            };
             spyOn(namespace.in(), 'emit');
             gameManager.handleRequestForGameState(
                 namespace,
@@ -207,25 +222,33 @@ describe('GameManager', () => {
             );
 
             expect(GameStateCurator.getGameStateFromPerspectiveOfPerson)
-                .toHaveBeenCalledWith(gameRunner.activeGames.abc, player, gameRunner, socket, logger);
+                .toHaveBeenCalledWith(gameRunner.activeGames.get('abc'), player, gameRunner, socket, logger);
             expect(player.socketId).toEqual(socket.id);
             expect(socket.join).toHaveBeenCalled();
         });
     });
 
     describe('#joinGame', () => {
-        it('should mark the game as full when all players have been assigned', () => {
-            const person = new Person('1', '123', 'Placeholder', USER_TYPES.KILLED_PLAYER);
-            const moderator = new Person('3', '789', 'Jack', USER_TYPES.MODERATOR);
-            moderator.assigned = true;
-            const game = new Game(
+        let game, person, moderator;
+
+        beforeEach(() => {
+            person = new Person('1', '123', 'Placeholder', USER_TYPES.KILLED_PLAYER);
+            moderator = new Person('3', '789', 'Jack', USER_TYPES.MODERATOR);
+            game = new Game(
                 'abc',
                 globals.STATUS.IN_PROGRESS,
                 [person],
                 [],
                 false,
-                moderator
+                moderator,
+                true,
+                moderator.id,
+                new Date().toJSON()
             );
+        });
+
+        it('should mark the game as full when all players have been assigned', () => {
+            moderator.assigned = true;
 
             gameManager.joinGame(game, 'Jill', 'x');
 
@@ -235,27 +258,16 @@ describe('GameManager', () => {
         });
 
         it('should create a spectator if the game is already full and broadcast it to the room', () => {
-            const person = new Person('1', '123', 'AlreadyJoined', USER_TYPES.KILLED_PLAYER);
-            const moderator = new Person('3', '789', 'AlreadyTheModerator', USER_TYPES.MODERATOR);
             moderator.assigned = true;
             person.assigned = true;
-            const game = new Game(
-                'abc',
-                globals.STATUS.IN_PROGRESS,
-                [person],
-                [],
-                false,
-                moderator
-            );
             game.isFull = true;
-
             spyOn(gameManager.namespace.in(), 'emit');
 
             gameManager.joinGame(game, 'Jane', 'x');
 
             expect(game.isFull).toEqual(true);
-            expect(game.people[0].name).toEqual('AlreadyJoined');
-            expect(game.moderator.name).toEqual('AlreadyTheModerator');
+            expect(game.people[0].name).toEqual('Placeholder');
+            expect(game.moderator.name).toEqual('Jack');
             expect(game.spectators.length).toEqual(1);
             expect(game.spectators[0].name).toEqual('Jane');
             expect(game.spectators[0].userType).toEqual(USER_TYPES.SPECTATOR);
@@ -265,18 +277,14 @@ describe('GameManager', () => {
 
     describe('#generateAccessCode', () => {
         it('should continue to generate access codes up to the max attempts when the generated code is already in use by another game', () => {
-            gameManager.activeGameRunner.activeGames = {
-                AAAA: {}
-            };
+            gameManager.activeGameRunner.activeGames = new Map([['AAAA', {}]]);
 
             const accessCode = gameManager.generateAccessCode(['A']);
             expect(accessCode).toEqual(null); // we might the max generation attempts of 50.
         });
 
         it('should generate and return a unique access code', () => {
-            gameManager.activeGameRunner.activeGames = {
-                AAAA: {}
-            };
+            gameManager.activeGameRunner.activeGames = new Map([['AAAA', {}]]);
 
             const accessCode = gameManager.generateAccessCode(['B']);
             expect(accessCode).toEqual('BBBB');

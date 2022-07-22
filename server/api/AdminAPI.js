@@ -36,9 +36,6 @@ router.use((req, res, next) => {
 router.post('/sockets/broadcast', (req, res, next) => {
     globals.CONTENT_TYPE_VALIDATOR(req, res, next);
 });
-router.put('/games/state', (req, res, next) => {
-    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
-});
 
 // TODO: implement client-side display of this message.
 router.post('/sockets/broadcast', function (req, res) {
@@ -53,12 +50,6 @@ router.get('/games/state', function (req, res) {
         gamesArray.push(gameManager.activeGameRunner.activeGames.get(key));
     }
     res.status(200).send(gamesArray);
-});
-
-router.put('/games/state', function (req, res) {
-    // TODO: validate the JSON object sent - ones that don't match the expected model could break the application.
-    gameManager.activeGameRunner.activeGames = req.body;
-    res.status(201).send(gameManager.activeGameRunner.activeGames);
 });
 
 /* validates Bearer Auth */

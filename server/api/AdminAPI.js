@@ -48,7 +48,11 @@ router.post('/sockets/broadcast', function (req, res) {
 });
 
 router.get('/games/state', function (req, res) {
-    res.status(200).send(gameManager.activeGameRunner.activeGames);
+    const gamesArray = [];
+    for (const key of gameManager.activeGameRunner.activeGames.keys()) {
+        gamesArray.push(gameManager.activeGameRunner.activeGames.get(key));
+    }
+    res.status(200).send(gamesArray);
 });
 
 router.put('/games/state', function (req, res) {

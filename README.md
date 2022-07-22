@@ -110,12 +110,7 @@ The admin api requires Bearer authentication. Locally, the base-64 decoded token
 
 Currently, the available operations are:
 
-- **GET /games/state** - returns a JSON object of the currently existing games. Within the object, each game is indexed by its access code. This is equivalent to, on the server-side, the singleton class `ActiveGameRunner`'s `activeGames` property. 
-<p align="center">
-  <kbd>
-    <img width="500" src="https://user-images.githubusercontent.com/24642328/179417269-b6373c6f-4b32-4545-95fe-6a34b5efae1d.png"/>
-  </kbd>
-</p>
+- **GET /games/state** - returns a JSON array of the currently existing games.
 
 - **PUT /games/state** - replaces the current state of existing games with the provided JSON object. **Warning: if you do not provide a valid JSON object (one that aligns with, for example, what's returned from GET /games/state), the application could break.**
 

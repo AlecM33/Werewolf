@@ -36,7 +36,7 @@ class GameManager {
             if (gameParams.timerParams !== null) {
                 gameParams.timerParams.paused = false;
             }
-            this.activeGameRunner.activeGames[newAccessCode] = new Game(
+            const newGame = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,
                 initializePeopleForGame(gameParams.deck, moderator, this.shuffle),
@@ -45,9 +45,12 @@ class GameManager {
                 moderator,
                 gameParams.hasDedicatedModerator,
                 moderator.id,
+                new Date().toJSON(),
                 gameParams.timerParams
             );
-            this.activeGameRunner.activeGames[newAccessCode].createTime = new Date().toJSON();
+
+            this.activeGameRunner.activeGames.set(newAccessCode, newGame);
+
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
         }
     };
@@ -146,7 +149,7 @@ class GameManager {
     };
 
     checkAvailability = (code) => {
-        const game = this.activeGameRunner.activeGames[code.toUpperCase()];
+        const game = this.activeGameRunner.activeGames.get(code.toUpperCase().trim());
         if (game) {
             return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
         } else {
@@ -158,7 +161,7 @@ class GameManager {
         const charCount = charPool.length;
         let codeDigits, accessCode;
         let attempts = 0;
-        while (!accessCode || (this.activeGameRunner.activeGames[accessCode] && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
+        while (!accessCode || (this.activeGameRunner.activeGames.get(accessCode) && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
             codeDigits = [];
             let iterations = globals.ACCESS_CODE_LENGTH;
             while (iterations > 0) {
@@ -168,7 +171,7 @@ class GameManager {
             accessCode = codeDigits.join('');
             attempts ++;
         }
-        return this.activeGameRunner.activeGames[accessCode]
+        return this.activeGameRunner.activeGames.get(accessCode)
             ? null
             : accessCode;
     };
@@ -316,7 +319,7 @@ class GameManager {
     };
 
     handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
-        const game = gameRunner.activeGames[accessCode];
+        const game = gameRunner.activeGames.get(accessCode);
         if (game) {
             const matchingPerson = findPersonByField(game, 'cookie', personCookie);
             if (matchingPerson) {
@@ -340,9 +343,9 @@ class GameManager {
 
     removeClientFromLobbyIfApplicable (socket) {
         socket.rooms.forEach((room) => {
-            if (this.activeGameRunner.activeGames[room]) {
+            if (this.activeGameRunner.activeGames.get(room)) {
                 this.logger.trace('disconnected socket is in a game');
-                const game = this.activeGameRunner.activeGames[room];
+                const game = this.activeGameRunner.activeGames.get(room);
                 if (game.status === globals.STATUS.LOBBY) {
                     const matchingPlayer = findPlayerBySocketId(game.people, socket.id);
                     if (matchingPlayer) {

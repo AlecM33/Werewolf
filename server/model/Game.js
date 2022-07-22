@@ -8,6 +8,7 @@ class Game {
         moderator,
         hasDedicatedModerator,
         originalModeratorId,
+        createTime,
         timerParams = null
     ) {
         this.accessCode = accessCode;

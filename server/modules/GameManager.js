@@ -26,7 +26,7 @@ class GameManager {
             return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
         } else {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
-            //pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
+            // pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
             const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);

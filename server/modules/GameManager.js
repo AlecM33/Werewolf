@@ -26,7 +26,7 @@ class GameManager {
             return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
         } else {
             // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
-            pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
+            //pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
             const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
@@ -478,22 +478,22 @@ function isNameTaken (game, name) {
     || (game.spectators.find((spectator) => spectator.name.toLowerCase().trim() === processedName));
 }
 
-function pruneStaleGames (activeGames, timerThreads, logger) {
-    for (const [accessCode, game] of Object.entries(activeGames)) {
-        if (game.createTime) {
-            const createDate = new Date(game.createTime);
-            if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
-                logger.info('PRUNING STALE GAME ' + accessCode);
-                delete activeGames[accessCode];
-                if (timerThreads[accessCode]) {
-                    logger.info('KILLING STALE TIMER PROCESS FOR ' + accessCode);
-                    timerThreads[accessCode].kill();
-                    delete timerThreads[accessCode];
-                }
-            }
-        }
-    }
-}
+// function pruneStaleGames (activeGames, timerThreads, logger) {
+//     for (const [accessCode, game] of Object.entries(activeGames)) {
+//         if (game.createTime) {
+//             const createDate = new Date(game.createTime);
+//             if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
+//                 logger.info('PRUNING STALE GAME ' + accessCode);
+//                 delete activeGames[accessCode];
+//                 if (timerThreads[accessCode]) {
+//                     logger.info('KILLING STALE TIMER PROCESS FOR ' + accessCode);
+//                     timerThreads[accessCode].kill();
+//                     delete timerThreads[accessCode];
+//                 }
+//             }
+//         }
+//     }
+// }
 
 function getGameSize (cards) {
     let quantity = 0;

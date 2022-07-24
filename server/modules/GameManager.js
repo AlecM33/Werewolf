@@ -25,8 +25,7 @@ class GameManager {
             this.logger.error('Tried to create game with invalid options: ' + JSON.stringify(gameParams));
             return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
         } else {
-            // to avoid excessive memory build-up, every time a game is created, check for and purge any stale games.
-            // pruneStaleGames(this.activeGameRunner.activeGames, this.activeGameRunner.timerThreads, this.logger);
+            this.pruneStaleGames();
             const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
@@ -382,6 +381,23 @@ class GameManager {
 
         return array;
     };
+
+    pruneStaleGames = () => {
+        this.activeGameRunner.activeGames.forEach((value, key) => {
+            if (value.createTime) {
+                const createDate = new Date(value.createTime);
+                if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
+                    this.logger.info('PRUNING STALE GAME ' + key);
+                    this.activeGameRunner.activeGames.delete(key);
+                    if (this.activeGameRunner.timerThreads[key]) {
+                        this.logger.info('KILLING STALE TIMER PROCESS FOR ' + key);
+                        this.activeGameRunner.timerThreads[key].kill();
+                        delete this.activeGameRunner.timerThreads[key];
+                    }
+                }
+            }
+        });
+    };
 }
 
 function getRandomInt (max) {
@@ -477,23 +493,6 @@ function isNameTaken (game, name) {
     || (game.moderator.name.toLowerCase().trim() === processedName)
     || (game.spectators.find((spectator) => spectator.name.toLowerCase().trim() === processedName));
 }
-
-// function pruneStaleGames (activeGames, timerThreads, logger) {
-//     for (const [accessCode, game] of Object.entries(activeGames)) {
-//         if (game.createTime) {
-//             const createDate = new Date(game.createTime);
-//             if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
-//                 logger.info('PRUNING STALE GAME ' + accessCode);
-//                 delete activeGames[accessCode];
-//                 if (timerThreads[accessCode]) {
-//                     logger.info('KILLING STALE TIMER PROCESS FOR ' + accessCode);
-//                     timerThreads[accessCode].kill();
-//                     delete timerThreads[accessCode];
-//                 }
-//             }
-//         }
-//     }
-// }
 
 function getGameSize (cards) {
     let quantity = 0;

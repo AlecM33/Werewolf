@@ -19,6 +19,7 @@ class Game {
         this.hasTimer = hasTimer;
         this.hasDedicatedModerator = hasDedicatedModerator;
         this.originalModeratorId = originalModeratorId;
+        this.createTime = createTime;
         this.timerParams = timerParams;
         this.isFull = false;
         this.timeRemaining = null;

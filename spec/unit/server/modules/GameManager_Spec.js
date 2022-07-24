@@ -432,4 +432,27 @@ describe('GameManager', () => {
             expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.START_GAME);
         });
     });
+
+    describe('#pruneStaleGames', () => {
+        it('delete a game if it was created more than 24 hours ago', () => {
+            const moreThan24HoursAgo = new Date();
+            moreThan24HoursAgo.setDate(moreThan24HoursAgo.getDate() - 1);
+            moreThan24HoursAgo.setHours(moreThan24HoursAgo.getHours() - 1);
+            gameManager.activeGameRunner.activeGames = new Map([['AAAA', { createTime: moreThan24HoursAgo.toJSON() }]]);
+
+            gameManager.pruneStaleGames();
+
+            expect(gameManager.activeGameRunner.activeGames.size).toEqual(0);
+        });
+
+        it('should not delete a game if it was not created more than 24 hours ago', () => {
+            const lessThan24HoursAgo = new Date();
+            lessThan24HoursAgo.setHours(lessThan24HoursAgo.getHours() - 23);
+            gameManager.activeGameRunner.activeGames = new Map([['AAAA', { createTime: lessThan24HoursAgo.toJSON() }]]);
+
+            gameManager.pruneStaleGames();
+
+            expect(gameManager.activeGameRunner.activeGames.size).toEqual(1);
+        });
+    });
 });

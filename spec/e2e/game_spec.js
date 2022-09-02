@@ -16,24 +16,25 @@ describe('game page', () => {
     };
 
     describe('lobby game', () => {
-        const mockSocket = {
-            eventHandlers: {},
-            on: function (message, handler) {
-                console.log('REGISTERED MOCK SOCKET HANDLER: ' + message);
-                this.eventHandlers[message] = handler;
-            },
-            emit: function (eventName, ...args) {
-                switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
-                    case globals.EVENT_IDS.FETCH_GAME_STATE:
-                        args[args.length - 1](mockGames.gameInLobby);
-                }
-            },
-            hasListeners: function (listener) {
-                return false;
-            }
-        };
+        let mockSocket;
 
-        beforeAll(async () => {
+        beforeEach(async function () {
+            document.body.innerHTML = '';
+            mockSocket = {
+                eventHandlers: {},
+                on: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
+                emit: function (eventName, ...args) {
+                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                        case globals.EVENT_IDS.FETCH_GAME_STATE:
+                            args[args.length - 1](deepCopy(mockGames.gameInLobby)); // copy the game object to prevent leaking of state between specs
+                    }
+                },
+                hasListeners: function (listener) {
+                    return false;
+                }
+            };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();
         });
@@ -77,27 +78,28 @@ describe('game page', () => {
     });
 
     describe('in-progress game', () => {
-        const mockSocket = {
-            eventHandlers: {},
-            on: function (message, handler) {
-                console.log('REGISTERED MOCK SOCKET HANDLER: ' + message);
-                this.eventHandlers[message] = handler;
-            },
-            emit: function (eventName, ...args) {
-                switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
-                    case globals.EVENT_IDS.FETCH_GAME_STATE:
-                        args[args.length - 1](mockGames.inProgressGame);
-                        break;
-                    default:
-                        break;
-                }
-            },
-            hasListeners: function (listener) {
-                return false;
-            }
-        };
+        let mockSocket;
 
-        beforeAll(async () => {
+        beforeEach(async () => {
+            document.body.innerHTML = '';
+            mockSocket = {
+                eventHandlers: {},
+                on: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
+                emit: function (eventName, ...args) {
+                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                        case globals.EVENT_IDS.FETCH_GAME_STATE:
+                            args[args.length - 1](deepCopy(mockGames.inProgressGame)); // copy the game object to prevent leaking of state between specs
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                hasListeners: function (listener) {
+                    return false;
+                }
+            };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();
             mockSocket.eventHandlers.getTimeRemaining(120000, true);
@@ -143,3 +145,7 @@ describe('game page', () => {
         });
     });
 });
+
+function deepCopy (object) {
+    return JSON.parse(JSON.stringify(object));
+}

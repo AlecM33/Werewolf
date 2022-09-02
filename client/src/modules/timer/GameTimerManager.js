@@ -1,4 +1,4 @@
-import { globals } from '../config/globals.js';
+import { globals } from '../../config/globals.js';
 
 export class GameTimerManager {
     constructor (stateBucket, socket) {

@@ -1,8 +1,8 @@
-import { HTMLFragments } from './HTMLFragments.js';
-import { globals } from '../config/globals.js';
-import { defaultRoles } from '../config/defaultRoles.js';
-import { toast } from './Toast.js';
-import { ModalManager } from './ModalManager.js';
+import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
+import { globals } from '../../config/globals.js';
+import { defaultRoles } from '../../config/defaultRoles.js';
+import { toast } from '../front_end_components/Toast.js';
+import { ModalManager } from '../front_end_components/ModalManager.js';
 
 export class RoleBox {
     constructor (container, deckManager) {

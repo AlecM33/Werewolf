@@ -1,6 +1,6 @@
-import { XHRUtility } from '../modules/XHRUtility.js';
-import { toast } from '../modules/Toast.js';
-import { injectNavbar } from '../modules/Navbar.js';
+import { XHRUtility } from '../modules/utility/XHRUtility.js';
+import { toast } from '../modules/front_end_components/Toast.js';
+import { injectNavbar } from '../modules/front_end_components/Navbar.js';
 
 const home = () => {
     injectNavbar();

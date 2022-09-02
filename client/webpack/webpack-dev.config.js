@@ -33,5 +33,8 @@ module.exports = {
                 loader: "webpack-remove-debug", // remove "debug" package
             }
         ],
+    },
+    experiments: {
+        topLevelAwait: true
     }
 }

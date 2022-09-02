@@ -38,7 +38,7 @@ function flipHamburger () {
 function getNavbarLinks (page = null, device) {
     const linkClass = device === 'mobile' ? 'mobile-link' : 'desktop-link';
     return '<a href="/" class="logo ' + linkClass + '">' +
-    '<img alt="logo" src="../images/Werewolf_Small.png"/>' +
+    '<img alt="logo" src="../../images/Werewolf_Small.png"/>' +
     '</a>' +
     '<a class="' + linkClass + '" href="/">Home</a>' +
     '<a class="' + linkClass + '" href="/create">Create</a>' +

@@ -1,7 +1,7 @@
-import { globals } from '../config/globals.js';
-import { HTMLFragments } from './HTMLFragments.js';
-import { toast } from './Toast.js';
-import { ModalManager } from './ModalManager.js';
+import { globals } from '../../config/globals.js';
+import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
+import { toast } from '../front_end_components/Toast.js';
+import { ModalManager } from '../front_end_components/ModalManager.js';
 
 export class DeckStateManager {
     constructor () {

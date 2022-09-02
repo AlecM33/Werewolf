@@ -1,21 +1,17 @@
 // TODO: clean up these deep relative paths? jsconfig.json is not working...
-
-import { GameCreationStepManager } from '../../client/src/modules/GameCreationStepManager.js';
-import { DeckStateManager } from '../../client/src/modules/DeckStateManager.js';
-import createTemplate from '../../client/src/view_templates/CreateTemplate.js';
+import { createHandler } from '../../client/src/modules/page_handlers/createHandler.js';
+import { GameCreationStepManager } from '../../client/src/modules/game_creation/GameCreationStepManager.js';
+import { DeckStateManager } from '../../client/src/modules/game_creation/DeckStateManager.js';
 
 describe('Create page', function () {
-    let gameCreationStepManager;
+    const gameCreationStepManager = new GameCreationStepManager(new DeckStateManager());
 
     beforeAll(function () {
         spyOn(window, 'confirm').and.returnValue(true);
         const container = document.createElement('div');
         container.setAttribute('id', 'game-creation-container');
         document.body.appendChild(container);
-        document.getElementById('game-creation-container').innerHTML = createTemplate;
-        const deckManager = new DeckStateManager();
-        gameCreationStepManager = new GameCreationStepManager(deckManager);
-        gameCreationStepManager.renderStep('creation-step-container', 1);
+        createHandler(gameCreationStepManager);
     });
 
     describe('deck builder page', function () {
@@ -118,6 +114,10 @@ describe('Create page', function () {
 
             expect(gameCreationStepManager.deckManager.deck.length).toEqual(5);
             expect(document.querySelectorAll('.added-role').length).toEqual(5);
+        });
+
+        afterAll(() => {
+            document.body.innerHTML = '';
         });
     });
 });

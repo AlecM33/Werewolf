@@ -1,10 +1,10 @@
-import { Game } from '../model/Game.js';
-import { cancelCurrentToast, toast } from './Toast.js';
-import { ModalManager } from './ModalManager.js';
-import { XHRUtility } from './XHRUtility.js';
-import { globals } from '../config/globals.js';
-import { HTMLFragments } from './HTMLFragments.js';
-import { UserUtility } from './UserUtility.js';
+import { Game } from '../../model/Game.js';
+import { cancelCurrentToast, toast } from '../front_end_components/Toast.js';
+import { ModalManager } from '../front_end_components/ModalManager.js';
+import { XHRUtility } from '../utility/XHRUtility.js';
+import { globals } from '../../config/globals.js';
+import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
+import { UserUtility } from '../utility/UserUtility.js';
 import { RoleBox } from './RoleBox.js';
 
 export class GameCreationStepManager {
@@ -457,7 +457,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
     document.querySelector('#create-game')?.remove();
     if (back) {
         const backButton = document.createElement('button');
-        backButton.innerHTML = '<img alt="back" src="../images/caret-back.svg"/>';
+        backButton.innerHTML = '<img alt="back" src="../../images/caret-back.svg"/>';
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute('id', 'step-back-button');
         backButton.classList.add('cancel');
@@ -467,7 +467,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
 
     if (forward && builtGame === null) {
         const fwdButton = document.createElement('button');
-        fwdButton.innerHTML = '<img alt="next" src="../images/caret-forward.svg"/>';
+        fwdButton.innerHTML = '<img alt="next" src="../../images/caret-forward.svg"/>';
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute('id', 'step-forward-button');
         fwdButton.classList.add('app-button');

@@ -31,17 +31,6 @@ export const globals = {
     MESSAGES: {
         ENTER_NAME: 'Client must enter name.'
     },
-    EVENTS: {
-        PLAYER_JOINED: 'playerJoined',
-        SYNC_GAME_STATE: 'syncGameState',
-        START_TIMER: 'startTimer',
-        KILL_PLAYER: 'killPlayer',
-        REVEAL_PLAYER: 'revealPlayer',
-        CHANGE_NAME: 'changeName',
-        START_GAME: 'startGame',
-        PLAYER_LEFT: 'playerLeft',
-        NEW_SPECTATOR: 'newSpectator'
-    },
     SOCKET_EVENTS: {
         IN_GAME_MESSAGE: 'inGameMessage'
     },
@@ -55,7 +44,12 @@ export const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
-        END_GAME: 'endGame'
+        END_GAME: 'endGame',
+        PLAYER_JOINED: 'playerJoined',
+        SYNC_GAME_STATE: 'syncGameState',
+        START_TIMER: 'startTimer',
+        PLAYER_LEFT: 'playerLeft',
+        NEW_SPECTATOR: 'newSpectator'
     },
     USER_TYPES: {
         MODERATOR: 'moderator',

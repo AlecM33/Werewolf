@@ -1,11 +1,11 @@
-import { globals } from '../config/globals.js';
-import { toast } from './Toast.js';
-import { HTMLFragments } from './HTMLFragments.js';
-import { ModalManager } from './ModalManager.js';
-import { XHRUtility } from './XHRUtility.js';
-import { UserUtility } from './UserUtility.js';
+import { globals } from '../../config/globals.js';
+import { toast } from '../front_end_components/Toast.js';
+import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
+import { ModalManager } from '../front_end_components/ModalManager.js';
+import { XHRUtility } from '../utility/XHRUtility.js';
+import { UserUtility } from '../utility/UserUtility.js';
 // QRCode module via: https://github.com/soldair/node-qrcode
-import { QRCode } from './third_party/qrcode.js';
+import { QRCode } from '../third_party/qrcode.js';
 
 export class GameStateRenderer {
     constructor (stateBucket, socket) {

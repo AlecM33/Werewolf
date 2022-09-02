@@ -1,7 +1,7 @@
-import { injectNavbar } from '../modules/Navbar.js';
-import { toast } from '../modules/Toast.js';
-import { XHRUtility } from '../modules/XHRUtility.js';
-import { UserUtility } from '../modules/UserUtility.js';
+import { injectNavbar } from '../modules/front_end_components/Navbar.js';
+import { toast } from '../modules/front_end_components/Toast.js';
+import { XHRUtility } from '../modules/utility/XHRUtility.js';
+import { UserUtility } from '../modules/utility/UserUtility.js';
 import { globals } from '../config/globals.js';
 
 const join = () => {

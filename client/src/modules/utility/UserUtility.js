@@ -1,4 +1,4 @@
-import { globals } from '../config/globals.js';
+import { globals } from '../../config/globals.js';
 
 /*
     we will use sessionStorage during local development to aid in testing, vs. localStorage for production.

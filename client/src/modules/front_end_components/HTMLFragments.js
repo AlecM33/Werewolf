@@ -156,7 +156,7 @@ export const HTMLFragments = {
         </div>
         <div class='player-action-buttons'>
             <button title='Kill' class='moderator-player-button kill-player-button'>\uD83D\uDC80</button>
-            <button title='Reveal' class='moderator-player-button reveal-role-button'><img alt='reveal' src='../images/eye.svg'/></button>
+            <button title='Reveal' class='moderator-player-button reveal-role-button'><img alt='reveal' src='../../images/eye.svg'/></button>
         </div>`,
     GAME_PLAYER:
         `<div>

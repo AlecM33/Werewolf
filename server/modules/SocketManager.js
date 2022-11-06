@@ -51,6 +51,7 @@ class SocketManager {
                 switch (eventId) {
                     case EVENT_IDS.FETCH_GAME_STATE:
                         await gameManager.handleRequestForGameState(
+                            game,
                             this.namespace,
                             this.logger,
                             gameManager.activeGameRunner,
@@ -94,6 +95,8 @@ class SocketManager {
                     default:
                         break;
                 }
+            } else {
+                ackFn(null);
             }
         });
     };

@@ -317,26 +317,20 @@ class GameManager {
         namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
     };
 
-    handleRequestForGameState = async (namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
-        const game = gameRunner.activeGames.get(accessCode);
-        if (game) {
-            const matchingPerson = findPersonByField(game, 'cookie', personCookie);
-            if (matchingPerson) {
-                if (matchingPerson.socketId === clientSocket.id) {
-                    logger.trace('matching person found with an established connection to the room: ' + matchingPerson.name);
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
-                } else {
-                    logger.trace('matching person found with a new connection to the room: ' + matchingPerson.name);
-                    clientSocket.join(accessCode);
-                    matchingPerson.socketId = clientSocket.id;
-                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
-                }
+    handleRequestForGameState = async (game, namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
+        const matchingPerson = findPersonByField(game, 'cookie', personCookie);
+        if (matchingPerson) {
+            if (matchingPerson.socketId === clientSocket.id) {
+                logger.trace('matching person found with an established connection to the room: ' + matchingPerson.name);
+                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
             } else {
-                rejectClientRequestForGameState(ackFn);
+                logger.trace('matching person found with a new connection to the room: ' + matchingPerson.name);
+                clientSocket.join(accessCode);
+                matchingPerson.socketId = clientSocket.id;
+                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson, gameRunner, clientSocket, logger));
             }
         } else {
             rejectClientRequestForGameState(ackFn);
-            logger.trace('the game ' + accessCode + ' was not found');
         }
     };
 

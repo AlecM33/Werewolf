@@ -192,6 +192,7 @@ describe('GameManager', () => {
             player.socketId = 'socket1';
             spyOn(namespace.in(), 'emit');
             gameManager.handleRequestForGameState(
+                gameRunner.activeGames.get('abc'),
                 namespace,
                 logger,
                 gameRunner,
@@ -212,6 +213,7 @@ describe('GameManager', () => {
             player.socketId = 'socket_111111';
             spyOn(namespace.in(), 'emit');
             gameManager.handleRequestForGameState(
+                gameRunner.activeGames.get('abc'),
                 namespace,
                 logger,
                 gameRunner,

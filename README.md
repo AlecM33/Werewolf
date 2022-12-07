@@ -14,7 +14,7 @@ Find the latest production deployment at: https://play-werewolf.app/
 
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
-Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities.
+Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities. Hosts can use any roles they want, in any configuration, and can create their own roles if the provided ones don't meet their needs (though neutral/third-party roles are currently not supported - only good and evil). 
 
 The app prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 

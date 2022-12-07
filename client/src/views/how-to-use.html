@@ -22,7 +22,23 @@
 <div id="mobile-menu-background-overlay"></div>
 <div id="navbar"></div>
 <div id="how-to-use-container">
-    <h1 class="how-to-use-header">Purpose of the Application</h1>
+    <div id="tutorial-links">
+        <ul>
+            <li>
+                <a href="#purpose-of-the-app">Purpose of the App</a>
+            </li>
+            <li>
+                <a href="#creating-a-game">Creating a Game</a>
+            </li>
+            <li>
+                <a href="#being-the-moderator">Being the Moderator</a>
+            </li>
+            <li>
+                <a href="#being-a-player">Being a Player</a>
+            </li>
+        </ul>
+    </div>
+    <h1 class="how-to-use-header" id="purpose-of-the-app">Purpose of the Application</h1>
     <div class="how-to-use-section">This app serves as a means of running games in a social setting where a traditional
         running of the game is hindered. This might be when people are meeting virtually, and thus roles can't be handed
         out in-person, or when people are in-person but don't have Werewolf cards with them. You can use a deck of regular
@@ -32,7 +48,7 @@
         players. This app attempts to provide the utilities necessary to run Werewolf with all the different roles you want,
         wherever you can access the internet.
     </div>
-    <h1 class="how-to-use-header">Creating a Game</h1>
+    <h1 class="how-to-use-header" id="creating-a-game">Creating a Game</h1>
     <div class="how-to-use-section">
         Creating a game through the app has 3 main components:
         <br>
@@ -80,7 +96,7 @@
         end. Whether or not the game ends immediately after that or continues longer is up to the moderator.
         <br><br>
     </div>
-    <h1 class="how-to-use-header">Being the Moderator</h1>
+    <h1 class="how-to-use-header" id="being-the-moderator">Being the Moderator</h1>
     <div class="how-to-use-section">
         This is an example of what a <span class="emphasized">dedicated moderator</span> sees during the game:
         <br><br>
@@ -105,8 +121,23 @@
         become a spectator:
         <br><br>
         <img class='tutorial-image-small' src="../images/tutorial/transfer-mod.gif"/>
+    </div>
+    <h1 class="how-to-use-header" id="being-a-player">Being a Player</h1>
+    <div class="how-to-use-section">
+        This is an example of what a <span class="emphasized">player</span> is seeing. The timer is running, and they view their
+        role by double-clicking it:
         <br><br>
-        <p class="teaser">More content coming soon.</p>
+        <img class='tutorial-image-small-portrait' src="../images/tutorial/player-view.gif"/>
+        <br><br>
+        There are three main things - the <span class="emphasized">timer</span>, your <span class="emphasized">role card</span>
+        and the <span class="emphasized">player list</span>. Players can view the timer, but only the current moderator can play and pause it.
+        <span class="emphasized">Your role card starts flipped over</span> - this is useful if you are in-person and don't want someone else accidentally seeing your role as
+        it is dealt. <span class="emphasized">You can view your role at any time by double-clicking/double-tapping it</span>. Requiring a double-click guards against the possibility
+        of accidentally flipping your role when tapping other things. Within the <span class="emphasized">player list</span>, you can see
+        <span class="emphasized">who is alive or dead</span> and <span class="emphasized">who has had their role revealed</span>. There is
+        also a <span class="emphasized">role info button</span> that, when pressed, displays all the different roles in the current game,
+        including their descriptions and alignment (good/evil).
+        <br><br>
     </div>
 </div>
 <script src="/dist/howToUse-bundle.js"></script>

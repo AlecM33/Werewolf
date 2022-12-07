@@ -15,6 +15,7 @@
     flex-direction: column;
     padding: 1em;
     display: none;
+    border: 2px solid #333243;
 }
 
 .modal-background {
@@ -55,14 +56,20 @@
     color: #d7d7d7;
     text-align: left;
     font-family: signika-negative, sans-serif;
+    align-items: flex-start;
+}
+
+#custom-role-info-modal h3 {
+    margin: 0 0 0.5em 0;
 }
 
 #custom-role-info-modal-description {
-    margin: 2em 0;
+    border-radius: 3px;
+    background-color: black;
     max-height: 10em;
     overflow: auto;
-    padding-top: 10px;
-    border-top: 1px solid whitesmoke
+    padding: 5px;
+    margin-bottom: 2em;
 }
 
 #custom-role-info-modal-name {
@@ -70,9 +77,16 @@
     font-size: 23px;
 }
 
+#custom-role-info-modal label {
+    margin: 5px 0;
+}
+
 #custom-role-info-modal-alignment {
-    font-size: 20px;
+    border-radius: 3px;
+    background-color: black;
+    font-size: 18px;
     font-weight: bold;
+    padding: 5px;
 }
 
 #change-name-modal, #transfer-mod-modal, #role-info-modal {

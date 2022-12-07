@@ -6,6 +6,7 @@ import { XHRUtility } from '../utility/XHRUtility.js';
 import { UserUtility } from '../utility/UserUtility.js';
 // QRCode module via: https://github.com/soldair/node-qrcode
 import { QRCode } from '../third_party/qrcode.js';
+import { Confirmation } from '../front_end_components/Confirmation.js';
 
 export class GameStateRenderer {
     constructor (stateBucket, socket) {
@@ -16,9 +17,9 @@ export class GameStateRenderer {
         this.transferModHandlers = {};
         this.startGameHandler = (e) => { // TODO: prevent multiple emissions of this event (recommend converting to XHR)
             e.preventDefault();
-            if (confirm('Start the game and deal roles?')) {
+            Confirmation('Start game and deal roles?', () => {
                 socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.START_GAME, stateBucket.currentGameState.accessCode);
-            }
+            });
         };
         this.restartGameHandler = (e) => {
             e.preventDefault();
@@ -356,9 +357,9 @@ export class GameStateRenderer {
                 }
             } else if (!player.out && moderatorType) {
                 killPlayerHandlers[player.id] = () => {
-                    if (confirm('KILL ' + player.name + '?')) {
+                    Confirmation('Kill \'' + player.name + '\'?', () => {
                         socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });
-                    }
+                    });
                 };
                 playerEl.querySelector('.kill-player-button').addEventListener('click', killPlayerHandlers[player.id]);
             }
@@ -371,9 +372,9 @@ export class GameStateRenderer {
                 }
             } else if (!player.revealed && moderatorType) {
                 revealRoleHandlers[player.id] = () => {
-                    if (confirm('REVEAL ' + player.name + '?')) {
+                    Confirmation('Reveal  \'' + player.name + '\'?', () => {
                         socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.REVEAL_PLAYER, accessCode, { personId: player.id });
-                    }
+                    });
                 };
                 playerEl.querySelector('.reveal-role-button').addEventListener('click', revealRoleHandlers[player.id]);
             }
@@ -398,13 +399,19 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
             container.innerText = member.name;
             transferModHandlers[member.id] = (e) => {
                 if (e.type === 'click' || e.code === 'Enter') {
-                    if (confirm('Transfer moderator powers to ' + member.name + '?')) {
+                    ModalManager.dispelModal('transfer-mod-modal', 'transfer-mod-modal-background');
+                    Confirmation('Transfer moderator powers to \'' + member.name + '\'?', () => {
                         const transferPrompt = document.getElementById('transfer-mod-prompt');
                         if (transferPrompt !== null) {
                             transferPrompt.innerHTML = '';
                         }
-                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.TRANSFER_MODERATOR, gameState.accessCode, { personId: member.id });
-                    }
+                        socket.emit(
+                            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                            globals.EVENT_IDS.TRANSFER_MODERATOR,
+                            gameState.accessCode,
+                            { personId: member.id }
+                        );
+                    });
                 }
             };
 
@@ -532,13 +539,13 @@ function createEndGamePromptComponent (socket, stateBucket) {
         div.innerHTML = HTMLFragments.END_GAME_PROMPT;
         div.querySelector('#end-game-button').addEventListener('click', (e) => {
             e.preventDefault();
-            if (confirm('End the game?')) {
+            Confirmation('End the game?', () => {
                 socket.emit(
                     globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                     globals.EVENT_IDS.END_GAME,
                     stateBucket.currentGameState.accessCode
                 );
-            }
+            });
         });
         document.getElementById('game-content').appendChild(div);
     }

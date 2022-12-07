@@ -63,8 +63,8 @@ export const HTMLFragments = {
         <p id='role-description'></p>
     </div>
     <div id='game-role-back'>
-        <h4>Double-tap here to show your role</h4>
-        <p>(Double-tap here again to hide)</p>
+        <h4>Double-click here to show your role</h4>
+        <p>(Double-click here again to hide)</p>
     </div>
     <div id='game-people-container'>
         <label id='players-alive-label'></label>
@@ -141,8 +141,8 @@ export const HTMLFragments = {
             <p id='role-description'></p>
         </div>
         <div id='game-role-back'>
-            <h4>Double-tap here to show your role</h4>
-            <p>(Double-tap here again to hide)</p>
+            <h4>Double-click here to show your role</h4>
+            <p>(Double-click here again to hide)</p>
         </div>
         <div id='game-people-container'>
             <label id='players-alive-label'></label>

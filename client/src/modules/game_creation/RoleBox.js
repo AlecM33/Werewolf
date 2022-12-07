@@ -3,6 +3,7 @@ import { globals } from '../../config/globals.js';
 import { defaultRoles } from '../../config/defaultRoles.js';
 import { toast } from '../front_end_components/Toast.js';
 import { ModalManager } from '../front_end_components/ModalManager.js';
+import { Confirmation } from '../front_end_components/Confirmation.js';
 
 export class RoleBox {
     constructor (container, deckManager) {
@@ -218,13 +219,13 @@ export class RoleBox {
             if (remove) {
                 const removeHandler = (e) => {
                     if (e.type === 'click' || e.code === 'Enter') {
-                        if (confirm("Delete the role '" + name + "'?")) {
+                        Confirmation("Delete the role '" + name + "'?", () => {
                             e.preventDefault();
                             this.removeFromCustomRoles(name);
                             if (this.category === 'custom') {
                                 this.displayCustomRoles(document.getElementById('role-select'));
                             }
-                        }
+                        });
                     }
                 };
                 role.querySelector('.role-remove').addEventListener('click', removeHandler);
@@ -234,8 +235,11 @@ export class RoleBox {
                 const infoHandler = (e) => {
                     if (e.type === 'click' || e.code === 'Enter') {
                         const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                        const nameEl = document.getElementById('custom-role-info-modal-name');
                         alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
                         alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+                        nameEl.classList.remove(globals.ALIGNMENT.GOOD);
+                        nameEl.classList.remove(globals.ALIGNMENT.EVIL);
                         e.preventDefault();
                         let role;
                         if (isCustom) {
@@ -243,7 +247,8 @@ export class RoleBox {
                         } else {
                             role = this.getDefaultRole(name);
                         }
-                        document.getElementById('custom-role-info-modal-name').innerText = name;
+                        nameEl.innerText = name;
+                        nameEl.classList.add(role.team);
                         alignmentEl.classList.add(role.team);
                         document.getElementById('custom-role-info-modal-description').innerText = role.description;
                         alignmentEl.innerText = role.team;

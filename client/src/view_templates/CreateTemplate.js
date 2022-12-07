@@ -35,7 +35,9 @@ const template =
     </div>
     <div tabindex="-1" id="custom-role-info-modal" class="modal">
         <h3 id="custom-role-info-modal-name"></h3>
+        <label for="custom-role-info-modal-alignment">alignment:</label>
         <div id="custom-role-info-modal-alignment"></div>
+        <label for="custom-role-info-modal-alignment">description:</label>
         <div id="custom-role-info-modal-description"></div>
         <div class="modal-button-container">
             <button id="close-custom-role-info-modal-button" class="cancel app-button">Close</button>

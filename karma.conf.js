@@ -8,7 +8,9 @@ module.exports = function(config) {
             { pattern: 'client/src/modules/*/*.js', type: 'module', included: true, served: true },
             { pattern: 'client/src/config/*.js', type: 'module', included: true, served: true },
             { pattern: 'client/src/model/*.js', type: 'module', included: true, served: true },
-            { pattern: 'client/src/view_templates/*.js', type: 'module', included: true, served: true }
+            { pattern: 'client/src/view_templates/*.js', type: 'module', included: true, served: true },
+            { pattern: 'core-js/stable', type: 'module', included: true, served: true },
+            { pattern: 'regenerator-runtime/runtime', type: 'module', included: true, served: true }
         ],
         reporters: ['progress'],
         port: 9876,

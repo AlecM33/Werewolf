@@ -134,6 +134,7 @@ export class DeckStateManager {
         document.getElementById('deck-list').appendChild(placeholder);
     };
 
+    // TODO: refactor
     updateDeckStatus = () => {
         document.getElementById('deck-count').innerText = this.getDeckSize() + ' Players';
         if (this.deck.length > 0) {
@@ -186,10 +187,14 @@ export class DeckStateManager {
                         const infoHandler = (e) => {
                             if (e.type === 'click' || e.code === 'Enter') {
                                 const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                                const nameEl = document.getElementById('custom-role-info-modal-name');
                                 alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
                                 alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+                                nameEl.classList.remove(globals.ALIGNMENT.GOOD);
+                                nameEl.classList.remove(globals.ALIGNMENT.EVIL);
                                 e.preventDefault();
-                                document.getElementById('custom-role-info-modal-name').innerText = sortedDeck[i].role;
+                                nameEl.innerText = sortedDeck[i].role;
+                                nameEl.classList.add(sortedDeck[i].team);
                                 alignmentEl.classList.add(sortedDeck[i].team);
                                 document.getElementById('custom-role-info-modal-description').innerText = sortedDeck[i].description;
                                 alignmentEl.innerText = sortedDeck[i].team;

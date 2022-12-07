@@ -307,7 +307,7 @@ button {
 }
 
 #how-to-use-container h1 {
-    color: #4b6bfa;
+    color: #d7d7d7;
     font-family: signika-negative, sans-serif;
     background-color: #1e1b26;
     width: fit-content;
@@ -359,7 +359,7 @@ input {
     color: #d7d7d7;
     display: flex;
     flex-direction: column;
-    margin: 1em auto 0 auto;
+    margin: 1em auto 2em auto;
     width: 90%;
     max-width: 64em;
     line-height: 1.5;
@@ -370,8 +370,37 @@ input {
     font-weight: bold;
 }
 
+#tutorial-links {text-align: left;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+#tutorial-links li {
+    font-size: 25px;
+    color: #768df0;
+    text-decoration: underline;
+}
+
+#tutorial-links li a {
+    color: #768df0;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: 'signika-negative', sans-serif;
+    font-size: 18px;
+    width: fit-content;
+}
+
+#tutorial-links li a:hover {
+    color: gray;
+}
+
 .tutorial-image-small {
     width: 30em !important;
+}
+
+.tutorial-image-small-portrait {
+    width: 20em !important;
 }
 
 #desktop-links > a:nth-child(1), #mobile-links a:nth-child(1) {

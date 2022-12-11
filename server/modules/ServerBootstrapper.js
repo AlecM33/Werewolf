@@ -7,6 +7,7 @@ const crypto = require('crypto');
 const SocketManager = require('./SocketManager.js');
 const GameManager = require('./GameManager.js');
 const { ENVIRONMENT } = require('../config/globals.js');
+const rateLimit = require('express-rate-limit').default;
 
 const ServerBootstrapper = {
 
@@ -93,22 +94,34 @@ const ServerBootstrapper = {
     },
 
     establishRouting: (app, express) => {
+
+        const standardRateLimit = rateLimit({
+            windowMs: 60000,
+            max: 100,
+            standardHeaders: true,
+            legacyHeaders: false
+        })
+
         /* api endpoints */
         const games = require('../api/GamesAPI');
         const admin = require('../api/AdminAPI');
         app.use('/api/games', games);
         app.use('/api/admin', admin);
 
+        if (process.env.NODE_ENV.trim() === 'production') {
+            app.use('/api/', standardRateLimit);
+        }
+
         /* serve all the app's pages */
-        app.use('/manifest.json', (req, res) => {
+        app.use('/manifest.json', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../manifest.json'));
         });
 
-        app.use('/favicon.ico', (req, res) => {
+        app.use('/favicon.ico', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../client/favicon_package/favicon.ico'));
         });
 
-        app.use('/apple-touch-icon.png', (req, res) => {
+        app.use('/apple-touch-icon.png', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../client/favicon_package/apple-touch-icon.png'));
         });
 

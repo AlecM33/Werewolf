@@ -6,22 +6,10 @@ const socketManager = new (require('../modules/SocketManager.js'))().getInstance
 const gameManager = new (require('../modules/GameManager.js'))().getInstance();
 const globals = require('../config/globals.js');
 const cors = require('cors');
-const rateLimit = require('express-rate-limit').default;
 
 const KEY = process.env.NODE_ENV.trim() === 'development'
     ? globals.MOCK_AUTH
     : process.env.ADMIN_KEY;
-
-const apiLimiter = rateLimit({
-    windowMs: 60000,
-    max: 50,
-    standardHeaders: true,
-    legacyHeaders: false
-});
-
-if (process.env.NODE_ENV.trim() === 'production') {
-    router.use(apiLimiter);
-}
 
 router.use(cors(globals.CORS));
 

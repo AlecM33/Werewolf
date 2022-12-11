@@ -94,13 +94,12 @@ const ServerBootstrapper = {
     },
 
     establishRouting: (app, express) => {
-
         const standardRateLimit = rateLimit({
             windowMs: 60000,
             max: 100,
             standardHeaders: true,
             legacyHeaders: false
-        })
+        });
 
         /* api endpoints */
         const games = require('../api/GamesAPI');

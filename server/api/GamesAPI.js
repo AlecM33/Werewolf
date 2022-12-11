@@ -11,7 +11,7 @@ const gameManager = new GameManager().getInstance();
 
 const gameCreationLimit = process.env.NODE_ENV.trim() === 'production'
     ? 20
-    : 1000
+    : 1000;
 
 const gameEndpointLimiter = rateLimit({
     windowMs: 600000,

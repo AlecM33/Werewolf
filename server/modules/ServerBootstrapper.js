@@ -6,7 +6,9 @@ const fs = require('fs');
 const crypto = require('crypto');
 const SocketManager = require('./SocketManager.js');
 const GameManager = require('./GameManager.js');
+const globals = require('../config/globals.js');
 const { ENVIRONMENT } = require('../config/globals.js');
+const rateLimit = require('express-rate-limit').default;
 
 const ServerBootstrapper = {
 
@@ -93,22 +95,33 @@ const ServerBootstrapper = {
     },
 
     establishRouting: (app, express) => {
-        /* api endpoints */
-        const games = require('../api/GamesAPI');
-        const admin = require('../api/AdminAPI');
-        app.use('/api/games', games);
-        app.use('/api/admin', admin);
+        const standardRateLimit = rateLimit({
+            windowMs: 60000,
+            max: 100,
+            standardHeaders: true,
+            legacyHeaders: false
+        });
 
-        /* serve all the app's pages */
-        app.use('/manifest.json', (req, res) => {
+        // API endpoints
+        app.use('/api/games', standardRateLimit, require('../api/GamesAPI'));
+        app.use('/api/admin', (req, res, next) => {
+            if (isAuthorized(req)) {
+                next();
+            } else {
+                res.status(401).send('You are not authorized to make this request.');
+            }
+        }, standardRateLimit, require('../api/AdminAPI'));
+
+        // miscellaneous assets
+        app.use('/manifest.json', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../manifest.json'));
         });
 
-        app.use('/favicon.ico', (req, res) => {
+        app.use('/favicon.ico', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../client/favicon_package/favicon.ico'));
         });
 
-        app.use('/apple-touch-icon.png', (req, res) => {
+        app.use('/apple-touch-icon.png', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../client/favicon_package/apple-touch-icon.png'));
         });
 
@@ -121,14 +134,28 @@ const ServerBootstrapper = {
         app.use('/images', express.static(path.join(__dirname, '../../client/src/images')));
         app.use('/styles', express.static(path.join(__dirname, '../../client/src/styles')));
         app.use('/webfonts', express.static(path.join(__dirname, '../../client/src/webfonts')));
-        app.use('/robots.txt', (req, res) => {
+        app.use('/robots.txt', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../client/robots.txt'));
         });
 
-        app.use(function (req, res) {
+        app.use(standardRateLimit, function (req, res) {
             res.sendFile(path.join(__dirname, '../../client/src/views/404.html'));
         });
     }
 };
+
+function isAuthorized (req) {
+    const KEY = process.env.NODE_ENV.trim() === 'development'
+        ? globals.MOCK_AUTH
+        : process.env.ADMIN_KEY;
+    const header = req.headers.authorization;
+    if (header) {
+        const token = header.split(/\s+/).pop() || '';
+        const decodedToken = Buffer.from(token, 'base64').toString();
+        return decodedToken.trim() === KEY?.trim();
+    }
+
+    return false;
+}
 
 module.exports = ServerBootstrapper;

@@ -9,16 +9,13 @@ const cors = require('cors');
 
 const gameManager = new GameManager().getInstance();
 
-const apiLimiter = rateLimit({
-    windowMs: 60000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false
-});
+const gameCreationLimit = process.env.NODE_ENV.trim() === 'production'
+    ? 20
+    : 1000;
 
-const gameEndpointLimiter = rateLimit({ // further limit the rate of game creation to 30 games per 10 minutes.
+const gameEndpointLimiter = rateLimit({
     windowMs: 600000,
-    max: 30,
+    max: gameCreationLimit,
     standardHeaders: true,
     legacyHeaders: false
 });
@@ -38,12 +35,7 @@ router.patch('/restart', (req, res, next) => {
     globals.CONTENT_TYPE_VALIDATOR(req, res, next);
 });
 
-if (process.env.NODE_ENV.trim() === 'production') {
-    router.use(apiLimiter);
-    router.use('/create', gameEndpointLimiter);
-}
-
-router.post('/create', function (req, res) {
+router.post('/create', gameEndpointLimiter, function (req, res) {
     logger.debug('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
     const gameCreationPromise = gameManager.createGame(req.body, false);
     gameCreationPromise.then((result) => {

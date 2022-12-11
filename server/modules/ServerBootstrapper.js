@@ -102,23 +102,17 @@ const ServerBootstrapper = {
             legacyHeaders: false
         });
 
-        /* api endpoints */
-        const games = require('../api/GamesAPI');
-        const admin = require('../api/AdminAPI');
-        app.use('/api/games', games);
-        app.use('/api/admin', admin);
-
-        app.use('/api/', standardRateLimit);
-
+        // API endpoints
+        app.use('/api/games', standardRateLimit, require('../api/GamesAPI'));
         app.use('/api/admin', (req, res, next) => {
             if (isAuthorized(req)) {
                 next();
             } else {
                 res.status(401).send('You are not authorized to make this request.');
             }
-        });
+        }, standardRateLimit, require('../api/AdminAPI'));
 
-        /* serve all the app's pages */
+        // miscellaneous assets
         app.use('/manifest.json', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../manifest.json'));
         });
@@ -144,13 +138,12 @@ const ServerBootstrapper = {
             res.sendFile(path.join(__dirname, '../../client/robots.txt'));
         });
 
-        app.use(function (req, res) {
+        app.use(standardRateLimit, function (req, res) {
             res.sendFile(path.join(__dirname, '../../client/src/views/404.html'));
         });
     }
 };
 
-/* validates Bearer Auth */
 function isAuthorized (req) {
     const KEY = process.env.NODE_ENV.trim() === 'development'
         ? globals.MOCK_AUTH
@@ -159,7 +152,7 @@ function isAuthorized (req) {
     if (header) {
         const token = header.split(/\s+/).pop() || '';
         const decodedToken = Buffer.from(token, 'base64').toString();
-        return decodedToken.trim() === KEY.trim();
+        return decodedToken.trim() === KEY?.trim();
     }
 
     return false;

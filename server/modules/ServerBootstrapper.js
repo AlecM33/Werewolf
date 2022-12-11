@@ -6,6 +6,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const SocketManager = require('./SocketManager.js');
 const GameManager = require('./GameManager.js');
+const globals = require('../config/globals.js');
 const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 
@@ -107,9 +108,15 @@ const ServerBootstrapper = {
         app.use('/api/games', games);
         app.use('/api/admin', admin);
 
-        if (process.env.NODE_ENV.trim() === 'production') {
-            app.use('/api/', standardRateLimit);
-        }
+        app.use('/api/', standardRateLimit);
+
+        app.use('/api/admin', (req, res, next) => {
+            if (isAuthorized(req)) {
+                next();
+            } else {
+                res.status(401).send('You are not authorized to make this request.');
+            }
+        });
 
         /* serve all the app's pages */
         app.use('/manifest.json', standardRateLimit, (req, res) => {
@@ -142,5 +149,20 @@ const ServerBootstrapper = {
         });
     }
 };
+
+/* validates Bearer Auth */
+function isAuthorized (req) {
+    const KEY = process.env.NODE_ENV.trim() === 'development'
+        ? globals.MOCK_AUTH
+        : process.env.ADMIN_KEY;
+    const header = req.headers.authorization;
+    if (header) {
+        const token = header.split(/\s+/).pop() || '';
+        const decodedToken = Buffer.from(token, 'base64').toString();
+        return decodedToken.trim() === KEY.trim();
+    }
+
+    return false;
+}
 
 module.exports = ServerBootstrapper;

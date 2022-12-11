@@ -140,7 +140,7 @@ const ServerBootstrapper = {
         app.use('/images', express.static(path.join(__dirname, '../../client/src/images')));
         app.use('/styles', express.static(path.join(__dirname, '../../client/src/styles')));
         app.use('/webfonts', express.static(path.join(__dirname, '../../client/src/webfonts')));
-        app.use('/robots.txt', (req, res) => {
+        app.use('/robots.txt', standardRateLimit, (req, res) => {
             res.sendFile(path.join(__dirname, '../../client/robots.txt'));
         });
 

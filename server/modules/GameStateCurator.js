@@ -66,6 +66,7 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                 moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
+                gameSize: game.gameSize,
                 people: game.people
                     .filter((person) => {
                         return person.assigned === true;
@@ -88,6 +89,7 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                 moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
+                gameSize: game.gameSize,
                 people: GameStateCurator.mapPeopleForModerator(game.people, client),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
@@ -100,6 +102,7 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                 moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
+                gameSize: game.gameSize,
                 people: game.people
                     .filter((person) => {
                         return person.assigned === true;
@@ -115,6 +118,7 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                 moderator: GameStateCurator.mapPerson(game.moderator),
                 client: client,
                 deck: game.deck,
+                gameSize: game.gameSize,
                 people: game.people
                     .filter((person) => {
                         return person.assigned === true;

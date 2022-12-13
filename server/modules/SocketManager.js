@@ -45,7 +45,7 @@ class SocketManager {
     };
 
     registerHandlers = (namespace, socket, gameManager) => {
-        socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args, ackFn) => {
+        socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args=null, ackFn=null) => {
             const game = gameManager.activeGameRunner.activeGames.get(accessCode);
             if (game) {
                 switch (eventId) {
@@ -63,6 +63,7 @@ class SocketManager {
                         break;
                     case EVENT_IDS.START_GAME:
                         gameManager.startGame(game, namespace);
+                        ackFn();
                         break;
                     case EVENT_IDS.PAUSE_TIMER:
                         gameManager.pauseTimer(game, this.logger);
@@ -91,6 +92,7 @@ class SocketManager {
                         break;
                     case EVENT_IDS.END_GAME:
                         gameManager.endGame(game);
+                        ackFn();
                         break;
                     default:
                         break;

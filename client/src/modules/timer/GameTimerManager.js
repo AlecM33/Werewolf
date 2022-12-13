@@ -99,7 +99,7 @@ export class GameTimerManager {
         timer.innerText = returnHumanReadableTime(0, true);
     }
 
-    attachTimerSocketListeners (socket, timerWorker, gameStateRenderer) {
+    attachTimerSocketListeners (socket, timerWorker) {
         if (!socket.hasListeners(globals.COMMANDS.PAUSE_TIMER)) {
             socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
                 this.pauseGameTimer(timerWorker, timeRemaining);

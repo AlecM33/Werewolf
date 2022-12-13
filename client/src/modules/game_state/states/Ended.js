@@ -3,7 +3,7 @@ import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { XHRUtility } from '../../utility/XHRUtility.js';
 import { UserUtility } from '../../utility/UserUtility.js';
 import { toast } from '../../front_end_components/Toast.js';
-import { Confirmation } from '../../front_end_components/Confirmation';
+import { Confirmation } from '../../front_end_components/Confirmation.js';
 
 export class Ended {
     constructor (containerId, stateBucket, socket) {

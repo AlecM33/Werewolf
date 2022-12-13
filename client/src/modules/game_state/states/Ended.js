@@ -3,6 +3,7 @@ import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { XHRUtility } from '../../utility/XHRUtility.js';
 import { UserUtility } from '../../utility/UserUtility.js';
 import { toast } from '../../front_end_components/Toast.js';
+import { Confirmation } from '../../front_end_components/Confirmation';
 
 export class Ended {
     constructor (containerId, stateBucket, socket) {
@@ -10,12 +11,7 @@ export class Ended {
         this.socket = socket;
         this.container = document.getElementById(containerId);
         this.container.innerHTML = HTMLFragments.END_OF_GAME_VIEW;
-        this.restartGameHandler = (e) => {
-            e.preventDefault();
-            const button = document.getElementById('restart-game');
-            button.removeEventListener('click', this.restartGameHandler);
-            button.classList.add('submitted');
-            button.innerText = 'Restarting...';
+        this.restartGameHandler = () => {
             XHRUtility.xhr(
                 '/api/games/' + this.stateBucket.currentGameState.accessCode + '/restart',
                 'PATCH',
@@ -31,10 +27,6 @@ export class Ended {
                     toast('Game restarted!', 'success', true, true, 'medium');
                 })
                 .catch((res) => {
-                    const button = document.getElementById('restart-game');
-                    button.innerText = 'Restart Game 🔄';
-                    button.classList.remove('submitted');
-                    button.addEventListener('click', this.restartGameHandler);
                     toast(res.content, 'error', true, true, 'medium');
                 });
         };
@@ -48,7 +40,11 @@ export class Ended {
             const restartGameContainer = document.createElement('div');
             restartGameContainer.innerHTML = HTMLFragments.RESTART_GAME_BUTTON;
             const button = restartGameContainer.querySelector('#restart-game');
-            button.addEventListener('click', this.restartGameHandler);
+            button.addEventListener('click', () => {
+                Confirmation('Restart the game, dealing everyone new roles?', () => {
+                    this.restartGameHandler();
+                });
+            });
             document.getElementById('end-of-game-buttons').prepend(restartGameContainer);
         }
         this.renderPlayersWithRoleInformation();

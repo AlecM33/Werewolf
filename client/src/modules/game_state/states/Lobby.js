@@ -9,41 +9,7 @@ export class Lobby {
         this.stateBucket = stateBucket;
         this.socket = socket;
         this.container = document.getElementById(containerId);
-        this.components = {
-            HTML:
-            `<div id='lobby-header'>
-                <div>
-                    <label for='game-link'>Share Link</label>
-                    <div tabindex='0' id='game-link'></div>
-                    <div id='game-code'></div>
-                </div>
-                <div>
-                    <canvas id="canvas"></canvas>
-                    <div id='game-parameters'>
-                        <div>
-                            <img alt='clock' src='/images/clock.svg'/>
-                            <div id='game-time'></div>
-                        </div>
-                        <div>
-                            <img alt='person' src='/images/person.svg'/>
-                            <div id='game-player-count'></div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
-                </div>
-            </div>
-            <div>
-                <div id='lobby-people-container'>
-                    <label for='lobby-players'>Other People</label>
-                    <div id='lobby-players'></div>
-                </div>
-                <div id='lobby-footer'>
-                    <div id='game-deck'></div>
-                </div>
-            </div>`
-        };
+        this.container.innerHTML = HTMLFragments.LOBBY;
 
         this.startGameHandler = (e) => {
             e.preventDefault();
@@ -59,8 +25,6 @@ export class Lobby {
                 );
             });
         };
-
-        this.container.innerHTML = this.components.HTML;
     }
 
     populateHeader () {

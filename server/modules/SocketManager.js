@@ -45,7 +45,7 @@ class SocketManager {
     };
 
     registerHandlers = (namespace, socket, gameManager) => {
-        socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args=null, ackFn=null) => {
+        socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args = null, ackFn = null) => {
             const game = gameManager.activeGameRunner.activeGames.get(accessCode);
             if (game) {
                 switch (eventId) {

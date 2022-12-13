@@ -18,7 +18,7 @@ class Game {
         this.deck = deck;
         this.gameSize = deck.reduce(
             (accumulator, currentValue) => accumulator + currentValue.quantity,
-            0,
+            0
         );
         this.hasTimer = hasTimer;
         this.hasDedicatedModerator = hasDedicatedModerator;

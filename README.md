@@ -88,8 +88,6 @@ files, are not bundled, and thus your changes will be picked up simply by refres
 
 **Note:** in the development environment, cookies are stored using sessionStorage (vs. localStorage in production). This makes it a lot easier to create/run test games, as you can join as different people in different tabs.
 
-Have a question that isn't covered here? Email me at <a href="mailto:play.werewolf.contact@gmail.com?Subject=Werewolf App" target="_top">play.werewolf.contact@gmail.com</a>
-
 ### CLI Options
 
 These options will be at the end of your run command following two dashes: `npm run start:dev -- [options]`.
@@ -123,6 +121,7 @@ Currently, the available operations are:
 curl --location --request GET "http://localhost:5000/api/admin/games/state"
 ```
 
+Have a question that isn't covered here? Email me at <a href="mailto:play.werewolf.contact@gmail.com?Subject=Werewolf App" target="_top">play.werewolf.contact@gmail.com</a>
 
 ## Testing
 

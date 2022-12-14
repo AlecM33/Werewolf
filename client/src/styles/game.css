@@ -589,6 +589,10 @@ canvas {
     border-radius: 3px;
 }
 
+.player-actions-buttons {
+    justify-content: flex-end;
+}
+
 .game-player-name {
     position: relative;
     min-width: 6em;
@@ -661,6 +665,10 @@ canvas {
 
 .killed, .killed .game-player-role {
     /*color: gray !important;*/
+}
+
+.game-player-role {
+    min-width: 7em;
 }
 
 .game-player.killed {

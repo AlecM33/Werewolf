@@ -108,8 +108,6 @@ example run command:
 
 The app exposes an admin API at `/api/admin`, e.g. `localhost:5000/api/admin`.
 
-#### Authorization
-
 The admin api doesn't require any authentication in the development environment (but does in prod).
 
 Currently, the available operations are:

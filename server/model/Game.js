@@ -16,6 +16,10 @@ class Game {
         this.moderator = moderator;
         this.people = people;
         this.deck = deck;
+        this.gameSize = deck.reduce(
+            (accumulator, currentValue) => accumulator + currentValue.quantity,
+            0
+        );
         this.hasTimer = hasTimer;
         this.hasDedicatedModerator = hasDedicatedModerator;
         this.originalModeratorId = originalModeratorId;

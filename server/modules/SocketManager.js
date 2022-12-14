@@ -85,7 +85,7 @@ class SocketManager {
                         if (!person) {
                             person = game.spectators.find((spectator) => spectator.id === args.personId);
                         }
-                        gameManager.transferModeratorPowers(game, person, this.logger);
+                        gameManager.transferModeratorPowers(game, person, namespace, this.logger);
                         break;
                     case EVENT_IDS.CHANGE_NAME:
                         gameManager.changeName(game, args.data, ackFn);

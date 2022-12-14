@@ -3,14 +3,28 @@
 </p>
 
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
+[![CodeQL](https://github.com/AlecM33/Werewolf/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/codeql-analysis.yml)
 
 Find the latest production deployment at: https://play-werewolf.app/
 
+- [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Contributing and Developers' Guide](#contributing-and-developers-guide)
 - [Testing](#testing)
 - [Code Formatting](#code-formatting)
+
+<br><br>
+<p align="center">
+  <kbd>
+    <img width="214" src="https://user-images.githubusercontent.com/24642328/188334421-e6a83543-41bb-4495-8206-aa0ce11217b6.png"/>
+  </kbd>
+  <kbd>
+    <img width="225" src="./client/src/images/screenshots/localhost_5000_game_NJ36(Samsung Galaxy S8+).png"/>
+  </kbd>
+</p>
+
+## Overview
 
 An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
@@ -22,16 +36,6 @@ The app prioritizes responsiveness. A key scenario would be when a group is hang
 
 Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
 2020's quarantine. The app is free to use, anonymous, and fully open-source under the MIT license. After a long hiatus I've rewritten a lot of the code. This was (and still is) fundamentally a learning project, so feedback or assistance is appreciated.
-
-<br><br>
-<p align="center">
-  <kbd>
-    <img width="225" src="https://user-images.githubusercontent.com/24642328/188334421-e6a83543-41bb-4495-8206-aa0ce11217b6.png"/>
-  </kbd>
-  <kbd>
-    <img width="225" src="./client/src/images/screenshots/localhost_5000_game_NJ36(Samsung Galaxy S8+).png"/>
-  </kbd>
-</p>
 
 ## Features
 
@@ -72,14 +76,14 @@ commands defined in `package.json`.
 
 If you simply want to run the app on the default port of **5000**:
 
-`npm run start:dev` (if developing on a linux machine)<br>
-`npm run start:dev:windows` (if developing on a windows machine)
+`npm start:dev` (if developing on a linux machine)<br>
+`npm start:dev:windows` (if developing on a windows machine)
 
 This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
 to listen for changes to **server-side code** (Node.js modules) and automatically restart the server. If you do not want 
-this, run instead `npm run start:dev:no-hot-reload` or `npm run start:dev:windows:no-hot-reload`. 
+this, run instead `npm start:dev:no-hot-reload` or `npm start:dev:windows:no-hot-reload`. 
 
-If you are making changes to client-side javascript, in a separate terminal, execute `npm run build:dev`. This uses <a href="https://webpack.js.org/">
+If you are making changes to client-side javascript, in a separate terminal, execute `npm build:dev`. This uses <a href="https://webpack.js.org/">
 Webpack</a> to bundle javascript from the `client/src` directory and place it in the `client/dist` directory, which is ignored by Git.
 This command uses the `--watch` flag, which means the process will continue
 to run in this terminal, watching for changes within the `client/src` directory and re-bundling automatically. You 
@@ -127,7 +131,7 @@ Have a question that isn't covered here? Email me at <a href="mailto:play.werewo
 
 Tests are written using <a href="https://jasmine.github.io/">Jasmine</a>. End-to-end tests are run using <a href='https://karma-runner.github.io/latest/index.html'>Karma</a>.
 
-Execute all tests by running `npm test`. Execute unit tests by running `npm run test:unit`. Execute end-to-end tests by running `npm run test:e2e`.
+Execute all tests by running `npm test`. Execute unit tests by running `npm test:unit`. Execute end-to-end tests by running `npm test:e2e`.
 
 Unit tests map 1:1 to the application directory structure - i.e. unit tests for 
 `server/modules/GameManager` are found in `spec/unit/server/modules/GameManager_Spec.js`

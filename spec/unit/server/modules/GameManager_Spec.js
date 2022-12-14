@@ -16,19 +16,22 @@ describe('GameManager', () => {
         spyOn(logger, 'error');
 
         const inObj = { emit: () => {} };
-        namespace = { in: () => { return inObj; } };
+        namespace = { in: () => { return inObj; }, to: () => { return inObj; } };
         gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
         gameManager.setGameSocketNamespace(namespace);
     });
 
     beforeEach(() => {
+        spyOn(namespace, 'to').and.callThrough();
     });
 
     describe('#transferModerator', () => {
         it('Should transfer successfully from a dedicated moderator to a killed player', () => {
             const personToTransferTo = new Person('1', '123', 'Joe', USER_TYPES.KILLED_PLAYER);
+            personToTransferTo.socketId = 'socket1';
             personToTransferTo.out = true;
             const moderator = new Person('3', '789', 'Jack', USER_TYPES.MODERATOR);
+            moderator.socketId = 'socket2';
             const game = new Game(
                 'abc',
                 globals.STATUS.IN_PROGRESS,
@@ -40,16 +43,20 @@ describe('GameManager', () => {
                 moderator.id,
                 new Date().toJSON()
             );
-            gameManager.transferModeratorPowers(game, personToTransferTo, logger);
+            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
             expect(moderator.userType).toEqual(USER_TYPES.SPECTATOR);
+            expect(namespace.to).toHaveBeenCalledWith(personToTransferTo.socketId);
+            expect(namespace.to).toHaveBeenCalledWith(game.moderator.socketId);
         });
 
         it('Should transfer successfully from a dedicated moderator to a spectator', () => {
             const personToTransferTo = new Person('1', '123', 'Joe', USER_TYPES.SPECTATOR);
+            personToTransferTo.socketId = 'socket1';
             const moderator = new Person('3', '789', 'Jack', USER_TYPES.MODERATOR);
+            moderator.socketId = 'socket2';
             const game = new Game(
                 'abc',
                 globals.STATUS.IN_PROGRESS,
@@ -62,17 +69,21 @@ describe('GameManager', () => {
                 new Date().toJSON()
             );
             game.spectators.push(personToTransferTo);
-            gameManager.transferModeratorPowers(game, personToTransferTo, logger);
+            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
             expect(moderator.userType).toEqual(USER_TYPES.SPECTATOR);
+            expect(namespace.to).toHaveBeenCalledWith(personToTransferTo.socketId);
+            expect(namespace.to).toHaveBeenCalledWith(game.moderator.socketId);
         });
 
         it('Should transfer successfully from a temporary moderator to a killed player', () => {
             const personToTransferTo = new Person('1', '123', 'Joe', USER_TYPES.KILLED_PLAYER);
             personToTransferTo.out = true;
+            personToTransferTo.socketId = 'socket1';
             const tempMod = new Person('3', '789', 'Jack', USER_TYPES.TEMPORARY_MODERATOR);
+            tempMod.socketId = 'socket2';
             const game = new Game(
                 'abc',
                 globals.STATUS.IN_PROGRESS,
@@ -84,15 +95,18 @@ describe('GameManager', () => {
                 tempMod.id,
                 new Date().toJSON()
             );
-            gameManager.transferModeratorPowers(game, personToTransferTo, logger);
+            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
             expect(tempMod.userType).toEqual(USER_TYPES.PLAYER);
+            expect(namespace.to).toHaveBeenCalledWith(personToTransferTo.socketId);
+            expect(namespace.to).toHaveBeenCalledWith(game.moderator.socketId);
         });
 
         it('Should make the temporary moderator a dedicated moderator when they take themselves out of the game', () => {
             const tempMod = new Person('3', '789', 'Jack', USER_TYPES.TEMPORARY_MODERATOR);
+            tempMod.socketId = 'socket1';
             const personToTransferTo = tempMod;
             tempMod.out = true;
             const game = new Game(
@@ -106,11 +120,12 @@ describe('GameManager', () => {
                 tempMod.id,
                 new Date().toJSON()
             );
-            gameManager.transferModeratorPowers(game, personToTransferTo, logger);
+            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
             expect(tempMod.userType).toEqual(USER_TYPES.MODERATOR);
+            expect(namespace.to).toHaveBeenCalledOnceWith(personToTransferTo.socketId);
         });
     });
 

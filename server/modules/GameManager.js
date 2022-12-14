@@ -175,12 +175,14 @@ class GameManager {
             : accessCode;
     };
 
-    transferModeratorPowers = (game, person, logger) => {
+    transferModeratorPowers = (game, person, namespace, logger) => {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
             logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
             if (game.moderator === person) {
                 person.userType = globals.USER_TYPES.MODERATOR;
+                this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
             } else {
+                const oldModerator = game.moderator;
                 if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                     game.moderator.userType = globals.USER_TYPES.PLAYER;
                 } else if (game.moderator.gameRole) { // the current moderator was at one point a dealt-in player.
@@ -196,9 +198,9 @@ class GameManager {
                 }
                 person.userType = globals.USER_TYPES.MODERATOR;
                 game.moderator = person;
+                this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
+                this.namespace.to(oldModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
             }
-
-            this.namespace.in(game.accessCode).emit(globals.EVENTS.SYNC_GAME_STATE);
         }
     };
 
@@ -212,7 +214,7 @@ class GameManager {
             namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
             // temporary moderators will transfer their powers automatically to the first person they kill.
             if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                this.transferModeratorPowers(game, person, logger);
+                this.transferModeratorPowers(game, person, namespace, logger);
             }
         }
     };

@@ -110,7 +110,7 @@ The app exposes an admin API at `/api/admin`, e.g. `localhost:5000/api/admin`.
 
 #### Authorization
 
-The admin api requires Bearer authentication. Locally, the base-64 decoded token is simply `mock_auth`, so for local calls to the admin API, provide the Authorization header with the encoded version of this token: `Authorization: Bearer bW9ja19hdXRoCg==`
+The admin api doesn't require any authentication in the development environment (but does in prod).
 
 Currently, the available operations are:
 
@@ -120,7 +120,7 @@ Currently, the available operations are:
 
 ##### Example cURL
 ```
-curl -XGET -H 'Authorization: Bearer bW9ja19hdXRoCg==' 'http://localhost:5000/api/admin/games/state'
+curl --location --request GET "http://localhost:5000/api/admin/games/state"
 ```
 
 

@@ -77,7 +77,7 @@ describe('game page', () => {
         });
     });
 
-    describe('in-progress game', () => {
+    describe('in-progress game - player view', () => {
         let mockSocket;
 
         beforeEach(async () => {
@@ -138,6 +138,159 @@ describe('game page', () => {
 
         it('should NOT display the ability to play/pause the timer when the client is NOT a moderator', () => {
             expect(document.getElementById('play-pause')).toBeNull();
+        });
+
+        afterAll(() => {
+            document.body.innerHTML = '';
+        });
+    });
+
+    describe('in-progress game - moderator view', () => {
+        let mockSocket;
+
+        beforeEach(async () => {
+            document.body.innerHTML = '';
+            mockSocket = {
+                eventHandlers: {},
+                on: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
+                emit: function (eventName, ...args) {
+                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                        case globals.EVENT_IDS.FETCH_GAME_STATE:
+                            args[args.length - 1](deepCopy(mockGames.moderatorGame)); // copy the game object to prevent leaking of state between specs
+                            break;
+                        case globals.EVENT_IDS.END_GAME:
+                            args[args.length - 1]();
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                hasListeners: function (listener) {
+                    return false;
+                }
+            };
+            await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
+            mockSocket.eventHandlers.connect();
+            mockSocket.eventHandlers.getTimeRemaining(120000, true);
+            spyOn(mockSocket, 'emit');
+        });
+
+        it('should display the button to play/pause the timer', () => {
+            expect(document.getElementById('play-pause')).not.toBeNull();
+        });
+
+        it('should intially have the play button displayed', () => {
+            expect(document.getElementById('play-pause').firstElementChild.getAttribute('src')).toEqual('../images/play-button.svg');
+        });
+
+        it('should display players by their alignment', () => {
+            expect(document.querySelector('.evil-players')).not.toBeNull();
+            expect(document.querySelector('.good-players')).not.toBeNull();
+            expect(document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+                .querySelector('.game-player-role').innerText).toEqual('Werewolf');
+        });
+
+        it('should display the mod transfer button', () => {
+            expect(document.getElementById('mod-transfer-button')).not.toBeNull();
+        });
+
+        it('should display the mod transfer modal, with the single spectator available for selection', () => {
+            document.getElementById('mod-transfer-button').click();
+            expect(document.querySelector('div[data-pointer="MGGVR8KQ7V7HGN3QBLJ5339ZL"].potential-moderator')
+                .innerText).toEqual('Matt');
+            document.getElementById('close-mod-transfer-modal-button').click();
+        });
+
+        it('should emit the appropriate socket event when killing a player, and indicate the result on the UI', () => {
+            document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+                .querySelector('.kill-player-button').click();
+            document.getElementById('confirmation-yes-button').click();
+            expect(mockSocket.emit).toHaveBeenCalledWith(
+                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                globals.EVENT_IDS.KILL_PLAYER,
+                mockGames.moderatorGame.accessCode,
+                { personId: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ' }
+            );
+            mockSocket.eventHandlers.killPlayer('FCVSGJFYWLDL5S3Y8B74ZVZLZ');
+            expect(document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"].game-player.killed')
+            ).not.toBeNull();
+        });
+
+        it('should emit the appropriate socket event when revealing a player, and indicate the result on the UI', () => {
+            document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+                .querySelector('.reveal-role-button').click();
+            document.getElementById('confirmation-yes-button').click();
+            expect(mockSocket.emit).toHaveBeenCalledWith(
+                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                globals.EVENT_IDS.REVEAL_PLAYER,
+                mockGames.moderatorGame.accessCode,
+                { personId: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ' }
+            );
+            mockSocket.eventHandlers.revealPlayer({ id: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ', gameRole: 'Werewolf', alignment: 'evil' });
+            expect(document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+                .querySelector('.reveal-role-button')).toBeNull();
+        });
+
+        it('should emit the event to end the game, and display the result in the UI', () => {
+            document.getElementById('end-game-button').click();
+            document.getElementById('confirmation-yes-button').click();
+            expect(mockSocket.emit).toHaveBeenCalled();
+            mockSocket.eventHandlers.endGame([
+                {
+                    name: 'Greg',
+                    id: 'HVB3SK3XPGNSP34W2GVD5G3SP',
+                    userType: 'player',
+                    gameRole: 'Seer',
+                    gameRoleDescription: 'Each night, learn if a chosen person is a Werewolf.',
+                    alignment: 'good',
+                    out: false,
+                    revealed: true
+                },
+                {
+                    name: 'Lys',
+                    id: 'XJNHYX85HCKYDQLKYN584CRKK',
+                    userType: 'player',
+                    gameRole: 'Sorceress',
+                    gameRoleDescription: 'Each night, learn if a chosen person is the Seer.',
+                    alignment: 'evil',
+                    out: false,
+                    revealed: true
+                },
+                {
+                    name: 'Colette',
+                    id: 'MLTP5M76K6NN83VQBDTNC6ZP5',
+                    userType: 'player',
+                    gameRole: 'Parity Hunter',
+                    gameRoleDescription: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
+                    alignment: 'good',
+                    out: false,
+                    revealed: true
+                },
+                {
+                    name: 'Hannah',
+                    id: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ',
+                    userType: 'killed',
+                    gameRole: 'Werewolf',
+                    gameRoleDescription: "During the night, choose a villager to kill. Don't get killed.",
+                    alignment: 'evil',
+                    out: true,
+                    revealed: true
+                },
+                {
+                    name: 'Andrea',
+                    id: 'VWLJ298FVTZR22R4TNCMRTB5B',
+                    userType: 'player',
+                    gameRole: 'Villager',
+                    gameRoleDescription: 'During the day, find the wolves and kill them.',
+                    alignment: 'good',
+                    out: false,
+                    revealed: true
+                }
+            ]);
+            expect(document.getElementById('end-of-game-header')).not.toBeNull();
+            expect(document.getElementById('restart-game')).not.toBeNull();
         });
 
         afterAll(() => {

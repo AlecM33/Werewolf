@@ -145,14 +145,15 @@ const ServerBootstrapper = {
 };
 
 function isAuthorized (req) {
-    const KEY = process.env.NODE_ENV.trim() === 'development'
-        ? globals.MOCK_AUTH
-        : process.env.ADMIN_KEY;
+    if (process.env.NODE_ENV.trim() === 'development') {
+        return true;
+    }
+
     const header = req.headers.authorization;
     if (header) {
         const token = header.split(/\s+/).pop() || '';
         const decodedToken = Buffer.from(token, 'base64').toString();
-        return decodedToken.trim() === KEY?.trim();
+        return decodedToken.trim() === process.env.ADMIN_KEY?.trim();
     }
 
     return false;

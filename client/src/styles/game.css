@@ -589,7 +589,7 @@ canvas {
     border-radius: 3px;
 }
 
-.player-actions-buttons {
+.player-action-buttons {
     justify-content: flex-end;
 }
 

@@ -93,7 +93,9 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                 people: GameStateCurator.mapPeopleForModerator(game.people, client),
                 timerParams: game.timerParams,
                 isFull: game.isFull,
-                spectators: game.spectators
+                spectators: game.spectators.map((filteredPerson) =>
+                    GameStateCurator.mapPerson(filteredPerson)
+                )
             };
         case globals.USER_TYPES.TEMPORARY_MODERATOR:
             return {

@@ -6,7 +6,6 @@ const fs = require('fs');
 const crypto = require('crypto');
 const SocketManager = require('./SocketManager.js');
 const GameManager = require('./GameManager.js');
-const globals = require('../config/globals.js');
 const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 
@@ -145,14 +144,15 @@ const ServerBootstrapper = {
 };
 
 function isAuthorized (req) {
-    const KEY = process.env.NODE_ENV.trim() === 'development'
-        ? globals.MOCK_AUTH
-        : process.env.ADMIN_KEY;
+    if (process.env.NODE_ENV.trim() === 'development') {
+        return true;
+    }
+
     const header = req.headers.authorization;
     if (header) {
         const token = header.split(/\s+/).pop() || '';
         const decodedToken = Buffer.from(token, 'base64').toString();
-        return decodedToken.trim() === KEY?.trim();
+        return decodedToken.trim() === process.env.ADMIN_KEY?.trim();
     }
 
     return false;

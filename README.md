@@ -58,8 +58,7 @@ This is a Node.js application. It is written purely using JavaScript/HTML/CSS, w
 <a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It runs as a containerized application
 via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. There is no data persisted in any database. 
 
-Currently there is one container instance, which is sufficient scaling at this time. In the event I need to scale to multiple containers, I will likely
-integrate with a message queue like <a href='https://redis.io/'>Redis</a>.
+In the event I need more scaling, I will likely integrate with a datastore like <a href='https://redis.io/'>Redis</a>.
 ## Contributing and Developers' Guide
 
 ### Running Locally

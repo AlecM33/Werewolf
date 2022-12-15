@@ -36,14 +36,16 @@ export class GameCreationStepManager {
             2: {
                 title: 'Create your deck of cards:',
                 forwardHandler: () => {
-                    if (this.deckManager.getDeckSize() >= 3 && this.deckManager.getDeckSize() <= 50) {
+                    if (this.deckManager.getDeckSize() > 50) {
+                        toast('Your deck is too large. The max is 50 cards.', 'error', true);
+                    } else if (this.deckManager.getDeckSize() < 1) {
+                        toast('You must add at least one card', 'error', true);
+                    } else {
                         this.currentGame.deck = this.deckManager.deck.filter((card) => card.quantity > 0);
                         cancelCurrentToast();
                         this.removeStepElementsFromDOM(this.step);
                         this.incrementStep();
                         this.renderStep('creation-step-container', this.step);
-                    } else {
-                        toast('You must have a deck for between 3 and 50 players', 'error', true);
                     }
                 },
                 backHandler: this.defaultBackHandler

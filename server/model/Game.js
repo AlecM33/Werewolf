@@ -25,7 +25,7 @@ class Game {
         this.originalModeratorId = originalModeratorId;
         this.createTime = createTime;
         this.timerParams = timerParams;
-        this.isFull = false;
+        this.isFull = this.gameSize === 1 && !this.hasDedicatedModerator;
         this.timeRemaining = null;
         this.spectators = [];
     }

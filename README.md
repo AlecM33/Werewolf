@@ -76,12 +76,12 @@ commands defined in `package.json`.
 
 If you simply want to run the app on the default port of **5000**:
 
-`npm start:dev` (if developing on a linux machine)<br>
-`npm start:dev:windows` (if developing on a windows machine)
+`npm run start:dev` (if developing on a linux machine)<br>
+`npm run start:dev:windows` (if developing on a windows machine)
 
 This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
 to listen for changes to **server-side code** (Node.js modules) and automatically restart the server. If you do not want 
-this, run instead `npm start:dev:no-hot-reload` or `npm start:dev:windows:no-hot-reload`. 
+this, run instead `npm run start:dev:no-hot-reload` or `npm run start:dev:windows:no-hot-reload`. 
 
 If you are making changes to client-side javascript, in a separate terminal, execute `npm build:dev`. This uses <a href="https://webpack.js.org/">
 Webpack</a> to bundle javascript from the `client/src` directory and place it in the `client/dist` directory, which is ignored by Git.
@@ -131,7 +131,7 @@ Have a question that isn't covered here? Email me at <a href="mailto:play.werewo
 
 Tests are written using <a href="https://jasmine.github.io/">Jasmine</a>. End-to-end tests are run using <a href='https://karma-runner.github.io/latest/index.html'>Karma</a>.
 
-Execute all tests by running `npm test`. Execute unit tests by running `npm test:unit`. Execute end-to-end tests by running `npm test:e2e`.
+Execute all tests by running `npm run test`. Execute unit tests by running `npm run test:unit`. Execute end-to-end tests by running `npm run test:e2e`.
 
 Unit tests map 1:1 to the application directory structure - i.e. unit tests for 
 `server/modules/GameManager` are found in `spec/unit/server/modules/GameManager_Spec.js`

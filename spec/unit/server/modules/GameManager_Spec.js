@@ -9,7 +9,7 @@ const GameStateCurator = require('../../../../server/modules/GameStateCurator');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {
-    let gameManager, namespace;
+    let gameManager, namespace, socket;
 
     beforeAll(() => {
         spyOn(logger, 'debug');
@@ -17,12 +17,14 @@ describe('GameManager', () => {
 
         const inObj = { emit: () => {} };
         namespace = { in: () => { return inObj; }, to: () => { return inObj; } };
+        socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
         gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
         gameManager.setGameSocketNamespace(namespace);
     });
 
     beforeEach(() => {
         spyOn(namespace, 'to').and.callThrough();
+        spyOn(socket, 'to').and.callThrough();
     });
 
     describe('#transferModerator', () => {
@@ -43,7 +45,7 @@ describe('GameManager', () => {
                 moderator.id,
                 new Date().toJSON()
             );
-            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
+            gameManager.transferModeratorPowers(socket, game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
@@ -69,7 +71,7 @@ describe('GameManager', () => {
                 new Date().toJSON()
             );
             game.spectators.push(personToTransferTo);
-            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
+            gameManager.transferModeratorPowers(socket, game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
@@ -95,7 +97,7 @@ describe('GameManager', () => {
                 tempMod.id,
                 new Date().toJSON()
             );
-            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
+            gameManager.transferModeratorPowers(socket, game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
@@ -120,12 +122,13 @@ describe('GameManager', () => {
                 tempMod.id,
                 new Date().toJSON()
             );
-            gameManager.transferModeratorPowers(game, personToTransferTo, namespace, logger);
+            gameManager.transferModeratorPowers(socket, game, personToTransferTo, namespace, logger);
 
             expect(game.moderator).toEqual(personToTransferTo);
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
             expect(tempMod.userType).toEqual(USER_TYPES.MODERATOR);
             expect(namespace.to).toHaveBeenCalledOnceWith(personToTransferTo.socketId);
+            expect(socket.to).toHaveBeenCalledWith(game.accessCode);
         });
     });
 
@@ -146,7 +149,7 @@ describe('GameManager', () => {
                 mod.id,
                 new Date().toJSON()
             );
-            gameManager.killPlayer(game, player, namespace, logger);
+            gameManager.killPlayer(socket, game, player, namespace, logger);
 
             expect(player.out).toEqual(true);
             expect(player.userType).toEqual(USER_TYPES.KILLED_PLAYER);
@@ -169,11 +172,11 @@ describe('GameManager', () => {
                 tempMod.id,
                 new Date().toJSON()
             );
-            gameManager.killPlayer(game, tempMod, namespace, logger);
+            gameManager.killPlayer(socket, game, tempMod, namespace, logger);
 
             expect(tempMod.out).toEqual(true);
             expect(tempMod.userType).toEqual(USER_TYPES.TEMPORARY_MODERATOR);
-            expect(namespace.in().emit).toHaveBeenCalled();
+            expect(namespace.in().emit).not.toHaveBeenCalled();
             expect(gameManager.transferModeratorPowers).toHaveBeenCalled();
         });
     });

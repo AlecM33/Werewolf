@@ -75,7 +75,7 @@ class SocketManager {
                         gameManager.getTimeRemaining(game, socket);
                         break;
                     case EVENT_IDS.KILL_PLAYER:
-                        gameManager.killPlayer(game, game.people.find((person) => person.id === args.personId), namespace, this.logger);
+                        gameManager.killPlayer(socket, game, game.people.find((person) => person.id === args.personId), namespace, this.logger);
                         break;
                     case EVENT_IDS.REVEAL_PLAYER:
                         gameManager.revealPlayer(game, args.personId);
@@ -85,7 +85,7 @@ class SocketManager {
                         if (!person) {
                             person = game.spectators.find((spectator) => spectator.id === args.personId);
                         }
-                        gameManager.transferModeratorPowers(game, person, namespace, this.logger);
+                        gameManager.transferModeratorPowers(socket, game, person, namespace, this.logger);
                         break;
                     case EVENT_IDS.CHANGE_NAME:
                         gameManager.changeName(game, args.data, ackFn);

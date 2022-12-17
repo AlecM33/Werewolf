@@ -382,7 +382,7 @@ h1 {
 #role-description {
     overflow: auto;
     position: absolute;
-    bottom: 8%;
+    bottom: 6%;
     left: 50%;
     transform: translate(-50%, 0);
     font-size: 15px;
@@ -642,6 +642,7 @@ canvas {
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
     margin: 5px 0 5px 25px;
     width: 65px;
+    height: 25px;
 }
 
 #game-link:hover {
@@ -785,6 +786,14 @@ canvas {
         font-size: 18px;
     }
 
+    #game-people-container {
+        padding: 5px;
+    }
+
+    #players-alive-label {
+        font-size: 20px;
+    }
+
     #client-name {
         font-size: 20px;
     }
@@ -810,8 +819,8 @@ canvas {
     /*    padding: 5px;*/
     /*}*/
 
-    .game-player-name {
-        font-size: 16px;
+    .game-player-name, .game-player-role {
+        font-size: 14px;
     }
 
     #game-timer {

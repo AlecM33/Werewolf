@@ -642,7 +642,7 @@ canvas {
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
     margin: 5px 0 5px 25px;
     width: 65px;
-    height: 2px;
+    height: 25px;
 }
 
 #game-link:hover {

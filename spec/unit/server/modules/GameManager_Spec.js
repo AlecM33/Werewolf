@@ -24,6 +24,7 @@ describe('GameManager', () => {
 
     beforeEach(() => {
         spyOn(namespace, 'to').and.callThrough();
+        spyOn(socket, 'to').and.callThrough();
     });
 
     describe('#transferModerator', () => {
@@ -127,6 +128,7 @@ describe('GameManager', () => {
             expect(personToTransferTo.userType).toEqual(USER_TYPES.MODERATOR);
             expect(tempMod.userType).toEqual(USER_TYPES.MODERATOR);
             expect(namespace.to).toHaveBeenCalledOnceWith(personToTransferTo.socketId);
+            expect(socket.to).toHaveBeenCalledWith(game.accessCode);
         });
     });
 

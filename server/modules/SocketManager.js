@@ -75,7 +75,7 @@ class SocketManager {
                         gameManager.getTimeRemaining(game, socket);
                         break;
                     case EVENT_IDS.KILL_PLAYER:
-                        gameManager.killPlayer(game, game.people.find((person) => person.id === args.personId), namespace, this.logger);
+                        gameManager.killPlayer(socket, game, game.people.find((person) => person.id === args.personId), namespace, this.logger);
                         break;
                     case EVENT_IDS.REVEAL_PLAYER:
                         gameManager.revealPlayer(game, args.personId);

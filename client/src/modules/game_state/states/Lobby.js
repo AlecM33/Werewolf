@@ -76,7 +76,7 @@ export class Lobby {
 
     setSocketHandlers () {
         this.socket.on(globals.EVENT_IDS.PLAYER_JOINED, (player, gameIsFull) => {
-            toast(player.name + ' joined!', 'success', false, true, 'short');
+            toast(player.name + ' joined!', 'success', true, true, 'short');
             this.stateBucket.currentGameState.people.push(player);
             this.stateBucket.currentGameState.isFull = gameIsFull;
             this.populatePlayers();

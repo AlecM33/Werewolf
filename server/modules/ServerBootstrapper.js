@@ -6,6 +6,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const SocketManager = require('./SocketManager.js');
 const GameManager = require('./GameManager.js');
+const ActiveGameRunner = require("./ActiveGameRunner.js");
 const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 
@@ -13,10 +14,11 @@ const ServerBootstrapper = {
 
     singletons: (logger) => {
         return {
-            socketManager: new SocketManager(logger).getInstance(),
+            activeGameRunner: new ActiveGameRunner(logger),
+            socketManager: new SocketManager(logger, ActiveGameRunner.instance),
             gameManager: process.env.NODE_ENV.trim() === 'development'
-                ? new GameManager(logger, ENVIRONMENT.LOCAL).getInstance()
-                : new GameManager(logger, ENVIRONMENT.PRODUCTION).getInstance()
+                ? new GameManager(logger, ENVIRONMENT.LOCAL, ActiveGameRunner.instance)
+                : new GameManager(logger, ENVIRONMENT.PRODUCTION, ActiveGameRunner.instance)
         };
     },
 

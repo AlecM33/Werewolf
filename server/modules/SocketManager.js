@@ -3,9 +3,15 @@ const EVENT_IDS = globals.EVENT_IDS;
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 class SocketManager {
-    constructor (logger) {
+    constructor (logger, activeGameRunner) {
+        if (SocketManager.instance) {
+            throw new Error('The server attempted to instantiate more than one SocketManager.');
+        }
+        logger.info('CREATING SINGLETON SOCKET MANAGER');
         this.logger = logger;
         this.io = null;
+        this.activeGameRunner = activeGameRunner;
+        SocketManager.instance = this;
     }
 
     broadcast = (message) => {
@@ -122,17 +128,4 @@ function registerRateLimiter (server, logger) {
     });
 }
 
-class Singleton {
-    constructor (logger) {
-        if (!Singleton.instance) {
-            logger.info('CREATING SINGLETON SOCKET MANAGER');
-            Singleton.instance = new SocketManager(logger);
-        }
-    }
-
-    getInstance () {
-        return Singleton.instance;
-    }
-}
-
-module.exports = Singleton;
+module.exports = SocketManager;

@@ -5,7 +5,8 @@ const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
 const Person = require('../../../../server/model/Person');
 const GameManager = require('../../../../server/modules/GameManager.js');
-const GameStateCurator = require('../../../../server/modules/GameStateCurator');
+const GameStateCurator = require('../../../../server/modules/GameStateCurator.js');
+const ActiveGameRunner = require("../../../../server/modules/ActiveGameRunner.js");
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {
@@ -18,7 +19,7 @@ describe('GameManager', () => {
         const inObj = { emit: () => {} };
         namespace = { in: () => { return inObj; }, to: () => { return inObj; } };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
-        gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION).getInstance();
+        gameManager = new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, new ActiveGameRunner(logger));
         gameManager.setGameSocketNamespace(namespace);
     });
 

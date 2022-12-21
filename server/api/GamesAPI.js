@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit').default;
 const globals = require('../config/globals.js');
 const cors = require('cors');
 
-const gameManager = new GameManager().getInstance();
+const gameManager = GameManager.instance;
 
 const gameCreationLimit = process.env.NODE_ENV.trim() === 'production'
     ? 20

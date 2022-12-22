@@ -1,5 +1,4 @@
 const globals = require('../config/globals');
-const ActiveGameRunner = require('./ActiveGameRunner');
 const Game = require('../model/Game');
 const Person = require('../model/Person');
 const GameStateCurator = require('./GameStateCurator');

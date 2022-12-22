@@ -6,7 +6,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const SocketManager = require('./SocketManager.js');
 const GameManager = require('./GameManager.js');
-const ActiveGameRunner = require("./ActiveGameRunner.js");
+const ActiveGameRunner = require('./ActiveGameRunner.js');
 const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 

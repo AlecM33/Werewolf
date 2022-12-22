@@ -4,9 +4,14 @@ const globals = require('../config/globals');
 
 class ActiveGameRunner {
     constructor (logger) {
+        if (ActiveGameRunner.instance) {
+            throw new Error('The server tried to instantiate more than one ActiveGameRunner');
+        }
+        logger.info('CREATING SINGLETON ACTIVE GAME RUNNER');
         this.activeGames = new Map();
         this.timerThreads = {};
         this.logger = logger;
+        ActiveGameRunner.instance = this;
     }
 
     /* We're only going to fork a child process for games with a timer. They will report back to the parent process whenever
@@ -61,17 +66,4 @@ class ActiveGameRunner {
     };
 }
 
-class Singleton {
-    constructor (logger) {
-        if (!Singleton.instance) {
-            logger.info('CREATING SINGLETON ACTIVE GAME RUNNER');
-            Singleton.instance = new ActiveGameRunner(logger);
-        }
-    }
-
-    getInstance () {
-        return Singleton.instance;
-    }
-}
-
-module.exports = Singleton;
+module.exports = ActiveGameRunner;

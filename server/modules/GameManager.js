@@ -1,16 +1,20 @@
 const globals = require('../config/globals');
-const ActiveGameRunner = require('./ActiveGameRunner');
 const Game = require('../model/Game');
 const Person = require('../model/Person');
 const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
 
 class GameManager {
-    constructor (logger, environment) {
+    constructor (logger, environment, activeGameRunner) {
+        if (GameManager.instance) {
+            throw new Error('The server tried to instantiate more than one GameManager');
+        }
+        logger.info('CREATING SINGLETON GAME MANAGER');
         this.logger = logger;
         this.environment = environment;
-        this.activeGameRunner = new ActiveGameRunner(logger).getInstance();
+        this.activeGameRunner = activeGameRunner;
         this.namespace = null;
+        GameManager.instance = this;
     }
 
     setGameSocketNamespace = (namespace) => {
@@ -501,17 +505,4 @@ function getGameSize (cards) {
     return quantity;
 }
 
-class Singleton {
-    constructor (logger, environment) {
-        if (!Singleton.instance) {
-            logger.info('CREATING SINGLETON GAME MANAGER');
-            Singleton.instance = new GameManager(logger, environment);
-        }
-    }
-
-    getInstance () {
-        return Singleton.instance;
-    }
-}
-
-module.exports = Singleton;
+module.exports = GameManager;

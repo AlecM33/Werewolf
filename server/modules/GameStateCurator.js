@@ -5,7 +5,7 @@ const globals = require('../config/globals');
     information that they shouldn't.
  */
 const GameStateCurator = {
-    getGameStateFromPerspectiveOfPerson: (game, person, gameRunner, socket, logger) => {
+    getGameStateFromPerspectiveOfPerson: (game, person, gameRunner) => {
         return getGameStateBasedOnPermissions(game, person, gameRunner);
     },
 
@@ -58,30 +58,6 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
             out: person.out
         };
     switch (person.userType) {
-        case globals.USER_TYPES.PLAYER:
-        case globals.USER_TYPES.KILLED_PLAYER: {
-            const state = {
-                accessCode: game.accessCode,
-                status: game.status,
-                moderator: GameStateCurator.mapPerson(game.moderator),
-                client: client,
-                deck: game.deck,
-                gameSize: game.gameSize,
-                people: game.people
-                    .filter((person) => {
-                        return person.assigned === true;
-                    })
-                    .map((filteredPerson) =>
-                        GameStateCurator.mapPerson(filteredPerson)
-                    ),
-                timerParams: game.timerParams,
-                isFull: game.isFull
-            };
-            if (game.status === globals.STATUS.ENDED) {
-                state.people = GameStateCurator.mapPeopleForModerator(game.people);
-            }
-            return state;
-        }
         case globals.USER_TYPES.MODERATOR:
             return {
                 accessCode: game.accessCode,
@@ -98,22 +74,9 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                 )
             };
         case globals.USER_TYPES.TEMPORARY_MODERATOR:
-            return {
-                accessCode: game.accessCode,
-                status: game.status,
-                moderator: GameStateCurator.mapPerson(game.moderator),
-                client: client,
-                deck: game.deck,
-                gameSize: game.gameSize,
-                people: game.people
-                    .filter((person) => {
-                        return person.assigned === true;
-                    })
-                    .map((filteredPerson) => GameStateCurator.mapPerson(filteredPerson)),
-                timerParams: game.timerParams,
-                isFull: game.isFull
-            };
         case globals.USER_TYPES.SPECTATOR:
+        case globals.USER_TYPES.PLAYER:
+        case globals.USER_TYPES.KILLED_PLAYER:
             return {
                 accessCode: game.accessCode,
                 status: game.status,
@@ -127,7 +90,10 @@ function getGameStateBasedOnPermissions (game, person, gameRunner) {
                     })
                     .map((filteredPerson) => GameStateCurator.mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
-                isFull: game.isFull
+                isFull: game.isFull,
+                spectators: game.spectators.map((filteredPerson) =>
+                    GameStateCurator.mapPerson(filteredPerson)
+                )
             };
         default:
             break;

@@ -46,6 +46,11 @@ export class Lobby {
         const playerCount = this.container.querySelector('#game-player-count');
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
 
+        setNumberOfSpectators(
+            this.stateBucket.currentGameState.spectators.length,
+            this.container.querySelector('#spectator-count')
+        )
+
         const gameCode = this.container.querySelector('#game-code');
         gameCode.innerHTML = 'Or enter this code on the homepage: <span>' +
             this.stateBucket.currentGameState.accessCode + '</span>';
@@ -91,6 +96,10 @@ export class Lobby {
 
         this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
             this.stateBucket.currentGameState.spectators.push(spectator);
+            setNumberOfSpectators(
+                this.stateBucket.currentGameState.spectators.length,
+                document.getElementById('spectator-count')
+            );
         });
 
         // this.socket.on(globals.EVENT_IDS.PLAYER_LEFT, (player) => {
@@ -125,6 +134,12 @@ export class Lobby {
         document.querySelector('#start-game-prompt')?.removeEventListener('click', this.startGameHandler);
         document.querySelector('#start-game-prompt')?.remove();
     }
+}
+
+function setNumberOfSpectators(number, el) {
+    el.innerText = '+ ' + (number === 1
+        ? number + ' Spectator'
+        : number + ' Spectators');
 }
 
 function enableOrDisableStartButton (gameState, buttonContainer, handler) {

@@ -17,7 +17,8 @@ export const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
-        END_GAME: 'endGame'
+        END_GAME: 'endGame',
+        END_TIMER: 'endTimer'
     },
     STATUS: {
         LOBBY: 'lobby',
@@ -49,7 +50,8 @@ export const globals = {
         SYNC_GAME_STATE: 'syncGameState',
         START_TIMER: 'startTimer',
         PLAYER_LEFT: 'playerLeft',
-        NEW_SPECTATOR: 'newSpectator'
+        NEW_SPECTATOR: 'newSpectator',
+        RESTART_GAME: 'restartGame'
     },
     USER_TYPES: {
         MODERATOR: 'moderator',

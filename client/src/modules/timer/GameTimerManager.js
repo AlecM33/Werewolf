@@ -1,4 +1,5 @@
 import { globals } from '../../config/globals.js';
+import { Confirmation } from '../front_end_components/Confirmation.js';
 
 export class GameTimerManager {
     constructor (stateBucket, socket) {
@@ -88,11 +89,21 @@ export class GameTimerManager {
     }
 
     displayExpiredTime () {
-        const currentBtn = document.querySelector('#play-pause img');
-        if (currentBtn) {
-            currentBtn.removeEventListener('click', this.pauseListener);
-            currentBtn.removeEventListener('click', this.playListener);
-            currentBtn.remove();
+        if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+            const currentBtn = document.querySelector('#timer-container-moderator #play-pause img');
+            if (currentBtn) {
+                currentBtn.removeEventListener('click', this.pauseListener);
+                currentBtn.removeEventListener('click', this.playListener);
+                currentBtn.classList.add('disabled');
+                currentBtn.setAttribute('src', '/images/play-pause-placeholder.svg');
+            } else {
+                document.querySelector('#play-pause-placeholder')?.remove();
+                const placeholderBtn = document.createElement('img');
+                placeholderBtn.setAttribute('src', '../images/play-pause-placeholder.svg');
+                placeholderBtn.classList.add('disabled');
+                document.getElementById('play-pause').appendChild(placeholderBtn);
+            }
         }
 
         const timer = document.getElementById('game-timer');
@@ -121,6 +132,12 @@ export class GameTimerManager {
                 } else {
                     this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
                 }
+            });
+        }
+
+        if (!socket.hasListeners(globals.COMMANDS.END_TIMER)) {
+            socket.on(globals.COMMANDS.END_TIMER, () => {
+                Confirmation('The timer has expired!');
             });
         }
     }

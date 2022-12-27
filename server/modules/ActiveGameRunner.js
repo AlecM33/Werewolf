@@ -21,11 +21,13 @@ class ActiveGameRunner {
         this.logger.debug('running game ' + game.accessCode);
         const gameProcess = fork(path.join(__dirname, '/GameProcess.js'));
         this.timerThreads[game.accessCode] = gameProcess;
+        this.logger.debug('game ' + game.accessCode + ' now associated with subProcess ' + gameProcess.pid);
         gameProcess.on('message', (msg) => {
             switch (msg.command) {
                 case globals.GAME_PROCESS_COMMANDS.END_TIMER:
                     game.timerParams.paused = false;
                     game.timerParams.timeRemaining = 0;
+                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_TIMER);
                     this.logger.trace('PARENT: END TIMER');
                     break;
                 case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
@@ -51,9 +53,8 @@ class ActiveGameRunner {
             }
         });
 
-        gameProcess.on('exit', () => {
-            this.logger.debug('Game ' + game.accessCode + ' timer has expired.');
-            delete this.timerThreads[game.accessCode];
+        gameProcess.on('exit', (code, signal) => {
+            this.logger.debug('Game timer thread ' + gameProcess.pid + ' exiting with code ' + code + ' - game ' + game.accessCode);
         });
         gameProcess.send({
             command: globals.GAME_PROCESS_COMMANDS.START_TIMER,

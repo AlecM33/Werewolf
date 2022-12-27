@@ -89,10 +89,6 @@ export class Lobby {
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
-            this.stateBucket.currentGameState.spectators.push(spectator);
-        });
-
         // this.socket.on(globals.EVENT_IDS.PLAYER_LEFT, (player) => {
         //     removeStartGameFunctionalityIfPresent(this.stateBucket.currentGameState, this.startGameHandler);
         //     toast(player.name + ' has left!', 'error', false, true, 'short');

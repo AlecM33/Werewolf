@@ -11,6 +11,7 @@
     "start:dev": "NODE_ENV=development && webpack --config client/webpack/webpack-dev.config.js --mode=development && nodemon index.js",
     "start:dev:no-hot-reload": "NODE_ENV=development && webpack --config client/webpack/webpack-dev.config.js --mode=development && node index.js",
     "start:dev:windows": "SET NODE_ENV=development && webpack --config client/webpack/webpack-dev.config.js --mode=development && nodemon index.js",
+    "start:dev:windows:no-hot-reload:debug": "SET NODE_ENV=development && webpack --config client/webpack/webpack-dev.config.js --mode=development && node --inspect index.js",
     "start:dev:windows:no-hot-reload": "SET NODE_ENV=development && webpack --config client/webpack/webpack-dev.config.js --mode=development && node index.js",
     "start": "NODE_ENV=production node index.js -- loglevel=debug",
     "start:windows": "SET NODE_ENV=production && node index.js -- loglevel=debug port=8080",

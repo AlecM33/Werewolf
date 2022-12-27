@@ -55,11 +55,13 @@
     max-width: 17em;
 }
 
-#restart-game {
-    background-color: #0078D7;
-    min-width: 10em;
-    margin-bottom: 1em !important;
-    animation: shadow-pulse 1.5s infinite ease-out;
+#restart-game-button, #mod-transfer-button {
+    background-color: #045EA6;
+}
+
+#restart-game-button:hover, #mod-transfer-button:hover {
+    background-color: #0078D773;
+    border: 2px solid #045EA6;
 }
 
 #play-pause-placeholder {
@@ -127,7 +129,15 @@ h1 {
 #end-of-game-header button {
     margin: 0.5em;
     min-width: 12em;
+    font-size: 18px;
 }
+
+#end-of-game-header #restart-game-button {
+    margin-bottom: 1em !important;
+    animation: shadow-pulse 1.5s infinite ease-out;
+    padding: 10px;
+}
+
 .potential-moderator {
     display: flex;
     color: #d7d7d7;
@@ -191,7 +201,7 @@ h1 {
     color: #21ba45;
 }
 
-#role-info-button img {
+#role-info-button img, #mod-transfer-button img {
     height: 25px;
     margin-left: 10px;
 }
@@ -440,7 +450,7 @@ label[for='moderator'] {
     font-size: 30px;
 }
 
-#start-game-prompt, #end-game-prompt {
+#start-game-prompt, #game-control-prompt {
     padding: 0.5em 0;
     display: flex;
     flex-direction: column;
@@ -463,6 +473,34 @@ label[for='moderator'] {
     background-color: #1b1a24;
 }
 
+#game-control-prompt {
+    padding: 0.5em 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 3;
+    font-family: 'signika-negative', sans-serif;
+    font-weight: 100;
+    box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.5);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 3px;
+    /* width: fit-content; */
+    font-size: 20px;
+    height: 100px;
+    margin: 0 auto;
+    max-width: 100%;
+    background-color: #1b1a24;
+}
+
+#game-control-prompt button {
+    margin: 0 15px;
+    min-width: 5em;
+}
+
 #start-game-prompt p {
     color: whitesmoke;
     font-size: 15px;
@@ -475,11 +513,11 @@ label[for='moderator'] {
     justify-content: space-evenly;
 }
 
-#end-game-prompt {
+#game-control-prompt {
     box-shadow: 0 -6px 40px black;
 }
 
-#start-game-button, #end-game-button {
+#start-game-button, #end-game-button, #restart-game-button {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
     border-radius: 3px;
@@ -774,7 +812,7 @@ canvas {
 }
 
 @media(max-width: 800px) {
-    #start-game-prompt, #end-game-prompt {
+    #start-game-prompt, #game-control-prompt {
         border-radius: 0;
         width: 100%;
         bottom: 0;
@@ -837,11 +875,11 @@ canvas {
         font-size: 20px;
     }
 
-    #start-game-prompt, #end-game-prompt {
+    #start-game-prompt, #game-control-prompt {
         height: 65px;
     }
 
-    #start-game-button, #end-game-button {
+    #start-game-button, #end-game-button, #restart-game-button {
         font-size: 20px;
         padding: 5px;
     }

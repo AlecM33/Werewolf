@@ -290,7 +290,7 @@ describe('game page', () => {
                 }
             ]);
             expect(document.getElementById('end-of-game-header')).not.toBeNull();
-            expect(document.getElementById('restart-game')).not.toBeNull();
+            expect(document.getElementById('restart-game-button')).not.toBeNull();
         });
 
         afterAll(() => {

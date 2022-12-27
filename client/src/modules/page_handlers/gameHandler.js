@@ -107,7 +107,7 @@ function processGameState (
             break;
         case globals.STATUS.IN_PROGRESS:
             if (refreshPrompt) {
-                document.querySelector('#end-game-prompt')?.remove();
+                document.querySelector('#game-control-prompt')?.remove();
             }
             const inProgressGame = new InProgress('game-state-container', stateBucket, socket);
             inProgressGame.setSocketHandlers();
@@ -173,24 +173,39 @@ function displayClientInfo (name, userType) {
 
 // Should be reserved for socket events not specific to any one game state (Lobby, In Progress, etc.)
 function setClientSocketHandlers (stateBucket, socket) {
-    socket.on(globals.EVENT_IDS.START_GAME, () => {
+    const commonAckLogic = (gameState) => {
+        stateBucket.currentGameState = gameState;
+        processGameState(
+            stateBucket.currentGameState,
+            gameState.client.cookie,
+            socket,
+            true,
+            true
+        );
+    };
+    const startGameStateAckFn = (gameState) => {
+        commonAckLogic(gameState);
+        toast('Game started!', 'success');
+    };
+
+    const restartGameStateAckFn = (gameState) => {
+        commonAckLogic(gameState);
+        toast('Game restarted!', 'success');
+    };
+
+    const fetchGameStateHandler = (ackFn) => {
         socket.emit(
             globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
             globals.EVENT_IDS.FETCH_GAME_STATE,
             stateBucket.currentGameState.accessCode,
             { personId: stateBucket.currentGameState.client.cookie },
-            function (gameState) {
-                stateBucket.currentGameState = gameState;
-                processGameState(
-                    stateBucket.currentGameState,
-                    gameState.client.cookie,
-                    socket,
-                    true,
-                    true
-                );
-            }
+            ackFn
         );
-    });
+    };
+
+    socket.on(globals.EVENT_IDS.START_GAME, () => { fetchGameStateHandler(startGameStateAckFn); });
+
+    socket.on(globals.EVENT_IDS.RESTART_GAME, () => { fetchGameStateHandler(restartGameStateAckFn); });
 
     socket.on(globals.EVENT_IDS.SYNC_GAME_STATE, () => {
         socket.emit(

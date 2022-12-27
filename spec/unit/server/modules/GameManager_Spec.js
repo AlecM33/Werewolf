@@ -360,7 +360,7 @@ describe('GameManager', () => {
                 expect(person.gameRole).toBeDefined();
             }
             expect(shuffleSpy).toHaveBeenCalled();
-            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.START_GAME);
+            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
         it('should reset all relevant game parameters, including when the game has a timer', async () => {
@@ -387,7 +387,7 @@ describe('GameManager', () => {
             expect(runGameSpy).toHaveBeenCalled();
             expect(Object.keys(gameManager.activeGameRunner.timerThreads).length).toEqual(0);
             expect(shuffleSpy).toHaveBeenCalled();
-            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.START_GAME);
+            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
         it('should reset all relevant game parameters and preserve temporary moderator', async () => {
@@ -408,7 +408,7 @@ describe('GameManager', () => {
                 expect(person.gameRole).toBeDefined();
             }
             expect(shuffleSpy).toHaveBeenCalled();
-            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.START_GAME);
+            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
         it('should reset all relevant game parameters and restore a temporary moderator from a dedicated moderator', async () => {
@@ -429,7 +429,7 @@ describe('GameManager', () => {
                 expect(person.gameRole).toBeDefined();
             }
             expect(shuffleSpy).toHaveBeenCalled();
-            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.START_GAME);
+            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
         it('should reset all relevant game parameters and create a temporary mod if a dedicated mod transferred to a killed player', async () => {
@@ -450,7 +450,7 @@ describe('GameManager', () => {
                 expect(person.gameRole).toBeDefined();
             }
             expect(shuffleSpy).toHaveBeenCalled();
-            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.START_GAME);
+            expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
     });
 

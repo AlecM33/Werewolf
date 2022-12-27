@@ -5,6 +5,7 @@ import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { ModalManager } from '../../front_end_components/ModalManager.js';
 import { GameTimerManager } from '../../timer/GameTimerManager.js';
 import { stateBucket } from '../StateBucket.js';
+import { SharedStateUtil } from './shared/SharedStateUtil.js';
 
 export class InProgress {
     constructor (containerId, stateBucket, socket) {
@@ -407,9 +408,9 @@ function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {
 }
 
 function createEndGamePromptComponent (socket, stateBucket) {
-    if (document.querySelector('#end-game-prompt') === null) {
+    if (document.querySelector('#game-control-prompt') === null) {
         const div = document.createElement('div');
-        div.innerHTML = HTMLFragments.END_GAME_PROMPT;
+        div.innerHTML = HTMLFragments.GAME_CONTROL_PROMPT;
         div.querySelector('#end-game-button').addEventListener('click', (e) => {
             e.preventDefault();
             Confirmation('End the game?', () => {
@@ -419,11 +420,12 @@ function createEndGamePromptComponent (socket, stateBucket) {
                     stateBucket.currentGameState.accessCode,
                     null,
                     () => {
-                        document.querySelector('#end-game-prompt')?.remove();
+                        document.querySelector('#game-control-prompt')?.remove();
                     }
                 );
             });
         });
+        div.querySelector('#game-control-prompt').prepend(SharedStateUtil.createRestartButton(stateBucket));
         document.getElementById('game-content').appendChild(div);
     }
 }

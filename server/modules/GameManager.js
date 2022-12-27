@@ -143,7 +143,6 @@ class GameManager {
         if (this.activeGameRunner.timerThreads[game.accessCode]) {
             this.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
             this.activeGameRunner.timerThreads[game.accessCode].kill();
-            delete this.activeGameRunner.timerThreads[game.accessCode];
         }
         for (const person of game.people) {
             person.revealed = true;
@@ -266,9 +265,13 @@ class GameManager {
 
     restartGame = async (game, namespace) => {
         // kill any outstanding timer threads
-        if (this.activeGameRunner.timerThreads[game.accessCode]) {
-            this.logger.info('KILLING STALE TIMER PROCESS FOR ' + game.accessCode);
-            this.activeGameRunner.timerThreads[game.accessCode].kill();
+        const subProcess = this.activeGameRunner.timerThreads[game.accessCode];
+        if (subProcess) {
+            if (!subProcess.killed) {
+                this.logger.info('Killing timer process ' + subProcess.pid + ' for: ' + game.accessCode);
+                this.activeGameRunner.timerThreads[game.accessCode].kill();
+            }
+            this.logger.debug('Deleting reference to subprocess ' + subProcess.pid);
             delete this.activeGameRunner.timerThreads[game.accessCode];
         }
 
@@ -322,7 +325,7 @@ class GameManager {
             this.activeGameRunner.runGame(game, namespace);
         }
 
-        namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
+        namespace.in(game.accessCode).emit(globals.EVENT_IDS.RESTART_GAME);
     };
 
     handleRequestForGameState = async (game, namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {

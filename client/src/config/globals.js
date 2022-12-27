@@ -17,7 +17,8 @@ export const globals = {
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
-        END_GAME: 'endGame'
+        END_GAME: 'endGame',
+        END_TIMER: 'endTimer'
     },
     STATUS: {
         LOBBY: 'lobby',

@@ -71,7 +71,7 @@ class GameManager {
 
     pauseTimer = (game, logger) => {
         const thread = this.activeGameRunner.timerThreads[game.accessCode];
-        if (thread) {
+        if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
             thread.send({
                 command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER,
@@ -83,7 +83,7 @@ class GameManager {
 
     resumeTimer = (game, logger) => {
         const thread = this.activeGameRunner.timerThreads[game.accessCode];
-        if (thread) {
+        if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
             thread.send({
                 command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER,
@@ -95,14 +95,14 @@ class GameManager {
 
     getTimeRemaining = (game, socket) => {
         const thread = this.activeGameRunner.timerThreads[game.accessCode];
-        if (thread) {
+        if (thread && (!thread.killed && thread.exitCode === null)) {
             thread.send({
                 command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                 accessCode: game.accessCode,
                 socketId: socket.id,
                 logLevel: this.logger.logLevel
             });
-        } else {
+        } else if (thread) {
             if (game.timerParams && game.timerParams.timeRemaining === 0) {
                 this.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
             }
@@ -299,23 +299,11 @@ class GameManager {
             game.people[i].alignment = cards[i].team;
         }
 
-        /* If the game was originally set up with a TEMP mod and the game has gone far enough to establish
-        a DEDICATED mod, make the current mod a TEMP mod for the restart. */
-        if (!game.hasDedicatedModerator && game.moderator.userType === globals.USER_TYPES.MODERATOR) {
-            game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
-        }
-
-        /* If the game was originally set up with a DEDICATED moderator and the current mod is DIFFERENT from that mod
-            (i.e. they transferred their powers at some point), check if the current mod was once a player (i.e. they have
-            a game role). If they were once a player, make them a temp mod for the restart. Otherwise, they were a
-            spectator, and we want to leave them as a dedicated moderator.
+        /* If there is currently a dedicated mod, and that person was once a player (i.e. they have a game role), make
+            them a temporary mod for the restarted game.
          */
-        if (game.hasDedicatedModerator && game.moderator.id !== game.originalModeratorId) {
-            if (game.moderator.gameRole) {
-                game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
-            } else {
-                game.moderator.userType = globals.USER_TYPES.MODERATOR;
-            }
+        if (game.moderator.gameRole && game.moderator.userType === globals.USER_TYPES.MODERATOR) {
+            game.moderator.userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
         }
 
         // start the new game

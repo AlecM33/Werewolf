@@ -222,7 +222,7 @@ describe('GameManager', () => {
             );
 
             expect(GameStateCurator.getGameStateFromPerspectiveOfPerson)
-                .toHaveBeenCalledWith(gameRunner.activeGames.get('abc'), player, gameRunner, socket, logger);
+                .toHaveBeenCalledWith(gameRunner.activeGames.get('abc'), player);
         });
 
         it('should send the game state to a matching person who reset their connection', () => {
@@ -243,7 +243,7 @@ describe('GameManager', () => {
             );
 
             expect(GameStateCurator.getGameStateFromPerspectiveOfPerson)
-                .toHaveBeenCalledWith(gameRunner.activeGames.get('abc'), player, gameRunner, socket, logger);
+                .toHaveBeenCalledWith(gameRunner.activeGames.get('abc'), player);
             expect(player.socketId).toEqual(socket.id);
             expect(socket.join).toHaveBeenCalled();
         });

@@ -64,12 +64,6 @@
     border: 2px solid #045EA6;
 }
 
-#rrrr {
-    min-width: 10em;
-    margin-bottom: 1em !important;
-    animation: shadow-pulse 1.5s infinite ease-out;
-}
-
 #play-pause-placeholder {
     width: 60px;
     height: 60px;

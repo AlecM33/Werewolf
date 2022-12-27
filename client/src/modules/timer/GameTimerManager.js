@@ -89,18 +89,21 @@ export class GameTimerManager {
     }
 
     displayExpiredTime () {
-        const currentBtn = document.querySelector('#timer-container-moderator #play-pause img');
-        if (currentBtn) {
-            currentBtn.removeEventListener('click', this.pauseListener);
-            currentBtn.removeEventListener('click', this.playListener);
-            currentBtn.classList.add('disabled');
-            currentBtn.setAttribute('src', '/images/play-pause-placeholder.svg');
-        } else {
-            document.querySelector('#play-pause-placeholder')?.remove();
-            const placeholderBtn = document.createElement('img');
-            placeholderBtn.setAttribute('src', '../images/play-pause-placeholder.svg');
-            placeholderBtn.classList.add('disabled');
-            document.getElementById('play-pause').appendChild(placeholderBtn);
+        if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+            const currentBtn = document.querySelector('#timer-container-moderator #play-pause img');
+            if (currentBtn) {
+                currentBtn.removeEventListener('click', this.pauseListener);
+                currentBtn.removeEventListener('click', this.playListener);
+                currentBtn.classList.add('disabled');
+                currentBtn.setAttribute('src', '/images/play-pause-placeholder.svg');
+            } else {
+                document.querySelector('#play-pause-placeholder')?.remove();
+                const placeholderBtn = document.createElement('img');
+                placeholderBtn.setAttribute('src', '../images/play-pause-placeholder.svg');
+                placeholderBtn.classList.add('disabled');
+                document.getElementById('play-pause').appendChild(placeholderBtn);
+            }
         }
 
         const timer = document.getElementById('game-timer');

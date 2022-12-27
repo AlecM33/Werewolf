@@ -12,9 +12,6 @@ export class InProgress {
         this.stateBucket = stateBucket;
         this.socket = socket;
         this.container = document.getElementById(containerId);
-        this.components = {
-
-        };
         this.killPlayerHandlers = {};
         this.revealRoleHandlers = {};
         this.transferModHandlers = {};
@@ -190,6 +187,15 @@ export class InProgress {
                     }
                 }
             }
+        });
+
+        if (this.socket.hasListeners(globals.EVENT_IDS.NEW_SPECTATOR)) {
+            this.socket.removeAllListeners(globals.EVENT_IDS.NEW_SPECTATOR);
+        }
+
+        this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
+            stateBucket.currentGameState.spectators.push(spectator);
+            this.displayAvailableModerators();
         });
 
         if (this.stateBucket.currentGameState.timerParams) {

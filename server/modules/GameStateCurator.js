@@ -5,8 +5,8 @@ const globals = require('../config/globals');
     information that they shouldn't.
  */
 const GameStateCurator = {
-    getGameStateFromPerspectiveOfPerson: (game, person, gameRunner) => {
-        return getGameStateBasedOnPermissions(game, person, gameRunner);
+    getGameStateFromPerspectiveOfPerson: (game, person) => {
+        return getGameStateBasedOnPermissions(game, person);
     },
 
     mapPeopleForModerator: (people) => {
@@ -42,7 +42,7 @@ const GameStateCurator = {
     }
 };
 
-function getGameStateBasedOnPermissions (game, person, gameRunner) {
+function getGameStateBasedOnPermissions (game, person) {
     const client = game.status === globals.STATUS.LOBBY // people won't be able to know their role until past the lobby stage.
         ? { name: person.name, hasEnteredName: person.hasEnteredName, id: person.id, cookie: person.cookie, userType: person.userType }
         : {

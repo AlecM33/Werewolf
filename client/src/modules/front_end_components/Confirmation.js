@@ -1,16 +1,20 @@
 import { toast } from './Toast.js';
 
-export const Confirmation = (message, onYes) => {
+export const Confirmation = (message, onYes = null) => {
     document.querySelector('#confirmation')?.remove();
     document.querySelector('#confirmation-background')?.remove();
 
     let confirmation = document.createElement('div');
     confirmation.setAttribute('id', 'confirmation');
-    confirmation.innerHTML =
-        `<div id="confirmation-message"></div>
+    confirmation.innerHTML = onYes
+        ? `<div id="confirmation-message"></div>
          <div class="confirmation-buttons">
             <button id="confirmation-cancel-button" class="app-button cancel">Cancel</button>
             <button id="confirmation-yes-button" class="app-button">Yes</button>
+        </div>`
+        : `<div id="confirmation-message"></div>
+         <div class="confirmation-buttons-centered">
+            <button id="confirmation-yes-button" class="app-button">OK</button>
         </div>`;
 
     confirmation.querySelector('#confirmation-message').innerText = message;
@@ -54,8 +58,13 @@ export const Confirmation = (message, onYes) => {
         });
     };
 
-    confirmation.querySelector('#confirmation-cancel-button').addEventListener('click', cancelHandler);
-    confirmation.querySelector('#confirmation-yes-button').addEventListener('click', confirmHandler);
+    if (onYes) {
+        confirmation.querySelector('#confirmation-cancel-button').addEventListener('click', cancelHandler);
+        confirmation.querySelector('#confirmation-yes-button').addEventListener('click', confirmHandler);
+    } else { // we are only displaying a message for them to acknowledge, so the yes button should dispel the confirmation
+        confirmation.querySelector('#confirmation-yes-button').addEventListener('click', cancelHandler);
+    }
+
     background.addEventListener('click', cancelHandler);
 
     document.body.appendChild(background);

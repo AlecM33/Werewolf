@@ -494,19 +494,19 @@ function getGameSize (cards) {
     return quantity;
 }
 
-function valid(gameParams) {
-    return typeof gameParams.hasTimer === "boolean"
-        && typeof gameParams.hasDedicatedModerator === "boolean"
-        && typeof gameParams.moderatorName === "string"
+function valid (gameParams) {
+    return typeof gameParams.hasTimer === 'boolean'
+        && typeof gameParams.hasDedicatedModerator === 'boolean'
+        && typeof gameParams.moderatorName === 'string'
         && gameParams.moderatorName.length > 0
         && gameParams.moderatorName.length <= 30
         && timerParamsAreValid(gameParams.hasTimer, gameParams.timerParams)
         && deckIsValid(gameParams.deck);
 }
 
-function timerParamsAreValid(hasTimer, timerParams) {
+function timerParamsAreValid (hasTimer, timerParams) {
     if (hasTimer === false) {
-        return timerParams === null
+        return timerParams === null;
     } else {
         if (timerParams === null || typeof timerParams !== 'object') {
             return false;
@@ -516,11 +516,11 @@ function timerParamsAreValid(hasTimer, timerParams) {
             || (timerParams.minutes === null && timerParams.hours > 0 && timerParams.hours < 6)
             || (timerParams.hours === 0 && timerParams.minutes > 0 && timerParams.minutes < 60)
             || (timerParams.minutes === 0 && timerParams.hours > 0 && timerParams.hours < 6)
-            || (timerParams.hours > 0 && timerParams.hours < 6 && timerParams.minutes >= 0 && timerParams.minutes < 60)
+            || (timerParams.hours > 0 && timerParams.hours < 6 && timerParams.minutes >= 0 && timerParams.minutes < 60);
     }
 }
 
-function deckIsValid(deck) {
+function deckIsValid (deck) {
     if (Array.isArray(deck) && deck.length > 0) {
         for (const entry of deck) {
             if (entry !== null && typeof entry === 'object') {

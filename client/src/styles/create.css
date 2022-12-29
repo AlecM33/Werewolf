@@ -106,7 +106,7 @@
     display: flex;
     justify-content: space-between;
     background-color: #0f0f10;
-    border: 2px solid #333243;
+    border: 2px solid #2d2c3a;
     padding: 5px;
     border-radius: 3px;
     font-size: 16px;
@@ -159,7 +159,7 @@
     background-color: #191920;
     padding: 10px;
     border-radius: 3px;
-    border: 2px solid #333243;
+    border: 2px solid #2d2c3a;
     position: relative;
 }
 
@@ -173,7 +173,7 @@
 
 #deck-count {
     font-size: 30px;
-    background-color: #333243;
+    background-color: #2d2c3a;
     width: fit-content;
     padding: 0 5px;
     border-radius: 3px;
@@ -236,7 +236,7 @@
     z-index: 25;
     top: 38px;
     right: 29px;
-    background-color: #333243;
+    background-color: #2d2c3a;
     border-radius: 3px;
     box-shadow: -3px -3px 6px rgb(0 0 0 / 60%);
 }
@@ -245,7 +245,7 @@
     display: flex;
     width: 100%;
     padding: 10px;
-    background-color: #333243;
+    background-color: #2d2c3a;
     text-align: center;
     justify-content: center;
     align-items: center;
@@ -362,7 +362,7 @@ select {
     display: flex;
     flex-wrap: wrap;
     background-color: #191920;
-    border: 2px solid #333243;
+    border: 2px solid #2d2c3a;
     border-radius: 3px;
 }
 
@@ -593,7 +593,7 @@ input[type="number"] {
     max-width: 20em;
     margin: 0.5em;
     cursor: pointer;
-    border: 2px solid #333243;
+    border: 2px solid #2d2c3a;
     border-radius: 3px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
@@ -613,7 +613,7 @@ input[type="number"] {
 
 .review-option {
     background-color: #191920;
-    border: 2px solid #333243;
+    border: 2px solid #2d2c3a;
     color: #e7e7e7;
     padding: 10px;
     font-size: 18px;

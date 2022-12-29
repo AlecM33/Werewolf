@@ -153,9 +153,12 @@ export class GameCreationStepManager {
                             }
                         }).catch((e) => {
                             restoreButton();
-                            toast(e.content, 'error', true, true, 'medium');
                             if (e.status === 429) {
                                 toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
+                            } else if (e.status === 413) {
+                                toast('Your request is too large.', 'error', true, true);
+                            } else {
+                                toast(e.content, 'error', true, true, 'medium');
                             }
                         });
                 }

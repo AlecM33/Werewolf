@@ -199,6 +199,7 @@ class GameManager {
                     if (game.spectators.includes(person)) {
                         game.spectators.splice(game.spectators.indexOf(person), 1);
                     }
+                    namespace.in(game.accessCode).emit(globals.EVENTS.NEW_SPECTATOR);
                 }
                 person.userType = globals.USER_TYPES.MODERATOR;
                 game.moderator = person;
@@ -224,13 +225,18 @@ class GameManager {
         }
     };
 
-    joinGame = (game, name, cookie) => {
+    joinGame = (game, name, cookie, joinAsSpectator) => {
         const matchingPerson = findPersonByField(game, 'cookie', cookie);
         if (matchingPerson) {
             return Promise.resolve(matchingPerson.cookie);
         }
         if (isNameTaken(game, name)) {
-            return Promise.reject(400);
+            return Promise.reject({ status: 400, reason: 'This name is taken.' });
+        }
+        if (joinAsSpectator && game.spectators.length === globals.MAX_SPECTATORS) {
+            return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
+        } else if (joinAsSpectator) {
+            return addSpectator(game, name, this.logger, this.namespace);
         }
         const unassignedPerson = game.moderator.assigned === false
             ? game.moderator
@@ -246,20 +252,11 @@ class GameManager {
                 game.isFull
             );
             return Promise.resolve(unassignedPerson.cookie);
-        } else { // if the game is full, make them a spectator.
-            const spectator = new Person(
-                createRandomId(),
-                createRandomId(),
-                name,
-                globals.USER_TYPES.SPECTATOR
-            );
-            this.logger.trace('new spectator: ' + spectator.name);
-            game.spectators.push(spectator);
-            this.namespace.in(game.accessCode).emit(
-                globals.EVENTS.NEW_SPECTATOR,
-                GameStateCurator.mapPerson(spectator)
-            );
-            return Promise.resolve(spectator.cookie);
+        } else {
+            if (game.spectators.length === globals.MAX_SPECTATORS) {
+                return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
+            }
+            return addSpectator(game, name, this.logger, this.namespace);
         }
     };
 
@@ -494,6 +491,22 @@ function getGameSize (cards) {
     }
 
     return quantity;
+}
+
+function addSpectator (game, name, logger, namespace) {
+    const spectator = new Person(
+        createRandomId(),
+        createRandomId(),
+        name,
+        globals.USER_TYPES.SPECTATOR
+    );
+    logger.trace('new spectator: ' + spectator.name);
+    game.spectators.push(spectator);
+    namespace.in(game.accessCode).emit(
+        globals.EVENTS.NEW_SPECTATOR,
+        GameStateCurator.mapPerson(spectator)
+    );
+    return Promise.resolve(spectator.cookie);
 }
 
 module.exports = GameManager;

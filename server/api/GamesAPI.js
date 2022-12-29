@@ -74,16 +74,17 @@ router.patch('/:code/players', function (req, res) {
         || !validateName(req.body.playerName)
         || !validateCookie(req.body.localCookie)
         || !validateCookie(req.body.sessionCookie)
+        || !validateSpectatorFlag(req.body.joinAsSpectator)
     ) {
         res.status(400).send();
     } else {
         const game = gameManager.activeGameRunner.activeGames.get(req.body.accessCode);
         if (game) {
             const inUseCookie = gameManager.environment === globals.ENVIRONMENT.PRODUCTION ? req.body.localCookie : req.body.sessionCookie;
-            gameManager.joinGame(game, req.body.playerName, inUseCookie).then((data) => {
+            gameManager.joinGame(game, req.body.playerName, inUseCookie, req.body.joinAsSpectator).then((data) => {
                 res.status(200).send({ cookie: data, environment: gameManager.environment });
-            }).catch((code) => {
-                res.status(code).send();
+            }).catch((data) => {
+                res.status(data.status).send(data.reason);
             });
         } else {
             res.status(404).send();
@@ -128,6 +129,10 @@ function validateCookie (cookie) {
 
 function validateAccessCode (accessCode) {
     return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH;
+}
+
+function validateSpectatorFlag (spectatorFlag) {
+    return typeof spectatorFlag === 'boolean';
 }
 
 module.exports = router;

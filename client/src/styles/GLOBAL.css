@@ -572,7 +572,7 @@ input {
 }
 
 .good, .compact-card.good .card-role {
-    color: #4b6bfa;
+    color: #5f7cfb;
 }
 
 .good-players, #deck-good {
@@ -786,7 +786,7 @@ input {
     display:inline-flex !important;
     align-items: center !important;
     color:#ffffff !important;
-    background-color:#333243 !important;
+    background-color:#2d2c3a !important;
     border-radius: 5px !important;
     border: 1px solid transparent !important;
     padding: 7px 15px 7px 10px !important;

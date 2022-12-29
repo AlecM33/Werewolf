@@ -199,7 +199,7 @@ describe('game page', () => {
         it('should display the mod transfer modal, with the single spectator available for selection', () => {
             document.getElementById('mod-transfer-button').click();
             expect(document.querySelector('div[data-pointer="MGGVR8KQ7V7HGN3QBLJ5339ZL"].potential-moderator')
-                .innerText).toEqual('Matt');
+                .innerText).toContain('Matt');
             document.getElementById('close-mod-transfer-modal-button').click();
         });
 

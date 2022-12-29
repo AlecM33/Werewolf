@@ -6,6 +6,25 @@
     z-index: 1 !important;
 }
 
+#join-game-form .modal-button-container {
+    justify-content: flex-end;
+    margin-top: 2em;
+}
+
+#join-game-form .modal-button-container input {
+    width: 5em;
+    margin: 0 10px;
+}
+
+#join-game-form .modal-button-container #submit-join-as-spectator {
+    background-color: #045EA6;
+}
+
+#join-game-form .modal-button-container #submit-join-as-spectator:hover {
+    background-color: #0078D773;
+    border: 2px solid #045EA6;
+}
+
 #player-new-name {
     max-width: 17em;
 }

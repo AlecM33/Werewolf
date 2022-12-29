@@ -2,13 +2,12 @@
     border-radius: 2px;
     text-align: center;
     position: fixed;
-    border: 2px solid #333243;
     width: 85%;
     z-index: 100001;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #191920;
+    background-color: #292834;
     align-items: center;
     justify-content: center;
     max-width: 25em;
@@ -32,6 +31,12 @@
     font-size: 20px;
     color: #e7e7e7;
     margin: 1em 0 2em 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-height: 20em;
+    overflow-y: auto;
 }
 
 .confirmation-buttons button, .confirmation-buttons-centered button {

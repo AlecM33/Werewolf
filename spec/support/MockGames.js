@@ -163,7 +163,8 @@ export const mockGames = {
             paused: true,
             timeRemaining: 120000
         },
-        isFull: true
+        isFull: true,
+        spectators: []
     },
     moderatorGame:
         {

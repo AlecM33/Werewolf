@@ -56,6 +56,19 @@ export class InProgress {
             document.querySelector('#timer-container-moderator')?.remove();
             document.querySelector('label[for="game-timer"]')?.remove();
         }
+
+        const spectatorCount = this.container.querySelector('#spectator-count');
+
+        if (spectatorCount) {
+            spectatorCount?.addEventListener('click', () => {
+                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.spectators), null, true);
+            });
+
+            SharedStateUtil.setNumberOfSpectators(
+                this.stateBucket.currentGameState.spectators.length,
+                spectatorCount
+            );
+        }
     }
 
     renderPlayerView (isKilled = false) {
@@ -142,6 +155,7 @@ export class InProgress {
             const killedPerson = this.stateBucket.currentGameState.people.find((person) => person.id === id);
             if (killedPerson) {
                 killedPerson.out = true;
+                killedPerson.userType = globals.USER_TYPES.KILLED_PLAYER;
                 if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
                     toast(killedPerson.name + ' killed.', 'success', true, true, 'medium');
                     this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
@@ -459,7 +473,9 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
             container.classList.add('potential-moderator');
             container.setAttribute('tabindex', '0');
             container.dataset.pointer = member.id;
-            container.innerText = member.name;
+            container.innerHTML =
+                '<div class=\'potential-mod-name\'>' + member.name + '</div>' +
+                '<div>' + member.userType + ' ' + globals.USER_TYPE_ICONS[member.userType] + ' </div>';
             transferModHandlers[member.id] = (e) => {
                 if (e.type === 'click' || e.code === 'Enter') {
                     ModalManager.dispelModal('transfer-mod-modal', 'transfer-mod-modal-background');

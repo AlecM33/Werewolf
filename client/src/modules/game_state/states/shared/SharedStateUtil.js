@@ -130,6 +130,27 @@ export const SharedStateUtil = {
         } else {
             window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
         }
+    },
+
+    buildSpectatorList (spectators) {
+        if (spectators.length === 0) {
+            return '<div>Nobody currently spectating.</div>';
+        }
+        let html = '';
+        for (const spectator of spectators) {
+            html += `<div class='spectator'>
+                        <div class='spectator-name'>` + spectator.name + '</div>' +
+                        '<div>' + 'spectator' + globals.USER_TYPE_ICONS.spectator + `</div>
+                    </div>`;
+        }
+
+        return html;
+    },
+
+    setNumberOfSpectators: (number, el) => {
+        el.innerText = '+ ' + (number === 1
+            ? number + ' Spectator'
+            : number + ' Spectators');
     }
 };
 

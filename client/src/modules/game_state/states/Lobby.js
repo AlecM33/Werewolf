@@ -3,6 +3,7 @@ import { toast } from '../../front_end_components/Toast.js';
 import { globals } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
+import { SharedStateUtil } from './shared/SharedStateUtil.js';
 
 export class Lobby {
     constructor (containerId, stateBucket, socket) {
@@ -46,10 +47,14 @@ export class Lobby {
         const playerCount = this.container.querySelector('#game-player-count');
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
 
-        setNumberOfSpectators(
+        this.container.querySelector('#spectator-count').addEventListener('click', () => {
+            Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.spectators), null, true);
+        });
+
+        SharedStateUtil.setNumberOfSpectators(
             this.stateBucket.currentGameState.spectators.length,
             this.container.querySelector('#spectator-count')
-        )
+        );
 
         const gameCode = this.container.querySelector('#game-code');
         gameCode.innerHTML = 'Or enter this code on the homepage: <span>' +
@@ -96,7 +101,7 @@ export class Lobby {
 
         this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
             this.stateBucket.currentGameState.spectators.push(spectator);
-            setNumberOfSpectators(
+            SharedStateUtil.setNumberOfSpectators(
                 this.stateBucket.currentGameState.spectators.length,
                 document.getElementById('spectator-count')
             );
@@ -134,12 +139,6 @@ export class Lobby {
         document.querySelector('#start-game-prompt')?.removeEventListener('click', this.startGameHandler);
         document.querySelector('#start-game-prompt')?.remove();
     }
-}
-
-function setNumberOfSpectators(number, el) {
-    el.innerText = '+ ' + (number === 1
-        ? number + ' Spectator'
-        : number + ' Spectators');
 }
 
 function enableOrDisableStartButton (gameState, buttonContainer, handler) {
@@ -189,6 +188,7 @@ function getTimeString (gameState) {
 function renderLobbyPerson (name, userType) {
     const el = document.createElement('div');
     const personNameEl = document.createElement('div');
+    personNameEl.classList.add('lobby-player-name');
     const personTypeEl = document.createElement('div');
     personNameEl.innerText = name;
     personTypeEl.innerText = userType + globals.USER_TYPE_ICONS[userType];

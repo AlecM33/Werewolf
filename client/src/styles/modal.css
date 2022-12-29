@@ -7,7 +7,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #191920;
+    background-color: #292834;
     align-items: center;
     justify-content: center;
     max-width: 25em;
@@ -15,7 +15,6 @@
     flex-direction: column;
     padding: 1em;
     display: none;
-    border: 2px solid #333243;
 }
 
 .modal-background {

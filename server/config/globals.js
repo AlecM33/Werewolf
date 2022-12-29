@@ -49,7 +49,7 @@ const globals = {
     USER_TYPES: {
         MODERATOR: 'moderator',
         PLAYER: 'player',
-        TEMPORARY_MODERATOR: 'player / temp mod',
+        TEMPORARY_MODERATOR: 'temp mod',
         KILLED_PLAYER: 'killed',
         SPECTATOR: 'spectator'
     },
@@ -84,7 +84,8 @@ const globals = {
         RESUME_TIMER: 'resumeTimer',
         GET_TIME_REMAINING: 'getTimeRemaining'
     },
-    MOCK_AUTH: 'mock_auth'
+    MOCK_AUTH: 'mock_auth',
+    MAX_SPECTATORS: 25
 };
 
 module.exports = globals;

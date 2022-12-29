@@ -56,7 +56,7 @@ export const globals = {
     USER_TYPES: {
         MODERATOR: 'moderator',
         PLAYER: 'player',
-        TEMPORARY_MODERATOR: 'player / temp mod',
+        TEMPORARY_MODERATOR: 'temp mod',
         KILLED_PLAYER: 'killed',
         SPECTATOR: 'spectator'
     },
@@ -67,7 +67,7 @@ export const globals = {
     USER_TYPE_ICONS: {
         player: ' \uD83C\uDFAE',
         moderator: ' \uD83D\uDC51',
-        'player / temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
+        'temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
         spectator: ' \uD83D\uDC7B',
         killed: '\uD83D\uDC80'
     }

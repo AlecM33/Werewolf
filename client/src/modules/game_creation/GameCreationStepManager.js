@@ -54,11 +54,13 @@ export class GameCreationStepManager {
                 title: 'Set an optional timer:',
                 forwardHandler: (e) => {
                     if (e.type === 'click' || e.code === 'Enter') {
-                        const hours = parseInt(document.getElementById('game-hours').value);
-                        const minutes = parseInt(document.getElementById('game-minutes').value);
-                        if ((isNaN(hours) && isNaN(minutes))
-                            || (isNaN(hours) && minutes > 0 && minutes < 60)
-                            || (isNaN(minutes) && hours > 0 && hours < 6)
+                        let hours = parseInt(document.getElementById('game-hours').value);
+                        let minutes = parseInt(document.getElementById('game-minutes').value);
+                        hours = isNaN(hours) ? null : hours;
+                        minutes = isNaN(minutes) ? null : minutes;
+                        if ((hours === null && minutes === null)
+                            || (hours === null && minutes > 0 && minutes < 60)
+                            || (minutes === null && hours > 0 && hours < 6)
                             || (hours === 0 && minutes > 0 && minutes < 60)
                             || (minutes === 0 && hours > 0 && hours < 6)
                             || (hours > 0 && hours < 6 && minutes >= 0 && minutes < 60)
@@ -571,7 +573,7 @@ function processNewCustomRoleSubmission (name, description, team, deckManager, i
 }
 
 function hasTimer (hours, minutes) {
-    return (!isNaN(hours) || !isNaN(minutes));
+    return hours !== null || minutes !== null;
 }
 
 function validateName (name) {

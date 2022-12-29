@@ -3,6 +3,12 @@ const globals = {
     ACCESS_CODE_LENGTH: 4,
     ACCESS_CODE_GENERATION_ATTEMPTS: 50,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
+    MAX_CUSTOM_ROLE_NAME_LENGTH: 50,
+    MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 500,
+    ALIGNMENT: {
+        GOOD: 'good',
+        EVIL: 'evil'
+    },
     CORS: process.env.NODE_ENV?.trim() === 'development'
         ? {
             origin: '*',

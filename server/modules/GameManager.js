@@ -22,11 +22,12 @@ class GameManager {
     };
 
     createGame = (gameParams) => {
-        const expectedKeys = ['deck', 'hasTimer', 'timerParams', 'moderatorName'];
+        const expectedKeys = ['deck', 'hasTimer', 'timerParams', 'moderatorName', 'hasDedicatedModerator'];
         if (typeof gameParams !== 'object'
             || expectedKeys.some((key) => !Object.keys(gameParams).includes(key))
+            || !valid(gameParams)
         ) {
-            this.logger.error('Tried to create game with invalid options: ' + JSON.stringify(gameParams));
+            this.logger.error('Tried to create game with invalid options.');
             return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
         } else {
             this.pruneStaleGames();
@@ -491,6 +492,54 @@ function getGameSize (cards) {
     }
 
     return quantity;
+}
+
+function valid(gameParams) {
+    return typeof gameParams.hasTimer === "boolean"
+        && typeof gameParams.hasDedicatedModerator === "boolean"
+        && typeof gameParams.moderatorName === "string"
+        && gameParams.moderatorName.length > 0
+        && gameParams.moderatorName.length <= 30
+        && timerParamsAreValid(gameParams.hasTimer, gameParams.timerParams)
+        && deckIsValid(gameParams.deck);
+}
+
+function timerParamsAreValid(hasTimer, timerParams) {
+    if (hasTimer === false) {
+        return timerParams === null
+    } else {
+        if (timerParams === null || typeof timerParams !== 'object') {
+            return false;
+        }
+
+        return (timerParams.hours === null && timerParams.minutes > 0 && timerParams.minutes < 60)
+            || (timerParams.minutes === null && timerParams.hours > 0 && timerParams.hours < 6)
+            || (timerParams.hours === 0 && timerParams.minutes > 0 && timerParams.minutes < 60)
+            || (timerParams.minutes === 0 && timerParams.hours > 0 && timerParams.hours < 6)
+            || (timerParams.hours > 0 && timerParams.hours < 6 && timerParams.minutes >= 0 && timerParams.minutes < 60)
+    }
+}
+
+function deckIsValid(deck) {
+    if (Array.isArray(deck) && deck.length > 0) {
+        for (const entry of deck) {
+            if (entry !== null && typeof entry === 'object') {
+                if (typeof entry.role !== 'string' || entry.role.length > globals.MAX_CUSTOM_ROLE_NAME_LENGTH
+                    || typeof entry.team !== 'string' || (entry.team !== globals.ALIGNMENT.GOOD && entry.team !== globals.ALIGNMENT.EVIL)
+                    || typeof entry.description !== 'string' || entry.description.length > globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
+                    || (entry.custom && typeof entry.custom !== 'boolean')
+                    || typeof entry.quantity !== 'number' || entry.quantity < 1 || entry.quantity > 50
+                ) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    return false;
 }
 
 function addSpectator (game, name, logger, namespace) {

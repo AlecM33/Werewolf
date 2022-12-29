@@ -36,7 +36,6 @@ router.patch('/restart', (req, res, next) => {
 });
 
 router.post('/create', gameEndpointLimiter, function (req, res) {
-    logger.debug('Received request to create new game: ' + JSON.stringify(req.body, null, 4));
     const gameCreationPromise = gameManager.createGame(req.body, false);
     gameCreationPromise.then((result) => {
         if (result instanceof Error) {

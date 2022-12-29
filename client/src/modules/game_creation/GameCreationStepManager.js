@@ -411,11 +411,11 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
         : 'Temporary Moderator - deal me into the game.';
 
     if (game.hasTimer) {
-        const formattedHours = !isNaN(game.timerParams.hours)
+        const formattedHours = game.timerParams.hours !== null
             ? game.timerParams.hours + ' Hours'
             : '0 Hours';
 
-        const formattedMinutes = !isNaN(game.timerParams.minutes)
+        const formattedMinutes = game.timerParams.minutes !== null
             ? game.timerParams.minutes + ' Minutes'
             : '0 Minutes';
 

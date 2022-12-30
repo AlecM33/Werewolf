@@ -1,5 +1,5 @@
 .modal {
-    border-radius: 2px;
+    border-radius: 5px;
     text-align: center;
     position: fixed;
     width: 85%;
@@ -7,7 +7,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #292834;
+    background-color: #2d2c38;
     align-items: center;
     justify-content: center;
     max-width: 25em;
@@ -63,7 +63,7 @@
 }
 
 #custom-role-info-modal-description {
-    border-radius: 3px;
+    border-radius: 5px;
     background-color: black;
     max-height: 10em;
     overflow: auto;
@@ -81,7 +81,7 @@
 }
 
 #custom-role-info-modal-alignment {
-    border-radius: 3px;
+    border-radius: 5px;
     background-color: black;
     font-size: 18px;
     font-weight: bold;

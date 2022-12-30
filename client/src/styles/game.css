@@ -8,7 +8,7 @@
     padding: 5px;
     border-radius: 3px;
     font-size: 17px;
-    width: 17em;
+    width: 16em;
     border: 2px solid transparent;
     margin: 0 auto 0.25em auto;
 }
@@ -22,7 +22,7 @@
     max-height: 30em;
     overflow-x: hidden;
     padding: 0 25px 0 10px;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 #lobby-people-container label {
@@ -33,7 +33,7 @@
     color: #b1afcd;
     text-decoration: underline;
     font-size: 17px;
-    margin: 5px 0;
+    margin: 5px 0 10px 0;
     cursor: pointer;
 }
 
@@ -128,7 +128,7 @@ h1 {
 }
 
 #end-of-game-header h2 {
-    border: 1px solid #2d2c3a;
+    border: 1px solid #3b3a4a;
     border-radius: 5px;
     background-color: #1a1726;
     padding: 7px;
@@ -161,9 +161,9 @@ h1 {
     cursor: pointer;
     margin-top: 10px;
     padding: 7px;
-    border-radius: 3px;
+    border-radius: 5px;
     background-color: #121314;
-    border: 2px solid #2d2c3a;
+    border: 2px solid #3b3a4a;
     color: #e7e7e7;
     align-items: center;
     display: flex;
@@ -232,7 +232,7 @@ h1 {
 
 #game-role-info-container .role-info-name {
     padding: 5px;
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 20px;
     font-family: signika-negative, sans-serif;
     margin: 0.5em 0;
@@ -265,7 +265,7 @@ h1 {
     cursor: pointer;
     justify-content: space-between;
     max-width: 17em;
-    border-radius: 3px;
+    border-radius: 5px;
     height: 23em;
     margin: 10px 20px;
     width: 100%;
@@ -308,7 +308,7 @@ h1 {
     flex-direction: column;
     cursor: pointer;
     max-width: 17em;
-    border-radius: 3px;
+    border-radius: 5px;
     height: 23em;
     margin: 10px 20px;
     width: 100%;
@@ -341,7 +341,7 @@ h1 {
     margin-top: 5px;
     background-color: #262626;
     color: #e7e7e7;
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 35px;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
     border: 1px solid #747474;
@@ -416,8 +416,8 @@ h1 {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    background-color: #2d2c3a;
-    border-radius: 3px;
+    background-color: #3b3a4a;
+    border-radius: 5px;
     min-width: 15em;
 }
 
@@ -433,7 +433,7 @@ h1 {
     font-family: 'signika-negative', sans-serif;
     font-size: 25px;
     background-color: #171522;
-    border-radius: 3px;
+    border-radius: 5px;
     display: block;
     padding: 0 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
@@ -460,7 +460,7 @@ label[for='moderator'] {
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 3px;
+    border-radius: 5px;
     /* width: fit-content; */
     font-size: 20px;
     height: 100px;
@@ -483,7 +483,7 @@ label[for='moderator'] {
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 3px;
+    border-radius: 5px;
     /* width: fit-content; */
     font-size: 20px;
     height: 100px;
@@ -516,7 +516,7 @@ label[for='moderator'] {
 #start-game-button, #end-game-button, #restart-game-button {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     color: #e7e7e7;
     cursor: pointer;
     border: 2px solid transparent;
@@ -600,12 +600,12 @@ label[for='moderator'] {
     justify-content: center;
     margin-bottom: 1em;
     padding: 0.5em;
-    border-radius: 3px;
-    background-color: #2d2c3a;
+    border-radius: 5px;
+    background-color: #3b3a4a;
 }
 
 canvas {
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 1em;
 }
 
@@ -641,7 +641,7 @@ canvas {
 .kill-player-button, .reveal-role-button {
     background-color: #434156;
     font-family: 'signika-negative', sans-serif !important;
-    border-radius: 3px;
+    border-radius: 5px;
     color: #e7e7e7;
     height: 25px;
     font-size: 16px;
@@ -670,7 +670,7 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 3px;
+    border-radius: 5px;
     color: #767676;
     font-weight: bold;
     font-size: 16px;
@@ -721,7 +721,7 @@ canvas {
 /*    font-size: 18px;*/
 /*    padding: 10px;*/
 /*    border: 2px transparent;*/
-/*    border-radius: 3px;*/
+/*    border-radius: 5px;*/
 /*    color: #d7d7d7;*/
 /*    font-family: signika-negative, sans-serif;*/
 /*}*/
@@ -744,8 +744,8 @@ canvas {
 }
 
 #game-parameters {
-    background-color: #2d2c3a;
-    border-radius: 3px;
+    background-color: #3b3a4a;
+    border-radius: 5px;
     padding: 5px 20px;
 }
 
@@ -789,9 +789,9 @@ canvas {
 
 #lobby-people-container , #game-people-container {
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     min-height: 25em;
-    background-color: #292834;
+    background-color: #3b3a4a;
     max-width: 35em;
     min-width: 17em;
     margin-top: 1em;

@@ -209,7 +209,10 @@ export class InProgress {
 
         this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
             stateBucket.currentGameState.spectators.push(spectator);
-            this.displayAvailableModerators();
+            if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                this.displayAvailableModerators();
+            }
         });
 
         if (this.stateBucket.currentGameState.timerParams) {

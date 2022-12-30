@@ -4,6 +4,7 @@
     transform-origin: center;
     display: block;
     z-index: 1 !important;
+    background-color: #2d2c38;
 }
 
 #join-game-form .modal-button-container {
@@ -11,18 +12,27 @@
     margin-top: 2em;
 }
 
-#join-game-form .modal-button-container input {
+#join-game-form .modal-button-container #join-submit {
     width: 5em;
     margin: 0 10px;
 }
 
-#join-game-form .modal-button-container #submit-join-as-spectator {
-    background-color: #045EA6;
+.modal-button-container > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #1e1b26;
 }
 
-#join-game-form .modal-button-container #submit-join-as-spectator:hover {
-    background-color: #0078D773;
-    border: 2px solid #045EA6;
+.modal-button-container > div > label {
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.modal-button-container > div > input {
+    cursor: pointer;
 }
 
 #player-new-name {
@@ -39,12 +49,10 @@
 
 @keyframes entrance {
     0% {
-        transform: translate(-50%, calc(-50% + 40px));
         opacity: 0;
     }
-    95% {
+    90% {
         opacity: 1;
-        transform: translate(-50%, -50%);
     }
     100% {
         opacity: 1;

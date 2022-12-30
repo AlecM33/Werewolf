@@ -42,13 +42,9 @@ const joinHandler = (e) => {
 
 function sendJoinRequest (e, name, accessCode) {
     document.getElementById('join-game-form').onsubmit = null;
-    if (e.submitter.getAttribute('id') === 'submit-join-as-player') {
-        document.getElementById('submit-join-as-player').classList.add('submitted');
-        document.getElementById('submit-join-as-player').setAttribute('value', '...');
-    } else {
-        document.getElementById('submit-join-as-spectator').classList.add('submitted');
-        document.getElementById('submit-join-as-spectator').setAttribute('value', '...');
-    }
+    document.getElementById('join-submit').classList.add('submitted');
+    document.getElementById('join-submit').setAttribute('value', '...');
+
     return XHRUtility.xhr(
         '/api/games/' + accessCode + '/players',
         'PATCH',
@@ -58,7 +54,7 @@ function sendJoinRequest (e, name, accessCode) {
             accessCode: accessCode,
             sessionCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.LOCAL),
             localCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.PRODUCTION),
-            joinAsSpectator: e.submitter.getAttribute('id') === 'submit-join-as-spectator'
+            joinAsSpectator: document.getElementById('join-as-spectator').checked
         })
     );
 }
@@ -66,11 +62,8 @@ function sendJoinRequest (e, name, accessCode) {
 function handleJoinError (e, res, joinHandler) {
     document.getElementById('join-game-form').onsubmit = joinHandler;
     e.submitter.classList.remove('submitted');
-    if (e.submitter.getAttribute('id') === 'submit-join-as-player') {
-        e.submitter.setAttribute('value', 'Join');
-    } else {
-        e.submitter.setAttribute('value', 'Spectate');
-    }
+    e.submitter.setAttribute('value', 'Join');
+
     if (res.status === 404) {
         toast('This game was not found.', 'error', true, true, 'long');
     } else if (res.status === 400) {

@@ -14,7 +14,6 @@ Find the latest production deployment at: https://play-werewolf.app/
 - [Testing](#testing)
 - [Code Formatting](#code-formatting)
 
-<br><br>
 <p align="center">
     <img src="./client/src/images/screenshots/view_medley.png"/>
 </p>

@@ -60,7 +60,7 @@ export class Lobby {
         gameCode.innerHTML = 'Or enter this code on the homepage: <span>' +
             this.stateBucket.currentGameState.accessCode + '</span>';
 
-        QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 2 }, function (error) {
+        QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 3 }, function (error) {
             if (error) console.error(error);
         });
     }

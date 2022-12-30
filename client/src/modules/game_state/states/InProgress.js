@@ -203,12 +203,16 @@ export class InProgress {
             }
         });
 
-        if (this.socket.hasListeners(globals.EVENT_IDS.NEW_SPECTATOR)) {
-            this.socket.removeAllListeners(globals.EVENT_IDS.NEW_SPECTATOR);
+        if (this.socket.hasListeners(globals.EVENT_IDS.UPDATE_SPECTATORS)) {
+            this.socket.removeAllListeners(globals.EVENT_IDS.UPDATE_SPECTATORS);
         }
 
-        this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
-            stateBucket.currentGameState.spectators.push(spectator);
+        this.socket.on(globals.EVENT_IDS.UPDATE_SPECTATORS, (updatedSpectatorList) => {
+            stateBucket.currentGameState.spectators = updatedSpectatorList;
+            SharedStateUtil.setNumberOfSpectators(
+                stateBucket.currentGameState.spectators.length,
+                document.getElementById('spectator-count')
+            );
             if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
                 || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                 this.displayAvailableModerators();

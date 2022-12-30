@@ -50,7 +50,7 @@ export const globals = {
         SYNC_GAME_STATE: 'syncGameState',
         START_TIMER: 'startTimer',
         PLAYER_LEFT: 'playerLeft',
-        NEW_SPECTATOR: 'newSpectator',
+        UPDATE_SPECTATORS: 'newSpectator',
         RESTART_GAME: 'restartGame'
     },
     USER_TYPES: {

@@ -68,7 +68,7 @@ const globals = {
         PLAYER_JOINED: 'playerJoined',
         PLAYER_LEFT: 'playerLeft',
         SYNC_GAME_STATE: 'syncGameState',
-        NEW_SPECTATOR: 'newSpectator',
+        UPDATE_SPECTATORS: 'newSpectator',
         BROADCAST: 'broadcast'
     },
     ENVIRONMENT: {

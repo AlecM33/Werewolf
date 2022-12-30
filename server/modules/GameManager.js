@@ -184,6 +184,11 @@ class GameManager {
 
     transferModeratorPowers = (socket, game, person, namespace, logger) => {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
+            let spectatorsUpdated = false;
+            if (game.spectators.includes(person)) {
+                game.spectators.splice(game.spectators.indexOf(person), 1);
+                spectatorsUpdated = true;
+            }
             logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
             if (game.moderator === person) {
                 person.userType = globals.USER_TYPES.MODERATOR;
@@ -197,16 +202,17 @@ class GameManager {
                     game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
                 } else if (game.moderator.userType === globals.USER_TYPES.MODERATOR) {
                     game.moderator.userType = globals.USER_TYPES.SPECTATOR;
-                    if (!game.spectators.includes(game.moderator)) {
-                        game.spectators.push(game.moderator);
-                    }
-                    if (game.spectators.includes(person)) {
-                        game.spectators.splice(game.spectators.indexOf(person), 1);
-                    }
-                    namespace.in(game.accessCode).emit(globals.EVENTS.NEW_SPECTATOR);
+                    game.spectators.push(game.moderator);
+                    spectatorsUpdated = true;
                 }
                 person.userType = globals.USER_TYPES.MODERATOR;
                 game.moderator = person;
+                if (spectatorsUpdated === true) {
+                    namespace.in(game.accessCode).emit(
+                        globals.EVENTS.UPDATE_SPECTATORS,
+                        game.spectators.map((spectator) => GameStateCurator.mapPerson(spectator))
+                    );
+                }
                 this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
                 this.namespace.to(oldModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
             }
@@ -507,8 +513,8 @@ function addSpectator (game, name, logger, namespace) {
     logger.trace('new spectator: ' + spectator.name);
     game.spectators.push(spectator);
     namespace.in(game.accessCode).emit(
-        globals.EVENTS.NEW_SPECTATOR,
-        GameStateCurator.mapPerson(spectator)
+        globals.EVENTS.UPDATE_SPECTATORS,
+        game.spectators.map((spectator) => { return GameStateCurator.mapPerson(spectator); })
     );
     return Promise.resolve(spectator.cookie);
 }

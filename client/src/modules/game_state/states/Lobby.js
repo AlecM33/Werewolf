@@ -99,8 +99,8 @@ export class Lobby {
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
-            this.stateBucket.currentGameState.spectators.push(spectator);
+        this.socket.on(globals.EVENT_IDS.UPDATE_SPECTATORS, (updatedSpectatorList) => {
+            this.stateBucket.currentGameState.spectators = updatedSpectatorList;
             SharedStateUtil.setNumberOfSpectators(
                 this.stateBucket.currentGameState.spectators.length,
                 document.getElementById('spectator-count')

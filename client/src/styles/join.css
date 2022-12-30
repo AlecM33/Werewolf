@@ -1,6 +1,5 @@
 #join-game-modal {
     border-left: 5px solid #b1afcd;
-    animation: entrance 0.5s forwards;
     transform-origin: center;
     display: block;
     z-index: 1 !important;
@@ -45,16 +44,4 @@
 
 #game-code {
     font-family: "Courier New", monospace;
-}
-
-@keyframes entrance {
-    0% {
-        opacity: 0;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-    }
 }

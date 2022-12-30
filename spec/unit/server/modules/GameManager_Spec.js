@@ -292,7 +292,7 @@ describe('GameManager', () => {
             expect(game.spectators.length).toEqual(1);
             expect(game.spectators[0].name).toEqual('Jane');
             expect(game.spectators[0].userType).toEqual(USER_TYPES.SPECTATOR);
-            expect(gameManager.namespace.in().emit).toHaveBeenCalledWith(globals.EVENTS.NEW_SPECTATOR, jasmine.anything());
+            expect(gameManager.namespace.in().emit).toHaveBeenCalledWith(globals.EVENTS.UPDATE_SPECTATORS, jasmine.anything());
         });
     });
 

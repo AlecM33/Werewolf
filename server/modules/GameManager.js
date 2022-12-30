@@ -3,7 +3,7 @@ const Game = require('../model/Game');
 const Person = require('../model/Person');
 const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
-const GameCreationRequest = require("../model/GameCreationRequest");
+const GameCreationRequest = require('../model/GameCreationRequest');
 
 class GameManager {
     constructor (logger, environment, activeGameRunner) {
@@ -24,7 +24,7 @@ class GameManager {
 
     createGame = (gameParams) => {
         return GameCreationRequest.validate(gameParams).then(() => {
-            let req = new GameCreationRequest(
+            const req = new GameCreationRequest(
                 gameParams.deck,
                 gameParams.hasTimer,
                 gameParams.timerParams,

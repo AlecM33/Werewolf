@@ -1,4 +1,4 @@
-const globals = require("../config/globals");
+const globals = require('../config/globals');
 
 class GameCreationRequest {
     constructor (
@@ -26,7 +26,7 @@ class GameCreationRequest {
         } else {
             return Promise.resolve();
         }
-    }
+    };
 }
 
 function valid (gameParams) {

@@ -16,12 +16,7 @@ Find the latest production deployment at: https://play-werewolf.app/
 
 <br><br>
 <p align="center">
-  <kbd>
-    <img width="214" src="https://user-images.githubusercontent.com/24642328/188334421-e6a83543-41bb-4495-8206-aa0ce11217b6.png"/>
-  </kbd>
-  <kbd>
-    <img width="225" src="./client/src/images/screenshots/localhost_5000_game_NJ36(Samsung Galaxy S8+).png"/>
-  </kbd>
+    <img src="./client/src/images/screenshots/view_medley.png"/>
 </p>
 
 ## Overview

@@ -1,6 +1,6 @@
 import { toast } from './Toast.js';
 
-export const Confirmation = (message, onYes = null, innerHTML = false) => {
+export const Confirmation = (message, onYes = null, isDOMNode = false) => {
     document.querySelector('#confirmation')?.remove();
     document.querySelector('#confirmation-background')?.remove();
 
@@ -17,8 +17,8 @@ export const Confirmation = (message, onYes = null, innerHTML = false) => {
             <button id="confirmation-yes-button" class="app-button">OK</button>
         </div>`;
 
-    if (innerHTML) {
-        confirmation.querySelector('#confirmation-message').innerHTML = message;
+    if (isDOMNode) {
+        confirmation.querySelector('#confirmation-message').prepend(message);
     } else {
         confirmation.querySelector('#confirmation-message').innerText = message;
     }

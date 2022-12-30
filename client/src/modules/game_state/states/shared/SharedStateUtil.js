@@ -133,18 +133,21 @@ export const SharedStateUtil = {
     },
 
     buildSpectatorList (spectators) {
+        const list = document.createElement('div');
         if (spectators.length === 0) {
-            return '<div>Nobody currently spectating.</div>';
-        }
-        let html = '';
-        for (const spectator of spectators) {
-            html += `<div class='spectator'>
-                        <div class='spectator-name'>` + spectator.name + '</div>' +
-                        '<div>' + 'spectator' + globals.USER_TYPE_ICONS.spectator + `</div>
-                    </div>`;
+            list.innerHTML = '<div>Nobody currently spectating.</div>';
+        } else {
+            for (const spectator of spectators) {
+                const spectatorEl = document.createElement('div');
+                spectatorEl.classList.add('spectator');
+                spectatorEl.innerHTML = '<div class=\'spectator-name\'></div>' +
+                    '<div>' + 'spectator' + globals.USER_TYPE_ICONS.spectator + '</div>';
+                spectatorEl.querySelector('.spectator-name').innerText = spectator.name;
+                list.appendChild(spectatorEl);
+            }
         }
 
-        return html;
+        return list;
     },
 
     setNumberOfSpectators: (number, el) => {

@@ -481,8 +481,9 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
             container.setAttribute('tabindex', '0');
             container.dataset.pointer = member.id;
             container.innerHTML =
-                '<div class=\'potential-mod-name\'>' + member.name + '</div>' +
+                '<div class=\'potential-mod-name\'></div>' +
                 '<div>' + member.userType + ' ' + globals.USER_TYPE_ICONS[member.userType] + ' </div>';
+            container.querySelector('.potential-mod-name').innerText = member.name;
             transferModHandlers[member.id] = (e) => {
                 if (e.type === 'click' || e.code === 'Enter') {
                     ModalManager.dispelModal('transfer-mod-modal', 'transfer-mod-modal-background');

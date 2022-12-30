@@ -1,9 +1,37 @@
 #join-game-modal {
     border-left: 5px solid #b1afcd;
-    animation: entrance 0.5s forwards;
     transform-origin: center;
     display: block;
     z-index: 1 !important;
+    background-color: #2d2c38;
+}
+
+#join-game-form .modal-button-container {
+    justify-content: flex-end;
+    margin-top: 2em;
+}
+
+#join-game-form .modal-button-container #join-submit {
+    width: 5em;
+    margin: 0 10px;
+}
+
+.modal-button-container > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #1e1b26;
+}
+
+.modal-button-container > div > label {
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.modal-button-container > div > input {
+    cursor: pointer;
 }
 
 #player-new-name {
@@ -16,18 +44,4 @@
 
 #game-code {
     font-family: "Courier New", monospace;
-}
-
-@keyframes entrance {
-    0% {
-        transform: translate(-50%, calc(-50% + 40px));
-        opacity: 0;
-    }
-    95% {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-    100% {
-        opacity: 1;
-    }
 }

@@ -5,6 +5,5 @@ export class Game {
         this.timerParams = timerParams;
         this.hasDedicatedModerator = hasDedicatedModerator;
         this.moderatorName = moderatorName;
-        this.accessCode = null;
     }
 }

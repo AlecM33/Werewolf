@@ -1,18 +1,20 @@
-.lobby-player, #moderator {
+.lobby-player, #moderator, .spectator, .potential-moderator  {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    background-color: black;
+    background-color: #171522;
     color: #e7e7e7;
     padding: 5px;
     border-radius: 3px;
     font-size: 17px;
-    width: fit-content;
-    min-width: 15em;
+    width: 16em;
     border: 2px solid transparent;
-    margin: 0.25em 0;
-    box-shadow: 2px 2px 5px rgb(0 0 0 / 40%);
+    margin: 0 auto 0.25em auto;
+}
+
+.potential-moderator {
+    margin: 0.5em auto;
 }
 
 #lobby-players {
@@ -20,19 +22,26 @@
     max-height: 30em;
     overflow-x: hidden;
     padding: 0 25px 0 10px;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 #lobby-people-container label {
     display: block;
-    margin-bottom: 0.5em;
+}
+
+#spectator-count {
+    color: #b1afcd;
+    text-decoration: underline;
+    font-size: 17px;
+    margin: 5px 0 10px 0;
+    cursor: pointer;
 }
 
 .lobby-player-client {
     border: 2px solid #21ba45;
 }
 
-.lobby-player div:nth-child(2) {
+.lobby-player div:nth-child(2), .spectator div:nth-child(2), .potential-moderator div:nth-child(2) {
     color: #21ba45;
 }
 
@@ -119,7 +128,7 @@ h1 {
 }
 
 #end-of-game-header h2 {
-    border: 1px solid #333243;
+    border: 1px solid #3b3a4a;
     border-radius: 5px;
     background-color: #1a1726;
     padding: 7px;
@@ -138,19 +147,6 @@ h1 {
     padding: 10px;
 }
 
-.potential-moderator {
-    display: flex;
-    color: #d7d7d7;
-    background-color: black;
-    border: 2px solid transparent;
-    align-items: center;
-    padding: 10px;
-    border-radius: 3px;
-    justify-content: space-between;
-    margin: 0.5em 0;
-    position: relative;
-}
-
 .potential-moderator:hover {
     border: 2px solid #d7d7d7;
     cursor: pointer;
@@ -165,9 +161,9 @@ h1 {
     cursor: pointer;
     margin-top: 10px;
     padding: 7px;
-    border-radius: 3px;
+    border-radius: 5px;
     background-color: #121314;
-    border: 2px solid #333243;
+    border: 2px solid #3b3a4a;
     color: #e7e7e7;
     align-items: center;
     display: flex;
@@ -236,11 +232,11 @@ h1 {
 
 #game-role-info-container .role-info-name {
     padding: 5px;
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 20px;
     font-family: signika-negative, sans-serif;
     margin: 0.5em 0;
-    background-color: black;
+    background-color: #171522;
 }
 
 #role-info-modal h2 {
@@ -269,7 +265,7 @@ h1 {
     cursor: pointer;
     justify-content: space-between;
     max-width: 17em;
-    border-radius: 3px;
+    border-radius: 5px;
     height: 23em;
     margin: 10px 20px;
     width: 100%;
@@ -312,7 +308,7 @@ h1 {
     flex-direction: column;
     cursor: pointer;
     max-width: 17em;
-    border-radius: 3px;
+    border-radius: 5px;
     height: 23em;
     margin: 10px 20px;
     width: 100%;
@@ -345,7 +341,7 @@ h1 {
     margin-top: 5px;
     background-color: #262626;
     color: #e7e7e7;
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 35px;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
     border: 1px solid #747474;
@@ -420,15 +416,15 @@ h1 {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    background-color: #333243;
-    border-radius: 3px;
+    background-color: #3b3a4a;
+    border-radius: 5px;
     min-width: 15em;
 }
 
 #client-name {
     color: #e7e7e7;
     font-family: 'signika-negative', sans-serif;
-    font-size: 30px;
+    font-size: 25px;
     margin: 0.25em 2em 0.25em 0;
 }
 
@@ -436,8 +432,8 @@ h1 {
     color: #21ba45;
     font-family: 'signika-negative', sans-serif;
     font-size: 25px;
-    background-color: black;
-    border-radius: 3px;
+    background-color: #171522;
+    border-radius: 5px;
     display: block;
     padding: 0 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
@@ -464,7 +460,7 @@ label[for='moderator'] {
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 3px;
+    border-radius: 5px;
     /* width: fit-content; */
     font-size: 20px;
     height: 100px;
@@ -487,7 +483,7 @@ label[for='moderator'] {
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 3px;
+    border-radius: 5px;
     /* width: fit-content; */
     font-size: 20px;
     height: 100px;
@@ -520,7 +516,7 @@ label[for='moderator'] {
 #start-game-button, #end-game-button, #restart-game-button {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     color: #e7e7e7;
     cursor: pointer;
     border: 2px solid transparent;
@@ -604,12 +600,12 @@ label[for='moderator'] {
     justify-content: center;
     margin-bottom: 1em;
     padding: 0.5em;
-    border-radius: 3px;
-    background-color: #333243;
+    border-radius: 5px;
+    background-color: #3b3a4a;
 }
 
 canvas {
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 1em;
 }
 
@@ -617,13 +613,12 @@ canvas {
     border-left: 3px solid #21ba45;
     display: flex;
     color: #d7d7d7;
-    background-color: black;
+    background-color: #171522;
     align-items: center;
     padding: 0 5px;
     justify-content: space-between;
     margin: 0.25em 0;
     position: relative;
-    box-shadow: 2px 3px 6px rgb(0 0 0 / 50%);
     border-radius: 3px;
 }
 
@@ -631,20 +626,22 @@ canvas {
     justify-content: flex-end;
 }
 
-.game-player-name {
+.game-player-name, .lobby-player-name, .spectator-name, .potential-mod-name {
     position: relative;
     min-width: 6em;
+    max-width: 10em;
     overflow: hidden;
     white-space: nowrap;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     text-overflow: ellipsis;
+    text-align: left;
 }
 
 .kill-player-button, .reveal-role-button {
-    background-color: #333243;
+    background-color: #434156;
     font-family: 'signika-negative', sans-serif !important;
-    border-radius: 3px;
+    border-radius: 5px;
     color: #e7e7e7;
     height: 25px;
     font-size: 16px;
@@ -673,7 +670,7 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 3px;
+    border-radius: 5px;
     color: #767676;
     font-weight: bold;
     font-size: 16px;
@@ -724,7 +721,7 @@ canvas {
 /*    font-size: 18px;*/
 /*    padding: 10px;*/
 /*    border: 2px transparent;*/
-/*    border-radius: 3px;*/
+/*    border-radius: 5px;*/
 /*    color: #d7d7d7;*/
 /*    font-family: signika-negative, sans-serif;*/
 /*}*/
@@ -747,8 +744,8 @@ canvas {
 }
 
 #game-parameters {
-    background-color: #333243;
-    border-radius: 3px;
+    background-color: #3b3a4a;
+    border-radius: 5px;
     padding: 5px 20px;
 }
 
@@ -762,12 +759,11 @@ canvas {
 #game-player-list > div {
     padding: 2px 10px;
     border-radius: 3px;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.25em;
 }
 
 #players-alive-label {
     display: block;
-    margin-bottom: 10px;
     font-size: 25px;
 }
 
@@ -792,10 +788,10 @@ canvas {
 }
 
 #lobby-people-container , #game-people-container {
-    background-color: #333243;
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     min-height: 25em;
+    background-color: #3b3a4a;
     max-width: 35em;
     min-width: 17em;
     margin-top: 1em;

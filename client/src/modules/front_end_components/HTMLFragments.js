@@ -25,7 +25,8 @@ export const HTMLFragments = {
     </div>
     <div>
         <div id='lobby-people-container'>
-            <label for='lobby-players'>Other People</label>
+            <label for='lobby-players'></label>
+            <div id="spectator-count"></div>
             <div id='lobby-players'></div>
         </div>
         <div id='lobby-footer'>
@@ -68,6 +69,7 @@ export const HTMLFragments = {
     </div>
     <div id='game-people-container'>
         <label id='players-alive-label'></label>
+        <div id="spectator-count"></div>
         <div id='game-player-list'></div>
     </div>`,
     SPECTATOR_GAME_VIEW:
@@ -82,6 +84,7 @@ export const HTMLFragments = {
     </div>
     <div id='game-people-container'>
         <label id='players-alive-label'></label>
+        <div id="spectator-count"></div>
         <div id='game-player-list'></div>
     </div>`,
     TRANSFER_MOD_MODAL:
@@ -146,6 +149,7 @@ export const HTMLFragments = {
         </div>
         <div id='game-people-container'>
             <label id='players-alive-label'></label>
+            <div id="spectator-count"></div>
             <div id='game-player-list'></div>
         </div>
     </div>`,

@@ -2,8 +2,8 @@ export const globals = {
     CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     USER_SIGNATURE_LENGTH: 25,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
-    MAX_CUSTOM_ROLE_NAME_LENGTH: 30,
-    MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 500,
+    MAX_CUSTOM_ROLE_NAME_LENGTH: 50,
+    MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 1000,
     TOAST_DURATION_DEFAULT: 6,
     ACCESS_CODE_LENGTH: 4,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id',
@@ -50,13 +50,13 @@ export const globals = {
         SYNC_GAME_STATE: 'syncGameState',
         START_TIMER: 'startTimer',
         PLAYER_LEFT: 'playerLeft',
-        NEW_SPECTATOR: 'newSpectator',
+        UPDATE_SPECTATORS: 'newSpectator',
         RESTART_GAME: 'restartGame'
     },
     USER_TYPES: {
         MODERATOR: 'moderator',
         PLAYER: 'player',
-        TEMPORARY_MODERATOR: 'player / temp mod',
+        TEMPORARY_MODERATOR: 'temp mod',
         KILLED_PLAYER: 'killed',
         SPECTATOR: 'spectator'
     },
@@ -67,7 +67,7 @@ export const globals = {
     USER_TYPE_ICONS: {
         player: ' \uD83C\uDFAE',
         moderator: ' \uD83D\uDC51',
-        'player / temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
+        'temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
         spectator: ' \uD83D\uDC7B',
         killed: '\uD83D\uDC80'
     }

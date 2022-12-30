@@ -68,7 +68,7 @@ form {
     display: flex;
     flex-wrap: wrap;
     margin: 10px 0;
-    border-radius: 3px;
+    border-radius: 5px;
     justify-content: center;
     align-items: center;
 }
@@ -127,7 +127,7 @@ form > div {
     max-width: 90%;
     background-color: #0f0f10;
     padding: 0.5em;
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 20px;
 }
 

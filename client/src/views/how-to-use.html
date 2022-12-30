@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create A Game</title>
+    <title>How to Use</title>
     <meta name="description" content="How to use this app.">
     <meta property="og:title" content="How to use">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://playwerewolf.uk.r.appspot.com/how-to-use">
+    <meta property="og:url" content="https://play-werewolf.app/how-to-use">
     <meta property="og:description" content="How to use this app.">
     <meta property="og:image" content="image.png">
     <link rel="icon" href="/favicon.ico">
@@ -55,21 +55,19 @@
         <h3>Step One: Choosing method of moderation</h3>
         <br>
         You have two options for moderation during the game. If the moderator isn't playing, you can choose the <span class="emphasized">dedicated
-        moderator</span> option. Dedicated Moderators are <span class="emphasized">not dealt into the game</span>. Once they start the game, they will know
+        moderator</span> option. Dedicated Moderators are not dealt into the game. Once they start the game, they will know
         everyone's role. At that point, they can kill players, reveal players' roles to everyone else, transfer their
         moderator powers, play/pause the timer (if there is one), and end the game when team good or evil wins.
         <br><br>
-        Similarly, you can also choose the <span class="emphasized">temporary moderator</span> option. The key differences
-        here are that you are <span class="emphasized">dealt a role</span>. You have the same powers as the dedicated
-        moderator, with the exception of game knowledge - you know the same information that a regular player does.
-        When you remove the first player from the game, your powers will be automatically transferred to them - they become
-        the dedicated moderator, and you become a regular player.
+        Similarly, you can also choose the <span class="emphasized">temporary moderator</span> option. You are dealt a role,
+        and you have the same powers as the dedicated moderator, with the exception of game knowledge - you know the same
+        information that a regular player does. When you remove the first player from the game (which can be yourself),
+        they will automatically become the dedicated moderator, and the temporary moderator--if they are a different person--will become
+        a killed player.
         <br><br>
         <span class="emphasized">Dedicated moderators</span> can <span class="emphasized">transfer their moderator powers</span>
         to a player that is out, or to a spectator. That way, if the current dedicated moderator has to leave, or simply
         does not want to moderate anymore, they can easily delegate.
-        <br><br>
-        <img src="../images/tutorial/moderation-option.png" class="tutorial-image-small" alt="moderation-option"/>
         <br><br>
         <h3>Step Two: Build your deck</h3>
         <br>
@@ -92,35 +90,40 @@
         <br>
         If you don't fill in these fields, the game will be untimed. If you do, <span class="emphasized">you can use a time between 1 minute
         and 5 hours.</span> The timer can be played and paused by the current moderator. Importantly, when the timer expires,
-        <span class="emphasized">nothing automatically happens.</span> The timer will display 0s, but the game will not
-        end. Whether or not the game ends immediately after that or continues longer is up to the moderator.
-        <br><br>
+        <span class="emphasized">nothing automatically happens.</span> Users will be notified that it has expired, and
+        the timer will display 0s, but the game will not end. Moderators always choose to end or restart the game manually.<br><br>
     </div>
     <h1 class="how-to-use-header" id="being-the-moderator">Being the Moderator</h1>
     <div class="how-to-use-section">
         This is an example of what a <span class="emphasized">dedicated moderator</span> sees during the game:
         <br><br>
-        <img class='tutorial-image-small' src="../images/tutorial/dedicated-mod.PNG"/>
+        <img class='tutorial-image-small-portrait' src="../images/screenshots/dedicated_mod_inprogress_mobile.png"/>
         <br><br>
         They can see who is on which team and who has each role. The moderator kills and reveals players. They are
         separate actions - note the two buttons for each player. So if you want to play a game where people's roles are
         not revealed during the day or night, you can use the "kill" option but not the reveal option. Or, if you happen to
         have a role that reveals but is not immediately removed from the game, you can use the "reveal" option but not the
-        "kill" option.
+        "kill" option. You of course don't have to utilize either of these options. If you just want to use the app to deal
+        cards, you are free to do that.
         <br><br>
-        The <span class="emphasized">temporary moderator view</span> looks like this. They have
+        The moderator also has permissions to play and pause the timer, and can end the game (revealing everyone's role)
+        or restart the game, which will reset the timer, give everyone new roles, and reset the status of anyone that was
+        killed or revealed.
+        <br><br>
+        The <span class="emphasized">temporary moderator view</span> looks like the below image. They have
         much the same abilities as a dedicated moderator, except they don't know role or alignment information and cannot
-        transfer their powers. Their powers will be transferred automatically to the first person they remove from the game:
+        transfer their powers. Their powers will be transferred automatically to the first person they remove from the game
+        (which can be themselves).
         <br><br>
-        <img class='tutorial-image-small' src="../images/tutorial/temporary-mod.PNG"/>
+        <img class='tutorial-image-small-portrait' src="../images/screenshots/temp_mod_inprogress_mobile.png"/>
         <br><br>
         <h3>Transferring your moderator powers</h3>
         <br>
         <span class="emphasized">You can transfer your moderator abilities to anyone that has been removed from the game, or to anyone that happens
-            to be spectating.</span> After selecting them from the list, they will then inherit the moderator's view, and you will
-        become a spectator:
+            to be spectating.</span> Here we select a spectator and transfer our powers to them, and then we inherit the view
+            of what we were before, which is a player that was removed from the game:
         <br><br>
-        <img class='tutorial-image-small' src="../images/tutorial/transfer-mod.gif"/>
+        <img class='tutorial-image-small-portrait' src="../images/tutorial/mod-transfer.gif"/>
     </div>
     <h1 class="how-to-use-header" id="being-a-player">Being a Player</h1>
     <div class="how-to-use-section">

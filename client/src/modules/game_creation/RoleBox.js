@@ -333,7 +333,7 @@ function validateCustomRoleCookie (cookie) {
             const cookieJSON = JSON.parse(cookie);
             if (Array.isArray(cookieJSON)) {
                 for (const entry of cookieJSON) {
-                    if (typeof entry === 'object') {
+                    if (entry !== null && typeof entry === 'object') {
                         if (typeof entry.role !== 'string' || entry.role.length > globals.MAX_CUSTOM_ROLE_NAME_LENGTH
                             || typeof entry.team !== 'string' || (entry.team !== globals.ALIGNMENT.GOOD && entry.team !== globals.ALIGNMENT.EVIL)
                             || typeof entry.description !== 'string' || entry.description.length > globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH

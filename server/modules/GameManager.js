@@ -3,6 +3,7 @@ const Game = require('../model/Game');
 const Person = require('../model/Person');
 const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
+const GameCreationRequest = require('../model/GameCreationRequest');
 
 class GameManager {
     constructor (logger, environment, activeGameRunner) {
@@ -22,40 +23,43 @@ class GameManager {
     };
 
     createGame = (gameParams) => {
-        const expectedKeys = ['deck', 'hasTimer', 'timerParams', 'moderatorName'];
-        if (typeof gameParams !== 'object'
-            || expectedKeys.some((key) => !Object.keys(gameParams).includes(key))
-        ) {
-            this.logger.error('Tried to create game with invalid options: ' + JSON.stringify(gameParams));
-            return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
-        } else {
+        return GameCreationRequest.validate(gameParams).then(() => {
+            const req = new GameCreationRequest(
+                gameParams.deck,
+                gameParams.hasTimer,
+                gameParams.timerParams,
+                gameParams.moderatorName,
+                gameParams.hasDedicatedModerator
+            );
             this.pruneStaleGames();
             const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
             }
-            const moderator = initializeModerator(gameParams.moderatorName, gameParams.hasDedicatedModerator);
+            const moderator = initializeModerator(req.moderatorName, req.hasDedicatedModerator);
             moderator.assigned = true;
-            if (gameParams.timerParams !== null) {
-                gameParams.timerParams.paused = false;
+            if (req.timerParams !== null) {
+                req.timerParams.paused = false;
             }
             const newGame = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(gameParams.deck, moderator, this.shuffle),
-                gameParams.deck,
-                gameParams.hasTimer,
+                initializePeopleForGame(req.deck, moderator, this.shuffle),
+                req.deck,
+                req.hasTimer,
                 moderator,
-                gameParams.hasDedicatedModerator,
+                req.hasDedicatedModerator,
                 moderator.id,
                 new Date().toJSON(),
-                gameParams.timerParams
+                req.timerParams
             );
 
             this.activeGameRunner.activeGames.set(newAccessCode, newGame);
 
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
-        }
+        }).catch((message) => {
+            return Promise.reject(message);
+        });
     };
 
     startGame = (game, namespace) => {
@@ -180,6 +184,11 @@ class GameManager {
 
     transferModeratorPowers = (socket, game, person, namespace, logger) => {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
+            let spectatorsUpdated = false;
+            if (game.spectators.includes(person)) {
+                game.spectators.splice(game.spectators.indexOf(person), 1);
+                spectatorsUpdated = true;
+            }
             logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
             if (game.moderator === person) {
                 person.userType = globals.USER_TYPES.MODERATOR;
@@ -193,15 +202,17 @@ class GameManager {
                     game.moderator.userType = globals.USER_TYPES.KILLED_PLAYER; // restore their state from before being made mod.
                 } else if (game.moderator.userType === globals.USER_TYPES.MODERATOR) {
                     game.moderator.userType = globals.USER_TYPES.SPECTATOR;
-                    if (!game.spectators.includes(game.moderator)) {
-                        game.spectators.push(game.moderator);
-                    }
-                    if (game.spectators.includes(person)) {
-                        game.spectators.splice(game.spectators.indexOf(person), 1);
-                    }
+                    game.spectators.push(game.moderator);
+                    spectatorsUpdated = true;
                 }
                 person.userType = globals.USER_TYPES.MODERATOR;
                 game.moderator = person;
+                if (spectatorsUpdated === true) {
+                    namespace.in(game.accessCode).emit(
+                        globals.EVENTS.UPDATE_SPECTATORS,
+                        game.spectators.map((spectator) => GameStateCurator.mapPerson(spectator))
+                    );
+                }
                 this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
                 this.namespace.to(oldModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
             }
@@ -224,13 +235,18 @@ class GameManager {
         }
     };
 
-    joinGame = (game, name, cookie) => {
+    joinGame = (game, name, cookie, joinAsSpectator) => {
         const matchingPerson = findPersonByField(game, 'cookie', cookie);
         if (matchingPerson) {
             return Promise.resolve(matchingPerson.cookie);
         }
         if (isNameTaken(game, name)) {
-            return Promise.reject(400);
+            return Promise.reject({ status: 400, reason: 'This name is taken.' });
+        }
+        if (joinAsSpectator && game.spectators.length === globals.MAX_SPECTATORS) {
+            return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
+        } else if (joinAsSpectator) {
+            return addSpectator(game, name, this.logger, this.namespace);
         }
         const unassignedPerson = game.moderator.assigned === false
             ? game.moderator
@@ -246,20 +262,11 @@ class GameManager {
                 game.isFull
             );
             return Promise.resolve(unassignedPerson.cookie);
-        } else { // if the game is full, make them a spectator.
-            const spectator = new Person(
-                createRandomId(),
-                createRandomId(),
-                name,
-                globals.USER_TYPES.SPECTATOR
-            );
-            this.logger.trace('new spectator: ' + spectator.name);
-            game.spectators.push(spectator);
-            this.namespace.in(game.accessCode).emit(
-                globals.EVENTS.NEW_SPECTATOR,
-                GameStateCurator.mapPerson(spectator)
-            );
-            return Promise.resolve(spectator.cookie);
+        } else {
+            if (game.spectators.length === globals.MAX_SPECTATORS) {
+                return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
+            }
+            return addSpectator(game, name, this.logger, this.namespace);
         }
     };
 
@@ -494,6 +501,22 @@ function getGameSize (cards) {
     }
 
     return quantity;
+}
+
+function addSpectator (game, name, logger, namespace) {
+    const spectator = new Person(
+        createRandomId(),
+        createRandomId(),
+        name,
+        globals.USER_TYPES.SPECTATOR
+    );
+    logger.trace('new spectator: ' + spectator.name);
+    game.spectators.push(spectator);
+    namespace.in(game.accessCode).emit(
+        globals.EVENTS.UPDATE_SPECTATORS,
+        game.spectators.map((spectator) => { return GameStateCurator.mapPerson(spectator); })
+    );
+    return Promise.resolve(spectator.cookie);
 }
 
 module.exports = GameManager;

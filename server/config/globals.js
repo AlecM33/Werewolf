@@ -3,6 +3,12 @@ const globals = {
     ACCESS_CODE_LENGTH: 4,
     ACCESS_CODE_GENERATION_ATTEMPTS: 50,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
+    MAX_CUSTOM_ROLE_NAME_LENGTH: 50,
+    MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 1000,
+    ALIGNMENT: {
+        GOOD: 'good',
+        EVIL: 'evil'
+    },
     CORS: process.env.NODE_ENV?.trim() === 'development'
         ? {
             origin: '*',
@@ -49,7 +55,7 @@ const globals = {
     USER_TYPES: {
         MODERATOR: 'moderator',
         PLAYER: 'player',
-        TEMPORARY_MODERATOR: 'player / temp mod',
+        TEMPORARY_MODERATOR: 'temp mod',
         KILLED_PLAYER: 'killed',
         SPECTATOR: 'spectator'
     },
@@ -62,7 +68,7 @@ const globals = {
         PLAYER_JOINED: 'playerJoined',
         PLAYER_LEFT: 'playerLeft',
         SYNC_GAME_STATE: 'syncGameState',
-        NEW_SPECTATOR: 'newSpectator',
+        UPDATE_SPECTATORS: 'newSpectator',
         BROADCAST: 'broadcast'
     },
     ENVIRONMENT: {
@@ -84,7 +90,8 @@ const globals = {
         RESUME_TIMER: 'resumeTimer',
         GET_TIME_REMAINING: 'getTimeRemaining'
     },
-    MOCK_AUTH: 'mock_auth'
+    MOCK_AUTH: 'mock_auth',
+    MAX_SPECTATORS: 25
 };
 
 module.exports = globals;

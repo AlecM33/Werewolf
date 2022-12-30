@@ -56,6 +56,19 @@ export class InProgress {
             document.querySelector('#timer-container-moderator')?.remove();
             document.querySelector('label[for="game-timer"]')?.remove();
         }
+
+        const spectatorCount = this.container.querySelector('#spectator-count');
+
+        if (spectatorCount) {
+            spectatorCount?.addEventListener('click', () => {
+                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.spectators), null, true);
+            });
+
+            SharedStateUtil.setNumberOfSpectators(
+                this.stateBucket.currentGameState.spectators.length,
+                spectatorCount
+            );
+        }
     }
 
     renderPlayerView (isKilled = false) {
@@ -142,6 +155,7 @@ export class InProgress {
             const killedPerson = this.stateBucket.currentGameState.people.find((person) => person.id === id);
             if (killedPerson) {
                 killedPerson.out = true;
+                killedPerson.userType = globals.USER_TYPES.KILLED_PLAYER;
                 if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
                     toast(killedPerson.name + ' killed.', 'success', true, true, 'medium');
                     this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
@@ -189,13 +203,20 @@ export class InProgress {
             }
         });
 
-        if (this.socket.hasListeners(globals.EVENT_IDS.NEW_SPECTATOR)) {
-            this.socket.removeAllListeners(globals.EVENT_IDS.NEW_SPECTATOR);
+        if (this.socket.hasListeners(globals.EVENT_IDS.UPDATE_SPECTATORS)) {
+            this.socket.removeAllListeners(globals.EVENT_IDS.UPDATE_SPECTATORS);
         }
 
-        this.socket.on(globals.EVENT_IDS.NEW_SPECTATOR, (spectator) => {
-            stateBucket.currentGameState.spectators.push(spectator);
-            this.displayAvailableModerators();
+        this.socket.on(globals.EVENT_IDS.UPDATE_SPECTATORS, (updatedSpectatorList) => {
+            stateBucket.currentGameState.spectators = updatedSpectatorList;
+            SharedStateUtil.setNumberOfSpectators(
+                stateBucket.currentGameState.spectators.length,
+                document.getElementById('spectator-count')
+            );
+            if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                this.displayAvailableModerators();
+            }
         });
 
         if (this.stateBucket.currentGameState.timerParams) {
@@ -459,7 +480,10 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
             container.classList.add('potential-moderator');
             container.setAttribute('tabindex', '0');
             container.dataset.pointer = member.id;
-            container.innerText = member.name;
+            container.innerHTML =
+                '<div class=\'potential-mod-name\'></div>' +
+                '<div>' + member.userType + ' ' + globals.USER_TYPE_ICONS[member.userType] + ' </div>';
+            container.querySelector('.potential-mod-name').innerText = member.name;
             transferModHandlers[member.id] = (e) => {
                 if (e.type === 'click' || e.code === 'Enter') {
                     ModalManager.dispelModal('transfer-mod-modal', 'transfer-mod-modal-background');

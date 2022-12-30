@@ -54,11 +54,13 @@ export class GameCreationStepManager {
                 title: 'Set an optional timer:',
                 forwardHandler: (e) => {
                     if (e.type === 'click' || e.code === 'Enter') {
-                        const hours = parseInt(document.getElementById('game-hours').value);
-                        const minutes = parseInt(document.getElementById('game-minutes').value);
-                        if ((isNaN(hours) && isNaN(minutes))
-                            || (isNaN(hours) && minutes > 0 && minutes < 60)
-                            || (isNaN(minutes) && hours > 0 && hours < 6)
+                        let hours = parseInt(document.getElementById('game-hours').value);
+                        let minutes = parseInt(document.getElementById('game-minutes').value);
+                        hours = isNaN(hours) ? null : hours;
+                        minutes = isNaN(minutes) ? null : minutes;
+                        if ((hours === null && minutes === null)
+                            || (hours === null && minutes > 0 && minutes < 60)
+                            || (minutes === null && hours > 0 && hours < 6)
                             || (hours === 0 && minutes > 0 && minutes < 60)
                             || (minutes === 0 && hours > 0 && hours < 6)
                             || (hours > 0 && hours < 6 && minutes >= 0 && minutes < 60)
@@ -153,9 +155,12 @@ export class GameCreationStepManager {
                             }
                         }).catch((e) => {
                             restoreButton();
-                            toast(e.content, 'error', true, true, 'medium');
                             if (e.status === 429) {
                                 toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
+                            } else if (e.status === 413) {
+                                toast('Your request is too large.', 'error', true, true);
+                            } else {
+                                toast(e.content, 'error', true, true, 'medium');
                             }
                         });
                 }
@@ -406,11 +411,11 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
         : 'Temporary Moderator - deal me into the game.';
 
     if (game.hasTimer) {
-        const formattedHours = !isNaN(game.timerParams.hours)
+        const formattedHours = game.timerParams.hours !== null
             ? game.timerParams.hours + ' Hours'
             : '0 Hours';
 
-        const formattedMinutes = !isNaN(game.timerParams.minutes)
+        const formattedMinutes = game.timerParams.minutes !== null
             ? game.timerParams.minutes + ' Minutes'
             : '0 Minutes';
 
@@ -568,7 +573,7 @@ function processNewCustomRoleSubmission (name, description, team, deckManager, i
 }
 
 function hasTimer (hours, minutes) {
-    return (!isNaN(hours) || !isNaN(minutes));
+    return hours !== null || minutes !== null;
 }
 
 function validateName (name) {

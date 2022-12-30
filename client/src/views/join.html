@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Active Game</title>
     <meta name="description" content="Join this game of werewolf!">
-    <meta property="og:title" content="Werewolf Utility - Join Game">
+    <meta property="og:title" content="Join a Game">
     <meta property="og:type" content="website">
     <meta property="og:description" content="Join this game of werewolf!">
     <meta property="og:image" content="image.png">
@@ -43,7 +43,11 @@
             <input id="player-new-name" autocomplete="given-name" type="text"/>
         </div>
         <div class="modal-button-container">
-            <input type="submit" id="submit-new-name" value="Join Game"/>
+            <div>
+                <input type="checkbox" id="join-as-spectator" name="join as spectator">
+                <label for="join-as-spectator">Join as spectator</label>
+            </div>
+            <input type="submit" id="join-submit" value="Join"/>
         </div>
     </form>
 </div>

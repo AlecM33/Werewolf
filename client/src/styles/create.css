@@ -7,7 +7,7 @@
     background-color: #191920;
     color: gray;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
-    border-radius: 3px;
+    border-radius: 5px;
     user-select: none;
     display: flex;
     height: 55px;
@@ -106,9 +106,9 @@
     display: flex;
     justify-content: space-between;
     background-color: #0f0f10;
-    border: 2px solid #333243;
+    border: 2px solid #3b3a4a;
     padding: 5px;
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 16px;
     flex-direction: column;
     align-items: flex-start;
@@ -144,7 +144,7 @@
 }
 
 .deck-role {
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 0.25em 0;
     padding: 0 5px;
     font-size: 18px;
@@ -158,8 +158,8 @@
     margin: 1em 0.5em;
     background-color: #191920;
     padding: 10px;
-    border-radius: 3px;
-    border: 2px solid #333243;
+    border-radius: 5px;
+    border: 2px solid #3b3a4a;
     position: relative;
 }
 
@@ -173,10 +173,10 @@
 
 #deck-count {
     font-size: 30px;
-    background-color: #333243;
+    background-color: #3b3a4a;
     width: fit-content;
     padding: 0 5px;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 
 #deck-status-header {
@@ -236,8 +236,8 @@
     z-index: 25;
     top: 38px;
     right: 29px;
-    background-color: #333243;
-    border-radius: 3px;
+    background-color: #3b3a4a;
+    border-radius: 5px;
     box-shadow: -3px -3px 6px rgb(0 0 0 / 60%);
 }
 
@@ -245,7 +245,7 @@
     display: flex;
     width: 100%;
     padding: 10px;
-    background-color: #333243;
+    background-color: #3b3a4a;
     text-align: center;
     justify-content: center;
     align-items: center;
@@ -259,7 +259,7 @@
 
 #deck-good, #deck-evil {
     padding: 0;
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 0.5em;
     display: flex;
     flex-wrap: wrap;
@@ -288,7 +288,7 @@
     justify-content: center;
     align-items: center;
     width: fit-content;
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 0 auto;
 }
 
@@ -339,7 +339,7 @@ select {
     font-family: 'signika-negative', sans-serif;
     background-color: transparent;
     color: #d7d7d7;
-    border-radius: 3px;
+    border-radius: 5px;
     min-width: 10em;
     cursor: pointer;
 }
@@ -349,7 +349,7 @@ select {
     display: flex;
     flex-direction: column;
     padding: 10px;
-    border-radius: 3px;
+    border-radius: 5px;
     width: fit-content;
     margin: 1em 0;
 }
@@ -362,8 +362,8 @@ select {
     display: flex;
     flex-wrap: wrap;
     background-color: #191920;
-    border: 2px solid #333243;
-    border-radius: 3px;
+    border: 2px solid #3b3a4a;
+    border-radius: 5px;
 }
 
 .step {
@@ -400,7 +400,7 @@ select {
 label[for="game-time"], label[for="add-card-to-deck-form"], label[for="deck"] {
     color: #e7e7e7;
     font-size: 20px;
-    border-radius: 3px;
+    border-radius: 5px;
     margin-bottom: 10px;
     font-weight: bold;
 }
@@ -440,7 +440,7 @@ input[type="number"] {
     align-items: center;
     padding: 5px;
     margin: 0.25em 0;
-    border-radius: 3px;
+    border-radius: 5px;
     border: 1px solid transparent;
     font-size: 16px;
 }
@@ -466,7 +466,7 @@ input[type="number"] {
     margin: 0 8px;
     cursor: pointer;
     padding: 5px;
-    border-radius: 3px;
+    border-radius: 5px;
     border: 1px solid transparent;
 }
 
@@ -593,8 +593,8 @@ input[type="number"] {
     max-width: 20em;
     margin: 0.5em;
     cursor: pointer;
-    border: 2px solid #333243;
-    border-radius: 3px;
+    border: 2px solid #3b3a4a;
+    border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
 
@@ -613,12 +613,12 @@ input[type="number"] {
 
 .review-option {
     background-color: #191920;
-    border: 2px solid #333243;
+    border: 2px solid #3b3a4a;
     color: #e7e7e7;
     padding: 10px;
     font-size: 18px;
     width: fit-content;
-    border-radius: 3px;
+    border-radius: 5px;
     margin: 0.5em 0;
     align-self: flex-start;
 }

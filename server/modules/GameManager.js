@@ -23,6 +23,7 @@ class GameManager {
     };
 
     createGame = (gameParams) => {
+        this.logger.debug('Received request to create new game.');
         return GameCreationRequest.validate(gameParams).then(() => {
             const req = new GameCreationRequest(
                 gameParams.deck,
@@ -58,6 +59,7 @@ class GameManager {
 
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
         }).catch((message) => {
+            this.logger.debug('Received invalid request to create new game.');
             return Promise.reject(message);
         });
     };

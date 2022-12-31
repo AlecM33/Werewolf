@@ -452,7 +452,7 @@ label[for='moderator'] {
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    position: absolute;
+    position: fixed;
     z-index: 3;
     font-family: 'signika-negative', sans-serif;
     font-weight: 100;

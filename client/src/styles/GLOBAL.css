@@ -28,7 +28,6 @@ body {
     flex-direction: column;
     align-items: flex-start;
     margin: 0 auto;
-    position: relative;
     background-color: #0f0f10;
 }
 

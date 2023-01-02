@@ -329,10 +329,10 @@ class GameManager {
         const matchingPerson = findPersonByField(game, 'cookie', personCookie);
         if (matchingPerson) {
             if (matchingPerson.socketId === clientSocket.id) {
-                logger.trace('matching person found with an established connection to the room: ' + matchingPerson.name);
+                logger.debug('matching person found with an established connection to the room: ' + matchingPerson.name);
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
             } else {
-                logger.trace('matching person found with a new connection to the room: ' + matchingPerson.name);
+                logger.debug('matching person found with a new connection to the room: ' + matchingPerson.name);
                 clientSocket.join(accessCode);
                 matchingPerson.socketId = clientSocket.id;
                 ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));

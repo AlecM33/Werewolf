@@ -1,4 +1,4 @@
-const globals = require('../config/globals');
+const globals = require('../../config/globals');
 const EVENT_IDS = globals.EVENT_IDS;
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 

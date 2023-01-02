@@ -4,9 +4,9 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const SocketManager = require('./SocketManager.js');
-const GameManager = require('./GameManager.js');
-const ActiveGameRunner = require('./ActiveGameRunner.js');
+const SocketManager = require('./singletons/SocketManager.js');
+const GameManager = require('./singletons/GameManager.js');
+const ActiveGameRunner = require('./singletons/ActiveGameRunner.js');
 const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 

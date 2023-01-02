@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
-const socketManager = (require('../modules/SocketManager.js')).instance;
-const gameManager = (require('../modules/GameManager.js')).instance;
+const socketManager = (require('../modules/singletons/SocketManager.js')).instance;
+const gameManager = (require('../modules/singletons/GameManager.js')).instance;
 const globals = require('../config/globals.js');
 const cors = require('cors');
 

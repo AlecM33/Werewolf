@@ -1,6 +1,6 @@
 const { fork } = require('child_process');
 const path = require('path');
-const globals = require('../config/globals');
+const globals = require('../../config/globals');
 
 class ActiveGameRunner {
     constructor (logger) {

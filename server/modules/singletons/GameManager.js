@@ -1,9 +1,9 @@
-const globals = require('../config/globals');
-const Game = require('../model/Game');
-const Person = require('../model/Person');
-const GameStateCurator = require('./GameStateCurator');
-const UsernameGenerator = require('./UsernameGenerator');
-const GameCreationRequest = require('../model/GameCreationRequest');
+const globals = require('../../config/globals');
+const Game = require('../../model/Game');
+const Person = require('../../model/Person');
+const GameStateCurator = require('../GameStateCurator');
+const UsernameGenerator = require('../UsernameGenerator');
+const GameCreationRequest = require('../../model/GameCreationRequest');
 
 class GameManager {
     constructor (logger, environment, activeGameRunner) {

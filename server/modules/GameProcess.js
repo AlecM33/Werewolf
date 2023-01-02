@@ -3,6 +3,7 @@ const ServerTimer = require('./ServerTimer.js');
 
 let timer;
 
+// This is a subprocess spawned by logic in the ActiveGameRunner module.
 process.on('message', (msg) => {
     const logger = require('./Logger')(msg.logLevel);
     switch (msg.command) {

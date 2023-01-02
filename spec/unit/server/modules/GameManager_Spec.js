@@ -4,9 +4,9 @@ const globals = require('../../../../server/config/globals');
 const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
 const Person = require('../../../../server/model/Person');
-const GameManager = require('../../../../server/modules/GameManager.js');
+const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const GameStateCurator = require('../../../../server/modules/GameStateCurator.js');
-const ActiveGameRunner = require('../../../../server/modules/ActiveGameRunner.js');
+const ActiveGameRunner = require('../../../../server/modules/singletons/ActiveGameRunner.js');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {

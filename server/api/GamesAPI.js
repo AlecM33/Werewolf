@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
-const GameManager = require('../modules/GameManager.js');
+const GameManager = require('../modules/singletons/GameManager.js');
 const rateLimit = require('express-rate-limit').default;
 const globals = require('../config/globals.js');
 const cors = require('cors');

@@ -19,7 +19,7 @@ class ActiveGameRunner {
      */
     runGame = (game, namespace) => {
         this.logger.debug('running game ' + game.accessCode);
-        const gameProcess = fork(path.join(__dirname, '/GameProcess.js'));
+        const gameProcess = fork(path.join(__dirname, '../GameProcess.js'));
         this.timerThreads[game.accessCode] = gameProcess;
         this.logger.debug('game ' + game.accessCode + ' now associated with subProcess ' + gameProcess.pid);
         gameProcess.on('message', (msg) => {

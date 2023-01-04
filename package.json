@@ -39,10 +39,11 @@
   },
   "devDependencies": {
     "acorn": "^8.6.0",
-    "eslint": "^8.31.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint": "^7.12.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-promise": "^5.0.0",
     "jasmine-browser-runner": "^1.0.0",
     "jasmine-core": "^4.0.1",
     "karma": "^6.3.16",

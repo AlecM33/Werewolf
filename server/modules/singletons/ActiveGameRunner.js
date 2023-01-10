@@ -1,17 +1,51 @@
 const { fork } = require('child_process');
 const path = require('path');
 const globals = require('../../config/globals');
+const redis = require('redis');
 
 class ActiveGameRunner {
-    constructor (logger) {
+    constructor (logger, instanceId) {
         if (ActiveGameRunner.instance) {
             throw new Error('The server tried to instantiate more than one ActiveGameRunner');
         }
         logger.info('CREATING SINGLETON ACTIVE GAME RUNNER');
-        this.activeGames = new Map();
         this.timerThreads = {};
         this.logger = logger;
+        this.client = redis.createClient();
+        this.publisher = null;
+        this.subscriber = null;
+        this.instanceId = instanceId;
         ActiveGameRunner.instance = this;
+    }
+
+    refreshActiveGames = async () => {
+        await this.client.hGetAll('activeGames').then(async (r) => {
+            this.activeGames = new Map(Object.entries(r).map(([k, v]) => {
+                return [k, JSON.parse(v)];
+            }));
+        });
+    }
+
+    createGameSyncSubscriber = async (gameManager, socketManager) => {
+        this.subscriber = this.client.duplicate();
+        await this.subscriber.connect();
+        await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
+            this.logger.info('MESSAGE: ' + message);
+            let messageComponents = message.split(';');
+            if (messageComponents[messageComponents.length - 1] === this.instanceId) {
+                this.logger.trace('Disregarding self-authored message');
+                return;
+            }
+            const game = this.activeGames.get(messageComponents[0]);
+            let args;
+            if (messageComponents[2]) {
+                args = JSON.parse(messageComponents[2]);
+            }
+            if (game || messageComponents[1] === globals.EVENT_IDS.NEW_GAME) {
+                await socketManager.handleEventById(messageComponents[1], game, null, gameManager, game?.accessCode || messageComponents[0], args ? args : null, null)
+            }
+        });
+        this.logger.info('ACTIVE GAME RUNNER - CREATED GAME SYNC SUBSCRIBER');
     }
 
     /* We're only going to fork a child process for games with a timer. They will report back to the parent process whenever

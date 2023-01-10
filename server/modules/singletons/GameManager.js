@@ -4,9 +4,11 @@ const Person = require('../../model/Person');
 const GameStateCurator = require('../GameStateCurator');
 const UsernameGenerator = require('../UsernameGenerator');
 const GameCreationRequest = require('../../model/GameCreationRequest');
+const redis = require('redis');
+
 
 class GameManager {
-    constructor (logger, environment, activeGameRunner) {
+    constructor (logger, environment, activeGameRunner, instanceId) {
         if (GameManager.instance) {
             throw new Error('The server tried to instantiate more than one GameManager');
         }
@@ -15,16 +17,29 @@ class GameManager {
         this.environment = environment;
         this.activeGameRunner = activeGameRunner;
         this.namespace = null;
+        this.publisher = null;
+        this.instanceId = instanceId;
         GameManager.instance = this;
+    }
+
+    createRedisPublisher = async () => {
+        this.publisher = redis.createClient();
+        await this.publisher.connect();
+        this.logger.info('GAME MANAGER - CREATED GAME SYNC PUBLISHER');
     }
 
     setGameSocketNamespace = (namespace) => {
         this.namespace = namespace;
     };
 
-    createGame = (gameParams) => {
+    refreshGame = async (game) => {
+        this.logger.debug('PUSHING REFRESH OF ' +  game.accessCode);
+        await this.activeGameRunner.client.hSet('activeGames', game.accessCode, JSON.stringify(game));
+    }
+
+    createGame = async (gameParams) => {
         this.logger.debug('Received request to create new game.');
-        return GameCreationRequest.validate(gameParams).then(() => {
+        return GameCreationRequest.validate(gameParams).then(async () => {
             const req = new GameCreationRequest(
                 gameParams.deck,
                 gameParams.hasTimer,
@@ -32,8 +47,8 @@ class GameManager {
                 gameParams.moderatorName,
                 gameParams.hasDedicatedModerator
             );
-            this.pruneStaleGames();
-            const newAccessCode = this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
+            await this.pruneStaleGames();
+            const newAccessCode = await this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
             }
@@ -56,26 +71,34 @@ class GameManager {
             );
 
             this.activeGameRunner.activeGames.set(newAccessCode, newGame);
+            await this.activeGameRunner.client.hSet('activeGames', newAccessCode, JSON.stringify(newGame));
+
+            this.publisher?.publish(
+                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                newGame.accessCode + ';' + globals.EVENT_IDS.NEW_GAME + ';' + JSON.stringify({ newGame: newGame }) + ';' + this.instanceId
+            );
 
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
         }).catch((message) => {
+            console.log(message);
             this.logger.debug('Received invalid request to create new game.');
             return Promise.reject(message);
         });
     };
 
-    startGame = (game, namespace) => {
+    startGame = async (game, namespace) => {
         if (game.isFull) {
             game.status = globals.STATUS.IN_PROGRESS;
             if (game.hasTimer) {
                 game.timerParams.paused = true;
                 this.activeGameRunner.runGame(game, namespace);
             }
+            await this.refreshGame(game);
             namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
         }
     };
 
-    pauseTimer = (game, logger) => {
+    pauseTimer = async (game, logger) => {
         const thread = this.activeGameRunner.timerThreads[game.accessCode];
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
@@ -87,7 +110,8 @@ class GameManager {
         }
     };
 
-    resumeTimer = (game, logger) => {
+    resumeTimer = async (game, logger) => {
+        await this.activeGameRunner.refreshActiveGames();
         const thread = this.activeGameRunner.timerThreads[game.accessCode];
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
@@ -99,52 +123,43 @@ class GameManager {
         }
     };
 
-    getTimeRemaining = (game, socket) => {
-        const thread = this.activeGameRunner.timerThreads[game.accessCode];
-        if (thread && (!thread.killed && thread.exitCode === null)) {
-            thread.send({
-                command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                accessCode: game.accessCode,
-                socketId: socket.id,
-                logLevel: this.logger.logLevel
-            });
-        } else if (thread) {
-            if (game.timerParams && game.timerParams.timeRemaining === 0) {
-                this.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+    getTimeRemaining = async (game, socketId) => {
+        if (socketId) {
+            await this.activeGameRunner.refreshActiveGames();
+            const thread = this.activeGameRunner.timerThreads[game.accessCode];
+            if (thread && (!thread.killed && thread.exitCode === null)) {
+                thread.send({
+                    command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    accessCode: game.accessCode,
+                    socketId: socketId,
+                    logLevel: this.logger.logLevel
+                });
+            } else if (thread) {
+                if (game.timerParams && game.timerParams.timeRemaining === 0) {
+                    this.namespace.to(socketId).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+                }
             }
         }
     };
 
-    revealPlayer = (game, personId) => {
+    revealPlayer = async (game, personId) => {
         const person = game.people.find((person) => person.id === personId);
         if (person && !person.revealed) {
             this.logger.debug('game ' + game.accessCode + ': revealing player ' + person.name);
             person.revealed = true;
+            await this.refreshGame(game);
             this.namespace.in(game.accessCode).emit(
                 globals.EVENT_IDS.REVEAL_PLAYER,
                 {
                     id: person.id,
                     gameRole: person.gameRole,
                     alignment: person.alignment
-                });
+                }
+            );
         }
     };
 
-    changeName = (game, data, ackFn) => {
-        const person = findPersonByField(game, 'id', data.personId);
-        if (person) {
-            if (!isNameTaken(game, data.name)) {
-                ackFn('changed');
-                person.name = data.name.trim();
-                person.hasEnteredName = true;
-                this.namespace.in(game.accessCode).emit(globals.EVENT_IDS.CHANGE_NAME, person.id, person.name);
-            } else {
-                ackFn('taken');
-            }
-        }
-    };
-
-    endGame = (game) => {
+    endGame = async (game) => {
         game.status = globals.STATUS.ENDED;
         if (this.activeGameRunner.timerThreads[game.accessCode]) {
             this.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
@@ -153,10 +168,11 @@ class GameManager {
         for (const person of game.people) {
             person.revealed = true;
         }
+        await this.refreshGame(game);
         this.namespace.in(game.accessCode).emit(globals.EVENT_IDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
     };
 
-    checkAvailability = (code) => {
+    checkAvailability = async (code) => {
         const game = this.activeGameRunner.activeGames.get(code.toUpperCase().trim());
         if (game) {
             return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
@@ -165,7 +181,7 @@ class GameManager {
         }
     };
 
-    generateAccessCode = (charPool) => {
+    generateAccessCode = async (charPool) => {
         const charCount = charPool.length;
         let codeDigits, accessCode;
         let attempts = 0;
@@ -184,7 +200,7 @@ class GameManager {
             : accessCode;
     };
 
-    transferModeratorPowers = (socket, game, person, namespace, logger) => {
+    transferModeratorPowers = async (socketId, game, person, namespace, logger) => {
         if (person && (person.out || person.userType === globals.USER_TYPES.SPECTATOR)) {
             let spectatorsUpdated = false;
             if (game.spectators.includes(person)) {
@@ -195,7 +211,9 @@ class GameManager {
             if (game.moderator === person) {
                 person.userType = globals.USER_TYPES.MODERATOR;
                 this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                socket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+                if (socketId) {
+                    this.namespace.sockets.get(socketId).to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+                }
             } else {
                 const oldModerator = game.moderator;
                 if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
@@ -218,10 +236,11 @@ class GameManager {
                 this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
                 this.namespace.to(oldModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
             }
+            await this.refreshGame(game);
         }
     };
 
-    killPlayer = (socket, game, person, namespace, logger) => {
+    killPlayer = async (socketId, game, person, namespace, logger) => {
         if (person && !person.out) {
             logger.debug('game ' + game.accessCode + ': killing player ' + person.name);
             if (person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
@@ -230,14 +249,15 @@ class GameManager {
             person.out = true;
             // temporary moderators will transfer their powers automatically to the first person they kill.
             if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                this.transferModeratorPowers(socket, game, person, namespace, logger);
+                await this.transferModeratorPowers(socketId, game, person, namespace, logger);
             } else {
+                await this.refreshGame(game);
                 namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
             }
         }
     };
 
-    joinGame = (game, name, cookie, joinAsSpectator) => {
+    joinGame = async (game, name, cookie, joinAsSpectator) => {
         const matchingPerson = findPersonByField(game, 'cookie', cookie);
         if (matchingPerson) {
             return Promise.resolve(matchingPerson.cookie);
@@ -248,7 +268,7 @@ class GameManager {
         if (joinAsSpectator && game.spectators.length === globals.MAX_SPECTATORS) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
         } else if (joinAsSpectator) {
-            return addSpectator(game, name, this.logger, this.namespace);
+            return await addSpectator(game, name, this.logger, this.namespace, this.publisher, this.instanceId, this.refreshGame);
         }
         const unassignedPerson = game.moderator.assigned === false
             ? game.moderator
@@ -257,7 +277,12 @@ class GameManager {
             this.logger.trace('request from client to join game. Assigning: ' + unassignedPerson.name);
             unassignedPerson.assigned = true;
             unassignedPerson.name = name;
-            game.isFull = isGameFull(game);
+            game.isFull = this.isGameFull(game);
+            await this.refreshGame(game);
+            await this.publisher?.publish(
+                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                game.accessCode + ';' + globals.EVENT_IDS.PLAYER_JOINED + ';' + JSON.stringify(unassignedPerson) + ';' + this.instanceId
+            );
             this.namespace.in(game.accessCode).emit(
                 globals.EVENTS.PLAYER_JOINED,
                 GameStateCurator.mapPerson(unassignedPerson),
@@ -268,7 +293,7 @@ class GameManager {
             if (game.spectators.length === globals.MAX_SPECTATORS) {
                 return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
             }
-            return addSpectator(game, name, this.logger, this.namespace);
+            return await addSpectator(game, name, this.logger, this.namespace, this.publisher, this.instanceId, this.refreshGame);
         }
     };
 
@@ -322,50 +347,32 @@ class GameManager {
             this.activeGameRunner.runGame(game, namespace);
         }
 
+        await this.refreshGame(game);
         namespace.in(game.accessCode).emit(globals.EVENT_IDS.RESTART_GAME);
     };
 
-    handleRequestForGameState = async (game, namespace, logger, gameRunner, accessCode, personCookie, ackFn, clientSocket) => {
+    handleRequestForGameState = async (game, namespace, logger, gameRunner, accessCode, personCookie, ackFn, socketId) => {
         const matchingPerson = findPersonByField(game, 'cookie', personCookie);
         if (matchingPerson) {
-            if (matchingPerson.socketId === clientSocket.id) {
+            if (matchingPerson.socketId === socketId) {
                 logger.debug('matching person found with an established connection to the room: ' + matchingPerson.name);
-                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
+                if (ackFn) {
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
+                }
             } else {
                 logger.debug('matching person found with a new connection to the room: ' + matchingPerson.name);
-                clientSocket.join(accessCode);
-                matchingPerson.socketId = clientSocket.id;
-                ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
-            }
-        } else {
-            rejectClientRequestForGameState(ackFn);
-        }
-    };
-
-    removeClientFromLobbyIfApplicable (socket) {
-        socket.rooms.forEach((room) => {
-            if (this.activeGameRunner.activeGames.get(room)) {
-                this.logger.trace('disconnected socket is in a game');
-                const game = this.activeGameRunner.activeGames.get(room);
-                if (game.status === globals.STATUS.LOBBY) {
-                    const matchingPlayer = findPlayerBySocketId(game.people, socket.id);
-                    if (matchingPlayer) {
-                        this.logger.trace('un-assigning disconnected player: ' + matchingPlayer.name);
-                        matchingPlayer.assigned = false;
-                        matchingPlayer.socketId = null;
-                        matchingPlayer.cookie = createRandomId();
-                        matchingPlayer.hasEnteredName = false;
-                        socket.to(game.accessCode).emit(
-                            globals.EVENTS.PLAYER_LEFT,
-                            GameStateCurator.mapPerson(matchingPlayer)
-                        );
-                        game.isFull = isGameFull(game);
-                        matchingPlayer.name = UsernameGenerator.generate();
-                    }
+                this.namespace.sockets.get(socketId).join(accessCode);
+                matchingPerson.socketId = socketId;
+                if (ackFn) {
+                    ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
                 }
             }
-        });
-    }
+        } else {
+            if (ackFn) {
+                rejectClientRequestForGameState(ackFn);
+            }
+        }
+    };
 
     /*
     -- To shuffle an array a of n elements (indices 0..n-1):
@@ -384,8 +391,9 @@ class GameManager {
         return array;
     };
 
-    pruneStaleGames = () => {
-        this.activeGameRunner.activeGames.forEach((value, key) => {
+    pruneStaleGames = async () => {
+        await this.activeGameRunner.refreshActiveGames();
+        this.activeGameRunner.activeGames.forEach((key, value) => {
             if (value.createTime) {
                 const createDate = new Date(value.createTime);
                 if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
@@ -400,6 +408,10 @@ class GameManager {
             }
         });
     };
+
+    isGameFull = (game) => {
+        return game.moderator.assigned === true && !game.people.find((person) => person.assigned === false);
+    }
 }
 
 function getRandomInt (max) {
@@ -471,10 +483,6 @@ function findPlayerBySocketId (people, socketId) {
     return people.find((person) => person.socketId === socketId && person.userType === globals.USER_TYPES.PLAYER);
 }
 
-function isGameFull (game) {
-    return game.moderator.assigned === true && !game.people.find((person) => person.assigned === false);
-}
-
 function findPersonByField (game, fieldName, value) {
     let person;
     if (value === game.moderator[fieldName]) {
@@ -505,7 +513,7 @@ function getGameSize (cards) {
     return quantity;
 }
 
-function addSpectator (game, name, logger, namespace) {
+async function addSpectator (game, name, logger, namespace, publisher, instanceId, refreshGame) {
     const spectator = new Person(
         createRandomId(),
         createRandomId(),
@@ -514,10 +522,15 @@ function addSpectator (game, name, logger, namespace) {
     );
     logger.trace('new spectator: ' + spectator.name);
     game.spectators.push(spectator);
+    await refreshGame(game);
     namespace.in(game.accessCode).emit(
         globals.EVENTS.UPDATE_SPECTATORS,
         game.spectators.map((spectator) => { return GameStateCurator.mapPerson(spectator); })
     );
+    publisher.publish(
+        globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+        game.accessCode + ';' + globals.EVENT_IDS.SPECTATOR_JOINED + ';' + JSON.stringify(spectator) + ';' + instanceId
+);
     return Promise.resolve(spectator.cookie);
 }
 

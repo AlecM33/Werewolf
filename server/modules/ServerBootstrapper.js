@@ -12,13 +12,13 @@ const rateLimit = require('express-rate-limit').default;
 
 const ServerBootstrapper = {
 
-    singletons: (logger) => {
+    singletons: (logger, instanceId) => {
         return {
-            activeGameRunner: new ActiveGameRunner(logger),
-            socketManager: new SocketManager(logger, ActiveGameRunner.instance),
+            activeGameRunner: new ActiveGameRunner(logger, instanceId),
+            socketManager: new SocketManager(logger, ActiveGameRunner.instance, instanceId),
             gameManager: process.env.NODE_ENV.trim() === 'development'
-                ? new GameManager(logger, ENVIRONMENT.LOCAL, ActiveGameRunner.instance)
-                : new GameManager(logger, ENVIRONMENT.PRODUCTION, ActiveGameRunner.instance)
+                ? new GameManager(logger, ENVIRONMENT.LOCAL, ActiveGameRunner.instance, instanceId)
+                : new GameManager(logger, ENVIRONMENT.PRODUCTION, ActiveGameRunner.instance, instanceId)
         };
     },
 

@@ -1,5 +1,6 @@
 const globals = {
     ACCESS_CODE_CHAR_POOL: 'BCDFGHJKLMNPQRSTVWXYZ23456789',
+    INSTANCE_ID_CHAR_POOL: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
     ACCESS_CODE_LENGTH: 4,
     ACCESS_CODE_GENERATION_ATTEMPTS: 50,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
@@ -8,6 +9,9 @@ const globals = {
     ALIGNMENT: {
         GOOD: 'good',
         EVIL: 'evil'
+    },
+    REDIS_CHANNELS: {
+      ACTIVE_GAME_STREAM: 'active_game_stream'
     },
     CORS: process.env.NODE_ENV?.trim() === 'development'
         ? {
@@ -31,6 +35,7 @@ const globals = {
         IN_GAME_MESSAGE: 'inGameMessage'
     },
     EVENT_IDS: {
+        NEW_GAME: 'newGame',
         FETCH_GAME_STATE: 'fetchGameState',
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',
@@ -41,7 +46,9 @@ const globals = {
         TRANSFER_MODERATOR: 'transferModerator',
         CHANGE_NAME: 'changeName',
         END_GAME: 'endGame',
-        RESTART_GAME: 'restartGame'
+        RESTART_GAME: 'restartGame',
+        PLAYER_JOINED: 'playerJoined',
+        SPECTATOR_JOINED: 'spectatorJoined'
     },
     MESSAGES: {
         ENTER_NAME: 'Client must enter name.'
@@ -52,6 +59,7 @@ const globals = {
         ENDED: 'ended'
     },
     USER_SIGNATURE_LENGTH: 25,
+    INSTANCE_ID_LENGTH: 75,
     USER_TYPES: {
         MODERATOR: 'moderator',
         PLAYER: 'player',

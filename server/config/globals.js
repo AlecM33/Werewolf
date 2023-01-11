@@ -48,7 +48,27 @@ const globals = {
         END_GAME: 'endGame',
         RESTART_GAME: 'restartGame',
         PLAYER_JOINED: 'playerJoined',
-        SPECTATOR_JOINED: 'spectatorJoined'
+        UPDATE_SPECTATORS: 'updateSpectators',
+        SYNC_GAME_STATE: 'syncGameState',
+        UPDATE_SOCKET: 'updateSocket'
+    },
+    SYNCABLE_EVENTS: function () {
+        return [
+            this.EVENT_IDS.NEW_GAME,
+            this.EVENT_IDS.START_GAME,
+            this.EVENT_IDS.PAUSE_TIMER,
+            this.EVENT_IDS.RESUME_TIMER,
+            this.EVENT_IDS.GET_TIME_REMAINING,
+            this.EVENT_IDS.KILL_PLAYER,
+            this.EVENT_IDS.REVEAL_PLAYER,
+            this.EVENT_IDS.TRANSFER_MODERATOR,
+            this.EVENT_IDS.END_GAME,
+            this.EVENT_IDS.RESTART_GAME,
+            this.EVENT_IDS.PLAYER_JOINED,
+            this.EVENT_IDS.UPDATE_SPECTATORS,
+            this.EVENT_IDS.SYNC_GAME_STATE,
+            this.EVENT_IDS.UPDATE_SOCKET
+        ]
     },
     MESSAGES: {
         ENTER_NAME: 'Client must enter name.'

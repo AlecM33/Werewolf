@@ -15,10 +15,10 @@ const ServerBootstrapper = {
     singletons: (logger, instanceId) => {
         return {
             activeGameRunner: new ActiveGameRunner(logger, instanceId),
-            socketManager: new SocketManager(logger, ActiveGameRunner.instance, instanceId),
+            socketManager: new SocketManager(logger, instanceId),
             gameManager: process.env.NODE_ENV.trim() === 'development'
-                ? new GameManager(logger, ENVIRONMENT.LOCAL, ActiveGameRunner.instance, instanceId)
-                : new GameManager(logger, ENVIRONMENT.PRODUCTION, ActiveGameRunner.instance, instanceId)
+                ? new GameManager(logger, ENVIRONMENT.LOCAL, instanceId)
+                : new GameManager(logger, ENVIRONMENT.PRODUCTION, instanceId)
         };
     },
 

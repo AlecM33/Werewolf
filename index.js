@@ -6,6 +6,9 @@ const main = async () => {
             const express = require('express');
             const app = express();
             const ServerBootstrapper = require('./server/modules/ServerBootstrapper');
+            const ActiveGameRunner = require('./server/modules/singletons/ActiveGameRunner');
+            const GameManager = require('./server/modules/singletons/GameManager');
+            const SocketManager = require('./server/modules/singletons/SocketManager');
             const globals = require('./server/config/globals');
 
             app.use(express.json({limit: '10kb'}));
@@ -25,10 +28,13 @@ const main = async () => {
                 }
                 return id;
             })());
+            singletons.gameManager.activeGameRunner = ActiveGameRunner.instance;
+            singletons.gameManager.socketManager = SocketManager.instance;
+            singletons.socketManager.activeGameRunner = ActiveGameRunner.instance;
+            singletons.socketManager.gameManager = GameManager.instance;
 
             await singletons.activeGameRunner.client.connect();
             console.log('Root Redis client connected');
-            await singletons.activeGameRunner.refreshActiveGames();
             await singletons.activeGameRunner.createGameSyncSubscriber(singletons.gameManager, singletons.socketManager);
             await singletons.socketManager.createRedisPublisher();
             await singletons.gameManager.createRedisPublisher();

@@ -18,12 +18,9 @@ class ActiveGameRunner {
         ActiveGameRunner.instance = this;
     }
 
-    refreshActiveGames = async () => {
-        await this.client.hGetAll('activeGames').then(async (r) => {
-            this.activeGames = new Map(Object.entries(r).map(([k, v]) => {
-                return [k, JSON.parse(v)];
-            }));
-        });
+    getActiveGame = async (accessCode) => {
+        const r = await this.client.hGet('activeGames', accessCode);
+        return JSON.parse(r);
     }
 
     createGameSyncSubscriber = async (gameManager, socketManager) => {
@@ -36,13 +33,21 @@ class ActiveGameRunner {
                 this.logger.trace('Disregarding self-authored message');
                 return;
             }
-            const game = this.activeGames.get(messageComponents[0]);
+            const game = await this.getActiveGame(messageComponents[0]);
             let args;
             if (messageComponents[2]) {
                 args = JSON.parse(messageComponents[2]);
             }
-            if (game || messageComponents[1] === globals.EVENT_IDS.NEW_GAME) {
-                await socketManager.handleEventById(messageComponents[1], game, null, gameManager, game?.accessCode || messageComponents[0], args ? args : null, null)
+            if (game) {
+                await socketManager.handleEventById(
+                    messageComponents[1],
+                    game,
+                    null,
+                    game?.accessCode || messageComponents[0],
+                    args ? args : null,
+                    null,
+                    true
+                )
             }
         });
         this.logger.info('ACTIVE GAME RUNNER - CREATED GAME SYNC SUBSCRIBER');

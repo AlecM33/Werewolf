@@ -20,11 +20,11 @@ router.post('/sockets/broadcast', function (req, res) {
     res.status(201).send('Broadcasted message to all connected sockets: ' + req.body?.message);
 });
 
-router.get('/games/state', function (req, res) {
+router.get('/games/state', async (req, res) => {
     const gamesArray = [];
-    for (const key of gameManager.activeGameRunner.activeGames.keys()) {
-        gamesArray.push(gameManager.activeGameRunner.activeGames.get(key));
-    }
+    await this.client.hGetAll('activeGames').then(async (r) => {
+        Object.values(r).forEach((v) => gamesArray.push(v));
+    });
     res.status(200).send(gamesArray);
 });
 

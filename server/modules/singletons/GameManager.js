@@ -8,14 +8,15 @@ const redis = require('redis');
 
 
 class GameManager {
-    constructor (logger, environment, activeGameRunner, instanceId) {
+    constructor (logger, environment, instanceId) {
         if (GameManager.instance) {
             throw new Error('The server tried to instantiate more than one GameManager');
         }
         logger.info('CREATING SINGLETON GAME MANAGER');
         this.logger = logger;
         this.environment = environment;
-        this.activeGameRunner = activeGameRunner;
+        this.activeGameRunner = null;
+        this.socketManager = null;
         this.namespace = null;
         this.publisher = null;
         this.instanceId = instanceId;
@@ -47,7 +48,7 @@ class GameManager {
                 gameParams.moderatorName,
                 gameParams.hasDedicatedModerator
             );
-            await this.pruneStaleGames();
+            //await this.pruneStaleGames();
             const newAccessCode = await this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
@@ -69,15 +70,7 @@ class GameManager {
                 new Date().toJSON(),
                 req.timerParams
             );
-
-            this.activeGameRunner.activeGames.set(newAccessCode, newGame);
             await this.activeGameRunner.client.hSet('activeGames', newAccessCode, JSON.stringify(newGame));
-
-            this.publisher?.publish(
-                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                newGame.accessCode + ';' + globals.EVENT_IDS.NEW_GAME + ';' + JSON.stringify({ newGame: newGame }) + ';' + this.instanceId
-            );
-
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
         }).catch((message) => {
             console.log(message);
@@ -93,7 +86,6 @@ class GameManager {
                 game.timerParams.paused = true;
                 this.activeGameRunner.runGame(game, namespace);
             }
-            await this.refreshGame(game);
             namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
         }
     };
@@ -111,7 +103,6 @@ class GameManager {
     };
 
     resumeTimer = async (game, logger) => {
-        await this.activeGameRunner.refreshActiveGames();
         const thread = this.activeGameRunner.timerThreads[game.accessCode];
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
@@ -125,7 +116,6 @@ class GameManager {
 
     getTimeRemaining = async (game, socketId) => {
         if (socketId) {
-            await this.activeGameRunner.refreshActiveGames();
             const thread = this.activeGameRunner.timerThreads[game.accessCode];
             if (thread && (!thread.killed && thread.exitCode === null)) {
                 thread.send({
@@ -147,7 +137,6 @@ class GameManager {
         if (person && !person.revealed) {
             this.logger.debug('game ' + game.accessCode + ': revealing player ' + person.name);
             person.revealed = true;
-            await this.refreshGame(game);
             this.namespace.in(game.accessCode).emit(
                 globals.EVENT_IDS.REVEAL_PLAYER,
                 {
@@ -168,12 +157,11 @@ class GameManager {
         for (const person of game.people) {
             person.revealed = true;
         }
-        await this.refreshGame(game);
         this.namespace.in(game.accessCode).emit(globals.EVENT_IDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
     };
 
     checkAvailability = async (code) => {
-        const game = this.activeGameRunner.activeGames.get(code.toUpperCase().trim());
+        const game = await this.activeGameRunner.getActiveGame(code.toUpperCase().trim());
         if (game) {
             return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
         } else {
@@ -185,7 +173,8 @@ class GameManager {
         const charCount = charPool.length;
         let codeDigits, accessCode;
         let attempts = 0;
-        while (!accessCode || (this.activeGameRunner.activeGames.get(accessCode) && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
+        while (!accessCode || ((await this.activeGameRunner.client.hKeys('activeGames')).includes(accessCode)
+            && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
             codeDigits = [];
             let iterations = globals.ACCESS_CODE_LENGTH;
             while (iterations > 0) {
@@ -195,7 +184,7 @@ class GameManager {
             accessCode = codeDigits.join('');
             attempts ++;
         }
-        return this.activeGameRunner.activeGames.get(accessCode)
+        return (await this.activeGameRunner.client.hKeys('activeGames')).includes(accessCode)
             ? null
             : accessCode;
     };
@@ -210,9 +199,9 @@ class GameManager {
             logger.debug('game ' + game.accessCode + ': transferring mod powers to ' + person.name);
             if (game.moderator === person) {
                 person.userType = globals.USER_TYPES.MODERATOR;
-                this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                if (socketId) {
-                    this.namespace.sockets.get(socketId).to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+                const socket = this.namespace.sockets.get(socketId);
+                if (socket) {
+                    this.namespace.to(socketId).emit(globals.EVENTS.SYNC_GAME_STATE); // they are guaranteed to be connected to this instance.
                 }
             } else {
                 const oldModerator = game.moderator;
@@ -233,10 +222,9 @@ class GameManager {
                         game.spectators.map((spectator) => GameStateCurator.mapPerson(spectator))
                     );
                 }
-                this.namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                this.namespace.to(oldModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
+                await notifyPlayerInvolvedInModTransfer(game, this.namespace, person);
+                await notifyPlayerInvolvedInModTransfer(game, this.namespace, oldModerator);
             }
-            await this.refreshGame(game);
         }
     };
 
@@ -247,18 +235,27 @@ class GameManager {
                 person.userType = globals.USER_TYPES.KILLED_PLAYER;
             }
             person.out = true;
+            const socket = namespace.sockets.get(socketId);
+            if (socket && game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                socket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+            } else {
+                namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+            }
             // temporary moderators will transfer their powers automatically to the first person they kill.
             if (game.moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                await this.transferModeratorPowers(socketId, game, person, namespace, logger);
-            } else {
-                await this.refreshGame(game);
-                namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+                await this.socketManager.handleAndSyncEvent(
+                    globals.EVENT_IDS.TRANSFER_MODERATOR,
+                    game,
+                    socket,
+                    { personId: person.id },
+                    null
+                );
             }
         }
     };
 
     joinGame = async (game, name, cookie, joinAsSpectator) => {
-        const matchingPerson = findPersonByField(game, 'cookie', cookie);
+        const matchingPerson = this.findPersonByField(game, 'cookie', cookie);
         if (matchingPerson) {
             return Promise.resolve(matchingPerson.cookie);
         }
@@ -279,14 +276,14 @@ class GameManager {
             unassignedPerson.name = name;
             game.isFull = this.isGameFull(game);
             await this.refreshGame(game);
-            await this.publisher?.publish(
-                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                game.accessCode + ';' + globals.EVENT_IDS.PLAYER_JOINED + ';' + JSON.stringify(unassignedPerson) + ';' + this.instanceId
-            );
             this.namespace.in(game.accessCode).emit(
                 globals.EVENTS.PLAYER_JOINED,
                 GameStateCurator.mapPerson(unassignedPerson),
                 game.isFull
+            );
+            await this.publisher?.publish(
+                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                game.accessCode + ';' + globals.EVENT_IDS.PLAYER_JOINED + ';' + JSON.stringify(unassignedPerson) + ';' + this.instanceId
             );
             return Promise.resolve(unassignedPerson.cookie);
         } else {
@@ -352,7 +349,7 @@ class GameManager {
     };
 
     handleRequestForGameState = async (game, namespace, logger, gameRunner, accessCode, personCookie, ackFn, socketId) => {
-        const matchingPerson = findPersonByField(game, 'cookie', personCookie);
+        const matchingPerson = this.findPersonByField(game, 'cookie', personCookie);
         if (matchingPerson) {
             if (matchingPerson.socketId === socketId) {
                 logger.debug('matching person found with an established connection to the room: ' + matchingPerson.name);
@@ -363,6 +360,10 @@ class GameManager {
                 logger.debug('matching person found with a new connection to the room: ' + matchingPerson.name);
                 this.namespace.sockets.get(socketId).join(accessCode);
                 matchingPerson.socketId = socketId;
+                await this.publisher.publish(
+                    globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    game.accessCode + ';' + globals.EVENT_IDS.UPDATE_SOCKET + ';' + JSON.stringify({ personId: matchingPerson.id, socketId: socketId }) + ';' + this.instanceId
+                );
                 if (ackFn) {
                     ackFn(GameStateCurator.getGameStateFromPerspectiveOfPerson(game, matchingPerson));
                 }
@@ -391,26 +392,39 @@ class GameManager {
         return array;
     };
 
-    pruneStaleGames = async () => {
-        await this.activeGameRunner.refreshActiveGames();
-        this.activeGameRunner.activeGames.forEach((key, value) => {
-            if (value.createTime) {
-                const createDate = new Date(value.createTime);
-                if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
-                    this.logger.info('PRUNING STALE GAME ' + key);
-                    this.activeGameRunner.activeGames.delete(key);
-                    if (this.activeGameRunner.timerThreads[key]) {
-                        this.logger.info('KILLING STALE TIMER PROCESS FOR ' + key);
-                        this.activeGameRunner.timerThreads[key].kill();
-                        delete this.activeGameRunner.timerThreads[key];
-                    }
-                }
-            }
-        });
-    };
+    // pruneStaleGames = async () => {
+    //     this.activeGameRunner.activeGames.forEach((key, value) => {
+    //         if (value.createTime) {
+    //             const createDate = new Date(value.createTime);
+    //             if (createDate.setHours(createDate.getHours() + globals.STALE_GAME_HOURS) < Date.now()) {
+    //                 this.logger.info('PRUNING STALE GAME ' + key);
+    //                 this.activeGameRunner.activeGames.delete(key);
+    //                 if (this.activeGameRunner.timerThreads[key]) {
+    //                     this.logger.info('KILLING STALE TIMER PROCESS FOR ' + key);
+    //                     this.activeGameRunner.timerThreads[key].kill();
+    //                     delete this.activeGameRunner.timerThreads[key];
+    //                 }
+    //             }
+    //         }
+    //     });
+    // };
 
     isGameFull = (game) => {
         return game.moderator.assigned === true && !game.people.find((person) => person.assigned === false);
+    }
+
+    findPersonByField = (game, fieldName, value) => {
+        let person;
+        if (value === game.moderator[fieldName]) {
+            person = game.moderator;
+        }
+        if (!person) {
+            person = game.people.find((person) => person[fieldName] === value);
+        }
+        if (!person) {
+            person = game.spectators.find((spectator) => spectator[fieldName] === value);
+        }
+        return person;
     }
 }
 
@@ -483,20 +497,6 @@ function findPlayerBySocketId (people, socketId) {
     return people.find((person) => person.socketId === socketId && person.userType === globals.USER_TYPES.PLAYER);
 }
 
-function findPersonByField (game, fieldName, value) {
-    let person;
-    if (value === game.moderator[fieldName]) {
-        person = game.moderator;
-    }
-    if (!person) {
-        person = game.people.find((person) => person[fieldName] === value);
-    }
-    if (!person) {
-        person = game.spectators.find((spectator) => spectator[fieldName] === value);
-    }
-    return person;
-}
-
 function isNameTaken (game, name) {
     const processedName = name.toLowerCase().trim();
     return (game.people.find((person) => person.name.toLowerCase().trim() === processedName))
@@ -513,6 +513,12 @@ function getGameSize (cards) {
     return quantity;
 }
 
+async function notifyPlayerInvolvedInModTransfer(game, namespace, person) {
+    if (namespace.sockets.get(person.socketId)) {
+        namespace.to(person.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
+    }
+}
+
 async function addSpectator (game, name, logger, namespace, publisher, instanceId, refreshGame) {
     const spectator = new Person(
         createRandomId(),
@@ -527,10 +533,10 @@ async function addSpectator (game, name, logger, namespace, publisher, instanceI
         globals.EVENTS.UPDATE_SPECTATORS,
         game.spectators.map((spectator) => { return GameStateCurator.mapPerson(spectator); })
     );
-    publisher.publish(
+    await publisher.publish(
         globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-        game.accessCode + ';' + globals.EVENT_IDS.SPECTATOR_JOINED + ';' + JSON.stringify(spectator) + ';' + instanceId
-);
+        game.accessCode + ';' + globals.EVENT_IDS.UPDATE_SPECTATORS + ';' + JSON.stringify(game.spectators) + ';' + instanceId
+    );
     return Promise.resolve(spectator.cookie);
 }
 

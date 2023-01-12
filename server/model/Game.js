@@ -5,7 +5,7 @@ class Game {
         people,
         deck,
         hasTimer,
-        moderator,
+        currentModeratorId,
         hasDedicatedModerator,
         originalModeratorId,
         createTime,
@@ -13,7 +13,7 @@ class Game {
     ) {
         this.accessCode = accessCode;
         this.status = status;
-        this.moderator = moderator;
+        this.currentModeratorId = currentModeratorId;
         this.people = people;
         this.deck = deck;
         this.gameSize = deck.reduce(
@@ -23,11 +23,11 @@ class Game {
         this.hasTimer = hasTimer;
         this.hasDedicatedModerator = hasDedicatedModerator;
         this.originalModeratorId = originalModeratorId;
+        this.previousModeratorId = null;
         this.createTime = createTime;
         this.timerParams = timerParams;
         this.isFull = this.gameSize === 1 && !this.hasDedicatedModerator;
         this.timeRemaining = null;
-        this.spectators = [];
     }
 }
 

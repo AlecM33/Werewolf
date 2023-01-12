@@ -11,7 +11,7 @@ const globals = {
         EVIL: 'evil'
     },
     REDIS_CHANNELS: {
-      ACTIVE_GAME_STREAM: 'active_game_stream'
+        ACTIVE_GAME_STREAM: 'active_game_stream'
     },
     CORS: process.env.NODE_ENV?.trim() === 'development'
         ? {
@@ -30,7 +30,7 @@ const globals = {
             res.status(400).send('Request has invalid content type.');
         }
     },
-    STALE_GAME_HOURS: 24,
+    STALE_GAME_SECONDS: 86400,
     SOCKET_EVENTS: {
         IN_GAME_MESSAGE: 'inGameMessage'
     },
@@ -49,8 +49,10 @@ const globals = {
         RESTART_GAME: 'restartGame',
         PLAYER_JOINED: 'playerJoined',
         UPDATE_SPECTATORS: 'updateSpectators',
+        ADD_SPECTATOR: 'addSpectator',
         SYNC_GAME_STATE: 'syncGameState',
-        UPDATE_SOCKET: 'updateSocket'
+        UPDATE_SOCKET: 'updateSocket',
+        ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
     },
     SYNCABLE_EVENTS: function () {
         return [
@@ -65,10 +67,13 @@ const globals = {
             this.EVENT_IDS.END_GAME,
             this.EVENT_IDS.RESTART_GAME,
             this.EVENT_IDS.PLAYER_JOINED,
-            this.EVENT_IDS.UPDATE_SPECTATORS,
+            this.EVENT_IDS.ADD_SPECTATOR,
+            this.EVENT_IDS.REMOVE_SPECTATOR,
             this.EVENT_IDS.SYNC_GAME_STATE,
-            this.EVENT_IDS.UPDATE_SOCKET
-        ]
+            this.EVENT_IDS.UPDATE_SOCKET,
+            this.EVENT_IDS.FETCH_GAME_STATE,
+            this.EVENT_IDS.ASSIGN_DEDICATED_MOD
+        ];
     },
     MESSAGES: {
         ENTER_NAME: 'Client must enter name.'

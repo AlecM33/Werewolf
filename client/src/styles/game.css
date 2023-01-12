@@ -13,6 +13,10 @@
     margin: 0 auto 0.25em auto;
 }
 
+.moderator {
+    border: 2px solid #c58f13;
+}
+
 .potential-moderator {
     margin: 0.5em auto;
 }
@@ -942,6 +946,21 @@ canvas {
     0% {
         opacity: 0;
         transform: translateY(20px);
+    }
+    5% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+@keyframes fade-in-slide-down {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
     }
     5% {
         opacity: 1;

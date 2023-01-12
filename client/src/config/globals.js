@@ -1,6 +1,6 @@
 export const globals = {
     CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
-    USER_SIGNATURE_LENGTH: 25,
+    USER_SIGNATURE_LENGTH: 75,
     CLOCK_TICK_INTERVAL_MILLIS: 100,
     MAX_CUSTOM_ROLE_NAME_LENGTH: 50,
     MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 1000,
@@ -50,8 +50,10 @@ export const globals = {
         SYNC_GAME_STATE: 'syncGameState',
         START_TIMER: 'startTimer',
         PLAYER_LEFT: 'playerLeft',
-        UPDATE_SPECTATORS: 'newSpectator',
-        RESTART_GAME: 'restartGame'
+        ADD_SPECTATOR: 'addSpectator',
+        UPDATE_SPECTATORS: 'updateSpectators',
+        RESTART_GAME: 'restartGame',
+        ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
     },
     USER_TYPES: {
         MODERATOR: 'moderator',

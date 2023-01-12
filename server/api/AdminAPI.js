@@ -3,7 +3,7 @@ const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
 const socketManager = (require('../modules/singletons/SocketManager.js')).instance;
-const gameManager = (require('../modules/singletons/GameManager.js')).instance;
+const activeGameRunner = (require('../modules/singletons/ActiveGameRunner.js')).instance;
 const globals = require('../config/globals.js');
 const cors = require('cors');
 
@@ -22,8 +22,8 @@ router.post('/sockets/broadcast', function (req, res) {
 
 router.get('/games/state', async (req, res) => {
     const gamesArray = [];
-    await this.client.hGetAll('activeGames').then(async (r) => {
-        Object.values(r).forEach((v) => gamesArray.push(v));
+    await activeGameRunner.client.keys('*').then(async (r) => {
+        Object.values(r).forEach((v) => gamesArray.push(JSON.parse(v)));
     });
     res.status(200).send(gamesArray);
 });

@@ -91,7 +91,7 @@ router.patch('/:code/players', async function (req, res) {
     }
 });
 
-router.patch('/:code/restart', function (req, res) {
+router.patch('/:code/restart', async function (req, res) {
     if (
         req.body === null
         || !validateAccessCode(req.body.accessCode)
@@ -101,7 +101,7 @@ router.patch('/:code/restart', function (req, res) {
     ) {
         res.status(400).send();
     } else {
-        const game = gameManager.activeGameRunner.getActiveGame(req.body.accessCode);
+        const game = await gameManager.activeGameRunner.getActiveGame(req.body.accessCode);
         if (game) {
             gameManager.restartGame(game, gameManager.namespace).then((data) => {
                 res.status(200).send();
@@ -123,11 +123,11 @@ function validateName (name) {
 }
 
 function validateCookie (cookie) {
-    return cookie === null || cookie === false || (typeof cookie === 'string' && cookie.length === globals.USER_SIGNATURE_LENGTH);
+    return cookie === null || cookie === false || (typeof cookie === 'string' && cookie.length === globals.INSTANCE_ID_LENGTH);
 }
 
 function validateAccessCode (accessCode) {
-    return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH;
+    return /^[a-zA-Z0-9]+$/.test(accessCode) && accessCode?.length === globals.ACCESS_CODE_LENGTH;
 }
 
 function validateSpectatorFlag (spectatorFlag) {

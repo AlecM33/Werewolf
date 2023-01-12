@@ -2,8 +2,7 @@ const globals = require('../../config/globals');
 const EVENT_IDS = globals.EVENT_IDS;
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 const redis = require('redis');
-const GameStateCurator = require("../GameStateCurator");
-const Events = require("../Events");
+const Events = require('../Events');
 
 class SocketManager {
     constructor (logger, instanceId) {
@@ -73,58 +72,33 @@ class SocketManager {
         });
     };
 
-    handleAndSyncEvent = async (eventId, game, socket, args, ackFn) => {
-        await this.handleEventById(eventId, game, socket?.id, game.accessCode, args, ackFn, false);
+    handleAndSyncEvent = async (eventId, game, socket, socketArgs, ackFn) => {
+        await this.handleEventById(eventId, game, socket?.id, game.accessCode, socketArgs, ackFn, false);
         /* This server should publish events initiated by a connected socket to Redis for consumption by other instances. */
         if (globals.SYNCABLE_EVENTS().includes(eventId)) {
             await this.gameManager.refreshGame(game);
-            this.publisher?.publish(
+            await this.publisher?.publish(
                 globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                game.accessCode + ';' + eventId + ';' + JSON.stringify(args) + ';' + this.instanceId
+                game.accessCode + ';' + eventId + ';' + JSON.stringify(socketArgs) + ';' + this.instanceId
             );
         }
     }
 
-    handleEventById = async (eventId, game, socketId, accessCode, args, ackFn, syncOnly) => {
-        this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(args));
+    handleEventById = async (eventId, game, socketId, accessCode, socketArgs, ackFn, syncOnly) => {
+        this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(socketArgs));
         const event = Events.find((event) => event.id === eventId);
+        const additionalVars = {
+            gameManager: this.gameManager,
+            socketId: socketId,
+            ackFn: ackFn
+        };
         if (event) {
             if (!syncOnly) {
-                event.stateChange(game, args, this.gameManager);
+                event.stateChange(game, socketArgs, additionalVars);
             }
-            event.communicate(game, args, this.gameManager);
+            event.communicate(game, socketArgs, additionalVars);
         }
         switch (eventId) {
-            case EVENT_IDS.FETCH_GAME_STATE:
-                await this.gameManager.handleRequestForGameState(
-                    game,
-                    this.namespace,
-                    this.logger,
-                    this.activeGameRunner,
-                    accessCode,
-                    args.personId,
-                    ackFn,
-                    socketId
-                );
-                break;
-            case EVENT_IDS.UPDATE_SOCKET:
-                const matchingPerson = this.gameManager.findPersonByField(game, 'id', args.personId);
-                if (matchingPerson) {
-                    matchingPerson.socketId = args.socketId;
-                }
-                break;
-            case EVENT_IDS.SYNC_GAME_STATE:
-                const personToSync = this.gameManager.findPersonByField(game, 'id', args.personId);
-                if (personToSync) {
-                    this.gameManager.namespace.to(personToSync.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                }
-                break;
-            case EVENT_IDS.START_GAME:
-                await this.gameManager.startGame(game, this.gameManager.namespace);
-                if (ackFn) {
-                    ackFn();
-                }
-                break;
             case EVENT_IDS.PAUSE_TIMER:
                 await this.gameManager.pauseTimer(game, this.logger);
                 break;
@@ -133,27 +107,6 @@ class SocketManager {
                 break;
             case EVENT_IDS.GET_TIME_REMAINING:
                 await this.gameManager.getTimeRemaining(game, socketId);
-                break;
-            case EVENT_IDS.KILL_PLAYER:
-                await this.gameManager.killPlayer(socketId, game, game.people.find((person) => person.id === args.personId), this.gameManager.namespace, this.logger);
-                break;
-            case EVENT_IDS.REVEAL_PLAYER:
-                await this.gameManager.revealPlayer(game, args.personId);
-                break;
-            case EVENT_IDS.TRANSFER_MODERATOR:
-                await this.gameManager.transferModeratorPowers(
-                    socketId,
-                    game,
-                    this.gameManager?.findPersonByField(game, 'id', args.personId),
-                    this.gameManager.namespace,
-                    this.logger
-                );
-                break;
-            case EVENT_IDS.END_GAME:
-                await this.gameManager.endGame(game);
-                if (ackFn) {
-                    ackFn();
-                }
                 break;
             default:
                 break;

@@ -132,8 +132,9 @@ export const SharedStateUtil = {
         }
     },
 
-    buildSpectatorList (spectators) {
+    buildSpectatorList (people) {
         const list = document.createElement('div');
+        const spectators = people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR);
         if (spectators.length === 0) {
             list.innerHTML = '<div>Nobody currently spectating.</div>';
         } else {
@@ -173,8 +174,18 @@ function processGameState (
             easing: 'ease-in-out',
             fill: 'both'
         });
+    const clientAnimation = document.getElementById('client-container').animate([
+        { opacity: '0' },
+        { opacity: '1' }
+    ], {
+        duration: 500,
+        easing: 'ease-out',
+        fill: 'both'
+    });
+
     if (animateContainer) {
         containerAnimation.play();
+        clientAnimation.play();
     }
 
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);

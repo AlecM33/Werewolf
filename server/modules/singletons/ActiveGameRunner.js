@@ -19,8 +19,8 @@ class ActiveGameRunner {
     }
 
     getActiveGame = async (accessCode) => {
-        const r = await this.client.hGet('activeGames', accessCode);
-        return JSON.parse(r);
+        const r = await this.client.get(accessCode);
+        return r === null ? r : JSON.parse(r);
     }
 
     createGameSyncSubscriber = async (gameManager, socketManager) => {
@@ -28,7 +28,7 @@ class ActiveGameRunner {
         await this.subscriber.connect();
         await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
             this.logger.info('MESSAGE: ' + message);
-            let messageComponents = message.split(';');
+            const messageComponents = message.split(';');
             if (messageComponents[messageComponents.length - 1] === this.instanceId) {
                 this.logger.trace('Disregarding self-authored message');
                 return;
@@ -44,10 +44,10 @@ class ActiveGameRunner {
                     game,
                     null,
                     game?.accessCode || messageComponents[0],
-                    args ? args : null,
+                    args || null,
                     null,
                     true
-                )
+                );
             }
         });
         this.logger.info('ACTIVE GAME RUNNER - CREATED GAME SYNC SUBSCRIBER');

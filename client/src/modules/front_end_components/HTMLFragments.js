@@ -114,6 +114,7 @@ export const HTMLFragments = {
     </div>
     <div id="game-players-container">
         <label id='players-alive-label'></label>
+        <div id="spectator-count"></div>
         <div id='game-player-list'>
             <div class='evil-players'>
                 <label class='evil'>Team Evil</label>

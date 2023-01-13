@@ -60,7 +60,6 @@
     display: flex;
     width: 95%;
     margin: 1em auto 140px auto;
-    animation: fade-in-slide-up 2s;
 }
 
 #game-state-container h2 {

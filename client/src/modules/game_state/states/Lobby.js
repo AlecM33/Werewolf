@@ -15,13 +15,25 @@ export class Lobby {
         this.startGameHandler = (e) => {
             e.preventDefault();
             Confirmation('Start game and deal roles?', () => {
-                socket.emit(
+                socket.timeout(5000).emit(
                     globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                     globals.EVENT_IDS.START_GAME,
                     stateBucket.currentGameState.accessCode,
                     null,
-                    () => {
-                        this.removeStartGameFunctionalityIfPresent();
+                    (err) => {
+                        if (err) {
+                            socket.emit(
+                                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                                globals.EVENT_IDS.FETCH_GAME_STATE,
+                                stateBucket.currentGameState.accessCode,
+                                { personId: stateBucket.currentGameState.client.cookie },
+                                (gameState) => {
+                                    SharedStateUtil.gameStateAckFn(gameState, socket);
+                                }
+                            );
+                        } else {
+                            this.removeStartGameFunctionalityIfPresent();
+                        }
                     }
                 );
             });
@@ -108,19 +120,6 @@ export class Lobby {
                 document.getElementById('spectator-count')
             );
         });
-
-        // this.socket.on(globals.EVENT_IDS.PLAYER_LEFT, (player) => {
-        //     removeStartGameFunctionalityIfPresent(this.stateBucket.currentGameState, this.startGameHandler);
-        //     toast(player.name + ' has left!', 'error', false, true, 'short');
-        //     const index = this.stateBucket.currentGameState.people.findIndex(person => person.id === player.id);
-        //     if (index >= 0) {
-        //         this.stateBucket.currentGameState.people.splice(
-        //             index,
-        //             1
-        //         );
-        //         this.populatePlayers();
-        //     }
-        // });
     }
 
     displayStartGamePromptForModerators () {

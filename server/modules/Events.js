@@ -35,21 +35,6 @@ const Events = [
         }
     },
     {
-        id: EVENT_IDS.REMOVE_SPECTATOR,
-        stateChange: (game, socketArgs, vars) => {
-            const spectatorIndex = game.people.findIndex(person => person.userType === globals.USER_TYPES.SPECTATOR && person.id === socketArgs.personId);
-            if (spectatorIndex >= 0) {
-                game.people.splice(spectatorIndex, 1);
-            }
-        },
-        communicate: (game, socketArgs, vars) => {
-            vars.gameManager.namespace.in(game.accessCode).emit(
-                globals.EVENT_IDS.REMOVE_SPECTATOR,
-                GameStateCurator.mapPerson(socketArgs)
-            );
-        }
-    },
-    {
         id: EVENT_IDS.FETCH_GAME_STATE,
         stateChange: (game, socketArgs, vars) => {
             const matchingPerson = vars.gameManager.findPersonByField(game, 'cookie', socketArgs.personId);
@@ -183,18 +168,10 @@ const Events = [
             }
         },
         communicate: (game, socketArgs, vars) => {
-            const moderator = vars.gameManager.findPersonByField(game, 'id', game.currentModeratorId);
-            const previousModerator = vars.gameManager.findPersonByField(game, 'id', game.previousModeratorId);
-            if (moderator && vars.gameManager.namespace.sockets.get(moderator.socketId)) {
-                vars.gameManager.namespace.to(moderator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
+            if (vars.ackFn) {
+                vars.ackFn();
             }
-            if (previousModerator && vars.gameManager.namespace.sockets.get(previousModerator.socketId)) {
-                vars.gameManager.namespace.to(previousModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-            }
-            vars.gameManager.namespace.to(game.accessCode).emit(globals.EVENT_IDS.UPDATE_SPECTATORS, game.people
-                .filter(p => p.userType === globals.USER_TYPES.SPECTATOR)
-                .map(spectator => GameStateCurator.mapPerson(spectator))
-            );
+            vars.gameManager.namespace.to(game.accessCode).emit(globals.EVENT_IDS.SYNC_GAME_STATE);
         }
     },
     {

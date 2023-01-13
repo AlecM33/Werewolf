@@ -523,11 +523,25 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                         if (transferPrompt !== null) {
                             transferPrompt.innerHTML = '';
                         }
-                        socket.emit(
+                        socket.timeout(5000).emit(
                             globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                             globals.EVENT_IDS.TRANSFER_MODERATOR,
                             gameState.accessCode,
-                            { personId: member.id }
+                            { personId: member.id },
+                            (err) => {
+                                if (err) {
+                                    console.error(err);
+                                    socket.emit(
+                                        globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                                        globals.EVENT_IDS.FETCH_GAME_STATE,
+                                        stateBucket.currentGameState.accessCode,
+                                        { personId: stateBucket.currentGameState.client.cookie },
+                                        (gameState) => {
+                                            SharedStateUtil.gameStateAckFn(gameState, socket);
+                                        }
+                                    );
+                                }
+                            }
                         );
                     });
                 }

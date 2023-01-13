@@ -12,6 +12,17 @@ import { ModalManager } from '../../../front_end_components/ModalManager.js';
 
 // This constant is meant to house logic that is utilized by more than one game state
 export const SharedStateUtil = {
+    gameStateAckFn: (gameState, socket) => {
+        stateBucket.currentGameState = gameState;
+        processGameState(
+            stateBucket.currentGameState,
+            gameState.client.cookie,
+            socket,
+            true,
+            true
+        );
+    },
+
     restartHandler: (stateBucket) => {
         XHRUtility.xhr(
             '/api/games/' + stateBucket.currentGameState.accessCode + '/restart',
@@ -45,23 +56,13 @@ export const SharedStateUtil = {
     },
 
     setClientSocketHandlers: (stateBucket, socket) => {
-        const commonAckLogic = (gameState) => {
-            stateBucket.currentGameState = gameState;
-            processGameState(
-                stateBucket.currentGameState,
-                gameState.client.cookie,
-                socket,
-                true,
-                true
-            );
-        };
         const startGameStateAckFn = (gameState) => {
-            commonAckLogic(gameState);
+            SharedStateUtil.gameStateAckFn(gameState, socket);
             toast('Game started!', 'success');
         };
 
         const restartGameStateAckFn = (gameState) => {
-            commonAckLogic(gameState);
+            SharedStateUtil.gameStateAckFn(gameState, socket);
             toast('Game restarted!', 'success');
         };
 
@@ -86,13 +87,14 @@ export const SharedStateUtil = {
                 stateBucket.currentGameState.accessCode,
                 { personId: stateBucket.currentGameState.client.cookie },
                 function (gameState) {
+                    const oldUserType = stateBucket.currentGameState.client.userType;
                     stateBucket.currentGameState = gameState;
                     processGameState(
                         stateBucket.currentGameState,
                         gameState.client.cookie,
                         socket,
                         true,
-                        true
+                        gameState.client.userType !== oldUserType
                     );
                 }
             );
@@ -165,27 +167,24 @@ function processGameState (
     refreshPrompt = true,
     animateContainer = false
 ) {
-    const containerAnimation = document.getElementById('game-state-container').animate(
-        [
-            { opacity: '0', transform: 'translateY(10px)' },
-            { opacity: '1', transform: 'translateY(0px)' }
+    if (animateContainer) {
+        document.getElementById('game-state-container').animate(
+            [
+                { opacity: '0', transform: 'translateY(10px)' },
+                { opacity: '1', transform: 'translateY(0px)' }
+            ], {
+                duration: 500,
+                easing: 'ease-in-out',
+                fill: 'both'
+            });
+        document.getElementById('client-container').animate([
+            { opacity: '0' },
+            { opacity: '1' }
         ], {
             duration: 500,
-            easing: 'ease-in-out',
+            easing: 'ease-out',
             fill: 'both'
         });
-    const clientAnimation = document.getElementById('client-container').animate([
-        { opacity: '0' },
-        { opacity: '1' }
-    ], {
-        duration: 500,
-        easing: 'ease-out',
-        fill: 'both'
-    });
-
-    if (animateContainer) {
-        containerAnimation.play();
-        clientAnimation.play();
     }
 
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);

@@ -348,12 +348,18 @@ h1 {
     font-size: 35px;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
     border: 1px solid #747474;
-    min-width: 5em;
+    width: 204px;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 43px;
-    margin-bottom: 0.5em;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.timer-error {
+    color: #c51212 !important;
+    font-size: 20px !important;
 }
 
 #game-timer.low {
@@ -861,6 +867,7 @@ canvas {
         padding: 5px;
         font-size: 30px;
         height: 30px;
+        width: 167px;
     }
 
     #role-info-button, #mod-transfer-button {

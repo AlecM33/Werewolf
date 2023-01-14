@@ -123,17 +123,15 @@ export class GameTimerManager {
             });
         }
 
-        if (!socket.hasListeners(globals.COMMANDS.GET_TIME_REMAINING)) {
-            socket.on(globals.COMMANDS.GET_TIME_REMAINING, (timeRemaining, paused) => {
-                if (paused) {
-                    this.displayPausedTime(timeRemaining);
-                } else if (timeRemaining === 0) {
-                    this.displayExpiredTime();
-                } else {
-                    this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
-                }
-            });
-        }
+        socket.once(globals.COMMANDS.GET_TIME_REMAINING, (timeRemaining, paused) => {
+            if (paused) {
+                this.displayPausedTime(timeRemaining);
+            } else if (timeRemaining === 0) {
+                this.displayExpiredTime();
+            } else {
+                this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
+            }
+        });
 
         if (!socket.hasListeners(globals.COMMANDS.END_TIMER)) {
             socket.on(globals.COMMANDS.END_TIMER, () => {

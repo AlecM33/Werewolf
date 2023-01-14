@@ -37,7 +37,6 @@ const main = async () => {
             console.log('Root Redis client connected');
             await singletons.activeGameRunner.createGameSyncSubscriber(singletons.gameManager, singletons.socketManager);
             await singletons.socketManager.createRedisPublisher();
-            await singletons.gameManager.createRedisPublisher();
 
             const socketServer = singletons.socketManager.createSocketServer(webServer, app, port);
             singletons.gameManager.setGameSocketNamespace(singletons.socketManager.createGameSocketNamespace(socketServer, logger, singletons.gameManager));

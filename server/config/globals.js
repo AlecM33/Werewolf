@@ -40,7 +40,10 @@ const globals = {
         START_GAME: 'startGame',
         PAUSE_TIMER: 'pauseTimer',
         RESUME_TIMER: 'resumeTimer',
+        END_TIMER: 'endTimer',
         GET_TIME_REMAINING: 'getTimeRemaining',
+        SOURCE_TIME_REMAINING: 'sourceTimeRemaining',
+        SHARE_TIME_REMAINING: 'shareTimeRemaining',
         KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
@@ -58,9 +61,6 @@ const globals = {
         return [
             this.EVENT_IDS.NEW_GAME,
             this.EVENT_IDS.START_GAME,
-            this.EVENT_IDS.PAUSE_TIMER,
-            this.EVENT_IDS.RESUME_TIMER,
-            this.EVENT_IDS.GET_TIME_REMAINING,
             this.EVENT_IDS.KILL_PLAYER,
             this.EVENT_IDS.REVEAL_PLAYER,
             this.EVENT_IDS.TRANSFER_MODERATOR,
@@ -68,11 +68,20 @@ const globals = {
             this.EVENT_IDS.RESTART_GAME,
             this.EVENT_IDS.PLAYER_JOINED,
             this.EVENT_IDS.ADD_SPECTATOR,
-            this.EVENT_IDS.REMOVE_SPECTATOR,
             this.EVENT_IDS.SYNC_GAME_STATE,
             this.EVENT_IDS.UPDATE_SOCKET,
             this.EVENT_IDS.FETCH_GAME_STATE,
-            this.EVENT_IDS.ASSIGN_DEDICATED_MOD
+            this.EVENT_IDS.ASSIGN_DEDICATED_MOD,
+            this.EVENT_IDS.RESUME_TIMER,
+            this.EVENT_IDS.PAUSE_TIMER,
+            this.EVENT_IDS.END_TIMER
+        ];
+    },
+    TIMER_EVENTS: function () {
+        return [
+            this.EVENT_IDS.RESUME_TIMER,
+            this.EVENT_IDS.PAUSE_TIMER,
+            this.EVENT_IDS.END_TIMER
         ];
     },
     MESSAGES: {

@@ -65,14 +65,18 @@ class SocketManager {
         socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args = null, ackFn = null) => {
             const game = await this.activeGameRunner.getActiveGame(accessCode);
             if (game) {
-                await this.handleAndSyncEvent(eventId, game, socket, args, ackFn);
+                if (globals.TIMER_EVENTS().includes(eventId)) {
+                    await this.handleAndSyncTimerEvent(eventId, game, socket, args, ackFn, false);
+                } else {
+                    await this.handleAndSyncSocketEvent(eventId, game, socket, args, ackFn, false);
+                }
             } else {
                 ackFn(null);
             }
         });
     };
 
-    handleAndSyncEvent = async (eventId, game, socket, socketArgs, ackFn) => {
+    handleAndSyncSocketEvent = async (eventId, game, socket, socketArgs, ackFn) => {
         await this.handleEventById(eventId, game, socket?.id, game.accessCode, socketArgs, ackFn, false);
         /* This server should publish events initiated by a connected socket to Redis for consumption by other instances. */
         if (globals.SYNCABLE_EVENTS().includes(eventId)) {
@@ -84,20 +88,7 @@ class SocketManager {
         }
     }
 
-    handleEventById = async (eventId, game, socketId, accessCode, socketArgs, ackFn, syncOnly) => {
-        this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(socketArgs));
-        const event = Events.find((event) => event.id === eventId);
-        const additionalVars = {
-            gameManager: this.gameManager,
-            socketId: socketId,
-            ackFn: ackFn
-        };
-        if (event) {
-            if (!syncOnly) {
-                event.stateChange(game, socketArgs, additionalVars);
-            }
-            event.communicate(game, socketArgs, additionalVars);
-        }
+    handleAndSyncTimerEvent = async (eventId, game, socketId, accessCode, socketArgs, ackFn, syncOnly) => {
         switch (eventId) {
             case EVENT_IDS.PAUSE_TIMER:
                 await this.gameManager.pauseTimer(game, this.logger);
@@ -105,11 +96,28 @@ class SocketManager {
             case EVENT_IDS.RESUME_TIMER:
                 await this.gameManager.resumeTimer(game, this.logger);
                 break;
-            case EVENT_IDS.GET_TIME_REMAINING:
-                await this.gameManager.getTimeRemaining(game, socketId);
-                break;
             default:
                 break;
+        }
+    }
+
+    handleEventById = async (eventId, game, socketId, accessCode, socketArgs, ackFn, syncOnly) => {
+        this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(socketArgs));
+        const event = Events.find((event) => event.id === eventId);
+        const additionalVars = {
+            gameManager: this.gameManager,
+            activeGameRunner: this.activeGameRunner,
+            socketManager: this,
+            socketId: socketId,
+            ackFn: ackFn,
+            logger: this.logger,
+            instanceId: this.instanceId
+        };
+        if (event) {
+            if (!syncOnly) {
+                await event.stateChange(game, socketArgs, additionalVars);
+            }
+            await event.communicate(game, socketArgs, additionalVars);
         }
     }
 }

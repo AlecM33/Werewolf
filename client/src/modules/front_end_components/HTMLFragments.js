@@ -52,7 +52,22 @@ export const HTMLFragments = {
     `<div id='game-header'>
         <div>
             <label for='game-timer'>Time Remaining</label>
-            <div id='game-timer'></div>
+            <div id='game-timer'>
+                <div class="lds-spinner lds-spinner-clock">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
         </div>
         <div>
             <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
@@ -76,7 +91,22 @@ export const HTMLFragments = {
     `<div id='game-header'>
         <div>
             <label for='game-timer'>Time Remaining</label>
-            <div id='game-timer'></div>
+            <div id='game-timer'>
+                <div class="lds-spinner lds-spinner-clock">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
         </div>
         <div>
             <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
@@ -101,7 +131,22 @@ export const HTMLFragments = {
         <div id='timer-container-moderator'>
             <div>
                 <label for='game-timer'>Time Remaining</label>
-                <div id='game-timer'></div>
+                <div id='game-timer'>
+                    <div class="lds-spinner lds-spinner-clock">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
             </div>
             <div id='play-pause'>
                 <div id="play-pause-placeholder"></div>
@@ -131,7 +176,22 @@ export const HTMLFragments = {
             <div id='timer-container-moderator'>
                 <div>
                     <label for='game-timer'>Time Remaining</label>
-                    <div id='game-timer'></div>
+                    <div id='game-timer'>
+                        <div class="lds-spinner lds-spinner-clock">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
                 </div>
                 <div id='play-pause'> </div>
             </div>
@@ -180,7 +240,7 @@ export const HTMLFragments = {
         <div id='game-state-container'></div>`,
     // via https://loading.io/css/
     SPINNER:
-        `<div class="lds-spinner">
+        `<div class="lds-spinner lds-spinner-clock">
             <div></div>
             <div></div>
             <div></div>

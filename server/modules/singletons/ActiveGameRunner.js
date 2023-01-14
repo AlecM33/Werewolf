@@ -12,7 +12,6 @@ class ActiveGameRunner {
         this.timerThreads = {};
         this.logger = logger;
         this.client = redis.createClient();
-        this.publisher = null;
         this.subscriber = null;
         this.instanceId = instanceId;
         ActiveGameRunner.instance = this;
@@ -56,39 +55,47 @@ class ActiveGameRunner {
     /* We're only going to fork a child process for games with a timer. They will report back to the parent process whenever
         the timer is up.
      */
-    runGame = (game, namespace) => {
+    runGame = async (game, namespace, socketManager, gameManager) => {
         this.logger.debug('running game ' + game.accessCode);
         const gameProcess = fork(path.join(__dirname, '../GameProcess.js'));
         this.timerThreads[game.accessCode] = gameProcess;
+        console.log(this.timerThreads);
         this.logger.debug('game ' + game.accessCode + ' now associated with subProcess ' + gameProcess.pid);
-        gameProcess.on('message', (msg) => {
+        gameProcess.on('message', async (msg) => {
+            game = await this.getActiveGame(game.accessCode);
             switch (msg.command) {
                 case globals.GAME_PROCESS_COMMANDS.END_TIMER:
-                    game.timerParams.paused = false;
-                    game.timerParams.timeRemaining = 0;
-                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_TIMER);
+                    await socketManager.handleEventById(globals.EVENT_IDS.END_TIMER, game, msg.socketId, game.accessCode, msg, null, false);
                     this.logger.trace('PARENT: END TIMER');
                     break;
                 case globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER:
-                    game.timerParams.paused = true;
-                    this.logger.trace(msg);
-                    game.timerParams.timeRemaining = msg.timeRemaining;
-                    this.logger.trace('PARENT: PAUSE TIMER');
-                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, game.timerParams.timeRemaining);
+                    await socketManager.handleEventById(globals.EVENT_IDS.PAUSE_TIMER, game, msg.socketId, game.accessCode, msg, null, false);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.RESUME_TIMER:
-                    game.timerParams.paused = false;
-                    this.logger.trace(msg);
-                    game.timerParams.timeRemaining = msg.timeRemaining;
-                    this.logger.trace('PARENT: RESUME TIMER');
-                    namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, game.timerParams.timeRemaining);
+                    await socketManager.handleEventById(globals.EVENT_IDS.RESUME_TIMER, game, msg.socketId, game.accessCode, msg, null, false);
                     break;
                 case globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
                     this.logger.trace(msg);
                     game.timerParams.timeRemaining = msg.timeRemaining;
                     this.logger.trace('PARENT: GET TIME REMAINING');
-                    namespace.to(msg.socketId).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+                    msg.paused = game.timerParams.paused;
+                    await socketManager.publisher.publish(
+                        globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                        game.accessCode + ';' + globals.EVENT_IDS.SHARE_TIME_REMAINING + ';' + JSON.stringify(msg) + ';' + this.instanceId
+                    );
+                    const socket = namespace.sockets.get(msg.socketId);
+                    if (socket) {
+                        namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+                    }
                     break;
+            }
+
+            if (globals.SYNCABLE_EVENTS().includes(msg.command)) {
+                await gameManager.refreshGame(game);
+                await socketManager.publisher.publish(
+                    globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    game.accessCode + ';' + msg.command + ';' + JSON.stringify(msg) + ';' + this.instanceId
+                );
             }
         });
 

@@ -54,6 +54,7 @@ export const globals = {
         UPDATE_SPECTATORS: 'updateSpectators',
         RESTART_GAME: 'restartGame',
         ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
+
     },
     USER_TYPES: {
         MODERATOR: 'moderator',

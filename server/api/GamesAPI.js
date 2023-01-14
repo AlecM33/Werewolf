@@ -83,6 +83,7 @@ router.patch('/:code/players', async function (req, res) {
             gameManager.joinGame(game, req.body.playerName, inUseCookie, req.body.joinAsSpectator).then((data) => {
                 res.status(200).send({ cookie: data, environment: gameManager.environment });
             }).catch((data) => {
+                console.log(data);
                 res.status(data.status).send(data.reason);
             });
         } else {

@@ -51,6 +51,12 @@ export class InProgress {
                 globals.EVENT_IDS.GET_TIME_REMAINING,
                 this.stateBucket.currentGameState.accessCode
             );
+            setTimeout(() => {
+                if (this.socket.hasListeners(globals.EVENT_IDS.GET_TIME_REMAINING)) {
+                    document.getElementById('game-timer').innerText = 'could not retrieve';
+                    document.getElementById('game-timer').classList.add('timer-error');
+                }
+            }, 15000);
         } else {
             document.querySelector('#game-timer')?.remove();
             document.querySelector('#timer-container-moderator')?.remove();

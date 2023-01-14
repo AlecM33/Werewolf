@@ -4,7 +4,6 @@ const Person = require('../../model/Person');
 const GameStateCurator = require('../GameStateCurator');
 const UsernameGenerator = require('../UsernameGenerator');
 const GameCreationRequest = require('../../model/GameCreationRequest');
-const redis = require('redis');
 
 class GameManager {
     constructor (logger, environment, instanceId) {
@@ -17,15 +16,8 @@ class GameManager {
         this.activeGameRunner = null;
         this.socketManager = null;
         this.namespace = null;
-        this.publisher = null;
         this.instanceId = instanceId;
         GameManager.instance = this;
-    }
-
-    createRedisPublisher = async () => {
-        this.publisher = redis.createClient();
-        await this.publisher.connect();
-        this.logger.info('GAME MANAGER - CREATED GAME SYNC PUBLISHER');
     }
 
     setGameSocketNamespace = (namespace) => {
@@ -164,7 +156,7 @@ class GameManager {
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
         } else if (joinAsSpectator) {
-            return await addSpectator(game, name, this.logger, this.namespace, this.publisher, this.instanceId, this.refreshGame);
+            return await addSpectator(game, name, this.logger, this.namespace, this.socketManager.publisher, this.instanceId, this.refreshGame);
         }
         const unassignedPerson = this.findPersonByField(game, 'id', game.currentModeratorId).assigned === false
             ? this.findPersonByField(game, 'id', game.currentModeratorId)
@@ -180,7 +172,7 @@ class GameManager {
                 GameStateCurator.mapPerson(unassignedPerson),
                 game.isFull
             );
-            await this.publisher?.publish(
+            await this.activeGameRunner.publisher?.publish(
                 globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                 game.accessCode + ';' + globals.EVENT_IDS.PLAYER_JOINED + ';' + JSON.stringify(unassignedPerson) + ';' + this.instanceId
             );
@@ -189,21 +181,21 @@ class GameManager {
             if (game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS) {
                 return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
             }
-            return await addSpectator(game, name, this.logger, this.namespace, this.publisher, this.instanceId, this.refreshGame);
+            return await addSpectator(game, name, this.logger, this.namespace, this.socketManager.publisher, this.instanceId, this.refreshGame);
         }
     };
 
     restartGame = async (game, namespace) => {
         // kill any outstanding timer threads
-        // const subProcess = this.activeGameRunner.timerThreads[game.accessCode];
-        // if (subProcess) {
-        //     if (!subProcess.killed) {
-        //         this.logger.info('Killing timer process ' + subProcess.pid + ' for: ' + game.accessCode);
-        //         this.activeGameRunner.timerThreads[game.accessCode].kill();
-        //     }
-        //     this.logger.debug('Deleting reference to subprocess ' + subProcess.pid);
-        //     delete this.activeGameRunner.timerThreads[game.accessCode];
-        // }
+        const subProcess = this.activeGameRunner.timerThreads[game.accessCode];
+        if (subProcess) {
+            if (!subProcess.killed) {
+                this.logger.info('Killing timer process ' + subProcess.pid + ' for: ' + game.accessCode);
+                this.activeGameRunner.timerThreads[game.accessCode].kill();
+            }
+            this.logger.debug('Deleting reference to subprocess ' + subProcess.pid);
+            delete this.activeGameRunner.timerThreads[game.accessCode];
+        }
 
         // re-shuffle the deck
         const cards = [];
@@ -238,11 +230,11 @@ class GameManager {
         game.status = globals.STATUS.IN_PROGRESS;
         if (game.hasTimer) {
             game.timerParams.paused = true;
-            this.activeGameRunner.runGame(game, namespace);
+            await this.activeGameRunner.runGame(game, namespace, this.socketManager, this);
         }
 
         await this.refreshGame(game);
-        await this.publisher?.publish(
+        await this.socketManager.publisher?.publish(
             globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
             game.accessCode + ';' + globals.EVENT_IDS.RESTART_GAME + ';' + JSON.stringify({}) + ';' + this.instanceId
         );

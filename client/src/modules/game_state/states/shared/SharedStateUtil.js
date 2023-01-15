@@ -118,21 +118,20 @@ export const SharedStateUtil = {
         const accessCode = splitUrl[1];
         if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
             socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.FETCH_GAME_STATE, accessCode, { personId: cookie }, function (gameState) {
-                // if (gameState === null) {
-                //     window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-                // } else {
-                stateBucket.currentGameState = gameState;
-                document.querySelector('.spinner-container')?.remove();
-                document.querySelector('.spinner-background')?.remove();
-                document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
-                toast('You are connected.', 'success', true, true, 'short');
-                processGameState(stateBucket.currentGameState, cookie, socket, true, true);
-                // }
+                if (gameState === null) {
+                    window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
+                } else {
+                    stateBucket.currentGameState = gameState;
+                    document.querySelector('.spinner-container')?.remove();
+                    document.querySelector('.spinner-background')?.remove();
+                    document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
+                    toast('You are connected.', 'success', true, true, 'short');
+                    processGameState(stateBucket.currentGameState, cookie, socket, true, true);
+                }
             });
+        } else {
+            window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
         }
-        // else {
-        //     window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
-        // }
     },
 
     buildSpectatorList (people) {
@@ -198,6 +197,7 @@ function processGameState (
             }
             lobby.populateHeader();
             lobby.populatePlayers();
+            globals.LOBBY_EVENTS().forEach(e => socket.removeAllListeners(e));
             lobby.setSocketHandlers();
             if ((
                 currentGameState.client.userType === globals.USER_TYPES.MODERATOR
@@ -213,6 +213,7 @@ function processGameState (
                 document.querySelector('#game-control-prompt')?.remove();
             }
             const inProgressGame = new InProgress('game-state-container', stateBucket, socket);
+            globals.IN_PROGRESS_EVENTS().forEach(e => socket.removeAllListeners(e));
             inProgressGame.setSocketHandlers();
             inProgressGame.setUserView(currentGameState.client.userType);
             break;

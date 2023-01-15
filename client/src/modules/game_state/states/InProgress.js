@@ -4,7 +4,6 @@ import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { ModalManager } from '../../front_end_components/ModalManager.js';
 import { GameTimerManager } from '../../timer/GameTimerManager.js';
-import { stateBucket } from '../StateBucket.js';
 import { SharedStateUtil } from './shared/SharedStateUtil.js';
 
 export class InProgress {
@@ -194,6 +193,7 @@ export class InProgress {
         });
 
         this.socket.on(globals.EVENT_IDS.REVEAL_PLAYER, (revealData) => {
+            console.log('here');
             const revealedPerson = this.stateBucket.currentGameState.people.find((person) => person.id === revealData.id);
             if (revealedPerson) {
                 revealedPerson.revealed = true;
@@ -217,27 +217,10 @@ export class InProgress {
             }
         });
 
-        if (this.socket.hasListeners(globals.EVENT_IDS.ADD_SPECTATOR)) {
-            this.socket.removeAllListeners(globals.EVENT_IDS.ADD_SPECTATOR);
-        }
-
         this.socket.on(globals.EVENT_IDS.ADD_SPECTATOR, (spectator) => {
-            stateBucket.currentGameState.people.push(spectator);
+            this.stateBucket.currentGameState.people.push(spectator);
             SharedStateUtil.setNumberOfSpectators(
-                stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
-                document.getElementById('spectator-count')
-            );
-            if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                this.displayAvailableModerators();
-            }
-        });
-
-        this.socket.on(globals.EVENT_IDS.UPDATE_SPECTATORS, (spectators) => {
-            stateBucket.currentGameState.people = stateBucket.currentGameState.people.filter(p => p.userType !== globals.USER_TYPES.SPECTATOR);
-            stateBucket.currentGameState.people = stateBucket.currentGameState.people.concat(spectators);
-            SharedStateUtil.setNumberOfSpectators(
-                stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+                this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
                 document.getElementById('spectator-count')
             );
             if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
@@ -247,9 +230,11 @@ export class InProgress {
         });
 
         if (this.stateBucket.currentGameState.timerParams) {
-            const timerWorker = new Worker(new URL('../../timer/Timer.js', import.meta.url));
-            const gameTimerManager = new GameTimerManager(stateBucket, this.socket);
-            gameTimerManager.attachTimerSocketListeners(this.socket, timerWorker);
+            if (!this.stateBucket.timerWorker) {
+                this.stateBucket.timerWorker = new Worker(new URL('../../timer/Timer.js', import.meta.url));
+            }
+            const gameTimerManager = new GameTimerManager(this.stateBucket, this.socket);
+            gameTimerManager.attachTimerSocketListeners(this.socket, this.stateBucket.timerWorker);
         }
     }
 
@@ -540,8 +525,8 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                                     socket.emit(
                                         globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                                         globals.EVENT_IDS.FETCH_GAME_STATE,
-                                        stateBucket.currentGameState.accessCode,
-                                        { personId: stateBucket.currentGameState.client.cookie },
+                                        gameState.accessCode,
+                                        { personId: gameState.client.cookie },
                                         (gameState) => {
                                             SharedStateUtil.gameStateAckFn(gameState, socket);
                                         }

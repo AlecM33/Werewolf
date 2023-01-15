@@ -6,7 +6,7 @@ const STATUS = globals.STATUS;
 const Person = require('../../../../server/model/Person');
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const GameStateCurator = require('../../../../server/modules/GameStateCurator.js');
-const ActiveGameRunner = require('../../../../server/modules/singletons/ActiveGameRunner.js');
+const ActiveGameRunner = require('../../../../server/modules/singletons/TimerManager.js');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {

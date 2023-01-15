@@ -1,14 +1,14 @@
 'use strict';
 
-const main = async () => {
+(async () => {
     return new Promise(async (resolve, reject) => {
         try {
             const express = require('express');
             const app = express();
             const ServerBootstrapper = require('./server/modules/ServerBootstrapper');
-            const ActiveGameRunner = require('./server/modules/singletons/ActiveGameRunner');
+            const timerManager = require('./server/modules/singletons/TimerManager');
             const GameManager = require('./server/modules/singletons/GameManager');
-            const SocketManager = require('./server/modules/singletons/SocketManager');
+            const eventManager = require('./server/modules/singletons/EventManager');
             const globals = require('./server/config/globals');
 
             app.use(express.json({limit: '10kb'}));
@@ -28,18 +28,24 @@ const main = async () => {
                 }
                 return id;
             })());
-            singletons.gameManager.activeGameRunner = ActiveGameRunner.instance;
-            singletons.gameManager.socketManager = SocketManager.instance;
-            singletons.socketManager.activeGameRunner = ActiveGameRunner.instance;
-            singletons.socketManager.gameManager = GameManager.instance;
+            singletons.gameManager.timerManager = timerManager.instance;
+            singletons.gameManager.eventManager = eventManager.instance;
+            singletons.eventManager.timerManager = timerManager.instance;
+            singletons.eventManager.gameManager = GameManager.instance;
 
-            await singletons.activeGameRunner.client.connect();
-            console.log('Root Redis client connected');
-            await singletons.activeGameRunner.createGameSyncSubscriber(singletons.gameManager, singletons.socketManager);
-            await singletons.socketManager.createRedisPublisher();
+            try {
+                await singletons.eventManager.client.connect();
+                logger.info('Root Redis client connected');
 
-            const socketServer = singletons.socketManager.createSocketServer(webServer, app, port);
-            singletons.gameManager.setGameSocketNamespace(singletons.socketManager.createGameSocketNamespace(socketServer, logger, singletons.gameManager));
+            } catch(e) {
+                reject(new Error('UNABLE TO CONNECT TO REDIS because: '+ e));
+            }
+
+            await singletons.eventManager.createGameSyncSubscriber(singletons.gameManager, singletons.eventManager);
+            await singletons.eventManager.createRedisPublisher();
+
+            const socketServer = singletons.eventManager.createSocketServer(webServer, app, port);
+            singletons.gameManager.setGameSocketNamespace(singletons.eventManager.createGameSocketNamespace(socketServer, logger, singletons.gameManager));
             ServerBootstrapper.establishRouting(app, express);
 
             app.set('port', port);
@@ -52,8 +58,5 @@ const main = async () => {
             reject(e);
         }
     })
-}
-
-main()
-    .then(() => console.log('Server startup complete.'))
+})().then(() => console.log('Server startup complete.'))
     .catch((e) => console.error('SERVER FAILED TO START: ' + e));

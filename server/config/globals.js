@@ -42,8 +42,7 @@ const globals = {
         RESUME_TIMER: 'resumeTimer',
         END_TIMER: 'endTimer',
         GET_TIME_REMAINING: 'getTimeRemaining',
-        SOURCE_TIME_REMAINING: 'sourceTimeRemaining',
-        SHARE_TIME_REMAINING: 'shareTimeRemaining',
+        SOURCE_TIMER_EVENT: 'sourceTimerEvent',
         KILL_PLAYER: 'killPlayer',
         REVEAL_PLAYER: 'revealPlayer',
         TRANSFER_MODERATOR: 'transferModerator',
@@ -55,7 +54,8 @@ const globals = {
         ADD_SPECTATOR: 'addSpectator',
         SYNC_GAME_STATE: 'syncGameState',
         UPDATE_SOCKET: 'updateSocket',
-        ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
+        ASSIGN_DEDICATED_MOD: 'assignDedicatedMod',
+        TIMER_EVENT: 'timerEvent'
     },
     SYNCABLE_EVENTS: function () {
         return [
@@ -81,7 +81,8 @@ const globals = {
         return [
             this.EVENT_IDS.RESUME_TIMER,
             this.EVENT_IDS.PAUSE_TIMER,
-            this.EVENT_IDS.END_TIMER
+            this.EVENT_IDS.END_TIMER,
+            this.EVENT_IDS.GET_TIME_REMAINING
         ];
     },
     MESSAGES: {

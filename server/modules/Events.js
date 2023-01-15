@@ -53,15 +53,6 @@ const Events = [
             }
         }
     },
-    // {
-    //     id: EVENT_IDS.UPDATE_SOCKET,
-    //     stateChange: (game, socketArgs, vars) => {
-    //         const matchingPerson = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);
-    //         if (matchingPerson) {
-    //             matchingPerson.socketId = socketArgs.socketId;
-    //         }
-    //     }
-    // }
     {
         id: EVENT_IDS.SYNC_GAME_STATE,
         stateChange: async (game, socketArgs, vars) => {},
@@ -79,7 +70,7 @@ const Events = [
                 game.status = globals.STATUS.IN_PROGRESS;
                 if (game.hasTimer) {
                     game.timerParams.paused = true;
-                    await vars.activeGameRunner.runGame(game, vars.gameManager.namespace, vars.socketManager, vars.gameManager);
+                    await vars.timerManager.runTimer(game, vars.gameManager.namespace, vars.eventManager, vars.gameManager);
                 }
             }
         },
@@ -133,10 +124,10 @@ const Events = [
         id: EVENT_IDS.END_GAME,
         stateChange: async (game, socketArgs, vars) => {
             game.status = globals.STATUS.ENDED;
-            // if (this.activeGameRunner.timerThreads[game.accessCode]) {
-            //     this.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
-            //     this.activeGameRunner.timerThreads[game.accessCode].kill();
-            // }
+            if (vars.timerManager.timerThreads[game.accessCode]) {
+                vars.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
+                vars.timerManager.timerThreads[game.accessCode].kill();
+            }
             for (const person of game.people) {
                 person.revealed = true;
             }
@@ -208,7 +199,15 @@ const Events = [
     },
     {
         id: EVENT_IDS.RESTART_GAME,
-        stateChange: async (game, socketArgs, vars) => {},
+        stateChange: async (game, socketArgs, vars) => {
+            if (vars.instanceId !== vars.senderInstanceId
+                && vars.timerManager.timerThreads[game.accessCode]
+                && !vars.timerManager.timerThreads[game.accessCode].killed
+            ) {
+                vars.timerManager.timerThreads[game.accessCode].kill();
+                delete vars.timerManager.timerThreads[game.accessCode];
+            }
+        },
         communicate: async (game, socketArgs, vars) => {
             if (vars.ackFn) {
                 vars.ackFn();
@@ -217,51 +216,51 @@ const Events = [
         }
     },
     {
-        id: EVENT_IDS.GET_TIME_REMAINING,
+        id: EVENT_IDS.TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            const thread = vars.activeGameRunner.timerThreads[game.accessCode];
+            const thread = vars.timerManager.timerThreads[game.accessCode];
             if (thread && (!thread.killed && thread.exitCode === null)) {
                 thread.send({
-                    command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    command: vars.timerEventSubtype,
                     accessCode: game.accessCode,
                     socketId: vars.socketId,
                     logLevel: vars.logger.logLevel
                 });
             } else if (thread) {
-                console.log(game.timerParams);
-                if (game.timerParams && game.timerParams.timeRemaining === 0) {
-                    vars.gameManager.namespace.to(vars.socketId)
-                        .emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
-                    await vars.socketManager.publisher.publish(
-                        globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                        game.accessCode + ';' + globals.EVENT_IDS.SHARE_TIME_REMAINING + ';' +
-                        JSON.stringify({
-                            socketId: vars.socketId,
-                            timeRemaining: game.timerParams.timeRemaining,
-                            paused: game.timerParams.paused
-                        }) +
-                        ';' + vars.instanceId
-                    );
+                if (vars.timerEventSubtype === EVENT_IDS.GET_TIME_REMAINING && game.timerParams && game.timerParams.timeRemaining === 0) {
+                    // vars.gameManager.namespace.to(vars.socketId)
+                    //     .emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+                    // await vars.eventManager.publisher.publish(
+                    //     globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    //     game.accessCode + ';' + globals.EVENT_IDS.SHARE_TIME_REMAINING + ';' +
+                    //     JSON.stringify({
+                    //         socketId: vars.socketId,
+                    //         timeRemaining: game.timerParams.timeRemaining,
+                    //         paused: game.timerParams.paused
+                    //     }) +
+                    //     ';' + vars.instanceId
+                    // );
                 }
             } else { // we need to consult another container for the timer data
-                await vars.socketManager.publisher?.publish(
+                await vars.eventManager.publisher?.publish(
                     globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    game.accessCode + ';' + globals.EVENT_IDS.SOURCE_TIME_REMAINING + ';' + JSON.stringify({ socketId: vars.socketId }) + ';' + vars.instanceId
+                    game.accessCode + ';' + globals.EVENT_IDS.SOURCE_TIMER_EVENT + ';' +
+                    JSON.stringify({ socketId: vars.socketId, timerEventSubtype: vars.timerEventSubtype }) + ';' + vars.instanceId
                 );
             }
         }
     },
     {
-        /* unlike the GET_TIME_REMAINING event, this event is a request from another instance for timer data. In response
+        /* This event is a request from another instance to consult its timer data. In response
         * to this event, this instance will check if it is home to a particular timer thread. */
-        id: EVENT_IDS.SOURCE_TIME_REMAINING,
+        id: EVENT_IDS.SOURCE_TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            const thread = vars.activeGameRunner.timerThreads[game.accessCode];
+            const thread = vars.timerManager.timerThreads[game.accessCode];
             if (thread && (!thread.killed && thread.exitCode === null)) {
                 thread.send({
-                    command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    command: socketArgs.timerEventSubtype,
                     accessCode: game.accessCode,
                     socketId: socketArgs.socketId,
                     logLevel: vars.logger.logLevel
@@ -271,7 +270,7 @@ const Events = [
                     vars.gameManager.namespace.to(vars.socketId)
                         .emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
                 }
-                await vars.socketManager.publisher.publish(
+                await vars.eventManager.publisher.publish(
                     globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                     game.accessCode + ';' + globals.EVENT_IDS.SHARE_TIME_REMAINING + ';' +
                     JSON.stringify({
@@ -285,21 +284,11 @@ const Events = [
         }
     },
     {
-        /* This is an event fired when an instance receives timer data from another instance. In this case, we should check if the socket id
-        * given in the message is connected to this namespace. If it is, emit the time remaining to them. */
-        id: EVENT_IDS.SHARE_TIME_REMAINING,
-        stateChange: async (game, socketArgs, vars) => {},
-        communicate: async (game, socketArgs, vars) => {
-            const socket = vars.gameManager.namespace.sockets.get(socketArgs.socketId);
-            if (socket) {
-                vars.gameManager.namespace.to(socket.id)
-                    .emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, socketArgs.timeRemaining, socketArgs.paused);
-            }
-        }
-    },
-    {
         id: EVENT_IDS.END_TIMER,
         stateChange: async (game, socketArgs, vars) => {
+            if (vars.timerManager.timerThreads[game.accessCode]) {
+                delete vars.timerManager.timerThreads[game.accessCode];
+            }
             game.timerParams.paused = false;
             game.timerParams.timeRemaining = 0;
         },
@@ -314,7 +303,7 @@ const Events = [
             game.timerParams.timeRemaining = socketArgs.timeRemaining;
         },
         communicate: async (game, socketArgs, vars) => {
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, game.timerParams.timeRemaining);
+            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, socketArgs.timeRemaining);
         }
     },
     {
@@ -324,7 +313,19 @@ const Events = [
             game.timerParams.timeRemaining = socketArgs.timeRemaining;
         },
         communicate: async (game, socketArgs, vars) => {
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, game.timerParams.timeRemaining);
+            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, socketArgs.timeRemaining);
+        }
+    },
+    {
+        id: EVENT_IDS.GET_TIME_REMAINING,
+        stateChange: async (game, socketArgs, vars) => {
+            game.timerParams.timeRemaining = socketArgs.timeRemaining;
+        },
+        communicate: async (game, socketArgs, vars) => {
+            const socket = vars.gameManager.namespace.sockets.get(socketArgs.socketId);
+            if (socket) {
+                vars.gameManager.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, socketArgs.timeRemaining, game.timerParams.paused);
+            }
         }
     }
 ];

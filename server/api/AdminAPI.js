@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
-const socketManager = (require('../modules/singletons/SocketManager.js')).instance;
-const activeGameRunner = (require('../modules/singletons/ActiveGameRunner.js')).instance;
+const eventManager = (require('../modules/singletons/EventManager.js')).instance;
+const timerManager = (require('../modules/singletons/TimerManager.js')).instance;
 const globals = require('../config/globals.js');
 const cors = require('cors');
 
@@ -16,13 +16,13 @@ router.post('/sockets/broadcast', (req, res, next) => {
 // TODO: implement client-side display of this message.
 router.post('/sockets/broadcast', function (req, res) {
     logger.info('admin user broadcasting message: ' + req.body?.message);
-    socketManager.broadcast(req.body?.message);
+    eventManager.broadcast(req.body?.message);
     res.status(201).send('Broadcasted message to all connected sockets: ' + req.body?.message);
 });
 
 router.get('/games/state', async (req, res) => {
     const gamesArray = [];
-    await activeGameRunner.client.keys('*').then(async (r) => {
+    await timerManager.client.keys('*').then(async (r) => {
         Object.values(r).forEach((v) => gamesArray.push(JSON.parse(v)));
     });
     res.status(200).send(gamesArray);

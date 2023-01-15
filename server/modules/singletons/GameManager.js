@@ -13,11 +13,16 @@ class GameManager {
         logger.info('CREATING SINGLETON GAME MANAGER');
         this.logger = logger;
         this.environment = environment;
-        this.activeGameRunner = null;
-        this.socketManager = null;
+        this.timerManager = null;
+        this.eventManager = null;
         this.namespace = null;
         this.instanceId = instanceId;
         GameManager.instance = this;
+    }
+
+    getActiveGame = async (accessCode) => {
+        const r = await this.eventManager.client.get(accessCode);
+        return r === null ? r : JSON.parse(r);
     }
 
     setGameSocketNamespace = (namespace) => {
@@ -26,7 +31,7 @@ class GameManager {
 
     refreshGame = async (game) => {
         this.logger.debug('PUSHING REFRESH OF ' + game.accessCode);
-        await this.activeGameRunner.client.set(game.accessCode, JSON.stringify(game));
+        await this.eventManager.client.set(game.accessCode, JSON.stringify(game));
     }
 
     createGame = async (gameParams) => {
@@ -61,7 +66,7 @@ class GameManager {
                 new Date().toJSON(),
                 req.timerParams
             );
-            await this.activeGameRunner.client.set(newAccessCode, JSON.stringify(newGame), {
+            await this.eventManager.client.set(newAccessCode, JSON.stringify(newGame), {
                 EX: globals.STALE_GAME_SECONDS
             });
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
@@ -73,7 +78,7 @@ class GameManager {
     };
 
     pauseTimer = async (game, logger) => {
-        const thread = this.activeGameRunner.timerThreads[game.accessCode];
+        const thread = this.timerManager.timerThreads[game.accessCode];
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
             thread.send({
@@ -85,7 +90,7 @@ class GameManager {
     };
 
     resumeTimer = async (game, logger) => {
-        const thread = this.activeGameRunner.timerThreads[game.accessCode];
+        const thread = this.timerManager.timerThreads[game.accessCode];
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
             thread.send({
@@ -98,7 +103,7 @@ class GameManager {
 
     getTimeRemaining = async (game, socketId) => {
         if (socketId) {
-            const thread = this.activeGameRunner.timerThreads[game.accessCode];
+            const thread = this.timerManager.timerThreads[game.accessCode];
             if (thread && (!thread.killed && thread.exitCode === null)) {
                 thread.send({
                     command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
@@ -115,7 +120,7 @@ class GameManager {
     };
 
     checkAvailability = async (code) => {
-        const game = await this.activeGameRunner.getActiveGame(code.toUpperCase().trim());
+        const game = await this.getActiveGame(code.toUpperCase().trim());
         if (game) {
             return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
         } else {
@@ -127,7 +132,7 @@ class GameManager {
         const charCount = charPool.length;
         let codeDigits, accessCode;
         let attempts = 0;
-        while (!accessCode || ((await this.activeGameRunner.client.keys('*')).includes(accessCode)
+        while (!accessCode || ((await this.eventManager.client.keys('*')).includes(accessCode)
             && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
             codeDigits = [];
             let iterations = globals.ACCESS_CODE_LENGTH;
@@ -138,7 +143,7 @@ class GameManager {
             accessCode = codeDigits.join('');
             attempts ++;
         }
-        return (await this.activeGameRunner.client.keys('*')).includes(accessCode)
+        return (await this.eventManager.client.keys('*')).includes(accessCode)
             ? null
             : accessCode;
     };
@@ -156,7 +161,7 @@ class GameManager {
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
         } else if (joinAsSpectator) {
-            return await addSpectator(game, name, this.logger, this.namespace, this.socketManager.publisher, this.instanceId, this.refreshGame);
+            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager.publisher, this.instanceId, this.refreshGame);
         }
         const unassignedPerson = this.findPersonByField(game, 'id', game.currentModeratorId).assigned === false
             ? this.findPersonByField(game, 'id', game.currentModeratorId)
@@ -172,7 +177,7 @@ class GameManager {
                 GameStateCurator.mapPerson(unassignedPerson),
                 game.isFull
             );
-            await this.activeGameRunner.publisher?.publish(
+            await this.eventManager.publisher?.publish(
                 globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                 game.accessCode + ';' + globals.EVENT_IDS.PLAYER_JOINED + ';' + JSON.stringify(unassignedPerson) + ';' + this.instanceId
             );
@@ -181,20 +186,20 @@ class GameManager {
             if (game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS) {
                 return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
             }
-            return await addSpectator(game, name, this.logger, this.namespace, this.socketManager.publisher, this.instanceId, this.refreshGame);
+            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager.publisher, this.instanceId, this.refreshGame);
         }
     };
 
     restartGame = async (game, namespace) => {
         // kill any outstanding timer threads
-        const subProcess = this.activeGameRunner.timerThreads[game.accessCode];
+        const subProcess = this.timerManager.timerThreads[game.accessCode];
         if (subProcess) {
             if (!subProcess.killed) {
                 this.logger.info('Killing timer process ' + subProcess.pid + ' for: ' + game.accessCode);
-                this.activeGameRunner.timerThreads[game.accessCode].kill();
+                this.timerManager.timerThreads[game.accessCode].kill();
             }
             this.logger.debug('Deleting reference to subprocess ' + subProcess.pid);
-            delete this.activeGameRunner.timerThreads[game.accessCode];
+            delete this.timerManager.timerThreads[game.accessCode];
         }
 
         // re-shuffle the deck
@@ -230,11 +235,11 @@ class GameManager {
         game.status = globals.STATUS.IN_PROGRESS;
         if (game.hasTimer) {
             game.timerParams.paused = true;
-            await this.activeGameRunner.runGame(game, namespace, this.socketManager, this);
+            await this.timerManager.runTimer(game, namespace, this.eventManager, this);
         }
 
         await this.refreshGame(game);
-        await this.socketManager.publisher?.publish(
+        await this.eventManager.publisher?.publish(
             globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
             game.accessCode + ';' + globals.EVENT_IDS.RESTART_GAME + ';' + JSON.stringify({}) + ';' + this.instanceId
         );

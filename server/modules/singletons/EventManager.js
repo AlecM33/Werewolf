@@ -1,22 +1,23 @@
 const globals = require('../../config/globals');
-const EVENT_IDS = globals.EVENT_IDS;
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 const redis = require('redis');
 const Events = require('../Events');
 
-class SocketManager {
+class EventManager {
     constructor (logger, instanceId) {
-        if (SocketManager.instance) {
-            throw new Error('The server attempted to instantiate more than one SocketManager.');
+        if (EventManager.instance) {
+            throw new Error('The server attempted to instantiate more than one EventManager.');
         }
-        logger.info('CREATING SINGLETON SOCKET MANAGER');
+        logger.info('CREATING SINGLETON EVENT MANAGER');
         this.logger = logger;
+        this.client = redis.createClient();
         this.io = null;
         this.publisher = null;
-        this.activeGameRunner = null;
+        this.subscriber = null;
+        this.timerManager = null;
         this.gameManager = null;
         this.instanceId = instanceId;
-        SocketManager.instance = this;
+        EventManager.instance = this;
     }
 
     broadcast = (message) => {
@@ -26,7 +27,38 @@ class SocketManager {
     createRedisPublisher = async () => {
         this.publisher = redis.createClient();
         await this.publisher.connect();
-        this.logger.info('SOCKET MANAGER - CREATED GAME SYNC PUBLISHER');
+        this.logger.info('EVENT MANAGER - CREATED PUBLISHER');
+    }
+
+    createGameSyncSubscriber = async (gameManager, eventManager) => {
+        this.subscriber = this.client.duplicate();
+        await this.subscriber.connect();
+        await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
+            this.logger.info('MESSAGE: ' + message);
+            const messageComponents = message.split(';');
+            if (messageComponents[messageComponents.length - 1] === this.instanceId) {
+                this.logger.trace('Disregarding self-authored message');
+                return;
+            }
+            const game = await gameManager.getActiveGame(messageComponents[0]);
+            let args;
+            if (messageComponents[2]) {
+                args = JSON.parse(messageComponents[2]);
+            }
+            if (game) {
+                await eventManager.handleEventById(
+                    messageComponents[1],
+                    messageComponents[messageComponents.length - 1],
+                    game,
+                    null,
+                    game?.accessCode || messageComponents[0],
+                    args || null,
+                    null,
+                    true
+                );
+            }
+        });
+        this.logger.info('EVENT MANAGER - CREATED SUBSCRIBER');
     }
 
     createSocketServer = (main, app, port, logger) => {
@@ -49,24 +81,24 @@ class SocketManager {
 
     createGameSocketNamespace = (server, logger, gameManager) => {
         const namespace = server.of('/in-game');
-        const registerHandlers = this.registerHandlers;
+        const registerSocketHandler = this.registerSocketHandler;
         registerRateLimiter(namespace, logger);
         namespace.on('connection', function (socket) {
             socket.on('disconnecting', (reason) => {
                 logger.trace('client socket disconnecting because: ' + reason);
             });
 
-            registerHandlers(namespace, socket, gameManager);
+            registerSocketHandler(namespace, socket, gameManager);
         });
         return server.of('/in-game');
     };
 
-    registerHandlers = (namespace, socket) => {
+    registerSocketHandler = (namespace, socket, gameManager) => {
         socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args = null, ackFn = null) => {
-            const game = await this.activeGameRunner.getActiveGame(accessCode);
+            const game = await gameManager.getActiveGame(accessCode);
             if (game) {
                 if (globals.TIMER_EVENTS().includes(eventId)) {
-                    await this.handleAndSyncTimerEvent(eventId, game, socket, args, ackFn, false);
+                    await this.handleEventById(globals.EVENT_IDS.TIMER_EVENT, null, game, socket.id, game.accessCode, args, ackFn, true, eventId);
                 } else {
                     await this.handleAndSyncSocketEvent(eventId, game, socket, args, ackFn, false);
                 }
@@ -77,7 +109,7 @@ class SocketManager {
     };
 
     handleAndSyncSocketEvent = async (eventId, game, socket, socketArgs, ackFn) => {
-        await this.handleEventById(eventId, game, socket?.id, game.accessCode, socketArgs, ackFn, false);
+        await this.handleEventById(eventId, null, game, socket?.id, game.accessCode, socketArgs, ackFn, false);
         /* This server should publish events initiated by a connected socket to Redis for consumption by other instances. */
         if (globals.SYNCABLE_EVENTS().includes(eventId)) {
             await this.gameManager.refreshGame(game);
@@ -88,33 +120,22 @@ class SocketManager {
         }
     }
 
-    handleAndSyncTimerEvent = async (eventId, game, socketId, accessCode, socketArgs, ackFn, syncOnly) => {
-        switch (eventId) {
-            case EVENT_IDS.PAUSE_TIMER:
-                await this.gameManager.pauseTimer(game, this.logger);
-                break;
-            case EVENT_IDS.RESUME_TIMER:
-                await this.gameManager.resumeTimer(game, this.logger);
-                break;
-            default:
-                break;
-        }
-    }
-
-    handleEventById = async (eventId, game, socketId, accessCode, socketArgs, ackFn, syncOnly) => {
+    handleEventById = async (eventId, senderInstanceId, game, socketId, accessCode, socketArgs, ackFn, syncOnly, timerEventSubtype = null) => {
         this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(socketArgs));
         const event = Events.find((event) => event.id === eventId);
         const additionalVars = {
             gameManager: this.gameManager,
-            activeGameRunner: this.activeGameRunner,
-            socketManager: this,
+            timerManager: this.timerManager,
+            eventManager: this,
             socketId: socketId,
             ackFn: ackFn,
             logger: this.logger,
-            instanceId: this.instanceId
+            instanceId: this.instanceId,
+            senderInstanceId: senderInstanceId,
+            timerEventSubtype: timerEventSubtype
         };
         if (event) {
-            if (!syncOnly) {
+            if (!syncOnly || eventId === globals.EVENT_IDS.RESTART_GAME) {
                 await event.stateChange(game, socketArgs, additionalVars);
             }
             await event.communicate(game, socketArgs, additionalVars);
@@ -140,4 +161,4 @@ function registerRateLimiter (server, logger) {
     });
 }
 
-module.exports = SocketManager;
+module.exports = EventManager;

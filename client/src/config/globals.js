@@ -1,7 +1,7 @@
 export const globals = {
     CHAR_POOL: 'abcdefghijklmnopqrstuvwxyz0123456789',
     USER_SIGNATURE_LENGTH: 75,
-    CLOCK_TICK_INTERVAL_MILLIS: 100,
+    CLOCK_TICK_INTERVAL_MILLIS: 50,
     MAX_CUSTOM_ROLE_NAME_LENGTH: 50,
     MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 1000,
     TOAST_DURATION_DEFAULT: 6,
@@ -54,7 +54,19 @@ export const globals = {
         UPDATE_SPECTATORS: 'updateSpectators',
         RESTART_GAME: 'restartGame',
         ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
-
+    },
+    LOBBY_EVENTS: function () {
+        return [
+            this.EVENT_IDS.PLAYER_JOINED,
+            this.EVENT_IDS.ADD_SPECTATOR
+        ];
+    },
+    IN_PROGRESS_EVENTS: function () {
+        return [
+            this.EVENT_IDS.KILL_PLAYER,
+            this.EVENT_IDS.REVEAL_PLAYER,
+            this.EVENT_IDS.ADD_SPECTATOR
+        ];
     },
     USER_TYPES: {
         MODERATOR: 'moderator',

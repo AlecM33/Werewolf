@@ -1,5 +1,10 @@
 'use strict';
 
+process.on('SIGTERM', function () {
+    console.log('received SIGTERM, exiting gracefully');
+    process.exit(0);
+});
+
 const express = require('express');
 const app = express();
 const ServerBootstrapper = require('./server/modules/ServerBootstrapper');

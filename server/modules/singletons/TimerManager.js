@@ -15,12 +15,6 @@ class TimerManager {
         TimerManager.instance = this;
     }
 
-    setUpSignalHandler = () => {
-        process.on('SIGTERM', (code) => {
-            console.log('received sigterm');
-        });
-    }
-
     runTimer = async (game, namespace, eventManager, gameManager) => {
         this.logger.debug('running timer for game ' + game.accessCode);
         const gameProcess = fork(path.join(__dirname, '../GameProcess.js'));

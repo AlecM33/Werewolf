@@ -32,18 +32,6 @@
             singletons.eventManager.timerManager = timerManager.instance;
             singletons.eventManager.gameManager = GameManager.instance;
 
-            //singletons.timerManager.setUpSignalHandler();
-            process.on( "SIGINT", function() {
-                console.log( "\ngracefully shutting down from SIGINT (Crtl-C)" );
-                process.exit();
-            } );
-
-            process.on( "exit", function() {
-                console.log( "never see this log message" );
-            } );
-
-            //process.kill(process.pid, "SIGTERM");
-
             try {
                 await singletons.eventManager.client.connect();
                 logger.info('Root Redis client connected');

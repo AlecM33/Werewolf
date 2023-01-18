@@ -38,9 +38,9 @@ const Events = [
         id: EVENT_IDS.FETCH_GAME_STATE,
         stateChange: async (game, socketArgs, vars) => {
             const matchingPerson = vars.gameManager.findPersonByField(game, 'cookie', socketArgs.personId);
-            if (matchingPerson && matchingPerson.socketId !== vars.socketId) {
-                matchingPerson.socketId = vars.socketId;
-                vars.gameManager.namespace.sockets.get(vars.socketId)?.join(game.accessCode);
+            if (matchingPerson && matchingPerson.socketId !== vars.requestingSocketId) {
+                matchingPerson.socketId = vars.requestingSocketId;
+                vars.gameManager.namespace.sockets.get(vars.requestingSocketId)?.join(game.accessCode);
             }
         },
         communicate: async (game, socketArgs, vars) => {
@@ -202,9 +202,10 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {
             if (vars.instanceId !== vars.senderInstanceId
                 && vars.timerManager.timerThreads[game.accessCode]
-                && !vars.timerManager.timerThreads[game.accessCode].killed
             ) {
-                vars.timerManager.timerThreads[game.accessCode].kill();
+                if (!vars.timerManager.timerThreads[game.accessCode].killed) {
+                    vars.timerManager.timerThreads[game.accessCode].kill();
+                }
                 delete vars.timerManager.timerThreads[game.accessCode];
             }
         },
@@ -220,33 +221,33 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
             const thread = vars.timerManager.timerThreads[game.accessCode];
-            if (thread && (!thread.killed && thread.exitCode === null)) {
-                thread.send({
-                    command: vars.timerEventSubtype,
-                    accessCode: game.accessCode,
-                    socketId: vars.socketId,
-                    logLevel: vars.logger.logLevel
-                });
-            } else if (thread) {
-                if (vars.timerEventSubtype === EVENT_IDS.GET_TIME_REMAINING && game.timerParams && game.timerParams.timeRemaining === 0) {
-                    // vars.gameManager.namespace.to(vars.socketId)
-                    //     .emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
-                    // await vars.eventManager.publisher.publish(
-                    //     globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    //     game.accessCode + ';' + globals.EVENT_IDS.SHARE_TIME_REMAINING + ';' +
-                    //     JSON.stringify({
-                    //         socketId: vars.socketId,
-                    //         timeRemaining: game.timerParams.timeRemaining,
-                    //         paused: game.timerParams.paused
-                    //     }) +
-                    //     ';' + vars.instanceId
-                    // );
+            if (thread) {
+                if (!thread.killed && thread.exitCode === null) {
+                    thread.send({
+                        command: vars.timerEventSubtype,
+                        accessCode: game.accessCode,
+                        socketId: vars.requestingSocketId,
+                        logLevel: vars.logger.logLevel
+                    });
+                } else {
+                    const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
+                    if (socket) {
+                        vars.gameManager.namespace.to(socket.id).emit(
+                            globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                            game.timerParams.timeRemaining,
+                            game.timerParams.paused
+                        );
+                    }
                 }
             } else { // we need to consult another container for the timer data
                 await vars.eventManager.publisher?.publish(
                     globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    game.accessCode + ';' + globals.EVENT_IDS.SOURCE_TIMER_EVENT + ';' +
-                    JSON.stringify({ socketId: vars.socketId, timerEventSubtype: vars.timerEventSubtype }) + ';' + vars.instanceId
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        globals.EVENT_IDS.SOURCE_TIMER_EVENT,
+                        vars.instanceId,
+                        JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
+                    )
                 );
             }
         }
@@ -258,37 +259,35 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
             const thread = vars.timerManager.timerThreads[game.accessCode];
-            if (thread && (!thread.killed && thread.exitCode === null)) {
-                thread.send({
-                    command: socketArgs.timerEventSubtype,
-                    accessCode: game.accessCode,
-                    socketId: socketArgs.socketId,
-                    logLevel: vars.logger.logLevel
-                });
-            } else if (thread) {
-                if (game.timerParams && game.timerParams.timeRemaining === 0) {
-                    vars.gameManager.namespace.to(vars.socketId)
-                        .emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
-                }
-                await vars.eventManager.publisher.publish(
-                    globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    game.accessCode + ';' + globals.EVENT_IDS.SHARE_TIME_REMAINING + ';' +
-                    JSON.stringify({
+            if (thread) {
+                if (!thread.killed && thread.exitCode === null) {
+                    thread.send({
+                        command: socketArgs.timerEventSubtype,
+                        accessCode: game.accessCode,
                         socketId: socketArgs.socketId,
-                        timeRemaining: game.timerParams.timeRemaining,
-                        paused: game.timerParams.paused
-                    }) +
-                    ';' + vars.instanceId
-                );
+                        logLevel: vars.logger.logLevel
+                    });
+                } else {
+                    await vars.eventManager.publisher.publish(
+                        globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                        vars.eventManager.createMessageToPublish(
+                            game.accessCode,
+                            socketArgs.timerEventSubtype,
+                            vars.instanceId,
+                            JSON.stringify({
+                                socketId: socketArgs.socketId,
+                                timeRemaining: game.timerParams.timeRemaining,
+                                paused: game.timerParams.paused
+                            })
+                        )
+                    );
+                }
             }
         }
     },
     {
         id: EVENT_IDS.END_TIMER,
         stateChange: async (game, socketArgs, vars) => {
-            if (vars.timerManager.timerThreads[game.accessCode]) {
-                delete vars.timerManager.timerThreads[game.accessCode];
-            }
             game.timerParams.paused = false;
             game.timerParams.timeRemaining = 0;
         },
@@ -318,9 +317,7 @@ const Events = [
     },
     {
         id: EVENT_IDS.GET_TIME_REMAINING,
-        stateChange: async (game, socketArgs, vars) => {
-            game.timerParams.timeRemaining = socketArgs.timeRemaining;
-        },
+        stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
             const socket = vars.gameManager.namespace.sockets.get(socketArgs.socketId);
             if (socket) {

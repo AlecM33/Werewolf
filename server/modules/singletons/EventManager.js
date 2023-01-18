@@ -34,31 +34,51 @@ class EventManager {
         this.subscriber = this.client.duplicate();
         await this.subscriber.connect();
         await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
-            this.logger.info('MESSAGE: ' + message);
-            const messageComponents = message.split(';');
-            if (messageComponents[messageComponents.length - 1] === this.instanceId) {
-                this.logger.trace('Disregarding self-authored message');
+            this.logger.debug('MESSAGE: ' + message);
+            let messageComponents, args;
+            try {
+                messageComponents = message.split(';', 3);
+                if (messageComponents[messageComponents.length - 1] === this.instanceId) {
+                    this.logger.trace('Disregarding self-authored message');
+                    return;
+                }
+                args = JSON.parse(
+                    message.slice(
+                        message.indexOf(messageComponents[messageComponents.length - 1]) + (globals.INSTANCE_ID_LENGTH + 1)
+                    )
+                )
+            } catch(e) {
+                this.logger.error('MALFORMED MESSAGE RESULTED IN ERROR: ' + e + '; DISREGARDING');
                 return;
             }
-            const game = await gameManager.getActiveGame(messageComponents[0]);
-            let args;
-            if (messageComponents[2]) {
-                args = JSON.parse(messageComponents[2]);
-            }
-            if (game) {
-                await eventManager.handleEventById(
-                    messageComponents[1],
-                    messageComponents[messageComponents.length - 1],
-                    game,
-                    null,
-                    game?.accessCode || messageComponents[0],
-                    args || null,
-                    null,
-                    true
-                );
+            if (messageComponents) {
+                const game = await gameManager.getActiveGame(messageComponents[0]);
+                if (game) {
+                    await eventManager.handleEventById(
+                        messageComponents[1],
+                        messageComponents[messageComponents.length - 1],
+                        game,
+                        null,
+                        game?.accessCode || messageComponents[0],
+                        args || null,
+                        null,
+                        true
+                    );
+                }
             }
         });
         this.logger.info('EVENT MANAGER - CREATED SUBSCRIBER');
+    }
+
+    createMessageToPublish = (...args) => {
+        let message = '';
+        for (let i = 0; i < args.length; i ++) {
+            message += args[i];
+            if (i !== args.length - 1) {
+                message += ';';
+            }
+        }
+        return message;
     }
 
     createSocketServer = (main, app, port, logger) => {
@@ -115,19 +135,19 @@ class EventManager {
             await this.gameManager.refreshGame(game);
             await this.publisher?.publish(
                 globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                game.accessCode + ';' + eventId + ';' + JSON.stringify(socketArgs) + ';' + this.instanceId
+                this.createMessageToPublish(game.accessCode, eventId, this.instanceId, JSON.stringify(socketArgs))
             );
         }
     }
 
-    handleEventById = async (eventId, senderInstanceId, game, socketId, accessCode, socketArgs, ackFn, syncOnly, timerEventSubtype = null) => {
+    handleEventById = async (eventId, senderInstanceId, game, requestingSocketId, accessCode, socketArgs, ackFn, syncOnly, timerEventSubtype = null) => {
         this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(socketArgs));
         const event = Events.find((event) => event.id === eventId);
         const additionalVars = {
             gameManager: this.gameManager,
             timerManager: this.timerManager,
             eventManager: this,
-            socketId: socketId,
+            requestingSocketId: requestingSocketId,
             ackFn: ackFn,
             logger: this.logger,
             instanceId: this.instanceId,

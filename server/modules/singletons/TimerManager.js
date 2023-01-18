@@ -15,6 +15,12 @@ class TimerManager {
         TimerManager.instance = this;
     }
 
+    setUpSignalHandler = () => {
+        process.on('SIGTERM', (code) => {
+            console.log('received sigterm');
+        });
+    }
+
     runTimer = async (game, namespace, eventManager, gameManager) => {
         this.logger.debug('running timer for game ' + game.accessCode);
         const gameProcess = fork(path.join(__dirname, '../GameProcess.js'));
@@ -26,7 +32,7 @@ class TimerManager {
             await gameManager.refreshGame(game);
             await eventManager.publisher.publish(
                 globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                game.accessCode + ';' + msg.command + ';' + JSON.stringify(msg) + ';' + this.instanceId
+                eventManager.createMessageToPublish(game.accessCode, msg.command, this.instanceId, JSON.stringify(msg))
             );
         });
 

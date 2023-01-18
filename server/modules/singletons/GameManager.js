@@ -22,6 +22,12 @@ class GameManager {
 
     getActiveGame = async (accessCode) => {
         const r = await this.eventManager.client.get(accessCode);
+        if (r === null && this.timerManager.timerThreads[accessCode]) {
+            if (!this.timerManager.timerThreads[accessCode].killed) {
+                this.timerManager.timerThreads[accessCode].kill();
+            }
+            delete this.timerManager.timerThreads[accessCode];
+        }
         return r === null ? r : JSON.parse(r);
     }
 
@@ -31,7 +37,10 @@ class GameManager {
 
     refreshGame = async (game) => {
         this.logger.debug('PUSHING REFRESH OF ' + game.accessCode);
-        await this.eventManager.client.set(game.accessCode, JSON.stringify(game));
+        await this.eventManager.client.set(game.accessCode, JSON.stringify(game), {
+            KEEPTTL: true,
+            XX: true // only set the key if it already exists
+        });
     }
 
     createGame = async (gameParams) => {
@@ -52,7 +61,9 @@ class GameManager {
             console.log(moderator);
             moderator.assigned = true;
             if (req.timerParams !== null) {
-                req.timerParams.paused = false;
+                req.timerParams.paused = true;
+                req.timerParams.timeRemaining = convertFromHoursToMilliseconds(req.timerParams.hours)
+                    + convertFromMinutesToMilliseconds(req.timerParams.minutes);
             }
             const newGame = new Game(
                 newAccessCode,
@@ -161,7 +172,7 @@ class GameManager {
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
         } else if (joinAsSpectator) {
-            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager.publisher, this.instanceId, this.refreshGame);
+            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
         const unassignedPerson = this.findPersonByField(game, 'id', game.currentModeratorId).assigned === false
             ? this.findPersonByField(game, 'id', game.currentModeratorId)
@@ -179,14 +190,19 @@ class GameManager {
             );
             await this.eventManager.publisher?.publish(
                 globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                game.accessCode + ';' + globals.EVENT_IDS.PLAYER_JOINED + ';' + JSON.stringify(unassignedPerson) + ';' + this.instanceId
+                this.eventManager.createMessageToPublish(
+                    game.accessCode,
+                    globals.EVENT_IDS.PLAYER_JOINED,
+                    this.instanceId,
+                    JSON.stringify(unassignedPerson)
+                )
             );
             return Promise.resolve(unassignedPerson.cookie);
         } else {
             if (game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS) {
                 return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
             }
-            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager.publisher, this.instanceId, this.refreshGame);
+            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
     };
 
@@ -235,13 +251,20 @@ class GameManager {
         game.status = globals.STATUS.IN_PROGRESS;
         if (game.hasTimer) {
             game.timerParams.paused = true;
+            game.timerParams.timeRemaining = convertFromHoursToMilliseconds(game.timerParams.hours)
+                + convertFromMinutesToMilliseconds(game.timerParams.minutes);
             await this.timerManager.runTimer(game, namespace, this.eventManager, this);
         }
 
         await this.refreshGame(game);
         await this.eventManager.publisher?.publish(
             globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-            game.accessCode + ';' + globals.EVENT_IDS.RESTART_GAME + ';' + JSON.stringify({}) + ';' + this.instanceId
+            this.eventManager.createMessageToPublish(
+                game.accessCode,
+                globals.EVENT_IDS.RESTART_GAME,
+                this.instanceId,
+                '{}'
+            )
         );
         namespace.in(game.accessCode).emit(globals.EVENT_IDS.RESTART_GAME);
     };
@@ -349,7 +372,7 @@ function getGameSize (cards) {
     return quantity;
 }
 
-async function addSpectator (game, name, logger, namespace, publisher, instanceId, refreshGame) {
+async function addSpectator (game, name, logger, namespace, eventManager, instanceId, refreshGame) {
     const spectator = new Person(
         createRandomId(),
         createRandomId(),
@@ -363,11 +386,24 @@ async function addSpectator (game, name, logger, namespace, publisher, instanceI
         globals.EVENT_IDS.ADD_SPECTATOR,
         GameStateCurator.mapPerson(spectator)
     );
-    await publisher.publish(
+    await eventManager.publisher.publish(
         globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-        game.accessCode + ';' + globals.EVENT_IDS.ADD_SPECTATOR + ';' + JSON.stringify(GameStateCurator.mapPerson(spectator)) + ';' + instanceId
+        eventManager.createMessageToPublish(
+            game.accessCode,
+            globals.EVENT_IDS.ADD_SPECTATOR,
+            instanceId,
+            JSON.stringify(GameStateCurator.mapPerson(spectator))
+        )
     );
     return Promise.resolve(spectator.cookie);
+}
+
+function convertFromMinutesToMilliseconds (minutes) {
+    return minutes * 60 * 1000;
+}
+
+function convertFromHoursToMilliseconds (hours) {
+    return hours * 60 * 60 * 1000;
 }
 
 module.exports = GameManager;

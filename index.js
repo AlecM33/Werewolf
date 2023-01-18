@@ -10,33 +10,43 @@
             const GameManager = require('./server/modules/singletons/GameManager');
             const eventManager = require('./server/modules/singletons/EventManager');
             const globals = require('./server/config/globals');
-
-            app.use(express.json({limit: '10kb'}));
-
             const args = ServerBootstrapper.processCLIArgs();
-
             const logger = require('./server/modules/Logger')(args.logLevel);
-            logger.info('LOG LEVEL IS: ' + args.logLevel);
-
             const port = parseInt(process.env.PORT) || args.port || 8080;
-
             const webServer = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, args.port, logger);
-            const singletons = ServerBootstrapper.singletons(logger, (() => {
+            const instanceId = (() => {
                 let id = '';
                 for (let i = 0; i < globals.INSTANCE_ID_LENGTH; i ++) {
                     id += globals.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * globals.INSTANCE_ID_CHAR_POOL.length)];
                 }
                 return id;
-            })());
+            })()
+            const singletons = ServerBootstrapper.singletons(logger, instanceId);
+
+            app.use(express.json({limit: '10kb'}));
+
+            logger.info('LOG LEVEL IS: ' + args.logLevel);
+
             singletons.gameManager.timerManager = timerManager.instance;
             singletons.gameManager.eventManager = eventManager.instance;
             singletons.eventManager.timerManager = timerManager.instance;
             singletons.eventManager.gameManager = GameManager.instance;
 
+            //singletons.timerManager.setUpSignalHandler();
+            process.on( "SIGINT", function() {
+                console.log( "\ngracefully shutting down from SIGINT (Crtl-C)" );
+                process.exit();
+            } );
+
+            process.on( "exit", function() {
+                console.log( "never see this log message" );
+            } );
+
+            //process.kill(process.pid, "SIGTERM");
+
             try {
                 await singletons.eventManager.client.connect();
                 logger.info('Root Redis client connected');
-
             } catch(e) {
                 reject(new Error('UNABLE TO CONNECT TO REDIS because: '+ e));
             }

@@ -52,7 +52,7 @@ export class InProgress {
             );
             setTimeout(() => {
                 if (this.socket.hasListeners(globals.EVENT_IDS.GET_TIME_REMAINING)) {
-                    document.getElementById('game-timer').innerText = 'could not retrieve';
+                    document.getElementById('game-timer').innerText = 'Timer not found.';
                     document.getElementById('game-timer').classList.add('timer-error');
                 }
             }, 15000);

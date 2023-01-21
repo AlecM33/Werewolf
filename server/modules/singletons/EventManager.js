@@ -10,7 +10,6 @@ class EventManager {
         }
         logger.info('CREATING SINGLETON EVENT MANAGER');
         this.logger = logger;
-        this.client = redis.createClient();
         this.io = null;
         this.publisher = null;
         this.subscriber = null;
@@ -24,56 +23,75 @@ class EventManager {
         this.io?.emit(globals.EVENTS.BROADCAST, message);
     };
 
-    createRedisPublisher = async () => {
-        this.publisher = redis.createClient();
-        this.publisher.on('error', (e) => {
-            this.logger.error('REDIS PUBLISHER CLIENT ERROR:', e);
+    createRedisPublisher = () => {
+        return new Promise((resolve, reject) => {
+            this.publisher = process.env.NODE_ENV.trim() === 'development'
+                ? redis.createClient()
+                : redis.createClient({
+                    url: process.env.REDIS_URL
+                });
+            this.publisher.on('error', (e) => {
+                this.logger.error('REDIS PUBLISHER CLIENT ERROR:', e);
+            });
+            try {
+                this.publisher.connect();
+                resolve();
+            } catch (e) {
+                reject(new Error('UNABLE TO CONNECT TO REDIS because: ' + e));
+            }
+            this.logger.info('EVENT MANAGER - CREATED PUBLISHER');
         });
-        await this.publisher.connect();
-        this.logger.info('EVENT MANAGER - CREATED PUBLISHER');
     }
 
-    createGameSyncSubscriber = async (gameManager, eventManager) => {
-        this.subscriber = this.client.duplicate();
-        this.subscriber.on('error', (e) => {
-            this.logger.error('REDIS SUBSCRIBER CLIENT ERROR:', e);
-        });
-        await this.subscriber.connect();
-        await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
-            this.logger.debug('MESSAGE: ' + message);
-            let messageComponents, args;
+    createGameSyncSubscriber = (gameManager, eventManager) => {
+        return new Promise((resolve, reject) => {
+            this.subscriber = this.publisher.duplicate();
+            this.subscriber.on('error', (e) => {
+                this.logger.error('REDIS SUBSCRIBER CLIENT ERROR:', e);
+            });
             try {
-                messageComponents = message.split(';', 3);
-                if (messageComponents[messageComponents.length - 1] === this.instanceId) {
-                    this.logger.trace('Disregarding self-authored message');
+                this.subscriber.connect();
+                resolve();
+                this.logger.info('EVENT MANAGER - CREATED SUBSCRIBER');
+            } catch (e) {
+                reject(new Error('UNABLE TO CONNECT TO REDIS because: ' + e));
+            }
+
+            this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
+                this.logger.debug('MESSAGE: ' + message);
+                let messageComponents, args;
+                try {
+                    messageComponents = message.split(';', 3);
+                    if (messageComponents[messageComponents.length - 1] === this.instanceId) {
+                        this.logger.trace('Disregarding self-authored message');
+                        return;
+                    }
+                    args = JSON.parse(
+                        message.slice(
+                            message.indexOf(messageComponents[messageComponents.length - 1]) + (globals.INSTANCE_ID_LENGTH + 1)
+                        )
+                    );
+                } catch (e) {
+                    this.logger.error('MALFORMED MESSAGE RESULTED IN ERROR: ' + e + '; DISREGARDING');
                     return;
                 }
-                args = JSON.parse(
-                    message.slice(
-                        message.indexOf(messageComponents[messageComponents.length - 1]) + (globals.INSTANCE_ID_LENGTH + 1)
-                    )
-                );
-            } catch (e) {
-                this.logger.error('MALFORMED MESSAGE RESULTED IN ERROR: ' + e + '; DISREGARDING');
-                return;
-            }
-            if (messageComponents) {
-                const game = await gameManager.getActiveGame(messageComponents[0]);
-                if (game) {
-                    await eventManager.handleEventById(
-                        messageComponents[1],
-                        messageComponents[messageComponents.length - 1],
-                        game,
-                        null,
-                        game?.accessCode || messageComponents[0],
-                        args || null,
-                        null,
-                        true
-                    );
+                if (messageComponents) {
+                    const game = await gameManager.getActiveGame(messageComponents[0]);
+                    if (game) {
+                        await eventManager.handleEventById(
+                            messageComponents[1],
+                            messageComponents[messageComponents.length - 1],
+                            game,
+                            null,
+                            game?.accessCode || messageComponents[0],
+                            args || null,
+                            null,
+                            true
+                        );
+                    }
                 }
-            }
+            });
         });
-        this.logger.info('EVENT MANAGER - CREATED SUBSCRIBER');
     }
 
     createMessageToPublish = (...args) => {

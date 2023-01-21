@@ -21,8 +21,8 @@ router.post('/sockets/broadcast', function (req, res) {
 
 router.get('/games/state', async (req, res) => {
     const gamesArray = [];
-    const keys = await eventManager.client.keys('*');
-    const values = await eventManager.client.mGet(keys);
+    const keys = await eventManager.publisher.keys('*');
+    const values = await eventManager.publisher.mGet(keys);
     values.forEach((v) => {
         let parsedGame;
         try {

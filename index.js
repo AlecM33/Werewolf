@@ -32,15 +32,9 @@
             singletons.eventManager.timerManager = timerManager.instance;
             singletons.eventManager.gameManager = GameManager.instance;
 
-            try {
-                await singletons.eventManager.client.connect();
-                logger.info('Root Redis client connected');
-            } catch(e) {
-                reject(new Error('UNABLE TO CONNECT TO REDIS because: '+ e));
-            }
-
-            await singletons.eventManager.createGameSyncSubscriber(singletons.gameManager, singletons.eventManager);
             await singletons.eventManager.createRedisPublisher();
+            await singletons.eventManager.createGameSyncSubscriber(singletons.gameManager, singletons.eventManager);
+
 
             const socketServer = singletons.eventManager.createSocketServer(webServer, app, port);
             singletons.gameManager.setGameSocketNamespace(singletons.eventManager.createGameSocketNamespace(socketServer, logger, singletons.gameManager));

@@ -21,7 +21,7 @@ class GameManager {
     }
 
     getActiveGame = async (accessCode) => {
-        const r = await this.eventManager.client.get(accessCode);
+        const r = await this.eventManager.publisher.get(accessCode);
         if (r === null && this.timerManager.timerThreads[accessCode]) {
             if (!this.timerManager.timerThreads[accessCode].killed) {
                 this.timerManager.timerThreads[accessCode].kill();
@@ -45,7 +45,7 @@ class GameManager {
 
     refreshGame = async (game) => {
         this.logger.debug('PUSHING REFRESH OF ' + game.accessCode);
-        await this.eventManager.client.set(game.accessCode, JSON.stringify(game), {
+        await this.eventManager.publisher.set(game.accessCode, JSON.stringify(game), {
             KEEPTTL: true,
             XX: true // only set the key if it already exists
         });
@@ -85,7 +85,7 @@ class GameManager {
                 new Date().toJSON(),
                 req.timerParams
             );
-            await this.eventManager.client.set(newAccessCode, JSON.stringify(newGame), {
+            await this.eventManager.publisher.set(newAccessCode, JSON.stringify(newGame), {
                 EX: globals.STALE_GAME_SECONDS
             });
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
@@ -151,7 +151,7 @@ class GameManager {
         const charCount = charPool.length;
         let codeDigits, accessCode;
         let attempts = 0;
-        while (!accessCode || ((await this.eventManager.client.keys('*')).includes(accessCode)
+        while (!accessCode || ((await this.eventManager.publisher.keys('*')).includes(accessCode)
             && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
             codeDigits = [];
             let iterations = globals.ACCESS_CODE_LENGTH;
@@ -162,7 +162,7 @@ class GameManager {
             accessCode = codeDigits.join('');
             attempts ++;
         }
-        return (await this.eventManager.client.keys('*')).includes(accessCode)
+        return (await this.eventManager.publisher.keys('*')).includes(accessCode)
             ? null
             : accessCode;
     };

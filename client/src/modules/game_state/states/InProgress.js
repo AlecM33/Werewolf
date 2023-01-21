@@ -193,7 +193,6 @@ export class InProgress {
         });
 
         this.socket.on(globals.EVENT_IDS.REVEAL_PLAYER, (revealData) => {
-            console.log('here');
             const revealedPerson = this.stateBucket.currentGameState.people.find((person) => person.id === revealData.id);
             if (revealedPerson) {
                 revealedPerson.revealed = true;

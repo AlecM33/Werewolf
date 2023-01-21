@@ -28,7 +28,15 @@ class GameManager {
             }
             delete this.timerManager.timerThreads[accessCode];
         }
-        return r === null ? r : JSON.parse(r);
+        let activeGame;
+        if (r !== null) {
+            try {
+                activeGame = JSON.parse(r);
+            } catch (e) {
+                this.logger.error('ERROR PARSING ACTIVE GAME: ' + e);
+            }
+        }
+        return r === null ? r : activeGame;
     }
 
     setGameSocketNamespace = (namespace) => {
@@ -62,8 +70,8 @@ class GameManager {
             moderator.assigned = true;
             if (req.timerParams !== null) {
                 req.timerParams.paused = true;
-                req.timerParams.timeRemaining = convertFromHoursToMilliseconds(req.timerParams.hours)
-                    + convertFromMinutesToMilliseconds(req.timerParams.minutes);
+                req.timerParams.timeRemaining = convertFromHoursToMilliseconds(req.timerParams.hours) +
+                    convertFromMinutesToMilliseconds(req.timerParams.minutes);
             }
             const newGame = new Game(
                 newAccessCode,
@@ -251,8 +259,8 @@ class GameManager {
         game.status = globals.STATUS.IN_PROGRESS;
         if (game.hasTimer) {
             game.timerParams.paused = true;
-            game.timerParams.timeRemaining = convertFromHoursToMilliseconds(game.timerParams.hours)
-                + convertFromMinutesToMilliseconds(game.timerParams.minutes);
+            game.timerParams.timeRemaining = convertFromHoursToMilliseconds(game.timerParams.hours) +
+                convertFromMinutesToMilliseconds(game.timerParams.minutes);
             await this.timerManager.runTimer(game, namespace, this.eventManager, this);
         }
 

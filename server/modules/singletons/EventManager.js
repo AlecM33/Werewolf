@@ -26,12 +26,18 @@ class EventManager {
 
     createRedisPublisher = async () => {
         this.publisher = redis.createClient();
+        this.publisher.on('error', (e) => {
+            this.logger.error('REDIS PUBLISHER CLIENT ERROR:', e);
+        });
         await this.publisher.connect();
         this.logger.info('EVENT MANAGER - CREATED PUBLISHER');
     }
 
     createGameSyncSubscriber = async (gameManager, eventManager) => {
         this.subscriber = this.client.duplicate();
+        this.subscriber.on('error', (e) => {
+            this.logger.error('REDIS SUBSCRIBER CLIENT ERROR:', e);
+        });
         await this.subscriber.connect();
         await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
             this.logger.debug('MESSAGE: ' + message);
@@ -46,8 +52,8 @@ class EventManager {
                     message.slice(
                         message.indexOf(messageComponents[messageComponents.length - 1]) + (globals.INSTANCE_ID_LENGTH + 1)
                     )
-                )
-            } catch(e) {
+                );
+            } catch (e) {
                 this.logger.error('MALFORMED MESSAGE RESULTED IN ERROR: ' + e + '; DISREGARDING');
                 return;
             }

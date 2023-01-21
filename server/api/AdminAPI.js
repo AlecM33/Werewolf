@@ -3,7 +3,6 @@ const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
 const eventManager = (require('../modules/singletons/EventManager.js')).instance;
-const timerManager = (require('../modules/singletons/TimerManager.js')).instance;
 const globals = require('../config/globals.js');
 const cors = require('cors');
 
@@ -24,7 +23,17 @@ router.get('/games/state', async (req, res) => {
     const gamesArray = [];
     const keys = await eventManager.client.keys('*');
     const values = await eventManager.client.mGet(keys);
-    values.forEach((v) => gamesArray.push(JSON.parse(v)));
+    values.forEach((v) => {
+        let parsedGame;
+        try {
+            parsedGame = JSON.parse(v);
+        } catch (e) {
+            logger.error(e);
+        }
+        if (parsedGame) {
+            gamesArray.push(parsedGame);
+        }
+    });
     res.status(200).send(gamesArray);
 });
 

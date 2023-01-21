@@ -200,7 +200,12 @@ export class InProgress {
                 revealedPerson.gameRole = revealData.gameRole;
                 revealedPerson.alignment = revealData.alignment;
                 if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
-                    toast(revealedPerson.name + ' revealed.', 'success', true, true, 'medium');
+                    if (revealedPerson.id === this.stateBucket.currentGameState.client.id) {
+                        toast('You revealed your role.', 'success', true, true, 'medium');
+                    } else {
+                        toast(revealedPerson.name + ' revealed.', 'success', true, true, 'medium');
+                    }
+
                     this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
                 } else {
                     if (revealedPerson.id === this.stateBucket.currentGameState.client.id) {
@@ -230,9 +235,13 @@ export class InProgress {
         });
 
         if (this.stateBucket.currentGameState.timerParams) {
-            if (!this.stateBucket.timerWorker) {
-                this.stateBucket.timerWorker = new Worker(new URL('../../timer/Timer.js', import.meta.url));
+            if (this.stateBucket.timerWorker) {
+                this.stateBucket.timerWorker.terminate();
+                this.stateBucket.timerWorker = null;
             }
+
+            this.stateBucket.timerWorker = new Worker(new URL('../../timer/Timer.js', import.meta.url));
+
             const gameTimerManager = new GameTimerManager(this.stateBucket, this.socket);
             gameTimerManager.attachTimerSocketListeners(this.socket, this.stateBucket.timerWorker);
         }

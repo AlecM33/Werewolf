@@ -25,11 +25,17 @@ describe('game page', () => {
                 on: function (message, handler) {
                     this.eventHandlers[message] = handler;
                 },
+                once: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
                 emit: function (eventName, ...args) {
                     switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
                         case globals.EVENT_IDS.FETCH_GAME_STATE:
                             args[args.length - 1](deepCopy(mockGames.gameInLobby)); // copy the game object to prevent leaking of state between specs
                     }
+                },
+                removeAllListeners: function(...names) {
+
                 },
                 hasListeners: function (listener) {
                     return false;
@@ -98,7 +104,13 @@ describe('game page', () => {
                 },
                 hasListeners: function (listener) {
                     return false;
-                }
+                },
+                removeAllListeners: function(...names) {
+
+                },
+                once: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
             };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();
@@ -106,11 +118,11 @@ describe('game page', () => {
         });
 
         it('should display the game role of the client', () => {
-            expect(document.getElementById('role-name').innerText).toEqual('Parity Hunter');
-            expect(document.getElementById('role-image').getAttribute('src')).toEqual('../images/roles/ParityHunter.png');
+            expect(document.getElementById('role-name').innerText).toEqual('Villager');
+            expect(document.getElementById('role-image').getAttribute('src')).toContain('../images/roles/Villager');
             expect(document.getElementById('game-timer').innerText).toEqual('00:02:00');
             expect(document.getElementById('game-timer').classList.contains('paused')).toEqual(true);
-            expect(document.getElementById('players-alive-label').innerText).toEqual('Players: 4 / 5 Alive');
+            expect(document.getElementById('players-alive-label').innerText).toEqual('Players: 6 / 7 Alive');
         });
 
         it('should flip the role card of the client', () => {
@@ -128,7 +140,7 @@ describe('game page', () => {
         });
 
         it('should display the number of alive players', () => {
-            expect(document.getElementById('players-alive-label').innerText).toEqual('Players: 4 / 5 Alive');
+            expect(document.getElementById('players-alive-label').innerText).toEqual('Players: 6 / 7 Alive');
         });
 
         it('should display the role info modal when the button is clicked', () => {
@@ -155,6 +167,9 @@ describe('game page', () => {
                 on: function (message, handler) {
                     this.eventHandlers[message] = handler;
                 },
+                once: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
                 emit: function (eventName, ...args) {
                     switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
                         case globals.EVENT_IDS.FETCH_GAME_STATE:
@@ -169,7 +184,10 @@ describe('game page', () => {
                 },
                 hasListeners: function (listener) {
                     return false;
-                }
+                },
+                removeAllListeners: function(...names) {
+
+                },
             };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();
@@ -188,7 +206,7 @@ describe('game page', () => {
         it('should display players by their alignment', () => {
             expect(document.querySelector('.evil-players')).not.toBeNull();
             expect(document.querySelector('.good-players')).not.toBeNull();
-            expect(document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+            expect(document.querySelector('div[data-pointer="v2eOvaYKusGfiUpuZWTCJ0JUiESC29OuH6fpivwMuwcqizpYTCAzetrPl7fF8F5CoR35pTMIKxh"]')
                 .querySelector('.game-player-role').innerText).toEqual('Werewolf');
         });
 
@@ -198,38 +216,38 @@ describe('game page', () => {
 
         it('should display the mod transfer modal, with the single spectator available for selection', () => {
             document.getElementById('mod-transfer-button').click();
-            expect(document.querySelector('div[data-pointer="MGGVR8KQ7V7HGN3QBLJ5339ZL"].potential-moderator')
-                .innerText).toContain('Matt');
+            expect(document.querySelector('div[data-pointer="BKfs1N0cfvwc309eOdwrTeum8NScSX7S8CTCGXgiI6JZufjAgD4WAdkkryn3sqIqKeswCFpIuTc"].potential-moderator')
+                .innerText).toContain('Stav');
             document.getElementById('close-mod-transfer-modal-button').click();
         });
 
         it('should emit the appropriate socket event when killing a player, and indicate the result on the UI', () => {
-            document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+            document.querySelector('div[data-pointer="pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW"]')
                 .querySelector('.kill-player-button').click();
             document.getElementById('confirmation-yes-button').click();
             expect(mockSocket.emit).toHaveBeenCalledWith(
                 globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                 globals.EVENT_IDS.KILL_PLAYER,
                 mockGames.moderatorGame.accessCode,
-                { personId: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ' }
+                { personId: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW' }
             );
-            mockSocket.eventHandlers.killPlayer('FCVSGJFYWLDL5S3Y8B74ZVZLZ');
-            expect(document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"].game-player.killed')
+            mockSocket.eventHandlers.killPlayer('pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW');
+            expect(document.querySelector('div[data-pointer="pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW"].game-player.killed')
             ).not.toBeNull();
         });
 
         it('should emit the appropriate socket event when revealing a player, and indicate the result on the UI', () => {
-            document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+            document.querySelector('div[data-pointer="pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW"]')
                 .querySelector('.reveal-role-button').click();
             document.getElementById('confirmation-yes-button').click();
             expect(mockSocket.emit).toHaveBeenCalledWith(
                 globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                 globals.EVENT_IDS.REVEAL_PLAYER,
                 mockGames.moderatorGame.accessCode,
-                { personId: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ' }
+                { personId: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW' }
             );
-            mockSocket.eventHandlers.revealPlayer({ id: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ', gameRole: 'Werewolf', alignment: 'evil' });
-            expect(document.querySelector('div[data-pointer="FCVSGJFYWLDL5S3Y8B74ZVZLZ"]')
+            mockSocket.eventHandlers.revealPlayer({ id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW', gameRole: 'Werewolf', alignment: 'evil' });
+            expect(document.querySelector('div[data-pointer="pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW"]')
                 .querySelector('.reveal-role-button')).toBeNull();
         });
 

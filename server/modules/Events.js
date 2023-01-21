@@ -124,7 +124,7 @@ const Events = [
         id: EVENT_IDS.END_GAME,
         stateChange: async (game, socketArgs, vars) => {
             game.status = globals.STATUS.ENDED;
-            if (vars.timerManager.timerThreads[game.accessCode]) {
+            if (game.hasTimer && vars.timerManager.timerThreads[game.accessCode]) {
                 vars.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
                 vars.timerManager.timerThreads[game.accessCode].kill();
             }

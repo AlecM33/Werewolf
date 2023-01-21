@@ -55,6 +55,14 @@ export const globals = {
         RESTART_GAME: 'restartGame',
         ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
     },
+    TIMER_EVENTS: function () {
+        return [
+            this.EVENT_IDS.PAUSE_TIMER,
+            this.EVENT_IDS.RESUME_TIMER,
+            this.EVENT_IDS.GET_TIME_REMAINING,
+            this.EVENT_IDS.END_TIMER
+        ];
+    },
     LOBBY_EVENTS: function () {
         return [
             this.EVENT_IDS.PLAYER_JOINED,

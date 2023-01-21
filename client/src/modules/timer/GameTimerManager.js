@@ -111,17 +111,15 @@ export class GameTimerManager {
     }
 
     attachTimerSocketListeners (socket, timerWorker) {
-        if (!socket.hasListeners(globals.COMMANDS.PAUSE_TIMER)) {
-            socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
-                this.pauseGameTimer(timerWorker, timeRemaining);
-            });
-        }
+        globals.TIMER_EVENTS().forEach(e => socket.removeAllListeners(e));
 
-        if (!socket.hasListeners(globals.COMMANDS.RESUME_TIMER)) {
-            socket.on(globals.COMMANDS.RESUME_TIMER, (timeRemaining) => {
-                this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
-            });
-        }
+        socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
+            this.pauseGameTimer(timerWorker, timeRemaining);
+        });
+
+        socket.on(globals.COMMANDS.RESUME_TIMER, (timeRemaining) => {
+            this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
+        });
 
         socket.once(globals.COMMANDS.GET_TIME_REMAINING, (timeRemaining, paused) => {
             if (paused) {
@@ -133,11 +131,9 @@ export class GameTimerManager {
             }
         });
 
-        if (!socket.hasListeners(globals.COMMANDS.END_TIMER)) {
-            socket.on(globals.COMMANDS.END_TIMER, () => {
-                Confirmation('The timer has expired!');
-            });
-        }
+        socket.on(globals.COMMANDS.END_TIMER, () => {
+            Confirmation('The timer has expired!');
+        });
     }
 
     swapToPlayButton () {

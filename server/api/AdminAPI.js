@@ -22,9 +22,9 @@ router.post('/sockets/broadcast', function (req, res) {
 
 router.get('/games/state', async (req, res) => {
     const gamesArray = [];
-    await timerManager.client.keys('*').then(async (r) => {
-        Object.values(r).forEach((v) => gamesArray.push(JSON.parse(v)));
-    });
+    const keys = await eventManager.client.keys('*');
+    const values = await eventManager.client.mGet(keys);
+    values.forEach((v) => gamesArray.push(JSON.parse(v)));
     res.status(200).send(gamesArray);
 });
 

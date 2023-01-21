@@ -3,11 +3,9 @@ const Game = require('../../../../server/model/Game');
 const globals = require('../../../../server/config/globals');
 const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
-const Person = require('../../../../server/model/Person');
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../server/modules/singletons/EventManager.js');
-const GameStateCurator = require('../../../../server/modules/GameStateCurator.js');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {
@@ -23,7 +21,7 @@ describe('GameManager', () => {
         gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, 'test');
         timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
         eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
-        eventManager.publisher = { publish: async (...a) => {} }
+        eventManager.publisher = { publish: async (...a) => {} };
         gameManager.eventManager = eventManager;
         gameManager.timerManager = timerManager;
         gameManager.setGameSocketNamespace(namespace);
@@ -52,7 +50,6 @@ describe('GameManager', () => {
     });
 
     describe('#joinGame', () => {
-
         it('should mark the game as full when all players have been assigned', async () => {
             await gameManager.joinGame(game, 'Jill', 'x');
 
@@ -74,14 +71,13 @@ describe('GameManager', () => {
     describe('#restartGame', () => {
         let shuffleSpy;
 
-
         beforeEach(() => {
             shuffleSpy = spyOn(gameManager, 'shuffle').and.stub();
         });
 
         it('should reset all relevant game parameters', async () => {
             game.status = STATUS.ENDED;
-            let player = game.people.find(p => p.id === 'b');
+            const player = game.people.find(p => p.id === 'b');
             player.userType = USER_TYPES.KILLED_PLAYER;
             player.killed = true;
             player.out = true;
@@ -100,10 +96,10 @@ describe('GameManager', () => {
         it('should reset all relevant game parameters, including when the game has a timer', async () => {
             game.timerParams = { hours: 2, minutes: 2, paused: false };
             game.hasTimer = true;
-            timerManager.timerThreads = { 'ABCD': { kill: () => {} } };
+            timerManager.timerThreads = { ABCD: { kill: () => {} } };
             game.status = STATUS.ENDED;
 
-            const threadKillSpy = spyOn(timerManager.timerThreads['ABCD'], 'kill');
+            const threadKillSpy = spyOn(timerManager.timerThreads.ABCD, 'kill');
             const runTimerSpy = spyOn(timerManager, 'runTimer').and.stub();
             const emitSpy = spyOn(namespace.in(), 'emit');
 

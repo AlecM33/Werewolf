@@ -34,7 +34,7 @@ describe('game page', () => {
                             args[args.length - 1](deepCopy(mockGames.gameInLobby)); // copy the game object to prevent leaking of state between specs
                     }
                 },
-                removeAllListeners: function(...names) {
+                removeAllListeners: function (...names) {
 
                 },
                 hasListeners: function (listener) {
@@ -105,12 +105,12 @@ describe('game page', () => {
                 hasListeners: function (listener) {
                     return false;
                 },
-                removeAllListeners: function(...names) {
+                removeAllListeners: function (...names) {
 
                 },
                 once: function (message, handler) {
                     this.eventHandlers[message] = handler;
-                },
+                }
             };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();
@@ -185,9 +185,9 @@ describe('game page', () => {
                 hasListeners: function (listener) {
                     return false;
                 },
-                removeAllListeners: function(...names) {
+                removeAllListeners: function (...names) {
 
-                },
+                }
             };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();

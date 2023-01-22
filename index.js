@@ -32,8 +32,12 @@
             singletons.eventManager.timerManager = timerManager.instance;
             singletons.eventManager.gameManager = GameManager.instance;
 
-            await singletons.eventManager.createRedisPublisher();
-            await singletons.eventManager.createGameSyncSubscriber(singletons.gameManager, singletons.eventManager);
+            try {
+                await singletons.eventManager.createRedisPublisher();
+                await singletons.eventManager.createGameSyncSubscriber(singletons.gameManager, singletons.eventManager);
+            } catch(e) {
+                reject(e);
+            }
 
 
             const socketServer = singletons.eventManager.createSocketServer(webServer, app, port);

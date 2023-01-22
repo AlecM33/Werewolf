@@ -22,6 +22,16 @@ const ServerBootstrapper = {
         };
     },
 
+    injectDependencies: (singletons) => {
+        const timerManager = require('./singletons/TimerManager').instance;
+        const gameManager = require('./singletons/GameManager').instance;
+        const eventManager = require('./singletons/EventManager').instance;
+        singletons.gameManager.timerManager = timerManager;
+        singletons.gameManager.eventManager = eventManager;
+        singletons.eventManager.timerManager = timerManager;
+        singletons.eventManager.gameManager = gameManager;
+    },
+
     processCLIArgs: () => {
         try {
             const args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));

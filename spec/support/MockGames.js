@@ -1,305 +1,311 @@
 export const mockGames = {
     gameInLobby: {
-        accessCode: 'ZS6M',
+        accessCode: 'TVV6',
         status: 'lobby',
-        moderator: {
-            name: 'Alec',
-            id: 'HZM64BVGXCSXS9L5YMGK2WTTQ',
-            userType: 'moderator',
-            out: false,
-            revealed: false
-        },
+        currentModeratorId: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
         client: {
             name: 'Alec',
             hasEnteredName: false,
-            id: 'HZM64BVGXCSXS9L5YMGK2WTTQ',
-            cookie: 'Q68BYSMM7DB5CH338TNPMF9CK',
+            id: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+            cookie: '28p80dbhY2k1iP1NuEy8UPFmuOctLx3nR0EMONU4MlJFfVrCzNncdNdsav9wEuGEswLQ70DKqa3',
             userType: 'moderator'
         },
         deck: [
             {
-                role: 'Parity Hunter',
-                team: 'good',
-                description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
-                id: 'wli3r2i9zxxmnns5euvtc01v0',
-                quantity: 1
-            },
-            {
-                role: 'Seer',
-                team: 'good',
-                description: 'Each night, learn if a chosen person is a Werewolf.',
-                id: '7q0xxfuflsjetzit1elu5rd2k',
-                quantity: 1
-            },
-            {
                 role: 'Villager',
                 team: 'good',
                 description: 'During the day, find the wolves and kill them.',
-                id: '33pw77odkdt3042yumxtxbrda',
-                quantity: 1
-            },
-            {
-                role: 'Sorceress',
-                team: 'evil',
-                description: 'Each night, learn if a chosen person is the Seer.',
-                id: '6fboglgqwua8n0twgh2f4a0xh',
-                quantity: 1
+                id: '52u5w81ryq5h30qu1gri56xxq',
+                quantity: 6
             },
             {
                 role: 'Werewolf',
                 team: 'evil',
                 description: "During the night, choose a villager to kill. Don't get killed.",
-                id: 'ixpmpaouc3oj1llkm6gttxbor',
+                id: '9uk0jcrm1hkhygzb6iw8xh2a7',
                 quantity: 1
             }
         ],
-        people: [],
-        timerParams: {
-            hours: null,
-            minutes: 15,
-            paused: false
-        },
-        isFull: false,
-        spectators: []
-    },
-    inProgressGame: {
-        accessCode: 'VVVG',
-        status: 'in progress',
-        moderator: {
-            name: 'Alec',
-            id: 'H24358C4GQ238LFK66RYMST9P',
-            userType: 'moderator',
-            out: false,
-            revealed: false
-        },
-        client: {
-            name: 'Andrea',
-            hasEnteredName: false,
-            id: 'THCX9K6MCKZXBXYH95FPLP68Y',
-            cookie: 'ZLPHS946H33W7LVJ28M8XCRVZ',
-            userType: 'player',
-            gameRole: 'Parity Hunter',
-            gameRoleDescription: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
-            alignment: 'good',
-            out: false
-        },
-        deck: [
-            {
-                role: 'Parity Hunter',
-                team: 'good',
-                description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
-                id: 'gw82x923gde5pcf3ru8y0w6mr',
-                quantity: 1
-            },
-            {
-                role: 'Seer',
-                team: 'good',
-                description: 'Each night, learn if a chosen person is a Werewolf.',
-                id: '0it2wybz7mdoatqs60b847x5v',
-                quantity: 1
-            },
-            {
-                role: 'Villager',
-                team: 'good',
-                description: 'During the day, find the wolves and kill them.',
-                id: 'v8oeyscxu53bg0a29uxsh4mzc',
-                quantity: 1
-            },
-            {
-                role: 'Sorceress',
-                team: 'evil',
-                description: 'Each night, learn if a chosen person is the Seer.',
-                id: '52ooljj12xpah0dgirxay2lma',
-                quantity: 1
-            },
-            {
-                role: 'Werewolf',
-                team: 'evil',
-                description: "During the night, choose a villager to kill. Don't get killed.",
-                id: '1oomauy0wc9pn5q55d2f4zq64',
-                quantity: 1
-            }
-        ],
+        gameSize: 7,
         people: [
             {
-                name: 'Andrea',
-                id: 'THCX9K6MCKZXBXYH95FPLP68Y',
-                userType: 'player',
-                out: false,
-                revealed: false
-            },
-            {
-                name: 'Greg',
-                id: 'SFVBXJZNF3G3QDML63X34KG5X',
-                userType: 'player',
-                out: false,
-                revealed: false
-            },
-            {
-                name: 'Lys',
-                id: 'S2496LVXL9CFP5B493XX6XMYL',
-                userType: 'player',
-                out: false,
-                revealed: false
-            },
-            {
-                name: 'Hannah',
-                id: 'Y7P2LGDZL6NV283525PL5GZTB',
-                userType: 'player',
-                out: true,
-                revealed: true
-            },
-            {
-                name: 'Matthew',
-                id: 'Z9YZ2JBM2GPRXFJB9J6ZFNSP9',
-                userType: 'player',
-                out: false,
-                revealed: false
-            }
-        ],
-        timerParams: {
-            hours: null,
-            minutes: 2,
-            paused: true,
-            timeRemaining: 120000
-        },
-        isFull: true,
-        spectators: []
-    },
-    moderatorGame:
-        {
-            accessCode: 'LYG5',
-            status: 'in progress',
-            moderator: {
                 name: 'Alec',
-                id: 'F623SN7JJMV5QW8K9MNQWW4WP',
-                userType: 'moderator',
-                out: false,
-                revealed: false
-            },
-            client: {
-                name: 'Alec',
-                hasEnteredName: false,
-                id: 'F623SN7JJMV5QW8K9MNQWW4WP',
-                cookie: 'ZJ9RQDF6CNZKZQCSKP4WSHDHQ',
+                id: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
                 userType: 'moderator',
                 gameRole: null,
                 gameRoleDescription: null,
                 alignment: null,
-                out: false
+                out: true,
+                killed: false,
+                revealed: false
+            }
+        ],
+        timerParams: {
+            hours: null,
+            minutes: 10,
+            paused: true,
+            timeRemaining: 600000
+        },
+        isFull: false
+    },
+    inProgressGame: {
+        accessCode: 'TVV6',
+        status: 'in progress',
+        currentModeratorId: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+        client: {
+            name: 'Andrea',
+            hasEnteredName: false,
+            id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW',
+            cookie: 'iIXXtc4BMtMSKOiDnz7sp20AE5QEIEzw7Ro2djXkZax4PQo3jR3VQGEAaD3WvaEBt06ZWgqi8s9',
+            userType: 'player',
+            gameRole: 'Villager',
+            gameRoleDescription: 'During the day, find the wolves and kill them.',
+            alignment: 'good',
+            out: false,
+            killed: false
+        },
+        deck: [
+            {
+                role: 'Villager',
+                team: 'good',
+                description: 'During the day, find the wolves and kill them.',
+                id: '52u5w81ryq5h30qu1gri56xxq',
+                quantity: 6
+            },
+            {
+                role: 'Werewolf',
+                team: 'evil',
+                description: "During the night, choose a villager to kill. Don't get killed.",
+                id: '9uk0jcrm1hkhygzb6iw8xh2a7',
+                quantity: 1
+            }
+        ],
+        gameSize: 7,
+        people: [
+            {
+                name: 'Andrea',
+                id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW',
+                userType: 'player',
+                out: false,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Hannah',
+                id: 'ojCjJqIXfNkOunHD9v2gQSNXRUQPzZCJzzuPTKyQy5TiyZ83ziHMvr2ZzDLWMb4M6dXqa8rN3O3',
+                userType: 'killed',
+                out: true,
+                killed: true,
+                revealed: true,
+                gameRole: 'Villager',
+                alignment: 'good'
+            },
+            {
+                name: 'Greg',
+                id: '1o2IntIivHV4pMqV2iMBi3lrMloHcShQiXObuedyc1DqeUho5aD0DI6Vqhja97c1GIMNzfyNC4a',
+                userType: 'player',
+                out: false,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Jerret',
+                id: 'eaxAqb1nj25jqWHnsWirSdYjLhHQVkQtnIkC4eHvmuleN7FtaG8XYnLJnBv4hhFvXWNbUguTrLJ',
+                userType: 'player',
+                out: false,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Lys',
+                id: 'v2eOvaYKusGfiUpuZWTCJ0JUiESC29OuH6fpivwMuwcqizpYTCAzetrPl7fF8F5CoR35pTMIKxh',
+                userType: 'player',
+                out: false,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Matt',
+                id: 'pUDrpiGF1vuMfhztT2KY9bllBoGILVl2vIpRWVFH27SnqGiVP3LunjO0wy0otXToWzwbXBlx7ga',
+                userType: 'player',
+                out: false,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Steve',
+                id: 'Csz1haKdNa3WLIbqllRwV2e9TgwMlDoQwzbpZkTa0JhioUT5MD1GopUHU90f6cyfQ2Uv7YBTZo1',
+                userType: 'player',
+                out: false,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Alec',
+                id: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+                userType: 'moderator',
+                out: true,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Stav',
+                id: 'BKfs1N0cfvwc309eOdwrTeum8NScSX7S8CTCGXgiI6JZufjAgD4WAdkkryn3sqIqKeswCFpIuTc',
+                userType: 'spectator',
+                out: true,
+                killed: false,
+                revealed: false
+            }
+        ],
+        timerParams: {
+            hours: null,
+            minutes: 10,
+            paused: true,
+            timeRemaining: 600000
+        },
+        isFull: true
+    },
+    moderatorGame:
+        {
+            accessCode: 'TVV6',
+            status: 'in progress',
+            currentModeratorId: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+            client: {
+                name: 'Alec',
+                hasEnteredName: false,
+                id: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+                cookie: '28p80dbhY2k1iP1NuEy8UPFmuOctLx3nR0EMONU4MlJFfVrCzNncdNdsav9wEuGEswLQ70DKqa3',
+                userType: 'moderator',
+                gameRole: null,
+                gameRoleDescription: null,
+                alignment: null,
+                out: true,
+                killed: false
             },
             deck: [
-                {
-                    role: 'Parity Hunter',
-                    team: 'good',
-                    description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
-                    id: 'bfs9pwk81yu9k47ho4xyidzy7',
-                    quantity: 1
-                },
-                {
-                    role: 'Seer',
-                    team: 'good',
-                    description: 'Each night, learn if a chosen person is a Werewolf.',
-                    id: '0rob6qyg3eq7douedxen5pb44',
-                    quantity: 1
-                },
                 {
                     role: 'Villager',
                     team: 'good',
                     description: 'During the day, find the wolves and kill them.',
-                    id: 'fq9n3u95ka16smbu6zaivnuvv',
-                    quantity: 1
-                },
-                {
-                    role: 'Sorceress',
-                    team: 'evil',
-                    description: 'Each night, learn if a chosen person is the Seer.',
-                    id: 'bwptvwzg0u1aao48045ht57wx',
-                    quantity: 1
+                    id: '52u5w81ryq5h30qu1gri56xxq',
+                    quantity: 6
                 },
                 {
                     role: 'Werewolf',
                     team: 'evil',
                     description: "During the night, choose a villager to kill. Don't get killed.",
-                    id: 'c9gziuv8bon9bhmyuanfvecpd',
+                    id: '9uk0jcrm1hkhygzb6iw8xh2a7',
                     quantity: 1
                 }
             ],
-            gameSize: 5,
+            gameSize: 7,
             people: [
                 {
-                    name: 'Greg',
-                    id: 'HVB3SK3XPGNSP34W2GVD5G3SP',
-                    userType: 'player',
-                    gameRole: 'Seer',
-                    gameRoleDescription: 'Each night, learn if a chosen person is a Werewolf.',
-                    alignment: 'good',
-                    out: false,
-                    revealed: false
-                },
-                {
-                    name: 'Lys',
-                    id: 'XJNHYX85HCKYDQLKYN584CRKK',
-                    userType: 'player',
-                    gameRole: 'Sorceress',
-                    gameRoleDescription: 'Each night, learn if a chosen person is the Seer.',
-                    alignment: 'evil',
-                    out: false,
-                    revealed: false
-                },
-                {
-                    name: 'Colette',
-                    id: 'MLTP5M76K6NN83VQBDTNC6ZP5',
-                    userType: 'player',
-                    gameRole: 'Parity Hunter',
-                    gameRoleDescription: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
-                    alignment: 'good',
-                    out: false,
-                    revealed: false
-                },
-                {
-                    name: 'Hannah',
-                    id: 'FCVSGJFYWLDL5S3Y8B74ZVZLZ',
-                    userType: 'player',
-                    gameRole: 'Werewolf',
-                    gameRoleDescription: "During the night, choose a villager to kill. Don't get killed.",
-                    alignment: 'evil',
-                    out: false,
-                    revealed: false
-                },
-                {
                     name: 'Andrea',
-                    id: 'VWLJ298FVTZR22R4TNCMRTB5B',
+                    id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW',
                     userType: 'player',
                     gameRole: 'Villager',
                     gameRoleDescription: 'During the day, find the wolves and kill them.',
                     alignment: 'good',
                     out: false,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Hannah',
+                    id: 'ojCjJqIXfNkOunHD9v2gQSNXRUQPzZCJzzuPTKyQy5TiyZ83ziHMvr2ZzDLWMb4M6dXqa8rN3O3',
+                    userType: 'killed',
+                    gameRole: 'Villager',
+                    gameRoleDescription: 'During the day, find the wolves and kill them.',
+                    alignment: 'good',
+                    out: true,
+                    killed: true,
+                    revealed: true
+                },
+                {
+                    name: 'Greg',
+                    id: '1o2IntIivHV4pMqV2iMBi3lrMloHcShQiXObuedyc1DqeUho5aD0DI6Vqhja97c1GIMNzfyNC4a',
+                    userType: 'player',
+                    gameRole: 'Villager',
+                    gameRoleDescription: 'During the day, find the wolves and kill them.',
+                    alignment: 'good',
+                    out: false,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Jerret',
+                    id: 'eaxAqb1nj25jqWHnsWirSdYjLhHQVkQtnIkC4eHvmuleN7FtaG8XYnLJnBv4hhFvXWNbUguTrLJ',
+                    userType: 'player',
+                    gameRole: 'Villager',
+                    gameRoleDescription: 'During the day, find the wolves and kill them.',
+                    alignment: 'good',
+                    out: false,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Lys',
+                    id: 'v2eOvaYKusGfiUpuZWTCJ0JUiESC29OuH6fpivwMuwcqizpYTCAzetrPl7fF8F5CoR35pTMIKxh',
+                    userType: 'player',
+                    gameRole: 'Werewolf',
+                    gameRoleDescription: "During the night, choose a villager to kill. Don't get killed.",
+                    alignment: 'evil',
+                    out: false,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Matt',
+                    id: 'pUDrpiGF1vuMfhztT2KY9bllBoGILVl2vIpRWVFH27SnqGiVP3LunjO0wy0otXToWzwbXBlx7ga',
+                    userType: 'player',
+                    gameRole: 'Villager',
+                    gameRoleDescription: 'During the day, find the wolves and kill them.',
+                    alignment: 'good',
+                    out: false,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Steve',
+                    id: 'Csz1haKdNa3WLIbqllRwV2e9TgwMlDoQwzbpZkTa0JhioUT5MD1GopUHU90f6cyfQ2Uv7YBTZo1',
+                    userType: 'player',
+                    gameRole: 'Villager',
+                    gameRoleDescription: 'During the day, find the wolves and kill them.',
+                    alignment: 'good',
+                    out: false,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Alec',
+                    id: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+                    userType: 'moderator',
+                    gameRole: null,
+                    gameRoleDescription: null,
+                    alignment: null,
+                    out: true,
+                    killed: false,
+                    revealed: false
+                },
+                {
+                    name: 'Stav',
+                    id: 'BKfs1N0cfvwc309eOdwrTeum8NScSX7S8CTCGXgiI6JZufjAgD4WAdkkryn3sqIqKeswCFpIuTc',
+                    userType: 'spectator',
+                    gameRole: null,
+                    gameRoleDescription: null,
+                    alignment: null,
+                    out: true,
+                    killed: false,
                     revealed: false
                 }
             ],
             timerParams: {
                 hours: null,
-                minutes: 30,
+                minutes: 10,
                 paused: true,
-                timeRemaining: 1800000
+                timeRemaining: 600000
             },
-            isFull: true,
-            spectators: [
-                {
-                    id: 'MGGVR8KQ7V7HGN3QBLJ5339ZL',
-                    cookie: '9M2F677JBGWKCJBMXR54GBWWZ',
-                    socketId: '3RdkA19luMvUfVh2AAAP',
-                    name: 'Matt',
-                    userType: 'spectator',
-                    gameRole: null,
-                    gameRoleDescription: null,
-                    alignment: null,
-                    assigned: false,
-                    out: false,
-                    revealed: false,
-                    hasEnteredName: false
-                }
-            ]
+            isFull: true
         }
 };

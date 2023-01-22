@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
-const socketManager = (require('../modules/singletons/SocketManager.js')).instance;
-const gameManager = (require('../modules/singletons/GameManager.js')).instance;
+const eventManager = (require('../modules/singletons/EventManager.js')).instance;
 const globals = require('../config/globals.js');
 const cors = require('cors');
 
@@ -16,15 +15,25 @@ router.post('/sockets/broadcast', (req, res, next) => {
 // TODO: implement client-side display of this message.
 router.post('/sockets/broadcast', function (req, res) {
     logger.info('admin user broadcasting message: ' + req.body?.message);
-    socketManager.broadcast(req.body?.message);
+    eventManager.broadcast(req.body?.message);
     res.status(201).send('Broadcasted message to all connected sockets: ' + req.body?.message);
 });
 
-router.get('/games/state', function (req, res) {
+router.get('/games/state', async (req, res) => {
     const gamesArray = [];
-    for (const key of gameManager.activeGameRunner.activeGames.keys()) {
-        gamesArray.push(gameManager.activeGameRunner.activeGames.get(key));
-    }
+    const keys = await eventManager.publisher.keys('*');
+    const values = await eventManager.publisher.mGet(keys);
+    values.forEach((v) => {
+        let parsedGame;
+        try {
+            parsedGame = JSON.parse(v);
+        } catch (e) {
+            logger.error(e);
+        }
+        if (parsedGame) {
+            gamesArray.push(parsedGame);
+        }
+    });
     res.status(200).send(gamesArray);
 });
 

@@ -15,13 +15,25 @@ export class Lobby {
         this.startGameHandler = (e) => {
             e.preventDefault();
             Confirmation('Start game and deal roles?', () => {
-                socket.emit(
+                socket.timeout(5000).emit(
                     globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
                     globals.EVENT_IDS.START_GAME,
                     stateBucket.currentGameState.accessCode,
                     null,
-                    () => {
-                        this.removeStartGameFunctionalityIfPresent();
+                    (err) => {
+                        if (err) {
+                            socket.emit(
+                                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                                globals.EVENT_IDS.FETCH_GAME_STATE,
+                                stateBucket.currentGameState.accessCode,
+                                { personId: stateBucket.currentGameState.client.cookie },
+                                (gameState) => {
+                                    SharedStateUtil.gameStateAckFn(gameState, socket);
+                                }
+                            );
+                        } else {
+                            this.removeStartGameFunctionalityIfPresent();
+                        }
                     }
                 );
             });
@@ -48,11 +60,11 @@ export class Lobby {
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
 
         this.container.querySelector('#spectator-count').addEventListener('click', () => {
-            Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.spectators), null, true);
+            Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people), null, true);
         });
 
         SharedStateUtil.setNumberOfSpectators(
-            this.stateBucket.currentGameState.spectators.length,
+            this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
             this.container.querySelector('#spectator-count')
         );
 
@@ -68,18 +80,20 @@ export class Lobby {
     populatePlayers () {
         document.querySelectorAll('.lobby-player').forEach((el) => el.remove());
         const lobbyPlayersContainer = this.container.querySelector('#lobby-players');
-        if (this.stateBucket.currentGameState.moderator.userType === globals.USER_TYPES.MODERATOR) {
-            lobbyPlayersContainer.appendChild(
-                renderLobbyPerson(
-                    this.stateBucket.currentGameState.moderator.name,
-                    this.stateBucket.currentGameState.moderator.userType
-                )
-            );
-        }
-        for (const person of this.stateBucket.currentGameState.people) {
+        const sorted = this.stateBucket.currentGameState.people.sort(
+            function (a, b) {
+                if (a.userType === globals.USER_TYPES.MODERATOR) {
+                    return -1;
+                }
+                return 1;
+            }
+        );
+        for (const person of sorted.filter(p => p.userType !== globals.USER_TYPES.SPECTATOR)) {
             lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name, person.userType));
         }
-        const playerCount = this.stateBucket.currentGameState.people.length;
+        const playerCount = this.stateBucket.currentGameState.people.filter(
+            p => p.userType === globals.USER_TYPES.PLAYER || p.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+        ).length;
         document.querySelector("label[for='lobby-players']").innerText =
             'Participants (' + playerCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
     }
@@ -99,26 +113,13 @@ export class Lobby {
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.UPDATE_SPECTATORS, (updatedSpectatorList) => {
-            this.stateBucket.currentGameState.spectators = updatedSpectatorList;
+        this.socket.on(globals.EVENT_IDS.ADD_SPECTATOR, (spectator) => {
+            this.stateBucket.currentGameState.people.push(spectator);
             SharedStateUtil.setNumberOfSpectators(
-                this.stateBucket.currentGameState.spectators.length,
+                this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
                 document.getElementById('spectator-count')
             );
         });
-
-        // this.socket.on(globals.EVENT_IDS.PLAYER_LEFT, (player) => {
-        //     removeStartGameFunctionalityIfPresent(this.stateBucket.currentGameState, this.startGameHandler);
-        //     toast(player.name + ' has left!', 'error', false, true, 'short');
-        //     const index = this.stateBucket.currentGameState.people.findIndex(person => person.id === player.id);
-        //     if (index >= 0) {
-        //         this.stateBucket.currentGameState.people.splice(
-        //             index,
-        //             1
-        //         );
-        //         this.populatePlayers();
-        //     }
-        // });
     }
 
     displayStartGamePromptForModerators () {
@@ -193,6 +194,9 @@ function renderLobbyPerson (name, userType) {
     personNameEl.innerText = name;
     personTypeEl.innerText = userType + globals.USER_TYPE_ICONS[userType];
     el.classList.add('lobby-player');
+    if (userType === globals.USER_TYPES.MODERATOR) {
+        el.classList.add('moderator');
+    }
 
     el.appendChild(personNameEl);
     el.appendChild(personTypeEl);

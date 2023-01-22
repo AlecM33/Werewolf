@@ -710,6 +710,13 @@ input {
     display: inline-block;
     width: 80px;
 }
+
+.lds-spinner-clock {
+    position: absolute;
+    transform: scale(0.3);
+    top: -23px;
+}
+
 .lds-spinner div {
     transform-origin: 40px 40px;
     animation: lds-spinner 1.2s linear infinite;

@@ -27,7 +27,11 @@ export class Ended {
         // sortPeopleByStatus(this.stateBucket.currentGameState.people);
         const modType = tempMod ? this.stateBucket.currentGameState.moderator.userType : null;
         renderGroupOfPlayers(
-            this.stateBucket.currentGameState.people,
+            this.stateBucket.currentGameState.people.filter(
+                p => p.userType === globals.USER_TYPES.PLAYER
+                    || p.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                    || p.killed
+            ),
             this.stateBucket.currentGameState.accessCode,
             null,
             modType,
@@ -35,7 +39,7 @@ export class Ended {
         );
         document.getElementById('players-alive-label').innerText =
             'Players: ' + this.stateBucket.currentGameState.people.filter((person) => !person.out).length + ' / ' +
-            this.stateBucket.currentGameState.people.length + ' Alive';
+            this.stateBucket.currentGameState.gameSize + ' Alive';
     }
 }
 

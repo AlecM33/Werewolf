@@ -20,16 +20,17 @@ This app is still being actively developed. Find the latest production deploymen
 
 ## Overview
 
-An application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
+A free, anonymous application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
 smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
-Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities. Hosts can use any roles they want, in any configuration, and can create their own roles if the provided ones don't meet their needs (though neutral/third-party roles are currently not supported - only good and evil). If you have a role that you think should be available by default, and that isn't already there, feel free to let me know. Otherwise, any roles you create will be saved in your cookies, or can be exported for use later. 
+Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities. Hosts can use any roles they want, in any configuration, and can create their own roles if the provided ones don't meet their needs.
+
 
 A good overview of usage can be found on the app's "How to Use" page: https://play-werewolf.app/how-to-use
 
 The app prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 
 Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/ultimate-werewolf-deluxe-edition">Ultimate Werewolf</a> and by
-2020's quarantine. The app is free to use, anonymous, and fully open-source under the MIT license. After a long hiatus I've rewritten a lot of the code. This was (and still is) fundamentally a learning project, so feedback or assistance is appreciated.
+2020's quarantine. After a long hiatus I've rewritten a lot of the code. This was (and still is) fundamentally a learning project, so feedback or assistance is appreciated.
 
 ## Features
 
@@ -50,16 +51,26 @@ You can:
 
 This is a Node.js application. It is written purely using JavaScript/HTML/CSS, with no front-end framework. The main dependencies are
 <a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It runs as a containerized application
-via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. There is no data persisted in any database. 
+via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. 
 
-In the event I need more scaling, I will likely integrate with a datastore like <a href='https://redis.io/'>Redis</a>.
+There is no data persisted in any database. The app is almost entirely stateless, with instances kept in sync via
+<a href="https://redis.io/">Redis</a>, specifically with the <a href="https://redis.io/docs/manual/pubsub/">pub/sub model</a>.
+The exceptions are <a href="https://nodejs.org/api/child_process.html">Node.js child processes</a> that are spawned to 
+keep track of games with a timer, which are stored in an instance's memory and communicated to other instances if needed.
 ## Contributing and Developers' Guide
 
 ### Running Locally
 
 The entrypoint for the application is `index.js` at the root. 
 
-If you haven't already, install <a href="https://nodejs.org/en/">Node.js.</a> This should include the node package 
+Before starting the Node.js server, you'll need a Redis server running locally on the default port. This is what's used 
+to store active games and keep any number of Node.js servers in sync. I followed
+<a href="https://www.sitepoint.com/using-redis-node-js/">this tutorial</a>, specifically using the installation method that uses
+Windows Subsystem for Linux (WSL), since I am on a windows machine. Once I got WSL installed and was in a linux environment
+running in the powershell, I tested out the Redis server by using the Redis CLI
+(see their <a href="https://redis.io/docs/getting-started/">getting started page</a>).
+
+Once that's done, if you haven't already, install <a href="https://nodejs.org/en/">Node.js.</a> This should include the node package 
 manager, <a href="https://www.npmjs.com/">npm</a>.
 
 Run `npm install` from the root directory to install the necessary dependencies.
@@ -71,6 +82,8 @@ If you simply want to run the app on the default port of **5000**:
 
 `npm run start:dev` (if developing on a linux machine)<br>
 `npm run start:dev:windows` (if developing on a windows machine)
+
+If everything is okay, you should see logs indicating a connection to Redis and a starting of the web server. 
 
 This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
 to listen for changes to **server-side code** (Node.js modules) and automatically restart the server. If you do not want 

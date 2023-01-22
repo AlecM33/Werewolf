@@ -12,6 +12,17 @@ import { ModalManager } from '../../../front_end_components/ModalManager.js';
 
 // This constant is meant to house logic that is utilized by more than one game state
 export const SharedStateUtil = {
+    gameStateAckFn: (gameState, socket) => {
+        stateBucket.currentGameState = gameState;
+        processGameState(
+            stateBucket.currentGameState,
+            gameState.client.cookie,
+            socket,
+            true,
+            true
+        );
+    },
+
     restartHandler: (stateBucket) => {
         XHRUtility.xhr(
             '/api/games/' + stateBucket.currentGameState.accessCode + '/restart',
@@ -45,23 +56,13 @@ export const SharedStateUtil = {
     },
 
     setClientSocketHandlers: (stateBucket, socket) => {
-        const commonAckLogic = (gameState) => {
-            stateBucket.currentGameState = gameState;
-            processGameState(
-                stateBucket.currentGameState,
-                gameState.client.cookie,
-                socket,
-                true,
-                true
-            );
-        };
         const startGameStateAckFn = (gameState) => {
-            commonAckLogic(gameState);
+            SharedStateUtil.gameStateAckFn(gameState, socket);
             toast('Game started!', 'success');
         };
 
         const restartGameStateAckFn = (gameState) => {
-            commonAckLogic(gameState);
+            SharedStateUtil.gameStateAckFn(gameState, socket);
             toast('Game restarted!', 'success');
         };
 
@@ -86,13 +87,14 @@ export const SharedStateUtil = {
                 stateBucket.currentGameState.accessCode,
                 { personId: stateBucket.currentGameState.client.cookie },
                 function (gameState) {
+                    const oldUserType = stateBucket.currentGameState.client.userType;
                     stateBucket.currentGameState = gameState;
                     processGameState(
                         stateBucket.currentGameState,
                         gameState.client.cookie,
                         socket,
                         true,
-                        true
+                        gameState.client.userType !== oldUserType
                     );
                 }
             );
@@ -132,8 +134,9 @@ export const SharedStateUtil = {
         }
     },
 
-    buildSpectatorList (spectators) {
+    buildSpectatorList (people) {
         const list = document.createElement('div');
+        const spectators = people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR);
         if (spectators.length === 0) {
             list.innerHTML = '<div>Nobody currently spectating.</div>';
         } else {
@@ -164,17 +167,24 @@ function processGameState (
     refreshPrompt = true,
     animateContainer = false
 ) {
-    const containerAnimation = document.getElementById('game-state-container').animate(
-        [
-            { opacity: '0', transform: 'translateY(10px)' },
-            { opacity: '1', transform: 'translateY(0px)' }
+    if (animateContainer) {
+        document.getElementById('game-state-container').animate(
+            [
+                { opacity: '0', transform: 'translateY(10px)' },
+                { opacity: '1', transform: 'translateY(0px)' }
+            ], {
+                duration: 500,
+                easing: 'ease-in-out',
+                fill: 'both'
+            });
+        document.getElementById('client-container').animate([
+            { opacity: '0' },
+            { opacity: '1' }
         ], {
             duration: 500,
-            easing: 'ease-in-out',
+            easing: 'ease-out',
             fill: 'both'
         });
-    if (animateContainer) {
-        containerAnimation.play();
     }
 
     displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
@@ -187,6 +197,7 @@ function processGameState (
             }
             lobby.populateHeader();
             lobby.populatePlayers();
+            globals.LOBBY_EVENTS().forEach(e => socket.removeAllListeners(e));
             lobby.setSocketHandlers();
             if ((
                 currentGameState.client.userType === globals.USER_TYPES.MODERATOR
@@ -202,6 +213,7 @@ function processGameState (
                 document.querySelector('#game-control-prompt')?.remove();
             }
             const inProgressGame = new InProgress('game-state-container', stateBucket, socket);
+            globals.IN_PROGRESS_EVENTS().forEach(e => socket.removeAllListeners(e));
             inProgressGame.setSocketHandlers();
             inProgressGame.setUserView(currentGameState.client.userType);
             break;

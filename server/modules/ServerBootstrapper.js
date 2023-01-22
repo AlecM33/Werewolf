@@ -4,21 +4,21 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const SocketManager = require('./singletons/SocketManager.js');
+const EventManager = require('./singletons/EventManager.js');
 const GameManager = require('./singletons/GameManager.js');
-const ActiveGameRunner = require('./singletons/ActiveGameRunner.js');
+const TimerManager = require('./singletons/TimerManager.js');
 const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 
 const ServerBootstrapper = {
 
-    singletons: (logger) => {
+    singletons: (logger, instanceId) => {
         return {
-            activeGameRunner: new ActiveGameRunner(logger),
-            socketManager: new SocketManager(logger, ActiveGameRunner.instance),
+            timerManager: new TimerManager(logger, instanceId),
+            eventManager: new EventManager(logger, instanceId),
             gameManager: process.env.NODE_ENV.trim() === 'development'
-                ? new GameManager(logger, ENVIRONMENT.LOCAL, ActiveGameRunner.instance)
-                : new GameManager(logger, ENVIRONMENT.PRODUCTION, ActiveGameRunner.instance)
+                ? new GameManager(logger, ENVIRONMENT.LOCAL, instanceId)
+                : new GameManager(logger, ENVIRONMENT.PRODUCTION, instanceId)
         };
     },
 

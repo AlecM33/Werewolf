@@ -20,6 +20,10 @@ export const gameHandler = async (socket, XHRUtility, window, gameDOM) => {
     stateBucket.environment = response.content;
 
     socket.on('connect', function () {
+        if (stateBucket.timerWorker) {
+            stateBucket.timerWorker.terminate();
+            stateBucket.timerWorker = null;
+        }
         SharedStateUtil.syncWithGame(
             stateBucket,
             socket,

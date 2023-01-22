@@ -53,7 +53,7 @@ This is a Node.js application. It is written purely using JavaScript/HTML/CSS, w
 <a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It runs as a containerized application
 via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. 
 
-There is no data persisted in any database. The app is almost entirely stateless, with instances kept in sync via
+No data is stored persistently. The app is almost entirely stateless, with instances kept in sync via
 <a href="https://redis.io/">Redis</a>, specifically with the <a href="https://redis.io/docs/manual/pubsub/">pub/sub model</a>.
 The exceptions are a browser cookie and the <a href="https://nodejs.org/api/child_process.html">Node.js child processes</a> that are spawned to 
 keep track of games with a timer, which are stored in an instance's memory and communicated to other instances if needed. In the end, it should not matter

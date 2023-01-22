@@ -66,7 +66,7 @@ The entrypoint for the application is `index.js` at the root.
 Before starting the Node.js server, you'll need a Redis server running locally on the default port. This is what's used 
 to store active games and keep any number of Node.js servers in sync. I followed
 <a href="https://www.sitepoint.com/using-redis-node-js/">this tutorial</a>, specifically using the installation method that uses
-Windows Subsystem for Linux (WSL), since I am on a windows machine. Once I got WSL installed and was in a linux environment
+Windows Subsystem for Linux (WSL), since I am on a windows machine. Once I got WSL and Redis installed and was in a linux environment
 running in the powershell, I tested out the Redis server by using the Redis CLI
 (see their <a href="https://redis.io/docs/getting-started/">getting started page</a>).
 

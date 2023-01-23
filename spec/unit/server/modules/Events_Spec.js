@@ -448,13 +448,13 @@ describe('Events', () => {
                 namespace.sockets.set('zzz', mockSocket);
                 await Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD)
                     .communicate(game, { personId: 'cookie' }, { gameManager: gameManager });
-                // verify the current mod's view is synced
+                // verify there's no attempted communication to the new mod (they are not connected to this instance)
                 expect(namespace.to).not.toHaveBeenCalledWith('aaa');
                 expect(namespace.to().emit).not.toHaveBeenCalled();
-                // verify the old mod's view is synced
+                // verify there's no attempted communication to the old mod
                 expect(namespace.to).not.toHaveBeenCalledWith('bbb');
                 expect(namespace.to().emit).not.toHaveBeenCalled();
-                // verify the "kill player" event is sent to everyone but the sender
+                // verify the "kill player" event is sent to everyone in the room (as opposed to everyone but the sender)
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
             });

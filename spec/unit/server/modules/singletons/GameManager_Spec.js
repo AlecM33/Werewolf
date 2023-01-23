@@ -1,12 +1,12 @@
 // TODO: clean up these deep relative paths? jsconfig.json is not working...
-const Game = require('../../../../server/model/Game');
-const globals = require('../../../../server/config/globals');
+const Game = require('../../../../../server/model/Game');
+const globals = require('../../../../../server/config/globals');
 const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
-const GameManager = require('../../../../server/modules/singletons/GameManager.js');
-const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
-const EventManager = require('../../../../server/modules/singletons/EventManager.js');
-const logger = require('../../../../server/modules/Logger.js')(false);
+const GameManager = require('../../../../../server/modules/singletons/GameManager.js');
+const TimerManager = require('../../../../../server/modules/singletons/TimerManager.js');
+const EventManager = require('../../../../../server/modules/singletons/EventManager.js');
+const logger = require('../../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {
     let gameManager, timerManager, eventManager, namespace, socket, game;

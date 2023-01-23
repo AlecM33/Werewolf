@@ -16,9 +16,9 @@ describe('Events', () => {
     beforeAll(() => {
         spyOn(logger, 'debug');
         spyOn(logger, 'error');
-
         const inObj = { emit: () => {} };
-        namespace = { in: () => { return inObj; }, to: () => { return inObj; }, sockets: new Map() };
+        const toObj = { emit: () => {} };
+        namespace = { in: () => { return inObj; }, to: () => { return toObj; }, sockets: new Map() };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
         gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, 'test');
         timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
@@ -29,8 +29,11 @@ describe('Events', () => {
         game = new Game(
             'ABCD',
             STATUS.LOBBY,
-            [{ id: 'a', assigned: true, out: true, killed: false, userType: USER_TYPES.MODERATOR },
-                { id: 'b', gameRole: 'Villager', alignment: 'good', assigned: false, out: false, killed: false, userType: USER_TYPES.PLAYER }],
+            [
+                { id: 'a', assigned: true, out: true, killed: false, userType: USER_TYPES.MODERATOR },
+                { id: 'b', gameRole: 'Villager', alignment: 'good', assigned: false, out: false, killed: false, userType: USER_TYPES.PLAYER },
+                { id: 'c', assigned: true, out: true, killed: false, userType: USER_TYPES.SPECTATOR }
+            ],
             [{ quantity: 2 }],
             false,
             'a',
@@ -43,6 +46,7 @@ describe('Events', () => {
         spyOn(namespace, 'in').and.callThrough();
         spyOn(socket, 'to').and.callThrough();
         spyOn(namespace.in(), 'emit').and.callThrough();
+        spyOn(namespace.to(), 'emit').and.callThrough();
         spyOn(gameManager, 'isGameFull').and.callThrough();
         spyOn(GameStateCurator, 'mapPerson').and.callThrough();
         namespace.sockets = new Map();
@@ -59,7 +63,7 @@ describe('Events', () => {
                 expect(game.people.find(p => p.id === 'b').assigned).toEqual(true);
             });
             it('should let a player join and mark the game as NOT full', async () => {
-                game.people.push({ id: 'c', assigned: false, userType: USER_TYPES.PLAYER });
+                game.people.push({ id: 'd', assigned: false, userType: USER_TYPES.PLAYER });
                 await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
                     .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager });
                 expect(gameManager.isGameFull).toHaveBeenCalled();
@@ -317,6 +321,144 @@ describe('Events', () => {
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
                 expect(vars.ackFn).toHaveBeenCalled();
+            });
+        });
+    });
+    describe(EVENT_IDS.TRANSFER_MODERATOR, () => {
+        describe('stateChange', () => {
+            it('should transfer from a dedicated mod to a spectator', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.TRANSFER_MODERATOR)
+                    .stateChange(game, { personId: 'c' }, { gameManager: gameManager });
+                expect(game.currentModeratorId).toEqual('c');
+                expect(game.previousModeratorId).toEqual('a');
+                expect(game.people.find(p => p.id === 'a').userType).toEqual(USER_TYPES.SPECTATOR);
+                expect(game.people.find(p => p.id === 'c').userType).toEqual(USER_TYPES.MODERATOR);
+            });
+            it('should transfer from a dedicated mod to a killed player', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.TRANSFER_MODERATOR)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+                expect(game.currentModeratorId).toEqual('b');
+                expect(game.previousModeratorId).toEqual('a');
+                expect(game.people.find(p => p.id === 'a').userType).toEqual(USER_TYPES.SPECTATOR);
+                expect(game.people.find(p => p.id === 'b').userType).toEqual(USER_TYPES.MODERATOR);
+            });
+            it('should transfer from a dedicated mod who was a former player, restoring their status to "killed player"', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.TRANSFER_MODERATOR)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.TRANSFER_MODERATOR)
+                    .stateChange(game, { personId: 'a' }, { gameManager: gameManager });
+                expect(game.currentModeratorId).toEqual('a');
+                expect(game.previousModeratorId).toEqual('b');
+                expect(game.people.find(p => p.id === 'a').userType).toEqual(USER_TYPES.MODERATOR);
+                expect(game.people.find(p => p.id === 'b').userType).toEqual(USER_TYPES.KILLED_PLAYER);
+            });
+        });
+        describe('communicate', () => {
+            it('should communicate the transfer moderator event to the room', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.TRANSFER_MODERATOR)
+                    .communicate(game, {}, { gameManager: gameManager });
+                expect(namespace.to).toHaveBeenCalledWith(game.accessCode);
+                expect(namespace.to().emit).toHaveBeenCalledWith(EVENT_IDS.SYNC_GAME_STATE);
+            });
+            it('should communicate the transfer moderator to the room and acknowledge the client', async () => {
+                const vars = { ackFn: () => {}, gameManager: gameManager };
+                spyOn(vars, 'ackFn').and.callThrough();
+                await Events.find((e) => e.id === EVENT_IDS.TRANSFER_MODERATOR)
+                    .communicate(game, {}, vars);
+                expect(namespace.to).toHaveBeenCalledWith(game.accessCode);
+                expect(namespace.to().emit).toHaveBeenCalledWith(EVENT_IDS.SYNC_GAME_STATE);
+                expect(vars.ackFn).toHaveBeenCalled();
+            });
+        });
+    });
+    describe(EVENT_IDS.ASSIGN_DEDICATED_MOD, () => {
+        beforeEach(() => {
+            game.people = [
+                { id: 'a', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.TEMPORARY_MODERATOR },
+                { id: 'b', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.PLAYER },
+                { id: 'c', assigned: true, out: true, killed: false, userType: USER_TYPES.SPECTATOR }
+            ]
+        })
+        describe('stateChange', () => {
+            it('should assign a dedicated mod who is different from the requesting temp mod', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+                expect(game.currentModeratorId).toEqual('b');
+                expect(game.previousModeratorId).toEqual('a');
+                expect(game.people.find(p => p.id === 'a').userType).toEqual(USER_TYPES.PLAYER);
+                expect(game.people.find(p => p.id === 'b').userType).toEqual(USER_TYPES.MODERATOR);
+            });
+            it('should assign a dedicated mod who is the same as the requesting temp mod', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD)
+                    .stateChange(game, { personId: 'a' }, { gameManager: gameManager });
+                expect(game.currentModeratorId).toEqual('a');
+                expect(game.previousModeratorId).toEqual('a');
+                expect(game.people.find(p => p.id === 'a').userType).toEqual(USER_TYPES.MODERATOR);
+                expect(game.people.find(p => p.id === 'b').userType).toEqual(USER_TYPES.PLAYER);
+            });
+        });
+        describe('communicate', () => {
+            it('should communicate to the new mod and the previous mod', async () => {
+                game.currentModeratorId = 'a';
+                game.previousModeratorId = 'b';
+                game.people.find(p => p.id === 'a').socketId = 'aaa';
+                game.people.find(p => p.id === 'b').socketId = 'bbb';
+                const socketToObj = { emit: () => {} };
+                const mockSocket = {
+                    join: () => {},
+                    to: () => {
+                        return socketToObj;
+                    }
+                };
+                spyOn(mockSocket, 'to').and.callThrough();
+                spyOn(socketToObj, 'emit').and.callThrough();
+                namespace.sockets.set('aaa', mockSocket);
+                namespace.sockets.set('bbb', mockSocket);
+                await Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD)
+                    .communicate(game, { personId: 'cookie' }, { gameManager: gameManager });
+                // verify the current mod's view is synced
+                expect(namespace.to).toHaveBeenCalledWith('aaa');
+                expect(namespace.to().emit).toHaveBeenCalledWith(EVENT_IDS.SYNC_GAME_STATE);
+                // verify the old mod's view is synced
+                expect(namespace.to).toHaveBeenCalledWith('bbb');
+                expect(namespace.to().emit).toHaveBeenCalledWith(EVENT_IDS.SYNC_GAME_STATE);
+                // verify the "kill player" event is sent to everyone but the sender
+                expect(mockSocket.to).toHaveBeenCalledWith(game.accessCode);
+                expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
+
+            });
+            it('should not communicate to the current or previous mod if their sockets are not found', async () => {
+                game.currentModeratorId = 'a';
+                game.previousModeratorId = 'b';
+                game.people.find(p => p.id === 'a').socketId = 'aaa';
+                game.people.find(p => p.id === 'b').socketId = 'bbb';
+                const socketToObj = { emit: () => {} };
+                const mockSocket = {
+                    join: () => {},
+                    to: () => {
+                        return socketToObj;
+                    }
+                };
+                spyOn(mockSocket, 'to').and.callThrough();
+                spyOn(socketToObj, 'emit').and.callThrough();
+                namespace.sockets.set('yyy', mockSocket);
+                namespace.sockets.set('zzz', mockSocket);
+                await Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD)
+                    .communicate(game, { personId: 'cookie' }, { gameManager: gameManager });
+                // verify the current mod's view is synced
+                expect(namespace.to).not.toHaveBeenCalledWith('aaa');
+                expect(namespace.to().emit).not.toHaveBeenCalled();
+                // verify the old mod's view is synced
+                expect(namespace.to).not.toHaveBeenCalledWith('bbb');
+                expect(namespace.to().emit).not.toHaveBeenCalled();
+                // verify the "kill player" event is sent to everyone but the sender
+                expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
+                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
+
             });
         });
     });

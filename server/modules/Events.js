@@ -187,7 +187,7 @@ const Events = [
             const moderatorSocket = vars.gameManager.namespace.sockets.get(moderator?.socketId);
             if (moderator && moderatorSocket) {
                 vars.gameManager.namespace.to(moderator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                moderatorSocket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, game.previousModeratorId);
+                moderatorSocket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, game.currentModeratorId);
             } else {
                 vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, game.currentModeratorId);
             }

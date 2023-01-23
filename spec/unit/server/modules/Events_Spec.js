@@ -381,8 +381,8 @@ describe('Events', () => {
                 { id: 'a', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.TEMPORARY_MODERATOR },
                 { id: 'b', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.PLAYER },
                 { id: 'c', assigned: true, out: true, killed: false, userType: USER_TYPES.SPECTATOR }
-            ]
-        })
+            ];
+        });
         describe('stateChange', () => {
             it('should assign a dedicated mod who is different from the requesting temp mod', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD)
@@ -429,7 +429,6 @@ describe('Events', () => {
                 // verify the "kill player" event is sent to everyone but the sender
                 expect(mockSocket.to).toHaveBeenCalledWith(game.accessCode);
                 expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
-
             });
             it('should not communicate to the current or previous mod if their sockets are not found', async () => {
                 game.currentModeratorId = 'a';
@@ -458,7 +457,6 @@ describe('Events', () => {
                 // verify the "kill player" event is sent to everyone but the sender
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
-
             });
         });
     });

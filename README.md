@@ -50,7 +50,7 @@ You can:
 ## Tech Stack
 
 This is a Node.js application. It is written purely using JavaScript/HTML/CSS, with no front-end framework. The main dependencies are
-<a href="https://expressjs.com/">Express.js</a> and <a href="https://socket.io/">Socket.io</a>. It runs as a containerized application
+<a href="https://expressjs.com/">Express.js</a>, <a href="https://socket.io/">Socket.io</a>, and <a href="https://www.npmjs.com/package//redis">Node-Redis</a>. It runs as a containerized application
 via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. 
 
 No data is stored persistently. The app is almost entirely stateless, with instances kept in sync via

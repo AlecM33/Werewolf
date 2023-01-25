@@ -22,18 +22,20 @@ router.post('/sockets/broadcast', function (req, res) {
 router.get('/games/state', async (req, res) => {
     const gamesArray = [];
     const keys = await eventManager.publisher.keys('*');
-    const values = await eventManager.publisher.mGet(keys);
-    values.forEach((v) => {
-        let parsedGame;
-        try {
-            parsedGame = JSON.parse(v);
-        } catch (e) {
-            logger.error(e);
-        }
-        if (parsedGame) {
-            gamesArray.push(parsedGame);
-        }
-    });
+    if (keys.length > 0) {
+        const values = await eventManager.publisher.mGet(keys);
+        values.forEach((v) => {
+            let parsedGame;
+            try {
+                parsedGame = JSON.parse(v);
+            } catch (e) {
+                logger.error(e);
+            }
+            if (parsedGame) {
+                gamesArray.push(parsedGame);
+            }
+        });
+    }
     res.status(200).send(gamesArray);
 });
 

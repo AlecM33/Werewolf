@@ -467,7 +467,6 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
         backButton.innerHTML = '<img alt="back" src="../../images/caret-back.svg"/>';
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute('id', 'step-back-button');
-        backButton.classList.add('cancel');
         backButton.classList.add('app-button');
         document.getElementById('tracker-container').prepend(backButton);
     }

@@ -69,6 +69,7 @@
 
 #restart-game-button, #mod-transfer-button {
     background-color: #045EA6;
+    border: 2px solid #024070;
 }
 
 #restart-game-button:hover, #mod-transfer-button:hover {
@@ -216,6 +217,11 @@ h1 {
 
 #game-role-info-container > div {
     width: 95%;
+    border: 1px solid #46455299;
+    background: #4645523b;
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
 }
 
 #transfer-mod-modal-content {
@@ -234,12 +240,9 @@ h1 {
 }
 
 #game-role-info-container .role-info-name {
-    padding: 5px;
     border-radius: 5px;
     font-size: 20px;
     font-family: signika-negative, sans-serif;
-    margin: 0.5em 0;
-    background-color: #171522;
 }
 
 #role-info-modal h2 {

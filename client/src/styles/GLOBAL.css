@@ -223,12 +223,12 @@ button {
 .app-button, input[type="submit"] {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
-    background-color: #13762b;
+    background-color: #1a7a31;
     border-radius: 5px;
     color: #e7e7e7;
     font-size: 18px;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 2px solid #0c541d;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
 }
 
@@ -237,12 +237,13 @@ button {
 }
 
 .cancel {
-    background-color: #762323 !important;
+    background-color: #7a1a1a !important;
+    border: 2px solid #540c0c !important;
 }
 
 .cancel:hover {
     background-color: #623232 !important;
-    border: 2px solid #8a1c1c !important;
+    border: 2px solid #7a1a1a !important;
 }
 
 .submitted {
@@ -269,7 +270,7 @@ button {
 
 .app-button:hover, input[type="submit"]:hover, #game-link:hover {
     background-color: #326243;
-    border: 2px solid #1c8a36;
+    border: 2px solid #1a7a31;
 }
 
 .emphasized {
@@ -349,7 +350,7 @@ input {
     align-items: center;
     padding: 5px 0;
     width: 100%;
-    background-color: #1e1b26;
+    background-color: #16141e;
     height: 45px;
     z-index: 53000;
 }

@@ -39,14 +39,14 @@ const template =
         <div id="custom-role-info-modal-alignment"></div>
         <label for="custom-role-info-modal-alignment">description:</label>
         <div id="custom-role-info-modal-description"></div>
-        <div class="modal-button-container">
+        <div class="modal-button-container single-button">
             <button id="close-custom-role-info-modal-button" class="cancel app-button">Close</button>
         </div>
     </div>
     <div tabindex='-1' id='deck-template-modal' class='modal'>
         <h2>Choose a pre-built game:</h2>
         <div id='deck-template-container'></div>
-        <div class='modal-button-container'>
+        <div class='modal-button-container single-button'>
             <button id='close-deck-template-modal-button' class='cancel app-button'>Close</button>
         </div>
     </div>

@@ -61,7 +61,7 @@ button#home-create-button {
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #1e1b26;
+    background-color: #16141e;
 }
 
 form {
@@ -125,10 +125,11 @@ form > div {
 
 #join-container {
     max-width: 90%;
-    background-color: #0f0f10;
+    border: 1px solid #46455299;
+    background: #4645523b;
     padding: 0.5em;
     border-radius: 5px;
-    margin: 20px;
+    margin: 20px
 }
 
 #join-container > label {

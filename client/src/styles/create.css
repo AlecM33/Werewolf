@@ -568,6 +568,16 @@ input[type="number"] {
     padding: 0 !important;
     width: 50px;
     height: 44px;
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    border: 2px solid #56565673;
+}
+
+#step-forward-button:hover, #step-back-button:hover {
+    background-color: #545454 !important;
+    border: 2px solid #646464 !important;
 }
 
 .tracker-placeholder {
@@ -583,7 +593,6 @@ input[type="number"] {
 
 #step-back-button {
     left: 15%;
-    background-color: #762323;
 }
 
 #step-1 div {

@@ -7,7 +7,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #2d2c38;
+    background-color: #16141e;
     align-items: center;
     justify-content: center;
     max-width: 25em;
@@ -40,15 +40,19 @@
     font-size: 16px;
 }
 
-#close-modal-button {
-    background-color: #762323 !important;
-}
-
 .modal-button-container {
     display: flex;
     width: 100%;
     justify-content: space-between;
     flex-direction: row;
+}
+
+.modal-button-container .app-button, .modal-button-container input[type="submit"] {
+    min-width: 6em;
+}
+
+.single-button {
+    justify-content: center;
 }
 
 #custom-role-info-modal {

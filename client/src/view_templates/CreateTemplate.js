@@ -46,7 +46,7 @@ const template =
     <div tabindex='-1' id='deck-template-modal' class='modal'>
         <h2>Choose a pre-built game:</h2>
         <div id='deck-template-container'></div>
-        <div class='modal-button-container'>
+        <div class='modal-button-container single-button'>
             <button id='close-deck-template-modal-button' class='cancel app-button'>Close</button>
         </div>
     </div>

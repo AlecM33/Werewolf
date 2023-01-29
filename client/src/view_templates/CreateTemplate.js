@@ -39,7 +39,7 @@ const template =
         <div id="custom-role-info-modal-alignment"></div>
         <label for="custom-role-info-modal-alignment">description:</label>
         <div id="custom-role-info-modal-description"></div>
-        <div class="modal-button-container">
+        <div class="modal-button-container single-button">
             <button id="close-custom-role-info-modal-button" class="cancel app-button">Close</button>
         </div>
     </div>

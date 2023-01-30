@@ -86,7 +86,9 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person && !person.out) {
-                person.userType = globals.USER_TYPES.KILLED_PLAYER;
+                person.userType = person.userType === globals.USER_TYPES.BOT
+                    ? globals.USER_TYPES.KILLED_BOT
+                    : globals.USER_TYPES.KILLED_PLAYER;
                 person.out = true;
                 person.killed = true;
             }

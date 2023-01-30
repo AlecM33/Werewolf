@@ -130,7 +130,8 @@ export class GameCreationStepManager {
                                 this.currentGame.hasTimer,
                                 this.currentGame.hasDedicatedModerator,
                                 this.currentGame.moderatorName,
-                                this.currentGame.timerParams
+                                this.currentGame.timerParams,
+                                this.currentGame.isTestGame
                             )
                         )
                     )
@@ -304,6 +305,12 @@ function renderNameStep (containerId, step, game, steps) {
     const nameInput = document.querySelector('#moderator-name');
     nameInput.value = game.moderatorName;
     nameInput.addEventListener('keyup', steps['4'].forwardHandler);
+
+    const testGameInput = document.getElementById('test-game');
+    testGameInput.onchange = (event) => {
+        game.isTestGame = testGameInput.value === 'yes';
+    };
+    testGameInput.value = game.isTestGame ? 'yes' : 'no';
 }
 
 function renderModerationTypeStep (game, containerId, stepNumber) {
@@ -390,21 +397,27 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
 
     div.innerHTML =
         '<div>' +
-            "<label for='mod-name'>Your name</label>" +
+            "<label for='mod-name'>Your name:</label>" +
             "<div id='mod-name' class='review-option'></div>" +
         '</div>' +
         '<div>' +
-            "<label for='mod-option'>Moderation</label>" +
+            "<label for='test-game'>Populate game with bots?</label>" +
+            "<div id='test-game' class='review-option'></div>" +
+        '</div>' +
+        '<div>' +
+            "<label for='mod-option'>Moderation:</label>" +
             "<div id='mod-option' class='review-option'></div>" +
         '</div>' +
         '<div>' +
-            "<label for='timer-option'>Timer</label>" +
+            "<label for='timer-option'>Timer:</label>" +
             "<div id='timer-option' class='review-option'></div>" +
         '</div>' +
         '<div>' +
-            "<label id='roles-option-label' for='roles-option'>Game Deck</label>" +
+            "<label id='roles-option-label' for='roles-option'>Game Deck:</label>" +
             "<div id='roles-option' class='review-option'></div>" +
         '</div>';
+
+    div.querySelector('#test-game').innerText = game.isTestGame ? 'Yes' : 'No';
 
     div.querySelector('#mod-option').innerText = game.hasDedicatedModerator
         ? "Dedicated Moderator - don't deal me a card."

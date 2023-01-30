@@ -9,7 +9,8 @@ class Game {
         hasDedicatedModerator,
         originalModeratorId,
         createTime,
-        timerParams = null
+        timerParams = null,
+        isTestGame = false
     ) {
         this.accessCode = accessCode;
         this.status = status;
@@ -26,7 +27,7 @@ class Game {
         this.previousModeratorId = null;
         this.createTime = createTime;
         this.timerParams = timerParams;
-        this.isFull = this.gameSize === 1 && !this.hasDedicatedModerator;
+        this.isFull = (this.gameSize === 1 && !this.hasDedicatedModerator) || isTestGame;
         this.timeRemaining = null;
     }
 }

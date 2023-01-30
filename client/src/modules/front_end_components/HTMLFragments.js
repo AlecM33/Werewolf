@@ -38,6 +38,13 @@ export const HTMLFragments = {
         <div>
             <input type="text" id="moderator-name" autocomplete='given-name' placeholder="enter your name...">
         </div>
+        <div>
+            <label for="test-game">Populate the game with bots?</label>
+            <select id="test-game">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
     </div>`,
     START_GAME_PROMPT:
     `<div>
@@ -120,7 +127,7 @@ export const HTMLFragments = {
     TRANSFER_MOD_MODAL:
     `<div id='transfer-mod-modal-background' class='modal-background'></div>
     <div tabindex='-1' id='transfer-mod-modal' class='modal'>
-        <h3>Transfer Mod Powers &#128081;</h3>
+        <h2>Select a new moderator &#128081;</h2>
         <div id='transfer-mod-modal-content'></div>
         <div class='modal-button-container'>
             <button id='close-mod-transfer-modal-button' class='app-button cancel'>Cancel</button>

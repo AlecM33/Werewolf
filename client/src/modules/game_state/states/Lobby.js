@@ -82,7 +82,7 @@ export class Lobby {
         const lobbyPlayersContainer = this.container.querySelector('#lobby-players');
         const sorted = this.stateBucket.currentGameState.people.sort(
             function (a, b) {
-                if (a.userType === globals.USER_TYPES.MODERATOR) {
+                if (a.userType === globals.USER_TYPES.MODERATOR || a.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
                     return -1;
                 }
                 return 1;
@@ -92,7 +92,7 @@ export class Lobby {
             lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name, person.userType));
         }
         const playerCount = this.stateBucket.currentGameState.people.filter(
-            p => p.userType === globals.USER_TYPES.PLAYER || p.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
         ).length;
         document.querySelector("label[for='lobby-players']").innerText =
             'Participants (' + playerCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
@@ -194,7 +194,7 @@ function renderLobbyPerson (name, userType) {
     personNameEl.innerText = name;
     personTypeEl.innerText = userType + globals.USER_TYPE_ICONS[userType];
     el.classList.add('lobby-player');
-    if (userType === globals.USER_TYPES.MODERATOR) {
+    if (userType === globals.USER_TYPES.MODERATOR || userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
         el.classList.add('moderator');
     }
 

@@ -101,8 +101,7 @@ export class InProgress {
             : null;
         this.renderGroupOfPlayers(
             this.stateBucket.currentGameState.people.filter(
-                p => p.userType === globals.USER_TYPES.PLAYER
-                || p.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                p => (p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
                 || p.killed
             ),
             this.killPlayerHandlers,
@@ -168,7 +167,9 @@ export class InProgress {
             if (killedPerson) {
                 killedPerson.out = true;
                 killedPerson.killed = true;
-                killedPerson.userType = globals.USER_TYPES.KILLED_PLAYER;
+                killedPerson.userType = killedPerson.userType === globals.USER_TYPES.BOT
+                    ? globals.USER_TYPES.KILLED_BOT
+                    : globals.USER_TYPES.KILLED_PLAYER;
                 if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
                     toast(killedPerson.name + ' killed.', 'success', true, true, 'medium');
                     this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
@@ -253,14 +254,12 @@ export class InProgress {
         });
         const teamGood = this.stateBucket.currentGameState.people.filter(
             (p) => p.alignment === globals.ALIGNMENT.GOOD
-                && (p.userType === globals.USER_TYPES.PLAYER
-                    || p.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                && ((p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
                     || p.killed)
 
         );
         const teamEvil = this.stateBucket.currentGameState.people.filter((p) => p.alignment === globals.ALIGNMENT.EVIL
-            && (p.userType === globals.USER_TYPES.PLAYER
-                || p.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            && ((p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
                 || p.killed)
         );
         this.renderGroupOfPlayers(
@@ -385,7 +384,8 @@ export class InProgress {
         );
 
         if (document.querySelectorAll('.potential-moderator').length === 0) {
-            document.getElementById('transfer-mod-modal-content').innerText = 'There is nobody available to transfer to.';
+            document.getElementById('transfer-mod-modal-content').innerText =
+                'There is nobody available to transfer to. Only spectators or killed players (who are not bots) can be mods.';
         }
     }
 

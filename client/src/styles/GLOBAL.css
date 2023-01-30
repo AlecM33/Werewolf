@@ -209,6 +209,12 @@ a {
     text-decoration: none;
 }
 
+.checkbox {
+    border-radius: 5px;
+    border: 2px solid #d7d7d7;
+    padding: 10px;
+}
+
 textarea, input {
     font-family: 'signika-negative', sans-serif;
     font-size: 16px;
@@ -572,7 +578,8 @@ input {
 }
 
 .good, .compact-card.good .card-role {
-    color: #5f7cfb;
+    color: #5f7cfb !important;
+    font-weight: bold;
 }
 
 .good-players, #deck-good {
@@ -584,7 +591,8 @@ input {
 }
 
 .evil, .compact-card.evil .card-role {
-    color: #e73333;
+    color: #dd2929 !important;
+    font-weight: bold;
 }
 
 @keyframes placeholder {

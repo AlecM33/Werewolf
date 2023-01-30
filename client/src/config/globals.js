@@ -93,7 +93,7 @@ export const globals = {
         moderator: ' \uD83D\uDC51',
         'temp mod': ' \uD83C\uDFAE\uD83D\uDC51',
         spectator: ' \uD83D\uDC7B',
-        killed: '\uD83D\uDC80',
-        bot: '\uD83E\uDD16'
+        killed: ' \uD83D\uDC80',
+        bot: ' \uD83E\uDD16'
     }
 };

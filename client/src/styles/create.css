@@ -314,6 +314,15 @@ option {
     margin: 0 auto;
 }
 
+#step-4 div:nth-child(2) {
+    margin-top: 25px;
+}
+
+#step-4 label[for="test-game"] {
+    display: block;
+    margin-bottom: 10px;
+}
+
 #step-4 input {
     padding: 15px 5px;
     width: 95%;

@@ -3,7 +3,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    background-color: #171522;
+    background-color: #000000;
     color: #e7e7e7;
     padding: 5px;
     border-radius: 3px;
@@ -19,6 +19,12 @@
 
 .potential-moderator {
     margin: 0.5em auto;
+    border: 2px solid #46455299;
+    background: #4645523b;
+}
+
+#transfer-mod-modal h2 {
+    margin-bottom: 15px;
 }
 
 #lobby-players {
@@ -615,14 +621,14 @@ label[for='moderator'] {
 
 canvas {
     border-radius: 5px;
-    margin: 1em;
+    margin: 20px 5px;
 }
 
 .game-player {
     border-left: 3px solid #21ba45;
     display: flex;
-    color: #d7d7d7;
-    background-color: #171522;
+    color: #f1f1f1;
+    background-color: #000000;
     align-items: center;
     padding: 0 5px;
     justify-content: space-between;
@@ -714,6 +720,7 @@ canvas {
 
 .game-player-role {
     min-width: 7em;
+    color: #bbbbbb;
 }
 
 .game-player.killed {
@@ -800,9 +807,10 @@ canvas {
     padding: 10px;
     border-radius: 5px;
     min-height: 25em;
-    background-color: #3b3a4a;
+    border: 1px solid #46455299;
+    background: #4645523b;
     max-width: 35em;
-    min-width: 17em;
+    min-width: 19em;
     margin-top: 1em;
 }
 

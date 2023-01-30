@@ -6,17 +6,19 @@ class GameCreationRequest {
         hasTimer,
         timerParams,
         moderatorName,
-        hasDedicatedModerator
+        hasDedicatedModerator,
+        isTestGame
     ) {
         this.deck = deck;
         this.hasTimer = hasTimer;
         this.timerParams = timerParams;
         this.moderatorName = moderatorName;
         this.hasDedicatedModerator = hasDedicatedModerator;
+        this.isTestGame = isTestGame;
     }
 
     static validate = (gameParams) => {
-        const expectedKeys = ['deck', 'hasTimer', 'timerParams', 'moderatorName', 'hasDedicatedModerator'];
+        const expectedKeys = ['deck', 'hasTimer', 'timerParams', 'moderatorName', 'hasDedicatedModerator', 'isTestGame'];
         if (gameParams === null
             || typeof gameParams !== 'object'
             || expectedKeys.some((key) => !Object.keys(gameParams).includes(key))
@@ -31,6 +33,7 @@ class GameCreationRequest {
 
 function valid (gameParams) {
     return typeof gameParams.hasTimer === 'boolean'
+        && typeof gameParams.isTestGame === 'boolean'
         && typeof gameParams.hasDedicatedModerator === 'boolean'
         && typeof gameParams.moderatorName === 'string'
         && gameParams.moderatorName.length > 0

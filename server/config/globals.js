@@ -100,7 +100,9 @@ const globals = {
         PLAYER: 'player',
         TEMPORARY_MODERATOR: 'temp mod',
         KILLED_PLAYER: 'killed',
-        SPECTATOR: 'spectator'
+        KILLED_BOT: 'killed bot',
+        SPECTATOR: 'spectator',
+        BOT: 'bot'
     },
     ERROR_MESSAGE: {
         GAME_IS_FULL: 'This game is full',

@@ -59,8 +59,10 @@ class GameManager {
                 gameParams.hasTimer,
                 gameParams.timerParams,
                 gameParams.moderatorName,
-                gameParams.hasDedicatedModerator
+                gameParams.hasDedicatedModerator,
+                gameParams.isTestGame
             );
+            console.log(req.isTestGame);
             const newAccessCode = await this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
@@ -76,14 +78,15 @@ class GameManager {
             const newGame = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(req.deck, moderator, this.shuffle),
+                initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame),
                 req.deck,
                 req.hasTimer,
                 moderator.id,
                 req.hasDedicatedModerator,
                 moderator.id,
                 new Date().toJSON(),
-                req.timerParams
+                req.timerParams,
+                req.isTestGame
             );
             await this.eventManager.publisher.set(newAccessCode, JSON.stringify(newGame), {
                 EX: globals.STALE_GAME_SECONDS
@@ -242,6 +245,10 @@ class GameManager {
                 game.people[i].userType = globals.USER_TYPES.PLAYER;
                 game.people[i].out = false;
             }
+            if (game.people[i].userType === globals.USER_TYPES.KILLED_BOT) {
+                game.people[i].userType = globals.USER_TYPES.BOT;
+                game.people[i].out = false;
+            }
             game.people[i].revealed = false;
             game.people[i].killed = false;
             if (game.people[i].gameRole) {
@@ -314,7 +321,7 @@ function initializeModerator (name, hasDedicatedModerator) {
     return new Person(createRandomId(), createRandomId(), name, userType);
 }
 
-function initializePeopleForGame (uniqueRoles, moderator, shuffle) {
+function initializePeopleForGame (uniqueRoles, moderator, shuffle, isTestGame) {
     const people = [];
 
     const cards = [];
@@ -335,10 +342,11 @@ function initializePeopleForGame (uniqueRoles, moderator, shuffle) {
             createRandomId(),
             createRandomId(),
             UsernameGenerator.generate(),
-            globals.USER_TYPES.PLAYER,
+            isTestGame ? globals.USER_TYPES.BOT : globals.USER_TYPES.PLAYER,
             cards[j].role,
             cards[j].description,
-            cards[j].team
+            cards[j].team,
+            isTestGame
         );
         person.customRole = cards[j].custom;
         person.hasEnteredName = false;

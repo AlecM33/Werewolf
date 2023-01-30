@@ -62,13 +62,11 @@ class GameManager {
                 gameParams.hasDedicatedModerator,
                 gameParams.isTestGame
             );
-            console.log(req.isTestGame);
             const newAccessCode = await this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
                 return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
             }
             const moderator = initializeModerator(req.moderatorName, req.hasDedicatedModerator);
-            console.log(moderator);
             moderator.assigned = true;
             if (req.timerParams !== null) {
                 req.timerParams.paused = true;
@@ -93,8 +91,8 @@ class GameManager {
             });
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
         }).catch((message) => {
-            console.log(message);
-            this.logger.debug('Received invalid request to create new game.');
+            console.error(message);
+            this.logger.error('Received invalid request to create new game.');
             return Promise.reject(message);
         });
     };

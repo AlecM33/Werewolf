@@ -28,6 +28,9 @@ describe('game page', () => {
                 once: function (message, handler) {
                     this.eventHandlers[message] = handler;
                 },
+                timeout: (duration) => {
+                    return mockSocket;
+                },
                 emit: function (eventName, ...args) {
                     switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
                         case globals.EVENT_IDS.FETCH_GAME_STATE:
@@ -92,6 +95,9 @@ describe('game page', () => {
                 eventHandlers: {},
                 on: function (message, handler) {
                     this.eventHandlers[message] = handler;
+                },
+                timeout: (duration) => {
+                    return mockSocket;
                 },
                 emit: function (eventName, ...args) {
                     switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
@@ -166,6 +172,9 @@ describe('game page', () => {
                 eventHandlers: {},
                 on: function (message, handler) {
                     this.eventHandlers[message] = handler;
+                },
+                timeout: (duration) => {
+                    return mockSocket;
                 },
                 once: function (message, handler) {
                     this.eventHandlers[message] = handler;

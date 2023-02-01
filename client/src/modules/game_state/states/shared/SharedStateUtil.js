@@ -113,24 +113,50 @@ export const SharedStateUtil = {
         });
     },
 
-    syncWithGame: (stateBucket, socket, cookie, window) => {
+    syncWithGame: (socket, cookie, window) => {
         const splitUrl = window.location.href.split('/game/');
         const accessCode = splitUrl[1];
         if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.FETCH_GAME_STATE, accessCode, { personId: cookie }, function (gameState) {
-                if (gameState === null) {
-                    window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-                } else {
-                    stateBucket.currentGameState = gameState;
-                    document.querySelector('.spinner-container')?.remove();
-                    document.querySelector('.spinner-background')?.remove();
-                    document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
-                    toast('You are connected.', 'success', true, true, 'short');
-                    processGameState(stateBucket.currentGameState, cookie, socket, true, true);
+            socket.timeout(5000).emit(
+                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                globals.EVENT_IDS.FETCH_GAME_STATE,
+                accessCode,
+                { personId: cookie },
+                (err, gameState) => {
+                    if (err) {
+                        SharedStateUtil.retrySync(accessCode, socket, cookie)
+                    } else {
+                        SharedStateUtil.handleGameState(gameState, cookie, socket);
+                    }
                 }
-            });
+            );
         } else {
             window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
+        }
+    },
+
+    retrySync: (accessCode, socket, cookie) => {
+        socket.emit(
+            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+            globals.EVENT_IDS.FETCH_GAME_STATE,
+            accessCode,
+            { personId: cookie },
+            (gameState) => {
+                SharedStateUtil.handleGameState(gameState, cookie, socket);
+            }
+        );
+    },
+
+    handleGameState: (gameState, cookie, socket) => {
+        if (gameState === null) {
+            window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
+        } else {
+            stateBucket.currentGameState = gameState;
+            document.querySelector('.spinner-container')?.remove();
+            document.querySelector('.spinner-background')?.remove();
+            document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
+            toast('You are connected.', 'success', true, true, 'short');
+            processGameState(stateBucket.currentGameState, cookie, socket, true, true);
         }
     },
 

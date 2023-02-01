@@ -25,7 +25,6 @@ export const gameHandler = async (socket, XHRUtility, window, gameDOM) => {
             stateBucket.timerWorker = null;
         }
         SharedStateUtil.syncWithGame(
-            stateBucket,
             socket,
             UserUtility.validateAnonUserSignature(response.content),
             window

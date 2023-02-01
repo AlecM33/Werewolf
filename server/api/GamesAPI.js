@@ -36,8 +36,7 @@ router.patch('/restart', (req, res, next) => {
 });
 
 router.post('/create', gameEndpointLimiter, function (req, res) {
-    const gameCreationPromise = gameManager.createGame(req.body, false);
-    gameCreationPromise.then((result) => {
+    gameManager.createGame(req.body, false).then((result) => {
         if (result instanceof Error) {
             res.status(500).send();
         } else {

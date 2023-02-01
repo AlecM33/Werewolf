@@ -137,9 +137,19 @@ class EventManager {
             const game = await gameManager.getActiveGame(accessCode);
             if (game) {
                 if (globals.TIMER_EVENTS().includes(eventId)) {
-                    await this.handleEventById(globals.EVENT_IDS.TIMER_EVENT, null, game, socket.id, game.accessCode, args, ackFn, true, eventId);
+                    await this.handleEventById(
+                        globals.EVENT_IDS.TIMER_EVENT,
+                        null,
+                        game,
+                        socket.id,
+                        game.accessCode,
+                        args,
+                        ackFn,
+                        true,
+                        eventId
+                    );
                 } else {
-                    await this.handleAndSyncSocketEvent(eventId, game, socket, args, ackFn, false);
+                    await this.handleAndSyncSocketEvent(eventId, game, socket, args, ackFn);
                 }
             } else {
                 ackFn(null);
@@ -159,7 +169,17 @@ class EventManager {
         }
     }
 
-    handleEventById = async (eventId, senderInstanceId, game, requestingSocketId, accessCode, socketArgs, ackFn, syncOnly, timerEventSubtype = null) => {
+    handleEventById = async (
+        eventId,
+        senderInstanceId,
+        game,
+        requestingSocketId,
+        accessCode,
+        socketArgs,
+        ackFn,
+        syncOnly,
+        timerEventSubtype = null
+    ) => {
         this.logger.trace('ARGS TO HANDLER: ' + JSON.stringify(socketArgs));
         const event = Events.find((event) => event.id === eventId);
         const additionalVars = {

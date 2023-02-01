@@ -124,7 +124,7 @@ export const SharedStateUtil = {
                 { personId: cookie },
                 (err, gameState) => {
                     if (err) {
-                        SharedStateUtil.retrySync(accessCode, socket, cookie)
+                        SharedStateUtil.retrySync(accessCode, socket, cookie);
                     } else {
                         SharedStateUtil.handleGameState(gameState, cookie, socket);
                     }

@@ -6,12 +6,13 @@ const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
+const EventManager = require('../../../../server/modules/singletons/EventManager.js');
 const Events = require('../../../../server/modules/Events.js');
 const GameStateCurator = require('../../../../server/modules/GameStateCurator.js');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('Events', () => {
-    let gameManager, namespace, socket, game, timerManager;
+    let gameManager, namespace, socket, game, timerManager, eventManager;
 
     beforeAll(() => {
         spyOn(logger, 'debug');
@@ -22,7 +23,9 @@ describe('Events', () => {
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
         gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, 'test');
         timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
+        eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
         gameManager.setGameSocketNamespace(namespace);
+        eventManager.publisher = { publish: (...args) => {} };
     });
 
     beforeEach(() => {
@@ -49,6 +52,8 @@ describe('Events', () => {
         spyOn(namespace.to(), 'emit').and.callThrough();
         spyOn(gameManager, 'isGameFull').and.callThrough();
         spyOn(GameStateCurator, 'mapPerson').and.callThrough();
+        spyOn(eventManager.publisher, 'publish').and.callThrough();
+        spyOn(eventManager, 'createMessageToPublish').and.stub();
         namespace.sockets = new Map();
         timerManager.timerThreads = {};
     });
@@ -457,6 +462,76 @@ describe('Events', () => {
                 // verify the "kill player" event is sent to everyone in the room (as opposed to everyone but the sender)
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
+            });
+        });
+    });
+
+    describe(EVENT_IDS.RESTART_GAME, () => {
+        describe('stateChange', () => {
+            it('should kill any alive timer thread if the instance is home to it', async () => {
+                const mockThread = { kill: () => {}, killed: false };
+                timerManager.timerThreads = { ABCD: mockThread };
+                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+                await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '222' });
+                expect(mockThread.kill).toHaveBeenCalled();
+                expect(Object.keys(timerManager.timerThreads).length).toEqual(0);
+            });
+            it('should not kill the timer thread if the instance sent the event', async () => {
+                const mockThread = { kill: () => {}, killed: false };
+                timerManager.timerThreads = { ABCD: mockThread };
+                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+                await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '111' });
+                expect(mockThread.kill).not.toHaveBeenCalled();
+                expect(Object.keys(timerManager.timerThreads).length).toEqual(1);
+            });
+        });
+        describe('communicate', () => {
+            it('should communicate the restart event to the room', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
+                    .communicate(game, {}, { gameManager: gameManager });
+                expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
+                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.RESTART_GAME);
+            });
+            it('should communicate the restart event to the room and acknowledge the client', async () => {
+                const vars = { ackFn: () => {}, gameManager: gameManager };
+                spyOn(vars, 'ackFn').and.callThrough();
+                await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
+                    .communicate(game, {}, vars);
+                expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
+                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.RESTART_GAME);
+                expect(vars.ackFn).toHaveBeenCalled();
+            });
+        });
+    });
+
+    describe(EVENT_IDS.TIMER_EVENT, () => {
+        describe('communicate', () => {
+            it('should publish an event to source timer data if the timer thread is not found', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
+                    .communicate(game, {}, { gameManager: gameManager, timerManager: timerManager, eventManager: eventManager });
+                expect(eventManager.publisher.publish).toHaveBeenCalled();
+            });
+            it('should send a message to the thread if it is found', async () => {
+                const mockThread = { exitCode: null, kill: () => {}, send: (...args) => {}, killed: false };
+                timerManager.timerThreads = { ABCD: mockThread };
+                spyOn(timerManager.timerThreads.ABCD, 'send').and.callThrough();
+                await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
+                    .communicate(game, {}, {
+                        gameManager: gameManager,
+                        timerManager: timerManager,
+                        eventManager: eventManager,
+                        timerEventSubtype: EVENT_IDS.GET_TIME_REMAINING,
+                        requestingSocketId: '2',
+                        logger: { logLevel: 'trace' }
+                    });
+                expect(mockThread.send).toHaveBeenCalledWith({
+                    command: EVENT_IDS.GET_TIME_REMAINING,
+                    accessCode: 'ABCD',
+                    socketId: '2',
+                    logLevel: 'trace'
+                });
             });
         });
     });

@@ -102,11 +102,11 @@
 }
 
 .template-option {
+    background-color: #4645525c;
+    border: 2px solid #46455299;
     color: #d7d7d7;
     display: flex;
     justify-content: space-between;
-    background-color: #0f0f10;
-    border: 2px solid #3b3a4a;
     padding: 5px;
     border-radius: 5px;
     font-size: 16px;
@@ -156,7 +156,7 @@
 #custom-roles-container, #deck-status-container {
     color: #d7d7d7;
     margin: 1em 0.5em;
-    background-color: #191920;
+    background-color: #16141e;
     padding: 10px;
     border-radius: 5px;
     border: 2px solid #3b3a4a;
@@ -314,6 +314,10 @@ option {
     margin: 0 auto;
 }
 
+#step-4 > div {
+    width: 100%;
+}
+
 #step-4 div:nth-child(2) {
     margin-top: 25px;
 }
@@ -370,9 +374,9 @@ select {
 #game-time {
     display: flex;
     flex-wrap: wrap;
-    background-color: #191920;
-    border: 2px solid #3b3a4a;
     border-radius: 5px;
+    background-color: #16141e;
+    border: 2px solid #3b3a4a;
 }
 
 .step {
@@ -573,7 +577,6 @@ input[type="number"] {
 }
 
 #step-forward-button, #step-back-button {
-    background-color: #66666657 !important;
     padding: 0 !important;
     width: 50px;
     height: 44px;
@@ -581,7 +584,8 @@ input[type="number"] {
     -ms-user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-    border: 2px solid #56565673;
+    background-color: #16141e;
+    border: 2px solid #3b3a4a;
 }
 
 #step-forward-button:hover, #step-back-button:hover {
@@ -605,7 +609,7 @@ input[type="number"] {
 }
 
 #step-1 div {
-    background-color: #191920;
+    background-color: #16141e;
     color: #e7e7e7;
     padding: 1em;
     max-width: 20em;

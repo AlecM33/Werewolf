@@ -20,7 +20,7 @@
 .potential-moderator {
     margin: 0.5em auto;
     border: 2px solid #46455299;
-    background: #4645523b;
+    background: #4645525c;
 }
 
 #transfer-mod-modal h2 {
@@ -224,7 +224,7 @@ h1 {
 #game-role-info-container > div {
     width: 95%;
     border: 1px solid #46455299;
-    background: #4645523b;
+    background: #4645525c;
     padding: 5px;
     border-radius: 5px;
     margin-bottom: 5px;
@@ -272,7 +272,8 @@ h1 {
     display: none;
     position: relative;
     border: 5px solid transparent;
-    background-color: #e7e7e7;
+    background-color: #16141e;
+    color: #d7d7d7;
     flex-direction: column;
     cursor: pointer;
     justify-content: space-between;
@@ -303,19 +304,19 @@ h1 {
 }
 
 .game-role-good {
-    border: 5px solid #5469c5 !important;
+    border: 3px solid #5469c5 !important;
 }
 
 .game-role-evil {
-    border: 5px solid #c55454 !important;
+    border: 3px solid #c55454 !important;
 }
 
 #game-role-back {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #171522;
-    border: 5px solid #61606a;
+    background-color: #16141e;
+    border: 3px solid #61606a;
     position: relative;
     flex-direction: column;
     cursor: pointer;
@@ -351,7 +352,7 @@ h1 {
 #game-timer {
     padding: 10px;
     margin-top: 5px;
-    background-color: #262626;
+    background-color: #0f0f10;
     color: #e7e7e7;
     border-radius: 5px;
     font-size: 35px;
@@ -434,9 +435,10 @@ h1 {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    background-color: #3b3a4a;
     border-radius: 5px;
     min-width: 15em;
+    border: 1px solid #46455299;
+    background: #4645525c;
 }
 
 #client-name {
@@ -450,7 +452,7 @@ h1 {
     color: #21ba45;
     font-family: 'signika-negative', sans-serif;
     font-size: 25px;
-    background-color: #171522;
+    background-color: black;
     border-radius: 5px;
     display: block;
     padding: 0 5px;
@@ -616,7 +618,8 @@ label[for='moderator'] {
     margin-bottom: 1em;
     padding: 0.5em;
     border-radius: 5px;
-    background-color: #3b3a4a;
+    border: 1px solid #46455299;
+    background: #4645525c;
 }
 
 canvas {
@@ -760,7 +763,8 @@ canvas {
 }
 
 #game-parameters {
-    background-color: #3b3a4a;
+    border: 1px solid #46455299;
+    background: #4645525c;
     border-radius: 5px;
     padding: 5px 20px;
 }
@@ -808,7 +812,7 @@ canvas {
     border-radius: 5px;
     min-height: 25em;
     border: 1px solid #46455299;
-    background: #4645523b;
+    background: #4645525c;
     max-width: 35em;
     min-width: 19em;
     margin-top: 1em;

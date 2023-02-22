@@ -26,7 +26,7 @@ export const HTMLFragments = {
     <div>
         <div id='lobby-people-container'>
             <label for='lobby-players'></label>
-            <div id="spectator-count"></div>
+            <div id="spectator-count" tabindex="0"></div>
             <div id='lobby-players'></div>
         </div>
         <div id='lobby-footer'>
@@ -34,8 +34,7 @@ export const HTMLFragments = {
         </div>
     </div>`,
     ENTER_NAME_STEP:
-    `<div id='step-4'>
-        <div>
+        `<div>
             <input type="text" id="moderator-name" autocomplete='given-name' placeholder="enter your name...">
         </div>
         <div>
@@ -44,8 +43,7 @@ export const HTMLFragments = {
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
             </select>
-        </div>
-    </div>`,
+        </div>`,
     START_GAME_PROMPT:
     `<div>
         <button id='start-game-button'>Start Game</button>
@@ -80,18 +78,18 @@ export const HTMLFragments = {
             <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
         </div>
     </div>
-    <div id='game-role'>
+    <div id='game-role' tabindex="0">
         <h4 id='role-name'></h4>
         <img alt='role' id='role-image'/>
         <p id='role-description'></p>
     </div>
-    <div id='game-role-back'>
+    <div id='game-role-back' tabindex="0">
         <h4>Double-click here to show your role</h4>
         <p>(Double-click here again to hide)</p>
     </div>
     <div id='game-people-container'>
         <label id='players-alive-label'></label>
-        <div id="spectator-count"></div>
+        <div id="spectator-count" tabindex="0"></div>
         <div id='game-player-list'></div>
     </div>`,
     SPECTATOR_GAME_VIEW:
@@ -121,7 +119,7 @@ export const HTMLFragments = {
     </div>
     <div id='game-people-container'>
         <label id='players-alive-label'></label>
-        <div id="spectator-count"></div>
+        <div id="spectator-count" tabindex="0"></div>
         <div id='game-player-list'></div>
     </div>`,
     TRANSFER_MOD_MODAL:
@@ -155,7 +153,7 @@ export const HTMLFragments = {
                     </div>
                 </div>
             </div>
-            <div id='play-pause'>
+            <div id='play-pause' tabindex="0">
                 <div id="play-pause-placeholder"></div>
             </div>
         </div>
@@ -166,7 +164,7 @@ export const HTMLFragments = {
     </div>
     <div id="game-players-container">
         <label id='players-alive-label'></label>
-        <div id="spectator-count"></div>
+        <div id="spectator-count" tabindex="0"></div>
         <div id='game-player-list'>
             <div class='evil-players'>
                 <label class='evil'>Team Evil</label>
@@ -206,18 +204,18 @@ export const HTMLFragments = {
                 <button id='role-info-button' class='app-button'>Roles in This Game <img src='/images/info.svg'/></button>
             </div>
         </div>
-        <div id='game-role'>
+        <div id='game-role' tabindex="0">
             <h4 id='role-name'></h4>
             <img alt='role' id='role-image'/>
             <p id='role-description'></p>
         </div>
-        <div id='game-role-back'>
+        <div id='game-role-back' tabindex="0">
             <h4>Double-click here to show your role</h4>
             <p>(Double-click here again to hide)</p>
         </div>
         <div id='game-people-container'>
             <label id='players-alive-label'></label>
-            <div id="spectator-count"></div>
+            <div id="spectator-count" tabindex="0"></div>
             <div id='game-player-list'></div>
         </div>
     </div>`,
@@ -280,7 +278,7 @@ export const HTMLFragments = {
             <h2>Roles in this game:</h2>
             <div id='game-role-info-container'></div>
             <div class='modal-button-container'>
-                <button id='close-role-info-modal-button' class='app-button cancel'>Close</button>
+                <button id='close-role-info-modal-button' class='app-button cancel' >Close</button>
             </div>
         </div>`,
     END_OF_GAME_VIEW:
@@ -339,7 +337,9 @@ export const HTMLFragments = {
             <div id="deck-list"></div>
         </div>`,
     DECK_SELECT_ROLE:
-        `<div class="role-name"></div>
+        `<div class="role-name">
+
+</div>
         <div class="role-options">
             <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
             <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>

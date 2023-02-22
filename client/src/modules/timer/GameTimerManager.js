@@ -4,11 +4,15 @@ import { Confirmation } from '../front_end_components/Confirmation.js';
 export class GameTimerManager {
     constructor (stateBucket, socket) {
         this.stateBucket = stateBucket;
-        this.playListener = () => {
-            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
+        this.playListener = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
+            }
         };
-        this.pauseListener = () => {
-            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
+        this.pauseListener = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
+            }
         };
     }
 
@@ -94,7 +98,9 @@ export class GameTimerManager {
             const currentBtn = document.querySelector('#timer-container-moderator #play-pause img');
             if (currentBtn) {
                 currentBtn.removeEventListener('click', this.pauseListener);
+                currentBtn.removeEventListener('keyup', this.pauseListener);
                 currentBtn.removeEventListener('click', this.playListener);
+                currentBtn.removeEventListener('keyup', this.playListener);
                 currentBtn.classList.add('disabled');
                 currentBtn.setAttribute('src', '/images/play-pause-placeholder.svg');
             } else {
@@ -140,12 +146,15 @@ export class GameTimerManager {
         const currentBtn = document.querySelector('#play-pause img');
         if (currentBtn) {
             currentBtn.removeEventListener('click', this.pauseListener);
+            currentBtn.removeEventListener('keyup', this.pauseListener);
             currentBtn.remove();
         }
 
         const playBtn = document.createElement('img');
         playBtn.setAttribute('src', '../images/play-button.svg');
+        playBtn.setAttribute('tabindex', '0');
         playBtn.addEventListener('click', this.playListener);
+        playBtn.addEventListener('keyup', this.playListener);
         document.querySelector('#play-pause-placeholder')?.remove();
         document.getElementById('play-pause').appendChild(playBtn);
     }
@@ -154,12 +163,15 @@ export class GameTimerManager {
         const currentBtn = document.querySelector('#play-pause img');
         if (currentBtn) {
             currentBtn.removeEventListener('click', this.playListener);
+            currentBtn.removeEventListener('keyup', this.playListener);
             currentBtn.remove();
         }
 
         const pauseBtn = document.createElement('img');
         pauseBtn.setAttribute('src', '../images/pause-button.svg');
+        pauseBtn.setAttribute('tabindex', '0');
         pauseBtn.addEventListener('click', this.pauseListener);
+        pauseBtn.addEventListener('keyup', this.pauseListener);
         document.querySelector('#play-pause-placeholder')?.remove();
         document.getElementById('play-pause').appendChild(pauseBtn);
     }

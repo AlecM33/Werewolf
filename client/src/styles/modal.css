@@ -68,11 +68,12 @@
 
 #custom-role-info-modal-description {
     border-radius: 5px;
-    background-color: black;
+    background-color: #4645525c;
     max-height: 10em;
     overflow: auto;
     padding: 5px;
     margin-bottom: 2em;
+    border: 1px solid #46455299;
 }
 
 #custom-role-info-modal-name {
@@ -86,7 +87,8 @@
 
 #custom-role-info-modal-alignment {
     border-radius: 5px;
-    background-color: black;
+    background-color: #4645525c;
+    border: 1px solid #46455299;
     font-size: 18px;
     font-weight: bold;
     padding: 5px;

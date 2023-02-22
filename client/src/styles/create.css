@@ -314,6 +314,10 @@ option {
     margin: 0 auto;
 }
 
+#step-4 > div {
+    width: 100%;
+}
+
 #step-4 div:nth-child(2) {
     margin-top: 25px;
 }

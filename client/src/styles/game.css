@@ -411,7 +411,8 @@ h1 {
     left: 50%;
     transform: translate(-50%, 0);
     font-size: 15px;
-    width: 78%;
+    width: 90%;
+    text-align: justify;
     max-height: 6em;
 }
 

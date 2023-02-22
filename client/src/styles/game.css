@@ -272,8 +272,7 @@ h1 {
     display: none;
     position: relative;
     border: 5px solid transparent;
-    background-color: #16141e;
-    color: #d7d7d7;
+    background-color: #e3e3e3;
     flex-direction: column;
     cursor: pointer;
     justify-content: space-between;
@@ -304,11 +303,11 @@ h1 {
 }
 
 .game-role-good {
-    border: 3px solid #5469c5 !important;
+    border: 4px solid #5469c5 !important;
 }
 
 .game-role-evil {
-    border: 3px solid #c55454 !important;
+    border: 4px solid #c55454 !important;
 }
 
 #game-role-back {
@@ -316,7 +315,7 @@ h1 {
     align-items: center;
     justify-content: center;
     background-color: #16141e;
-    border: 3px solid #61606a;
+    border: 4px solid #61606a;
     position: relative;
     flex-direction: column;
     cursor: pointer;
@@ -412,8 +411,12 @@ h1 {
     transform: translate(-50%, 0);
     font-size: 15px;
     width: 90%;
-    text-align: justify;
+    text-align: left;
     max-height: 6em;
+}
+
+#role-name.good {
+    color: #4466fb !important;
 }
 
 #game-link img {

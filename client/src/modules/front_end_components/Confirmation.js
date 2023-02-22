@@ -6,6 +6,7 @@ export const Confirmation = (message, onYes = null, isDOMNode = false) => {
 
     let confirmation = document.createElement('div');
     confirmation.setAttribute('id', 'confirmation');
+    confirmation.setAttribute('tabindex', '-1');
     confirmation.innerHTML = onYes
         ? `<div id="confirmation-message"></div>
          <div class="confirmation-buttons">
@@ -73,4 +74,5 @@ export const Confirmation = (message, onYes = null, isDOMNode = false) => {
 
     document.body.appendChild(background);
     document.body.appendChild(confirmation);
+    confirmation.querySelector('#confirmation-yes-button').focus();
 };

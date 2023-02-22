@@ -63,12 +63,16 @@ export class InProgress {
         }
 
         const spectatorCount = this.container.querySelector('#spectator-count');
+        const spectatorHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
+                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR)), null, true);
+            }
+        };
 
         if (spectatorCount) {
-            spectatorCount?.addEventListener('click', () => {
-                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR)), null, true);
-            });
-
+            spectatorCount?.addEventListener('click', spectatorHandler);
+            spectatorCount?.addEventListener('keyup', spectatorHandler);
             SharedStateUtil.setNumberOfSpectators(
                 this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
                 spectatorCount
@@ -438,15 +442,25 @@ function renderPlayerRole (gameState) {
 
     document.querySelector('#role-description').innerText = gameState.client.gameRoleDescription;
 
-    document.getElementById('game-role-back').addEventListener('dblclick', () => {
-        document.getElementById('game-role').style.display = 'flex';
-        document.getElementById('game-role-back').style.display = 'none';
-    });
+    const roleBackHandler = (e) => {
+        if (e.type === 'dblclick' || e.code === 'Enter') {
+            document.getElementById('game-role').style.display = 'flex';
+            document.getElementById('game-role-back').style.display = 'none';
+        }
+    };
 
-    document.getElementById('game-role').addEventListener('dblclick', () => {
-        document.getElementById('game-role-back').style.display = 'flex';
-        document.getElementById('game-role').style.display = 'none';
-    });
+    const roleFrontHandler = (e) => {
+        if (e.type === 'dblclick' || e.code === 'Enter') {
+            document.getElementById('game-role-back').style.display = 'flex';
+            document.getElementById('game-role').style.display = 'none';
+        }
+    };
+
+    document.getElementById('game-role-back').addEventListener('dblclick', roleBackHandler);
+    document.getElementById('game-role-back').addEventListener('keyup', roleBackHandler);
+
+    document.getElementById('game-role').addEventListener('dblclick', roleFrontHandler);
+    document.getElementById('game-role').addEventListener('keyup', roleFrontHandler);
 }
 
 function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {

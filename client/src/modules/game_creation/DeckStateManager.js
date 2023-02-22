@@ -92,6 +92,7 @@ export class DeckStateManager {
             for (const templateName of Object.keys(this.templates)) {
                 const templateOption = document.createElement('div');
                 templateOption.classList.add('template-option');
+                templateOption.setAttribute('tabindex', '0');
                 templateOption.innerHTML = HTMLFragments.DECK_TEMPLATE;
                 templateOption.querySelector('.template-option-name').innerText = templateName;
                 for (let i = 0; i < Object.keys(this.templates[templateName]).length; i ++) {
@@ -104,24 +105,28 @@ export class DeckStateManager {
                     roleEl.classList.add(roleBox.defaultRoles.find((entry) => entry.role === role).team);
                     templateOption.querySelector('.template-option-roles').appendChild(roleEl);
                 }
-                templateOption.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    for (const card of this.deck) {
-                        card.quantity = 0;
-                    }
-                    for (const role of Object.keys(this.templates[templateName])) {
-                        const roleObj = roleBox.getDefaultRole(role);
-                        if (!this.hasRole(roleObj.role)) {
-                            this.addToDeck(roleObj);
+                const templateHandler = (e) => {
+                    if (e.type === 'click' || e.code === 'Enter') {
+                        e.preventDefault();
+                        for (const card of this.deck) {
+                            card.quantity = 0;
                         }
-                        for (let i = roleObj.quantity; i < this.templates[templateName][role]; i ++) {
-                            this.addCopyOfCard(roleObj.role);
+                        for (const role of Object.keys(this.templates[templateName])) {
+                            const roleObj = roleBox.getDefaultRole(role);
+                            if (!this.hasRole(roleObj.role)) {
+                                this.addToDeck(roleObj);
+                            }
+                            for (let i = roleObj.quantity; i < this.templates[templateName][role]; i ++) {
+                                this.addCopyOfCard(roleObj.role);
+                            }
                         }
+                        this.updateDeckStatus();
+                        ModalManager.dispelModal('deck-template-modal', 'modal-background');
+                        toast('Template loaded', 'success', true, true, 'short');
                     }
-                    this.updateDeckStatus();
-                    ModalManager.dispelModal('deck-template-modal', 'modal-background');
-                    toast('Template loaded', 'success', true, true, 'short');
-                });
+                };
+                templateOption.addEventListener('click', templateHandler);
+                templateOption.addEventListener('keyup', templateHandler);
                 document.getElementById('deck-template-container').appendChild(templateOption);
             }
         }

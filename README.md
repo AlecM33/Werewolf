@@ -90,7 +90,7 @@ This command uses <a href="https://www.npmjs.com/package/nodemon">nodemon</a>
 to listen for changes to **server-side code** (Node.js modules) and automatically restart the server. If you do not want 
 this, run instead `npm run start:dev:no-hot-reload` or `npm run start:dev:windows:no-hot-reload`. 
 
-If you are making changes to client-side javascript, in a separate terminal, execute `npm build:dev`. This uses <a href="https://webpack.js.org/">
+If you are making changes to client-side javascript, in a separate terminal, execute `npm run build:dev`. This uses <a href="https://webpack.js.org/">
 Webpack</a> to bundle javascript from the `client/src` directory and place it in the `client/dist` directory, which is ignored by Git.
 This command uses the `--watch` flag, which means the process will continue
 to run in this terminal, watching for changes within the `client/src` directory and re-bundling automatically. You 

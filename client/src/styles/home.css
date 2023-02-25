@@ -46,6 +46,7 @@ button#home-create-button {
     font-size: 22px;
     border-left: 1px solid #bababa;
     padding: 15px;
+    margin: 0 15px;
 }
 
 #about-container img {

@@ -16,6 +16,8 @@ button#home-create-button {
     width: 40vw;
     min-width: 175px;
     margin: 0;
+    border: 1px solid #464552;
+    border-radius: 21px;
 }
 
 #about-container {

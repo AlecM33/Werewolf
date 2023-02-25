@@ -142,6 +142,10 @@ form > div {
     filter: drop-shadow(2px 2px 4px black);
 }
 
+#room-code {
+    background-color: #16141e;
+}
+
 label[for="room-code"], label[for="player-name"] {
     margin-right: 0.5em;
 }

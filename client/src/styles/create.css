@@ -466,7 +466,7 @@ input[type="number"] {
     background-color: black;
     align-items: center;
     padding: 5px;
-    margin: 0.25em 0;
+    margin: 0.25em 0.25em 0 0;
     border-radius: 5px;
     border: 1px solid transparent;
     font-size: 16px;
@@ -476,6 +476,10 @@ input[type="number"] {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
+}
+
+.role-quantity {
+    color: #00a718;
 }
 
 .default-role:hover, .custom-role:hover, .added-role:hover {

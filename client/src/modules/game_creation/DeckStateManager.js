@@ -139,7 +139,6 @@ export class DeckStateManager {
         document.getElementById('deck-list').appendChild(placeholder);
     };
 
-    // TODO: refactor
     updateDeckStatus = () => {
         document.getElementById('deck-count').innerText = this.getDeckSize() + ' Players';
         if (this.deck.length > 0) {
@@ -156,58 +155,9 @@ export class DeckStateManager {
                 const existingCardEl = document.querySelector('#deck-list [data-role-id="' + sortedDeck[i].id + '"]');
                 if (sortedDeck[i].quantity > 0) {
                     if (existingCardEl) {
-                        existingCardEl.querySelector('.role-name').innerText = sortedDeck[i].quantity + 'x ' + sortedDeck[i].role;
+                        populateRoleElementInfo(existingCardEl, sortedDeck, i);
                     } else {
-                        const roleEl = document.createElement('div');
-                        roleEl.dataset.roleId = sortedDeck[i].id;
-                        roleEl.classList.add('added-role');
-                        roleEl.innerHTML = HTMLFragments.DECK_SELECT_ROLE_ADDED_TO_DECK;
-                        // roleEl.classList.add('deck-role');
-                        if (sortedDeck[i].team === globals.ALIGNMENT.GOOD) {
-                            roleEl.classList.add(globals.ALIGNMENT.GOOD);
-                        } else {
-                            roleEl.classList.add(globals.ALIGNMENT.EVIL);
-                        }
-                        roleEl.querySelector('.role-name').innerText = sortedDeck[i].quantity + 'x ' + sortedDeck[i].role;
-                        document.getElementById('deck-list').appendChild(roleEl);
-                        const minusOneHandler = (e) => {
-                            if (e.type === 'click' || e.code === 'Enter') {
-                                e.preventDefault();
-                                toast(
-                                    '<span class=\'toast-minus-one\'>-1</span>' +
-                                    sortedDeck[i].role + ' (<span class="toast-minus-role-quantity">' + (sortedDeck[i].quantity - 1).toString() + '</span>)',
-                                    'neutral',
-                                    true,
-                                    true,
-                                    'short',
-                                    true
-                                );
-                                this.removeCopyOfCard(sortedDeck[i].role);
-                                this.updateDeckStatus();
-                            }
-                        };
-                        roleEl.querySelector('.role-remove').addEventListener('click', minusOneHandler);
-                        roleEl.querySelector('.role-remove').addEventListener('keyup', minusOneHandler);
-
-                        const infoHandler = (e) => {
-                            if (e.type === 'click' || e.code === 'Enter') {
-                                const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
-                                const nameEl = document.getElementById('custom-role-info-modal-name');
-                                alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
-                                alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
-                                nameEl.classList.remove(globals.ALIGNMENT.GOOD);
-                                nameEl.classList.remove(globals.ALIGNMENT.EVIL);
-                                e.preventDefault();
-                                nameEl.innerText = sortedDeck[i].role;
-                                nameEl.classList.add(sortedDeck[i].team);
-                                alignmentEl.classList.add(sortedDeck[i].team);
-                                document.getElementById('custom-role-info-modal-description').innerText = sortedDeck[i].description;
-                                alignmentEl.innerText = sortedDeck[i].team;
-                                ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
-                            }
-                        };
-                        roleEl.querySelector('.role-info').addEventListener('click', infoHandler);
-                        roleEl.querySelector('.role-info').addEventListener('keyup', infoHandler);
+                        this.addNewRoleElementToDeckList(sortedDeck, i);
                     }
                 } else {
                     sortedDeck[i].markedForRemoval = true;
@@ -231,4 +181,64 @@ export class DeckStateManager {
             this.displayDeckPlaceHolder();
         }
     };
+
+    addNewRoleElementToDeckList = (sortedDeck, i) => {
+        const roleEl = document.createElement('div');
+        roleEl.dataset.roleId = sortedDeck[i].id;
+        roleEl.classList.add('added-role');
+        roleEl.innerHTML = HTMLFragments.DECK_SELECT_ROLE_ADDED_TO_DECK;
+        if (sortedDeck[i].team === globals.ALIGNMENT.GOOD) {
+            roleEl.classList.add(globals.ALIGNMENT.GOOD);
+        } else {
+            roleEl.classList.add(globals.ALIGNMENT.EVIL);
+        }
+        populateRoleElementInfo(roleEl, sortedDeck, i);
+        document.getElementById('deck-list').appendChild(roleEl);
+        const minusOneHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                e.preventDefault();
+                toast(
+                    '<span class=\'toast-minus-one\'>-1</span>' +
+                    sortedDeck[i].role + ' (<span class="toast-minus-role-quantity">' + (sortedDeck[i].quantity - 1).toString() + '</span>)',
+                    'neutral',
+                    true,
+                    true,
+                    'short',
+                    true
+                );
+                this.removeCopyOfCard(sortedDeck[i].role);
+                this.updateDeckStatus();
+            }
+        };
+        roleEl.querySelector('.role-remove').addEventListener('click', minusOneHandler);
+        roleEl.querySelector('.role-remove').addEventListener('keyup', minusOneHandler);
+
+        const infoHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                const nameEl = document.getElementById('custom-role-info-modal-name');
+                alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
+                alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
+                nameEl.classList.remove(globals.ALIGNMENT.GOOD);
+                nameEl.classList.remove(globals.ALIGNMENT.EVIL);
+                e.preventDefault();
+                nameEl.innerText = sortedDeck[i].role;
+                nameEl.classList.add(sortedDeck[i].team);
+                alignmentEl.classList.add(sortedDeck[i].team);
+                document.getElementById('custom-role-info-modal-description').innerText = sortedDeck[i].description;
+                alignmentEl.innerText = sortedDeck[i].team;
+                ModalManager.displayModal('custom-role-info-modal', 'modal-background', 'close-custom-role-info-modal-button');
+            }
+        };
+        roleEl.querySelector('.role-info').addEventListener('click', infoHandler);
+        roleEl.querySelector('.role-info').addEventListener('keyup', infoHandler);
+    };
+}
+
+function populateRoleElementInfo (roleEl, sortedDeck, i) {
+    roleEl.querySelector('.role-name').innerHTML =
+        `<span class="role-quantity"></span>
+         <span class="name"></span>`;
+    roleEl.querySelector('.role-name .role-quantity').innerText = sortedDeck[i].quantity + 'x';
+    roleEl.querySelector('.role-name .name').innerText = sortedDeck[i].role;
 }

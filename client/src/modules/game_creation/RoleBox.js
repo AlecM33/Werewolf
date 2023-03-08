@@ -319,7 +319,7 @@ export class RoleBox {
 
 function createRandomId () {
     let id = '';
-    for (let i = 0; i < 25; i ++) {
+    for (let i = 0; i < 50; i ++) {
         id += globals.CHAR_POOL[Math.floor(Math.random() * globals.CHAR_POOL.length)];
     }
     return id;

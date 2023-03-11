@@ -20,12 +20,8 @@ This app is still being actively developed. Find the latest production deploymen
 
 ## Overview
 
-A free, anonymous application to run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a>
-smoothly when you don't have a deck, or when you and your friends are together virtually. Basically, a host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
+An app to create and run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a> with your friends. No sign-up, installation, or payment required. A host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
 Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities. Hosts can use any roles they want, in any configuration, and can create their own roles if the provided ones don't meet their needs.
-
-
-A good overview of usage can be found on the app's "How to Use" page: https://play-werewolf.app/how-to-use
 
 The app prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 
@@ -34,18 +30,13 @@ Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/
 
 ## Features
 
-You can:
-
-- build your desired game with default or custom roles.
-- join a game via a shareable link, a 4-character code entered on the homepage, or a QR code.
-- automatically deal cards to everyone's device.
-- create a game as a "dedicated moderator", who is not dealt in, or as a "temporary moderator", who is dealt in and
-  then has their powers automatically delegated. 
-- transfer your mod powers to someone else that is out of the game if you can no longer mod.
-- run a shared timer that can be paused by the moderator.
-- reference helpful info during the game including what roles are in the game and who has been killed or revealed.
-- choose to reveal a player without killing them, or kill them without revealing them. 
-- restart the same game setup any number of times.
+- hosts can build their own game for any player count using default roles, or custom roles that they create. They can include a timer, shared by everyone, that the moderator can play or pause.
+- party members can join games easily via a shareable link, a QR code, or a 4-character code entered on the homepage.
+- when hosts start the game, cards are dealt randomly and automatically.
+- players can reference helpful info, such as descriptions of all the roles in the game, the time remaining (if the host has set a timer), and who has been killed or had their role revealed.
+- Moderators have the option to be dealt into the game, and will have their moderator powers automatically delegated to whoever they first remove from the game. Moderators can also transfer their powers to players that have been killed or to people that are spectating.
+- A specific game can be restarted at any time, which will reset the timer and re-deal roles to all players.
+- The app is lightweight and loads fast. 
 
 ## Tech Stack
 

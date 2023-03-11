@@ -140,7 +140,7 @@ const ServerBootstrapper = {
         app.use('', router);
 
         app.use('/dist', (req, res, next) => {
-            if (req.url !== '/521-bundle.js') {
+            if (req.url !== '/521-bundle.js') { // this is the bundled web worker, which was introducing compatibility problems with webpack compression.
                 res.set('Content-Encoding', 'gzip');
             }
             next();

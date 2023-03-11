@@ -139,6 +139,13 @@ const ServerBootstrapper = {
         const router = require('../routes/router');
         app.use('', router);
 
+        app.use('/dist', (req, res, next) => {
+            if (req.url !== '/521-bundle.js') {
+                res.set('Content-Encoding', 'gzip');
+            }
+            next();
+        });
+
         app.use('/dist', express.static(path.join(__dirname, '../../client/dist')));
 
         // set up routing for static content that isn't being bundled.

@@ -152,6 +152,7 @@ export class GameTimerManager {
 
         const playBtn = document.createElement('img');
         playBtn.setAttribute('src', '../images/play-button.svg');
+        playBtn.setAttribute('alt', 'play button');
         playBtn.setAttribute('tabindex', '0');
         playBtn.addEventListener('click', this.playListener);
         playBtn.addEventListener('keyup', this.playListener);

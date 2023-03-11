@@ -5,7 +5,7 @@
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
 [![CodeQL](https://github.com/AlecM33/Werewolf/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/codeql-analysis.yml)
 
-This app is still being actively developed. Find the latest production deployment at: https://play-werewolf.app/
+Find the latest production deployment at: https://play-werewolf.app/
 
 - [Overview](#overview)
 - [Features](#features)

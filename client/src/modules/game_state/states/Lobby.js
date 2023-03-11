@@ -59,9 +59,15 @@ export class Lobby {
         const playerCount = this.container.querySelector('#game-player-count');
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
 
-        this.container.querySelector('#spectator-count').addEventListener('click', () => {
-            Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people), null, true);
-        });
+        const spectatorHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
+                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR)), null, true);
+            }
+        };
+
+        this.container.querySelector('#spectator-count').addEventListener('click', spectatorHandler);
+        this.container.querySelector('#spectator-count').addEventListener('keyup', spectatorHandler);
 
         SharedStateUtil.setNumberOfSpectators(
             this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,

@@ -1,4 +1,5 @@
 const path = require('path');
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -11,8 +12,11 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: "[name]-bundle.js"
+        filename: "[name]-bundle.js",
     },
+    plugins: [new CompressionPlugin({
+        exclude: [/.map$/, /521-bundle.js$/]
+    })],
     mode: "development",
     node: false,
     devtool: 'source-map',

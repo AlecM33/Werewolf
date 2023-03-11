@@ -71,12 +71,12 @@ export class InProgress {
         };
 
         if (spectatorCount) {
-            spectatorCount?.addEventListener('click', spectatorHandler);
-            spectatorCount?.addEventListener('keyup', spectatorHandler);
             SharedStateUtil.setNumberOfSpectators(
                 this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
                 spectatorCount
             );
+            spectatorCount?.addEventListener('click', spectatorHandler);
+            spectatorCount?.addEventListener('keyup', spectatorHandler);
         }
     }
 

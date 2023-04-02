@@ -240,7 +240,14 @@ describe('game page', () => {
                 mockGames.moderatorGame.accessCode,
                 { personId: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW' }
             );
-            mockSocket.eventHandlers.killPlayer('pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW');
+            mockSocket.eventHandlers.killPlayer({
+                id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW',
+                userType: globals.USER_TYPES.KILLED_PLAYER,
+                out: true,
+                killed: true,
+                revealed: false,
+                alignment: 'good'
+            });
             expect(document.querySelector('div[data-pointer="pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW"].game-player.killed')
             ).not.toBeNull();
         });

@@ -15,7 +15,7 @@ module.exports = {
         filename: "[name]-bundle.js",
     },
     plugins: [new CompressionPlugin({
-        exclude: [/.map$/, /521-bundle.js$/]
+        exclude: [/.map$/, /Timer_js-bundle.js$/]
     })],
     mode: "development",
     node: false,

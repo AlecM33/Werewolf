@@ -263,7 +263,7 @@ describe('Events', () => {
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(
                     EVENT_IDS.KILL_PLAYER,
-                    'b'
+                    game.people.find(p => p.id === 'b')
                 );
             });
         });
@@ -433,7 +433,7 @@ describe('Events', () => {
                 expect(namespace.to().emit).toHaveBeenCalledWith(EVENT_IDS.SYNC_GAME_STATE);
                 // verify the "kill player" event is sent to everyone but the sender
                 expect(mockSocket.to).toHaveBeenCalledWith(game.accessCode);
-                expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
+                expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, game.people.find(p => p.id === 'a'));
             });
             it('should not communicate to the current or previous mod if their sockets are not found', async () => {
                 game.currentModeratorId = 'a';
@@ -461,7 +461,7 @@ describe('Events', () => {
                 expect(namespace.to().emit).not.toHaveBeenCalled();
                 // verify the "kill player" event is sent to everyone in the room (as opposed to everyone but the sender)
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
-                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, 'a');
+                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, game.people.find(p => p.id === 'a'));
             });
         });
     });

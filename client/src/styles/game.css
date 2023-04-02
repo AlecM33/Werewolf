@@ -1,4 +1,4 @@
-.lobby-player, #moderator, .spectator, .potential-moderator  {
+.lobby-player, #moderator, .spectator, .potential-moderator, #current-moderator  {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -14,7 +14,16 @@
 }
 
 .moderator {
-    border: 2px solid #c58f13;
+    border: 2px solid #c58f13 !important;
+}
+
+#current-moderator {
+    border-radius: 5px;
+    color: #d7d7d7;
+    background-color: #16141e;
+    width: fit-content;
+    padding: 0 20px;
+    margin-bottom: 0.5em;
 }
 
 .potential-moderator {
@@ -51,7 +60,7 @@
     border: 2px solid #21ba45;
 }
 
-.lobby-player div:nth-child(2), .spectator div:nth-child(2), .potential-moderator div:nth-child(2) {
+.lobby-player div:nth-child(2), .spectator div:nth-child(2), .potential-moderator div:nth-child(2), #current-moderator div:nth-child(2) {
     color: #21ba45;
 }
 
@@ -648,7 +657,7 @@ canvas {
     justify-content: flex-end;
 }
 
-.game-player-name, .lobby-player-name, .spectator-name, .potential-mod-name {
+.game-player-name, .lobby-player-name, .spectator-name, .potential-mod-name, #current-moderator-name {
     position: relative;
     min-width: 6em;
     max-width: 10em;

@@ -88,6 +88,9 @@ export class InProgress {
             }
         }
         renderPlayerRole(this.stateBucket.currentGameState);
+        displayCurrentModerator(this.stateBucket.currentGameState.people
+            .find((person) => person.userType === globals.USER_TYPES.MODERATOR
+                || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
     }
 
@@ -162,37 +165,37 @@ export class InProgress {
     }
 
     renderSpectatorView () {
+        displayCurrentModerator(this.stateBucket.currentGameState.people
+            .find((person) => person.userType === globals.USER_TYPES.MODERATOR
+                || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }
 
     setSocketHandlers () {
-        this.socket.on(globals.EVENT_IDS.KILL_PLAYER, (id) => {
-            const killedPerson = this.stateBucket.currentGameState.people.find((person) => person.id === id);
-            if (killedPerson) {
-                killedPerson.out = true;
-                killedPerson.killed = true;
-                killedPerson.userType = killedPerson.userType === globals.USER_TYPES.BOT
-                    ? globals.USER_TYPES.KILLED_BOT
-                    : globals.USER_TYPES.KILLED_PLAYER;
-                if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
-                    toast(killedPerson.name + ' killed.', 'success', true, true, 'medium');
-                    this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
+        this.socket.on(globals.EVENT_IDS.KILL_PLAYER, (killedPlayer) => {
+            this.stateBucket.currentGameState.people = this.stateBucket.currentGameState.people
+                .map(person => person.id === killedPlayer.id ? killedPlayer : person);
+            if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+                toast(killedPlayer.name + ' killed.', 'success', true, true, 'medium');
+                this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
+            } else {
+                if (killedPlayer.id === this.stateBucket.currentGameState.client.id) {
+                    const clientUserType = document.getElementById('client-user-type');
+                    if (clientUserType) {
+                        clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
+                    }
+                    this.updatePlayerCardToKilledState();
+                    toast('You have been killed!', 'warning', true, true, 'medium');
                 } else {
-                    if (killedPerson.id === this.stateBucket.currentGameState.client.id) {
-                        const clientUserType = document.getElementById('client-user-type');
-                        if (clientUserType) {
-                            clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
-                        }
-                        this.updatePlayerCardToKilledState();
-                        toast('You have been killed!', 'warning', true, true, 'medium');
-                    } else {
-                        toast(killedPerson.name + ' was killed!', 'warning', true, true, 'medium');
+                    toast(killedPlayer.name + ' was killed!', 'warning', true, true, 'medium');
+                    if (killedPlayer.userType === globals.USER_TYPES.MODERATOR) {
+                        displayCurrentModerator(killedPlayer);
                     }
-                    if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                        this.removePlayerListEventListeners(false);
-                    } else {
-                        this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
-                    }
+                }
+                if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    this.removePlayerListEventListeners(false);
+                } else {
+                    this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
                 }
             }
         });
@@ -476,6 +479,11 @@ function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {
         }
         el.remove();
     });
+}
+
+function displayCurrentModerator (moderator) {
+    document.getElementById('current-moderator-name').innerText = moderator.name;
+    document.getElementById('current-moderator-type').innerText = moderator.userType + globals.USER_TYPE_ICONS[moderator.userType];
 }
 
 function createEndGamePromptComponent (socket, stateBucket) {

@@ -96,7 +96,7 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person) {
-                vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person.id);
+                vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person);
             }
         }
     },
@@ -189,9 +189,9 @@ const Events = [
             const moderatorSocket = vars.gameManager.namespace.sockets.get(moderator?.socketId);
             if (moderator && moderatorSocket) {
                 vars.gameManager.namespace.to(moderator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                moderatorSocket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, game.currentModeratorId);
+                moderatorSocket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, moderator);
             } else {
-                vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, game.currentModeratorId);
+                vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, moderator);
             }
             const previousModerator = vars.gameManager.findPersonByField(game, 'id', game.previousModeratorId);
             if (previousModerator && previousModerator.id !== moderator.id && vars.gameManager.namespace.sockets.get(previousModerator.socketId)) {

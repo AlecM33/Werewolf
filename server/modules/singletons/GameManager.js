@@ -393,6 +393,7 @@ async function addSpectator (game, name, logger, namespace, eventManager, instan
         name,
         globals.USER_TYPES.SPECTATOR
     );
+    spectator.assigned = true;
     logger.trace('new spectator: ' + spectator.name);
     game.people.push(spectator);
     await refreshGame(game);

@@ -88,6 +88,10 @@ export const HTMLFragments = {
         <p>(Double-click here again to hide)</p>
     </div>
     <div id='game-people-container'>
+        <div id="current-moderator" class="moderator">
+            <div id="current-moderator-name"></div>
+            <div id="current-moderator-type"></div>
+        </div>
         <label id='players-alive-label'></label>
         <div id="spectator-count" tabindex="0"></div>
         <div id='game-player-list'></div>
@@ -118,6 +122,10 @@ export const HTMLFragments = {
         </div>
     </div>
     <div id='game-people-container'>
+        <div id="current-moderator" class="moderator">
+            <div id="current-moderator-name"></div>
+            <div id="current-moderator-type"></div>
+        </div>
         <label id='players-alive-label'></label>
         <div id="spectator-count" tabindex="0"></div>
         <div id='game-player-list'></div>
@@ -294,6 +302,10 @@ export const HTMLFragments = {
             </div>
         </div>
         <div id='game-people-container'>
+            <div id="current-moderator" class="moderator">
+                <div id="current-moderator-name"></div>
+                <div id="current-moderator-type"></div>
+            </div>
             <label id='players-alive-label'></label>
             <div id='game-player-list'></div>
         </div>`,

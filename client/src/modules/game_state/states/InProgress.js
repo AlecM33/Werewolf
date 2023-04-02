@@ -175,12 +175,10 @@ export class InProgress {
         this.socket.on(globals.EVENT_IDS.KILL_PLAYER, (killedPlayer) => {
             this.stateBucket.currentGameState.people = this.stateBucket.currentGameState.people
                 .map(person => person.id === killedPlayer.id ? killedPlayer : person);
-            console.log(this.stateBucket.currentGameState.people);
             if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
                 toast(killedPlayer.name + ' killed.', 'success', true, true, 'medium');
                 this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
             } else {
-                console.log(killedPlayer);
                 if (killedPlayer.id === this.stateBucket.currentGameState.client.id) {
                     const clientUserType = document.getElementById('client-user-type');
                     if (clientUserType) {
@@ -306,7 +304,6 @@ export class InProgress {
         socket = null
     ) {
         for (const player of people) {
-            console.log(player);
             const playerEl = document.createElement('div');
             playerEl.classList.add('game-player');
 

@@ -183,6 +183,11 @@ export const SharedStateUtil = {
         el.innerText = '+ ' + (number === 1
             ? number + ' Spectator'
             : number + ' Spectators');
+    },
+
+    displayCurrentModerator: (moderator) => {
+        document.getElementById('current-moderator-name').innerText = moderator.name;
+        document.getElementById('current-moderator-type').innerText = moderator.userType + globals.USER_TYPE_ICONS[moderator.userType];
     }
 };
 

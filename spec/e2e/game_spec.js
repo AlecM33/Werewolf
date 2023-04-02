@@ -283,6 +283,14 @@ describe('game page', () => {
                     revealed: true
                 },
                 {
+                    name: 'Matt',
+                    id: 'IVB3SK3XPGNSP34W2GVD5G3SP',
+                    userType: 'moderator',
+                    alignment: null,
+                    out: true,
+                    revealed: true
+                },
+                {
                     name: 'Lys',
                     id: 'XJNHYX85HCKYDQLKYN584CRKK',
                     userType: 'player',

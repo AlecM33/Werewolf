@@ -88,7 +88,7 @@ export class InProgress {
             }
         }
         renderPlayerRole(this.stateBucket.currentGameState);
-        displayCurrentModerator(this.stateBucket.currentGameState.people
+        SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
             .find((person) => person.userType === globals.USER_TYPES.MODERATOR
                 || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
@@ -165,7 +165,7 @@ export class InProgress {
     }
 
     renderSpectatorView () {
-        displayCurrentModerator(this.stateBucket.currentGameState.people
+        SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
             .find((person) => person.userType === globals.USER_TYPES.MODERATOR
                 || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
@@ -189,7 +189,7 @@ export class InProgress {
                 } else {
                     toast(killedPlayer.name + ' was killed!', 'warning', true, true, 'medium');
                     if (killedPlayer.userType === globals.USER_TYPES.MODERATOR) {
-                        displayCurrentModerator(killedPlayer);
+                        SharedStateUtil.displayCurrentModerator(killedPlayer);
                     }
                 }
                 if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
@@ -479,11 +479,6 @@ function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {
         }
         el.remove();
     });
-}
-
-function displayCurrentModerator (moderator) {
-    document.getElementById('current-moderator-name').innerText = moderator.name;
-    document.getElementById('current-moderator-type').innerText = moderator.userType + globals.USER_TYPE_ICONS[moderator.userType];
 }
 
 function createEndGamePromptComponent (socket, stateBucket) {

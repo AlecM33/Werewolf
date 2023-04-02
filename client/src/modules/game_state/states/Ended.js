@@ -17,6 +17,9 @@ export class Ended {
         ) {
             document.getElementById('end-of-game-buttons').prepend(SharedStateUtil.createRestartButton(this.stateBucket));
         }
+        SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
+            .find((person) => person.userType === globals.USER_TYPES.MODERATOR
+                || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithRoleInformation();
     }
 

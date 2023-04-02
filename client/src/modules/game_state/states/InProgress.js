@@ -481,9 +481,9 @@ function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {
     });
 }
 
-function displayCurrentModerator(moderator) {
-    document.getElementById("current-moderator-name").innerText = moderator.name;
-    document.getElementById("current-moderator-type").innerText = moderator.userType + globals.USER_TYPE_ICONS[moderator.userType];
+function displayCurrentModerator (moderator) {
+    document.getElementById('current-moderator-name').innerText = moderator.name;
+    document.getElementById('current-moderator-type').innerText = moderator.userType + globals.USER_TYPE_ICONS[moderator.userType];
 }
 
 function createEndGamePromptComponent (socket, stateBucket) {

@@ -66,26 +66,29 @@ class ServerTimer {
     }
 
     stopTimer () {
-        this.logger.debug('STOPPING TIMER');
         if (this.ticking) {
+            this.logger.debug('STOPPING TIMER');
             clearTimeout(this.ticking);
+            this.ticking = null;
         }
     }
 
     resumeTimer () {
-        this.logger.debug('RESUMING TIMER FOR ' + this.currentTimeInMillis + 'ms');
-        this.start = Date.now();
-        this.totalTime = this.currentTimeInMillis;
-        const expected = Date.now() + this.tickInterval;
-        const instance = this;
-        this.ticking = setTimeout(function () {
-            stepFn(
-                instance,
-                expected
-            );
-        }, this.tickInterval);
+        if (!this.ticking) {
+            this.logger.debug('RESUMING TIMER FOR ' + this.currentTimeInMillis + 'ms');
+            this.start = Date.now();
+            this.totalTime = this.currentTimeInMillis;
+            const expected = Date.now() + this.tickInterval;
+            const instance = this;
+            this.ticking = setTimeout(function () {
+                stepFn(
+                    instance,
+                    expected
+                );
+            }, this.tickInterval);
 
-        return this.timesUpPromise;
+            return this.timesUpPromise;
+        }
     }
 }
 

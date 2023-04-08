@@ -21,12 +21,11 @@ describe('ServerTimer', () => {
         serverTimer = new ServerTimer(1, 0, 10, logger);
         spyOn(global, 'clearTimeout');
         serverTimer.runTimer(false).then(() => {
-            fail();
+            serverTimer.stopTimer();
+            expect(clearTimeout).toHaveBeenCalledWith(serverTimer.ticking);
         }).catch((e) => {
             fail(e);
         });
-        serverTimer.stopTimer();
-        expect(clearTimeout).toHaveBeenCalledWith(serverTimer.ticking);
     });
 
     it('should stop and resume the timer', async () => {

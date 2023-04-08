@@ -59,7 +59,7 @@ class EventManager {
             try {
                 messageComponents = message.split(';', 3);
                 if (messageComponents[messageComponents.length - 1] === this.instanceId) {
-                    this.logger.trace('Disregarding self-authored message');
+                    this.logger.debug('Disregarding self-authored message');
                     return;
                 }
                 args = JSON.parse(

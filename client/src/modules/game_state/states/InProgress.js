@@ -188,7 +188,8 @@ export class InProgress {
                     toast('You have been killed!', 'warning', true, true, 'medium');
                 } else {
                     toast(killedPlayer.name + ' was killed!', 'warning', true, true, 'medium');
-                    if (killedPlayer.userType === globals.USER_TYPES.MODERATOR) {
+                    if (killedPlayer.userType === globals.USER_TYPES.MODERATOR
+                        && this.stateBucket.currentGameState.client.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
                         SharedStateUtil.displayCurrentModerator(killedPlayer);
                     }
                 }

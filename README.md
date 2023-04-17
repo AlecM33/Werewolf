@@ -46,7 +46,7 @@ via <a href='https://cloud.google.com/run'>Google Cloud Run</a>.
 
 No data is stored persistently. The app is almost entirely stateless, with instances kept in sync via
 <a href="https://redis.io/">Redis</a>, specifically with the <a href="https://redis.io/docs/manual/pubsub/">pub/sub model</a>.
-The exceptions are a browser cookie and the <a href="https://nodejs.org/api/child_process.html">Node.js child processes</a> that are spawned to 
+The exceptions are a browser cookie used to identify a particular player, and the <a href="https://nodejs.org/api/child_process.html">Node.js child processes</a> that are spawned to 
 keep track of games with a timer, which are stored in an instance's memory and communicated to other instances if needed. In the end, it should not matter
 which instance a given client connects to.
 ## Contributing and Developers' Guide

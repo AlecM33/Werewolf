@@ -29,10 +29,6 @@ export class RoleBox {
             });
     }
 
-    render = () => {
-
-    };
-
     loadDefaultRoles = () => {
         this.defaultRoles = defaultRoles.sort((a, b) => {
             if (a.team !== b.team) {

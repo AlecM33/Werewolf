@@ -3,14 +3,14 @@ export const toast = (
     type, positionAtTop = true,
     dispelAutomatically = true,
     duration = null,
-    innerHTML = false
+    domChild = false
 ) => {
     if (message && type) {
-        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration, innerHTML);
+        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration, domChild);
     }
 };
 
-function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, domChild = false) {
+function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, domChild) {
     cancelCurrentToast();
     const messageEl = document.createElement('div');
     messageEl.classList.add('info-message');

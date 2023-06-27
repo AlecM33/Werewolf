@@ -204,15 +204,17 @@ export class RoleBox {
                         } else {
                             this.deckManager.addCopyOfCard(name);
                         }
-                        const toastContent = document.createElement('span');
-                        toastContent.innerHTML =
-                              `<span class="toast-plus-one">+1 </span>
-                               <span id="toast-plus-one-name"></span>
-                               (<span class="toast-plus-role-quantity"></span>)`;
-                        toastContent.querySelector('#toast-plus-one-name').innerText = name;
-                        toastContent.querySelector('.toast-plus-role-quantity').innerText = this.deckManager.getQuantityOfRole(name);
 
-                        toast(toastContent, 'neutral', true, true, 'short', true);
+                        toast(name + ' ', 'neutral', true, true, 'short', () => {
+                            const toastEl = document.createElement('span');
+                            toastEl.innerHTML =
+                                `<span class="toast-plus-one">+1 </span>
+                                 <span id="toast-content"></span>
+                                 <span class="toast-plus-role-quantity"></span>`;
+                            toastEl.querySelector('.toast-plus-role-quantity').innerText = ' (' + this.deckManager.getQuantityOfRole(name) + ')';
+
+                            return toastEl;
+                        });
 
                         this.deckManager.updateDeckStatus();
                     }

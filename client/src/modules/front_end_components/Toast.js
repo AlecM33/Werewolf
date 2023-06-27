@@ -3,16 +3,16 @@ export const toast = (
     type, positionAtTop = true,
     dispelAutomatically = true,
     duration = null,
-    domChild = false
+    elementBuilder = null // this is meant to be a function that returns a DOM Node
 ) => {
     if (message && type) {
-        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration, domChild);
+        buildAndInsertMessageElement(message, type, positionAtTop, dispelAutomatically, duration, elementBuilder);
     }
 };
 
-function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, domChild) {
+function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, elementBuilder) {
     cancelCurrentToast();
-    const messageEl = document.createElement('div');
+    const messageEl = elementBuilder ? elementBuilder() : buildDefaultMessageElement();
     messageEl.classList.add('info-message');
     const positionClass = positionAtTop ? 'toast-top' : 'toast-bottom';
     messageEl.classList.add(positionClass);
@@ -56,13 +56,19 @@ function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutom
     }
 
     messageEl.setAttribute('id', 'current-info-message');
-    if (domChild) {
-        messageEl.appendChild(message);
-    } else {
-        messageEl.innerText = message;
-    }
+
+    messageEl.querySelector('#toast-content').innerText = message;
 
     document.body.prepend(messageEl);
+}
+
+function buildDefaultMessageElement () {
+    const messageEl = document.createElement('div');
+    const content = document.createElement('span');
+    content.setAttribute('id', 'toast-content');
+    messageEl.appendChild(content);
+
+    return messageEl;
 }
 
 export function cancelCurrentToast () {

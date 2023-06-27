@@ -197,11 +197,11 @@ export class DeckStateManager {
         const minusOneHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
                 e.preventDefault();
-                const toastContent = document.createElement("span")
+                const toastContent = document.createElement('span');
                 toastContent.innerHTML =
                     `<span class="toast-minus-one">-1 </span>
                      <span id="toast-minus-one-name"></span>
-                     (<span class="toast-minus-role-quantity"></span>)`
+                     (<span class="toast-minus-role-quantity"></span>)`;
                 toastContent.querySelector('#toast-minus-one-name').innerText = sortedDeck[i].role;
                 toastContent.querySelector('.toast-minus-role-quantity').innerText = sortedDeck[i].quantity - 1;
 

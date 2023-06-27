@@ -204,11 +204,11 @@ export class RoleBox {
                         } else {
                             this.deckManager.addCopyOfCard(name);
                         }
-                        const toastContent = document.createElement("span")
+                        const toastContent = document.createElement('span');
                         toastContent.innerHTML =
                               `<span class="toast-plus-one">+1 </span>
                                <span id="toast-plus-one-name"></span>
-                               (<span class="toast-plus-role-quantity"></span>)`
+                               (<span class="toast-plus-role-quantity"></span>)`;
                         toastContent.querySelector('#toast-plus-one-name').innerText = name;
                         toastContent.querySelector('.toast-plus-role-quantity').innerText = this.deckManager.getQuantityOfRole(name);
 

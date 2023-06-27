@@ -10,7 +10,7 @@ export const toast = (
     }
 };
 
-function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, domChild) {
+function buildAndInsertMessageElement (message, type, positionAtTop, dispelAutomatically, duration, domChild = false) {
     cancelCurrentToast();
     const messageEl = document.createElement('div');
     messageEl.classList.add('info-message');

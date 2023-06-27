@@ -133,11 +133,13 @@ textarea {
 .toast-plus-role-quantity {
     color: #1c8a36;
     font-weight: bold;
+    margin-left: 10px;
 }
 
 .toast-minus-role-quantity {
     color: #e73333;
     font-weight: bold;
+    margin-left: 10px;
 }
 
 #footer {

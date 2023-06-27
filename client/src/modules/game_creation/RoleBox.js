@@ -44,9 +44,13 @@ export class RoleBox {
     loadCustomRolesFromCookies () {
         const customRoles = localStorage.getItem('play-werewolf-custom-roles');
         if (customRoles !== null && validateCustomRoleCookie(customRoles)) {
-            this.customRoles = JSON.parse(customRoles).map((role) => {
-                role.id = createRandomId();
-                return role;
+            this.customRoles = JSON.parse(customRoles).map((roleObj) => {
+                return {
+                    id: createRandomId(),
+                    role: roleObj.role,
+                    team: roleObj.team,
+                    description: roleObj.description
+                };
             }); // we know it is valid JSON from the validate function
         }
     }
@@ -64,9 +68,13 @@ export class RoleBox {
                 string = e.target.result;
             }
             if (validateCustomRoleCookie(string)) {
-                this.customRoles = JSON.parse(string).map((role) => {
-                    role.id = createRandomId();
-                    return role;
+                this.customRoles = JSON.parse(string).map((roleObj) => {
+                    return {
+                        id: createRandomId(),
+                        role: roleObj.role,
+                        team: roleObj.team,
+                        description: roleObj.description
+                    };
                 }); // we know it is valid JSON from the validate function
                 const initialLength = this.customRoles.length;
                 // If any imported roles match a default role, exclude them.
@@ -182,6 +190,7 @@ export class RoleBox {
             ? document.querySelectorAll('#role-select .custom-role')
             : document.querySelectorAll('#role-select .default-role');
         elements.forEach((role) => {
+            const name = role.querySelector('.role-name').innerText;
             if (addOne) {
                 const plusOneHandler = (e) => {
                     if (e.type === 'click' || e.code === 'Enter') {
@@ -195,22 +204,24 @@ export class RoleBox {
                         } else {
                             this.deckManager.addCopyOfCard(name);
                         }
-                        toast(
-                            '<span class="toast-plus-one">+1 </span>' +
-                            name + ' (<span class="toast-plus-role-quantity">' + this.deckManager.getQuantityOfRole(name) + '</span>)',
-                            'neutral',
-                            true,
-                            true,
-                            'short',
-                            true
-                        );
+
+                        toast(name + ' ', 'neutral', true, true, 'short', () => {
+                            const toastEl = document.createElement('span');
+                            toastEl.innerHTML =
+                                `<span class="toast-plus-one">+1 </span>
+                                 <span id="toast-content"></span>
+                                 <span class="toast-plus-role-quantity"></span>`;
+                            toastEl.querySelector('.toast-plus-role-quantity').innerText = ' (' + this.deckManager.getQuantityOfRole(name) + ')';
+
+                            return toastEl;
+                        });
+
                         this.deckManager.updateDeckStatus();
                     }
                 };
                 role.querySelector('.role-include').addEventListener('click', plusOneHandler);
                 role.querySelector('.role-include').addEventListener('keyup', plusOneHandler);
             }
-            const name = role.querySelector('.role-name').innerText;
 
             if (remove) {
                 const removeHandler = (e) => {

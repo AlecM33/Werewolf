@@ -197,15 +197,17 @@ export class DeckStateManager {
         const minusOneHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
                 e.preventDefault();
-                toast(
-                    '<span class=\'toast-minus-one\'>-1</span>' +
-                    sortedDeck[i].role + ' (<span class="toast-minus-role-quantity">' + (sortedDeck[i].quantity - 1).toString() + '</span>)',
-                    'neutral',
-                    true,
-                    true,
-                    'short',
-                    true
-                );
+                toast(sortedDeck[i].role + ' ', 'neutral', true, true, 'short', () => {
+                    const toastEl = document.createElement('span');
+                    toastEl.innerHTML =
+                        `<span class="toast-minus-one">-1 </span>
+                         <span id="toast-content"></span>
+                         <span class="toast-minus-role-quantity"></span>`;
+                    toastEl.querySelector('.toast-minus-role-quantity').innerText = '(' + (sortedDeck[i].quantity - 1) + ')';
+
+                    return toastEl;
+                });
+
                 this.removeCopyOfCard(sortedDeck[i].role);
                 this.updateDeckStatus();
             }

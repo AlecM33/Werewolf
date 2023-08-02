@@ -296,9 +296,6 @@ export const HTMLFragments = {
             <h2>&#x1F3C1; The moderator has ended the game. Roles are revealed.</h2>
             <div id="end-of-game-buttons">
                 <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
-                <a href='/'>
-                    <button class='app-button'>Go Home \uD83C\uDFE0</button>
-                </a>
             </div>
         </div>
         <div id='game-people-container'>

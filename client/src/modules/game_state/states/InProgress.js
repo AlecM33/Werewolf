@@ -500,7 +500,7 @@ function createEndGamePromptComponent (socket, stateBucket) {
                 );
             });
         });
-        div.querySelector('#game-control-prompt').prepend(SharedStateUtil.createRestartButton(stateBucket));
+        div.querySelector('#game-control-prompt').prepend(SharedStateUtil.createReturnToLobbyButton(stateBucket));
         document.getElementById('game-content').appendChild(div);
     }
 }

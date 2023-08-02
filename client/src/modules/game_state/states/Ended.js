@@ -15,7 +15,7 @@ export class Ended {
             gameState.client.userType === globals.USER_TYPES.MODERATOR
             || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
         ) {
-            document.getElementById('end-of-game-buttons').prepend(SharedStateUtil.createRestartButton(this.stateBucket));
+            document.getElementById('end-of-game-buttons').prepend(SharedStateUtil.createReturnToLobbyButton(this.stateBucket));
         }
         SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
             .find((person) => person.userType === globals.USER_TYPES.MODERATOR

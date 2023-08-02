@@ -62,7 +62,7 @@ export class Lobby {
         const spectatorHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
                 Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
-                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR)), null, true);
+                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR), this.stateBucket.currentGameState.client), null, true);
             }
         };
 
@@ -95,7 +95,7 @@ export class Lobby {
             }
         );
         for (const person of sorted.filter(p => p.userType !== globals.USER_TYPES.SPECTATOR)) {
-            lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name, person.userType));
+            lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name, person.userType, this.stateBucket.currentGameState.client));
         }
         const playerCount = this.stateBucket.currentGameState.people.filter(
             p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
@@ -192,7 +192,7 @@ function getTimeString (gameState) {
     }
 }
 
-function renderLobbyPerson (name, userType) {
+function renderLobbyPerson (name, userType, client) {
     const el = document.createElement('div');
     const personNameEl = document.createElement('div');
     personNameEl.classList.add('lobby-player-name');
@@ -206,6 +206,10 @@ function renderLobbyPerson (name, userType) {
 
     el.appendChild(personNameEl);
     el.appendChild(personTypeEl);
+
+    if (client.userType === globals.USER_TYPES.MODERATOR || client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+        SharedStateUtil.addPlayerOptions(el);
+    }
 
     return el;
 }

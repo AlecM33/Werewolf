@@ -13,6 +13,30 @@
     margin: 0 auto 0.25em auto;
 }
 
+.lobby-player, .spectator {
+    position: relative;
+}
+
+.lobby-player img, .spectator img {
+    height: 18px;
+    margin: 0 8px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    position: absolute;
+    right: -33px;
+}
+
+.lobby-player img:active, .spectator img:active {
+    border: 1px solid whitesmoke;
+}
+
+.lobby-player img:hover, .spectator img:hover {
+    filter: brightness(1.5);
+    background-color: #8080804d;
+}
+
 .moderator {
     border: 2px solid #c58f13 !important;
 }
@@ -82,13 +106,13 @@
     max-width: 17em;
 }
 
-#restart-game-button, #mod-transfer-button {
+#return-to-lobby-button, #end-of-game-buttons #return-to-lobby-button, #mod-transfer-button {
     background-color: #045EA6;
     border: 2px solid #024070;
 }
 
-#restart-game-button:hover, #mod-transfer-button:hover {
-    background-color: #0078D773;
+#return-to-lobby-button:hover, #end-of-game-buttons #return-to-lobby-button:hover, #mod-transfer-button:hover {
+    background-color: rgba(0, 120, 215, 0.45);
     border: 2px solid #045EA6;
 }
 
@@ -160,7 +184,7 @@ h1 {
     font-size: 18px;
 }
 
-#end-of-game-header #restart-game-button {
+#end-of-game-header #return-to-lobby-button {
     margin-bottom: 1em !important;
     animation: shadow-pulse 1.5s infinite ease-out;
     padding: 10px;
@@ -543,7 +567,7 @@ label[for='moderator'] {
     box-shadow: 0 -6px 40px black;
 }
 
-#start-game-button, #end-game-button, #restart-game-button {
+#start-game-button, #end-game-button, #return-to-lobby-button {
     font-family: 'signika-negative', sans-serif !important;
     padding: 10px;
     border-radius: 5px;
@@ -910,7 +934,7 @@ canvas {
         height: 65px;
     }
 
-    #start-game-button, #end-game-button, #restart-game-button {
+    #start-game-button, #end-game-button, #return-to-lobby-button {
         font-size: 20px;
         padding: 5px;
     }

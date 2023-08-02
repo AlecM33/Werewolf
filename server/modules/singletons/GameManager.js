@@ -215,7 +215,7 @@ class GameManager {
         }
     };
 
-    restartGame = async (game, namespace) => {
+    restartGame = async (game, namespace, status = globals.STATUS.IN_PROGRESS) => {
         // kill any outstanding timer threads
         const subProcess = this.timerManager.timerThreads[game.accessCode];
         if (subProcess) {
@@ -260,14 +260,18 @@ class GameManager {
             }
         }
 
-        // start the new game
-        game.status = globals.STATUS.IN_PROGRESS;
-        if (game.hasTimer) {
-            game.timerParams.paused = true;
-            game.timerParams.timeRemaining = convertFromHoursToMilliseconds(game.timerParams.hours) +
-                convertFromMinutesToMilliseconds(game.timerParams.minutes);
-            await this.timerManager.runTimer(game, namespace, this.eventManager, this);
+        if (status === globals.STATUS.IN_PROGRESS) {
+            game.status = globals.STATUS.IN_PROGRESS;
+            if (game.hasTimer) {
+                game.timerParams.paused = true;
+                game.timerParams.timeRemaining = convertFromHoursToMilliseconds(game.timerParams.hours) +
+                    convertFromMinutesToMilliseconds(game.timerParams.minutes);
+                await this.timerManager.runTimer(game, namespace, this.eventManager, this);
+            }
+        } else {
+            game.status = globals.STATUS.LOBBY;
         }
+
 
         await this.refreshGame(game);
         await this.eventManager.publisher?.publish(

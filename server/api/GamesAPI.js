@@ -102,7 +102,9 @@ router.patch('/:code/restart', async function (req, res) {
     } else {
         const game = await gameManager.getActiveGame(req.body.accessCode);
         if (game) {
-            gameManager.restartGame(game, gameManager.namespace).then((data) => {
+            gameManager.restartGame(game, gameManager.namespace, req.query.status).then((data) => {
+                console.log(req.query.status);
+                console.log(req.query.toLobby);
                 res.status(200).send();
             }).catch((code) => {
                 res.status(code).send();

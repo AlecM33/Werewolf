@@ -23,9 +23,10 @@ export const SharedStateUtil = {
         );
     },
 
-    restartHandler: (stateBucket) => {
+    restartHandler: (stateBucket, status = globals.STATUS.IN_PROGRESS) => {
+        console.log("HEY")
         XHRUtility.xhr(
-            '/api/games/' + stateBucket.currentGameState.accessCode + '/restart',
+            '/api/games/' + stateBucket.currentGameState.accessCode + '/restart?status=' + status,
             'PATCH',
             null,
             JSON.stringify({
@@ -45,7 +46,7 @@ export const SharedStateUtil = {
         const restartGameButton = document.createElement('button');
         restartGameButton.classList.add('app-button');
         restartGameButton.setAttribute('id', 'restart-game-button');
-        restartGameButton.innerText = 'Restart';
+        restartGameButton.innerText = 'Quick Restart';
         restartGameButton.addEventListener('click', () => {
             Confirmation('Restart the game, dealing everyone new roles?', () => {
                 SharedStateUtil.restartHandler(stateBucket);
@@ -53,6 +54,20 @@ export const SharedStateUtil = {
         });
 
         return restartGameButton;
+    },
+
+    createReturnToLobbyButton: (stateBucket) => {
+        const returnToLobbyButton = document.createElement('button');
+        returnToLobbyButton.classList.add('app-button');
+        returnToLobbyButton.setAttribute('id', 'return-to-lobby-button');
+        returnToLobbyButton.innerText = 'Return to Lobby';
+        returnToLobbyButton.addEventListener('click', () => {
+            Confirmation('Return everyone to the Lobby?', () => {
+                SharedStateUtil.restartHandler(stateBucket, globals.STATUS.LOBBY);
+            });
+        });
+
+        return returnToLobbyButton;
     },
 
     setClientSocketHandlers: (stateBucket, socket) => {
@@ -63,7 +78,7 @@ export const SharedStateUtil = {
 
         const restartGameStateAckFn = (gameState) => {
             SharedStateUtil.gameStateAckFn(gameState, socket);
-            toast('Game restarted!', 'success');
+            toast('Everyone has returned to the Lobby!', 'success');
         };
 
         const fetchGameStateHandler = (ackFn) => {
@@ -160,7 +175,17 @@ export const SharedStateUtil = {
         }
     },
 
-    buildSpectatorList (people) {
+    addPlayerOptions: (personEl) => {
+        const kickButton = document.createElement('img');
+        kickButton.setAttribute('tabIndex', '0');
+        kickButton.setAttribute('className', 'role-remove');
+        kickButton.setAttribute('src', '../images/3-vertical-dots-icon.svg');
+        kickButton.setAttribute('title', 'Kick Player');
+        kickButton.setAttribute('alt', 'Kick Player');
+        personEl.appendChild(kickButton);
+    },
+
+    buildSpectatorList (people, client) {
         const list = document.createElement('div');
         const spectators = people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR);
         if (spectators.length === 0) {
@@ -173,6 +198,10 @@ export const SharedStateUtil = {
                     '<div>' + 'spectator' + globals.USER_TYPE_ICONS.spectator + '</div>';
                 spectatorEl.querySelector('.spectator-name').innerText = spectator.name;
                 list.appendChild(spectatorEl);
+
+                if (client.userType === globals.USER_TYPES.MODERATOR || client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    this.addPlayerOptions(spectatorEl);
+                }
             }
         }
 

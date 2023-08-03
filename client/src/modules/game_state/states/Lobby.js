@@ -18,7 +18,7 @@ export class Lobby {
 
         this.startGameHandler = (e) => {
             e.preventDefault();
-            if (!stateBucket.currentGameState.isFull) {
+            if (!stateBucket.currentGameState.isStartable) {
                 toast('The number of players does not match the number of cards. ' +
                     'You must either add/remove players or edit roles and their quantities.', 'error');
                 return;
@@ -171,10 +171,10 @@ export class Lobby {
     }
 
     setSocketHandlers () {
-        this.socket.on(globals.EVENT_IDS.PLAYER_JOINED, (player, gameIsFull) => {
+        this.socket.on(globals.EVENT_IDS.PLAYER_JOINED, (player, gameisStartable) => {
             toast(player.name + ' joined!', 'success', true, true, 'short');
             this.stateBucket.currentGameState.people.push(player);
-            this.stateBucket.currentGameState.isFull = gameIsFull;
+            this.stateBucket.currentGameState.isStartable = gameisStartable;
             this.populatePlayers();
             if ((
                 this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
@@ -193,7 +193,7 @@ export class Lobby {
             );
         });
 
-        this.socket.on(globals.EVENT_IDS.KICK_PERSON, (kickedId, gameIsFull) => {
+        this.socket.on(globals.EVENT_IDS.KICK_PERSON, (kickedId, gameisStartable) => {
             if (kickedId === this.stateBucket.currentGameState.client.id) {
                 window.location = '/?message=' + encodeURIComponent('You were kicked by the moderator.');
             } else {
@@ -202,7 +202,7 @@ export class Lobby {
                     this.stateBucket.currentGameState.people
                         .splice(kickedIndex, 1);
                 }
-                this.stateBucket.currentGameState.isFull = gameIsFull;
+                this.stateBucket.currentGameState.isStartable = gameisStartable;
                 SharedStateUtil.setNumberOfSpectators(
                     this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
                     document.getElementById('spectator-count')
@@ -222,7 +222,7 @@ export class Lobby {
         this.socket.on(globals.EVENT_IDS.UPDATE_GAME_ROLES, (deck, gameSize) => {
             this.stateBucket.currentGameState.deck = deck;
             this.stateBucket.currentGameState.gameSize = gameSize;
-            this.stateBucket.currentGameState.isFull = this.stateBucket.currentGameState.people
+            this.stateBucket.currentGameState.isStartable = this.stateBucket.currentGameState.people
                 .filter(person => person.userType === globals.USER_TYPES.PLAYER
                     || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR).length === gameSize;
             this.setLink(getTimeString(this.stateBucket.currentGameState));

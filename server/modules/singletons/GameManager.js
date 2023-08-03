@@ -181,7 +181,7 @@ class GameManager {
             && game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
-        } else if (joinAsSpectator || this.isGameFull(game)) {
+        } else if (joinAsSpectator || this.isGameStartable(game)) {
             console.log('game is full');
             return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
@@ -206,12 +206,12 @@ class GameManager {
             newPlayer.assigned = true;
             game.people.push(newPlayer);
         }
-        game.isFull = this.isGameFull(game);
+        game.isStartable = this.isGameStartable(game);
         await this.refreshGame(game);
         this.namespace.in(game.accessCode).emit(
             globals.EVENTS.PLAYER_JOINED,
             GameStateCurator.mapPerson(moderator || newPlayer),
-            game.isFull
+            game.isStartable
         );
         await this.eventManager.publisher?.publish(
             globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
@@ -318,7 +318,7 @@ class GameManager {
         }
     }
 
-    isGameFull = (game) => {
+    isGameStartable = (game) => {
         return game.people.filter(person => person.userType === globals.USER_TYPES.PLAYER
             || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR).length === game.gameSize;
     }

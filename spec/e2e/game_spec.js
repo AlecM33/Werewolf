@@ -69,18 +69,6 @@ describe('game page', () => {
             expect(document.getElementById('current-info-message').innerText).toEqual('Jane joined!');
         });
 
-        it('should activate the start button for the moderator when the game is full', () => {
-            expect(document.getElementById('start-game-button').classList.contains('disabled')).toBeTrue();
-            mockSocket.eventHandlers[globals.EVENT_IDS.PLAYER_JOINED]({
-                name: 'Jack',
-                id: '456',
-                userType: globals.USER_TYPES.PLAYER,
-                out: false,
-                revealed: false
-            }, true);
-            expect(document.getElementById('start-game-button').classList.contains('disabled')).toBeFalse();
-        });
-
         afterAll(() => {
             document.body.innerHTML = '';
         });

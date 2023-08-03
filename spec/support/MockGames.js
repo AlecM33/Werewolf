@@ -46,7 +46,7 @@ export const mockGames = {
             paused: true,
             timeRemaining: 600000
         },
-        isFull: false
+        isStartable: false
     },
     inProgressGame: {
         accessCode: 'TVV6',
@@ -163,7 +163,7 @@ export const mockGames = {
             paused: true,
             timeRemaining: 600000
         },
-        isFull: true
+        isStartable: true
     },
     moderatorGame:
         {
@@ -306,6 +306,6 @@ export const mockGames = {
                 paused: true,
                 timeRemaining: 600000
             },
-            isFull: true
+            isStartable: true
         }
 };

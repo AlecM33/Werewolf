@@ -37,8 +37,8 @@ describe('GameManager', () => {
             'ABCD',
             STATUS.LOBBY,
             [{ id: 'a', name: 'person1', assigned: true, out: true, killed: false, userType: USER_TYPES.MODERATOR },
-                { id: 'b', name: 'person2', gameRole: 'Villager', alignment: 'good', assigned: false, out: false, killed: false, userType: USER_TYPES.PLAYER }],
-            [{ quantity: 2 }],
+                { id: 'b', name: 'person2', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.PLAYER }],
+            [{ quantity: 1 }, { quantity: 1 }],
             false,
             'a',
             true,
@@ -50,30 +50,26 @@ describe('GameManager', () => {
     });
 
     describe('#joinGame', () => {
-        it('should mark the game as full when all players have been assigned', async () => {
+        it('should mark the game as startable when the number of players equals the game size', async () => {
             await gameManager.joinGame(game, 'Jill', 'x');
 
-            expect(game.isFull).toEqual(true);
+            expect(game.isStartable).toEqual(true);
         });
 
-        it('should create a spectator if the game is already full and broadcast it to the room', () => {
-            game.people.find(p => p.id === 'b').assigned = true;
-            game.isFull = true;
+        it('should create a spectator if the game is already startable and broadcast it to the room', async () => {
+            await gameManager.joinGame(game, 'Jill', 'x');
+            game.isStartable = true;
             spyOn(gameManager.namespace.in(), 'emit');
 
-            gameManager.joinGame(game, 'Jane', 'x');
+            await gameManager.joinGame(game, 'Jane', 'x');
 
-            expect(game.isFull).toEqual(true);
+            expect(game.isStartable).toEqual(true);
             expect(game.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length).toEqual(1);
         });
     });
 
     describe('#restartGame', () => {
-        let shuffleSpy;
-
-        beforeEach(() => {
-            shuffleSpy = spyOn(gameManager, 'shuffle').and.stub();
-        });
+        beforeEach(() => {});
 
         it('should reset all relevant game parameters', async () => {
             game.status = STATUS.ENDED;
@@ -85,11 +81,10 @@ describe('GameManager', () => {
 
             await gameManager.restartGame(game, namespace);
 
-            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.status).toEqual(STATUS.LOBBY);
             expect(player.userType).toEqual(USER_TYPES.PLAYER);
             expect(player.out).toBeFalse();
             expect(player.killed).toBeFalse();
-            expect(shuffleSpy).toHaveBeenCalled();
             expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
@@ -100,16 +95,12 @@ describe('GameManager', () => {
             game.status = STATUS.ENDED;
 
             const threadKillSpy = spyOn(timerManager.timerThreads.ABCD, 'kill');
-            const runTimerSpy = spyOn(timerManager, 'runTimer').and.stub();
             const emitSpy = spyOn(namespace.in(), 'emit');
 
             await gameManager.restartGame(game, namespace);
 
-            expect(game.status).toEqual(STATUS.IN_PROGRESS);
-            expect(game.timerParams.paused).toBeTrue();
+            expect(game.status).toEqual(STATUS.LOBBY);
             expect(threadKillSpy).toHaveBeenCalled();
-            expect(runTimerSpy).toHaveBeenCalled();
-            expect(shuffleSpy).toHaveBeenCalled();
             expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
@@ -123,10 +114,9 @@ describe('GameManager', () => {
 
             await gameManager.restartGame(game, namespace);
 
-            expect(game.status).toEqual(STATUS.IN_PROGRESS);
+            expect(game.status).toEqual(STATUS.LOBBY);
             expect(game.currentModeratorId).toEqual('b');
             expect(game.people.find(p => p.id === 'b').userType).toEqual(USER_TYPES.TEMPORARY_MODERATOR);
-            expect(shuffleSpy).toHaveBeenCalled();
             expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
     });

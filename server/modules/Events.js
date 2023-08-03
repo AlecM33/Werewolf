@@ -7,19 +7,14 @@ const Events = [
     {
         id: EVENT_IDS.PLAYER_JOINED,
         stateChange: async (game, socketArgs, vars) => {
-            const toBeAssignedIndex = game.people.findIndex(
-                (person) => person.id === socketArgs.id && person.assigned === false
-            );
-            if (toBeAssignedIndex >= 0) {
-                game.people[toBeAssignedIndex] = socketArgs;
-                game.isFull = vars.gameManager.isGameFull(game);
-            }
+            game.people.push(socketArgs);
+            game.isStartable = vars.gameManager.isGameStartable(game);
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode).emit(
                 globals.EVENTS.PLAYER_JOINED,
                 GameStateCurator.mapPerson(socketArgs),
-                game.isFull
+                game.isStartable
             );
         }
     },
@@ -31,14 +26,14 @@ const Events = [
             );
             if (toBeClearedIndex >= 0) {
                 game.people.splice(toBeClearedIndex, 1);
-                game.isFull = vars.gameManager.isGameFull(game);
+                game.isStartable = vars.gameManager.isGameStartable(game);
             }
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode).emit(
                 EVENT_IDS.KICK_PERSON,
                 socketArgs.personId,
-                game.isFull
+                game.isStartable
             );
         }
     },
@@ -51,7 +46,7 @@ const Events = [
                     (accumulator, currentValue) => accumulator + currentValue.quantity,
                     0
                 );
-                game.isFull = vars.gameManager.isGameFull(game);
+                game.isStartable = vars.gameManager.isGameStartable(game);
             }
         },
         communicate: async (game, socketArgs, vars) => {
@@ -109,7 +104,7 @@ const Events = [
     {
         id: EVENT_IDS.START_GAME,
         stateChange: async (game, socketArgs, vars) => {
-            if (game.isFull) {
+            if (game.isStartable) {
                 game.status = globals.STATUS.IN_PROGRESS;
                 vars.gameManager.deal(game);
                 if (game.hasTimer) {

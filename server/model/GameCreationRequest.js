@@ -29,6 +29,33 @@ class GameCreationRequest {
             return Promise.resolve();
         }
     };
+
+    static deckIsValid = (deck) => {
+        if (Array.isArray(deck) && deck.length > 0) {
+            for (const entry of deck) {
+                if (entry !== null
+                    && typeof entry === 'object'
+                    && typeof entry.role === 'string'
+                    && entry.role.length > 0
+                    && entry.role.length <= globals.MAX_CUSTOM_ROLE_NAME_LENGTH
+                    && typeof entry.team === 'string'
+                    && (entry.team === globals.ALIGNMENT.GOOD || entry.team === globals.ALIGNMENT.EVIL)
+                    && typeof entry.description === 'string'
+                    && entry.description.length > 0
+                    && entry.description.length <= globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
+                    && (!entry.custom || typeof entry.custom === 'boolean')
+                    && typeof entry.quantity === 'number'
+                    && entry.quantity >= 1
+                    && entry.quantity <= 50
+                ) {
+                    continue;
+                }
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }
 
 function valid (gameParams) {
@@ -39,7 +66,7 @@ function valid (gameParams) {
         && gameParams.moderatorName.length > 0
         && gameParams.moderatorName.length <= 30
         && timerParamsAreValid(gameParams.hasTimer, gameParams.timerParams)
-        && deckIsValid(gameParams.deck);
+        && GameCreationRequest.deckIsValid(gameParams.deck);
 }
 
 function timerParamsAreValid (hasTimer, timerParams) {
@@ -56,33 +83,6 @@ function timerParamsAreValid (hasTimer, timerParams) {
             || (timerParams.minutes === 0 && timerParams.hours > 0 && timerParams.hours < 6)
             || (timerParams.hours > 0 && timerParams.hours < 6 && timerParams.minutes >= 0 && timerParams.minutes < 60);
     }
-}
-
-function deckIsValid (deck) {
-    if (Array.isArray(deck) && deck.length > 0) {
-        for (const entry of deck) {
-            if (entry !== null
-                && typeof entry === 'object'
-                && typeof entry.role === 'string'
-                && entry.role.length > 0
-                && entry.role.length <= globals.MAX_CUSTOM_ROLE_NAME_LENGTH
-                && typeof entry.team === 'string'
-                && (entry.team === globals.ALIGNMENT.GOOD || entry.team === globals.ALIGNMENT.EVIL)
-                && typeof entry.description === 'string'
-                && entry.description.length > 0
-                && entry.description.length <= globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
-                && (!entry.custom || typeof entry.custom === 'boolean')
-                && typeof entry.quantity === 'number'
-                && entry.quantity >= 1
-                && entry.quantity <= 50
-            ) {
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-    return false;
 }
 
 module.exports = GameCreationRequest;

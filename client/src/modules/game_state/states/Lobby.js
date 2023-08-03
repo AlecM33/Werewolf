@@ -4,6 +4,9 @@ import { globals } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { SharedStateUtil } from './shared/SharedStateUtil.js';
+import { GameCreationStepManager } from '../../game_creation/GameCreationStepManager.js';
+import { DeckStateManager } from '../../game_creation/DeckStateManager.js';
+import { hiddenMenus } from '../../../view_templates/CreateTemplate.js';
 
 export class Lobby {
     constructor (containerId, stateBucket, socket) {
@@ -11,6 +14,7 @@ export class Lobby {
         this.socket = socket;
         this.container = document.getElementById(containerId);
         this.container.innerHTML = HTMLFragments.LOBBY;
+        this.gameCreationStepManager = new GameCreationStepManager(new DeckStateManager());
 
         this.startGameHandler = (e) => {
             e.preventDefault();
@@ -38,13 +42,45 @@ export class Lobby {
                 );
             });
         };
+
+        this.editRolesHandler = (e) => {
+            e.preventDefault();
+            document.querySelector('#mid-game-role-editor')?.remove();
+            const roleEditContainer = document.createElement('div');
+            roleEditContainer.setAttribute('id', 'mid-game-role-editor');
+            roleEditContainer.innerHTML = hiddenMenus;
+            document.body.appendChild(roleEditContainer);
+            this.gameCreationStepManager.deckManager.deck = [];
+            this.gameCreationStepManager
+                .renderRoleSelectionStep(this.stateBucket.currentGameState, 'mid-game-role-editor', '2');
+            this.gameCreationStepManager.roleBox.loadSelectedRolesFromCurrentGame(this.stateBucket.currentGameState);
+            const saveButton = document.createElement('button');
+            saveButton.classList.add('app-button');
+            saveButton.setAttribute('id', 'save-role-changes-button');
+            saveButton.innerHTML = '<p>Save</p><img src=\'../images/save-svgrepo-com.svg\'/>';
+            saveButton.addEventListener('click', () => {
+                if (this.gameCreationStepManager.deckManager.getDeckSize() > 50) {
+                    toast('Your deck is too large. The max is 50 cards.', 'error', true);
+                } else if (this.gameCreationStepManager.deckManager.getDeckSize() < 1) {
+                    toast('You must add at least one card', 'error', true);
+                } else {
+                    document.querySelector('#mid-game-role-editor')?.remove();
+                    this.socket.emit(
+                        globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                        globals.EVENT_IDS.UPDATE_GAME_ROLES,
+                        stateBucket.currentGameState.accessCode,
+                        { deck: this.gameCreationStepManager.deckManager.deck.filter((card) => card.quantity > 0) },
+                        () => {
+                            toast('Roles updated successfully!', 'success');
+                        }
+                    );
+                }
+            });
+            roleEditContainer.appendChild(saveButton);
+        };
     }
 
-    populateHeader () {
-        const timeString = getTimeString(this.stateBucket.currentGameState);
-        const time = this.container.querySelector('#game-time');
-        time.innerText = timeString;
-
+    setLink (timeString) {
         const linkContainer = this.container.querySelector('#game-link');
         linkContainer.innerHTML = '<img src=\'../images/copy.svg\' alt=\'copy\'/>';
         const link = window.location.protocol + '//' + window.location.host +
@@ -56,8 +92,27 @@ export class Lobby {
         linkContainer.prepend(linkDiv);
         activateLink(linkContainer, link);
 
+        return link;
+    }
+
+    setPlayerCount () {
         const playerCount = this.container.querySelector('#game-player-count');
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
+        const inLobbyCount = this.stateBucket.currentGameState.people.filter(
+            p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
+        ).length;
+        document.querySelector("label[for='lobby-players']").innerText =
+            'Participants (' + inLobbyCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
+    }
+
+    populateHeader () {
+        const timeString = getTimeString(this.stateBucket.currentGameState);
+        const time = this.container.querySelector('#game-time');
+        time.innerText = timeString;
+
+        const link = this.setLink(timeString);
+
+        this.setPlayerCount();
 
         const spectatorHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
@@ -158,12 +213,20 @@ export class Lobby {
                 }
             }
         });
+
+        this.socket.on(globals.EVENT_IDS.UPDATE_GAME_ROLES, (deck, gameSize) => {
+            this.stateBucket.currentGameState.deck = deck;
+            this.stateBucket.currentGameState.gameSize = gameSize;
+            this.setLink(getTimeString(this.stateBucket.currentGameState));
+            this.setPlayerCount();
+        });
     }
 
     displayStartGamePromptForModerators () {
         const existingPrompt = document.getElementById('start-game-prompt');
         if (existingPrompt) {
             enableOrDisableStartButton(this.stateBucket.currentGameState, existingPrompt, this.startGameHandler);
+            document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
         } else {
             const newPrompt = document.createElement('div');
             newPrompt.setAttribute('id', 'start-game-prompt');
@@ -171,6 +234,7 @@ export class Lobby {
 
             document.body.appendChild(newPrompt);
             enableOrDisableStartButton(this.stateBucket.currentGameState, newPrompt, this.startGameHandler);
+            document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
         }
     }
 

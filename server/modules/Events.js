@@ -1,6 +1,7 @@
 const globals = require('../config/globals');
 const GameStateCurator = require('./GameStateCurator');
 const UsernameGenerator = require('./UsernameGenerator');
+const GameCreationRequest = require('../model/GameCreationRequest');
 const EVENT_IDS = globals.EVENT_IDS;
 
 const Events = [
@@ -54,6 +55,28 @@ const Events = [
                 EVENT_IDS.KICK_PERSON,
                 socketArgs.personId,
                 game.isFull
+            );
+        }
+    },
+    {
+        id: EVENT_IDS.UPDATE_GAME_ROLES,
+        stateChange: async (game, socketArgs, vars) => {
+            if (GameCreationRequest.deckIsValid(socketArgs.deck)) {
+                game.deck = socketArgs.deck;
+                game.gameSize = socketArgs.deck.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue.quantity,
+                    0
+                );
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            if (vars.ackFn) {
+                vars.ackFn();
+            }
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.UPDATE_GAME_ROLES,
+                game.deck,
+                game.gameSize
             );
         }
     },

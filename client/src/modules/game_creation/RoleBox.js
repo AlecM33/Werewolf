@@ -49,7 +49,8 @@ export class RoleBox {
                     id: createRandomId(),
                     role: roleObj.role,
                     team: roleObj.team,
-                    description: roleObj.description
+                    description: roleObj.description,
+                    custom: true
                 };
             }); // we know it is valid JSON from the validate function
         }
@@ -73,7 +74,8 @@ export class RoleBox {
                         id: createRandomId(),
                         role: roleObj.role,
                         team: roleObj.team,
-                        description: roleObj.description
+                        description: roleObj.description,
+                        custom: true
                     };
                 }); // we know it is valid JSON from the validate function
                 const initialLength = this.customRoles.length;
@@ -105,6 +107,26 @@ export class RoleBox {
             }
         };
         reader.readAsText(file);
+    }
+
+    loadSelectedRolesFromCurrentGame = (game) => {
+        for (const card of game.deck) {
+            if (card.quantity) {
+                for (let i = 0; i < card.quantity; i ++) {
+                    if (!this.deckManager.hasRole(card.role)) {
+                        const role = this.getDefaultRole(card.role)
+                            ? this.getDefaultRole(card.role)
+                            : this.getCustomRole(card.role);
+                        role.id = card.id;
+                        this.deckManager.addToDeck(role);
+                    } else {
+                        this.deckManager.addCopyOfCard(card.role);
+                    }
+                }
+            }
+        }
+
+        this.deckManager.updateDeckStatus();
     }
 
     // via https://stackoverflow.com/a/18197341

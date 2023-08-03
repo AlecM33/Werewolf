@@ -385,7 +385,7 @@ select {
     display: flex;
 }
 
-#game-time {
+#creation-step-container #game-time {
     display: flex;
     flex-wrap: wrap;
     border-radius: 5px;
@@ -673,7 +673,7 @@ input[type="number"] {
 
 @media(max-width: 550px) {
     #custom-roles-container, #deck-status-container {
-        min-width: 90%;
+        min-width: 85%;
     }
     h1 {
         font-size: 32px;

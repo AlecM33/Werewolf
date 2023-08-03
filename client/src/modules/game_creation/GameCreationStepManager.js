@@ -191,7 +191,7 @@ export class GameCreationStepManager {
                 showButtons(false, true, this.steps[step].forwardHandler, null);
                 break;
             case 2:
-                this.renderRoleSelectionStep(this.currentGame, containerId, step, this.deckManager);
+                this.renderRoleSelectionStep(this.currentGame, containerId, step);
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
                 break;
             case 3:
@@ -216,7 +216,7 @@ export class GameCreationStepManager {
         document.getElementById('step-' + stepNumber)?.remove();
     }
 
-    renderRoleSelectionStep = (game, containerId, step, deckManager) => {
+    renderRoleSelectionStep = (game, containerId, step) => {
         const stepContainer = document.createElement('div');
 
         setAttributes(stepContainer, { id: 'step-' + step, class: 'flex-row-container-left-align step' });
@@ -225,13 +225,13 @@ export class GameCreationStepManager {
 
         document.getElementById(containerId).appendChild(stepContainer);
 
-        this.roleBox = new RoleBox(stepContainer, deckManager);
-        deckManager.roleBox = this.roleBox;
+        this.roleBox = new RoleBox(stepContainer, this.deckManager);
+        this.deckManager.roleBox = this.roleBox;
         this.roleBox.loadDefaultRoles();
         this.roleBox.loadCustomRolesFromCookies();
         this.roleBox.displayDefaultRoles(document.getElementById('role-select'));
 
-        deckManager.loadDeckTemplates(this.roleBox);
+        this.deckManager.loadDeckTemplates(this.roleBox);
 
         const exportHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
@@ -290,9 +290,9 @@ export class GameCreationStepManager {
 
         document.getElementById('custom-role-hamburger').addEventListener('click', clickHandler);
 
-        deckManager.updateDeckStatus();
+        this.deckManager.updateDeckStatus();
 
-        initializeRemainingEventListeners(deckManager, this.roleBox);
+        initializeRemainingEventListeners(this.deckManager, this.roleBox);
     };
 }
 

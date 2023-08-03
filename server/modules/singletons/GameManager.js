@@ -302,6 +302,10 @@ class GameManager {
         return array;
     };
 
+    deal = () => {
+
+    }
+
     isGameFull = (game) => {
         return !game.people.find((person) => person.userType === globals.USER_TYPES.PLAYER && person.assigned === false);
     }

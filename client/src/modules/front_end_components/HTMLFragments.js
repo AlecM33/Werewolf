@@ -45,10 +45,8 @@ export const HTMLFragments = {
             </select>
         </div>`,
     START_GAME_PROMPT:
-    `<div>
-        <button id='start-game-button'>Start Game</button>
-        <p>All players must join to start.</p>
-    </div>`,
+    `<button id='start-game-button'>Start Game</button>
+     <button id='edit-roles-button'>Edit Roles</button>`,
     GAME_CONTROL_PROMPT:
     `<div id='game-control-prompt'>
         <button id='end-game-button'>End Game</button>
@@ -361,21 +359,21 @@ export const HTMLFragments = {
 
 </div>
         <div class="role-options">
-            <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
-            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
-            <img tabindex="0" class="role-edit" src="images/pencil.svg" title="edit" alt="edit"/>
-            <img tabindex="0" class="role-remove" src="images/delete.svg" title="remove" alt="remove"/>
+            <img tabindex="0" class="role-include" src="../images/add.svg" title="add one" alt="add one"/>
+            <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-edit" src="../images/pencil.svg" title="edit" alt="edit"/>
+            <img tabindex="0" class="role-remove" src="../images/delete.svg" title="remove" alt="remove"/>
         </div>`,
     DECK_SELECT_ROLE_DEFAULT:
         `<div class="role-name"></div>
         <div class="role-options">
-            <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
-            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-include" src="../images/add.svg" title="add one" alt="add one"/>
+            <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
         </div>`,
     DECK_SELECT_ROLE_ADDED_TO_DECK:
         `<div class="role-name"></div>
         <div class="role-options">
-            <img tabindex="0" class="role-remove" src="images/remove.svg" title="remove one" alt="remove one"/>
-            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-remove" src="../images/remove.svg" title="remove one" alt="remove one"/>
+            <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
         </div>`
 };

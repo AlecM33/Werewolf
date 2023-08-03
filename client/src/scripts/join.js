@@ -31,6 +31,7 @@ const joinHandler = (e) => {
             .then((res) => {
                 const json = JSON.parse(res.content);
                 UserUtility.setAnonymousUserId(json.cookie, json.environment);
+                resetJoinButtonState(e, res, joinHandler);
                 window.location = '/game/' + accessCode;
             }).catch((res) => {
                 handleJoinError(e, res, joinHandler);
@@ -59,10 +60,14 @@ function sendJoinRequest (e, name, accessCode) {
     );
 }
 
-function handleJoinError (e, res, joinHandler) {
+function resetJoinButtonState (e, res, joinHandler) {
     document.getElementById('join-game-form').onsubmit = joinHandler;
     e.submitter.classList.remove('submitted');
     e.submitter.setAttribute('value', 'Join');
+}
+
+function handleJoinError (e, res, joinHandler) {
+    resetJoinButtonState(e, res, joinHandler);
 
     if (res.status === 404) {
         toast('This game was not found.', 'error', true, true, 'long');

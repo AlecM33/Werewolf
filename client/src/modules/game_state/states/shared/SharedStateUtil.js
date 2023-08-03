@@ -315,14 +315,15 @@ function processGameState (
             break;
     }
 
-    activateRoleInfoButton(stateBucket.currentGameState.deck);
+    activateRoleInfoButton();
 }
 
-function activateRoleInfoButton (deck) {
-    deck.sort((a, b) => {
-        return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
-    });
+function activateRoleInfoButton () {
     document.getElementById('role-info-button').addEventListener('click', (e) => {
+        const deck = stateBucket.currentGameState.deck;
+        deck.sort((a, b) => {
+            return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
+        });
         e.preventDefault();
         document.getElementById('role-info-prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
         const modalContent = document.getElementById('game-role-info-container');

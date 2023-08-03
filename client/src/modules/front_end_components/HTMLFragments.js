@@ -45,8 +45,8 @@ export const HTMLFragments = {
             </select>
         </div>`,
     START_GAME_PROMPT:
-    `<button id='start-game-button'>Start Game</button>
-     <button id='edit-roles-button'>Edit Roles</button>`,
+    `<button id='edit-roles-button'>Edit Roles</button>
+    <button id='start-game-button'>Start Game</button>`,
     GAME_CONTROL_PROMPT:
     `<div id='game-control-prompt'>
         <button id='end-game-button'>End Game</button>

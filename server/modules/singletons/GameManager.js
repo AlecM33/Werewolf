@@ -76,7 +76,7 @@ class GameManager {
             const newGame = new Game(
                 newAccessCode,
                 globals.STATUS.LOBBY,
-                initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame),
+                null,
                 req.deck,
                 req.hasTimer,
                 moderator.id,
@@ -86,6 +86,7 @@ class GameManager {
                 req.timerParams,
                 req.isTestGame
             );
+            newGame.people = initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame, newGame.gameSize);
             await this.eventManager.publisher.set(newAccessCode, JSON.stringify(newGame), {
                 EX: globals.STALE_GAME_SECONDS
             });
@@ -142,7 +143,7 @@ class GameManager {
     checkAvailability = async (code) => {
         const game = await this.getActiveGame(code.toUpperCase().trim());
         if (game) {
-            return Promise.resolve({ accessCode: code, playerCount: getGameSize(game.deck), timerParams: game.timerParams });
+            return Promise.resolve({ accessCode: code, playerCount: game.gameSize, timerParams: game.timerParams });
         } else {
             return Promise.resolve(404);
         }
@@ -180,40 +181,62 @@ class GameManager {
             && game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
-        } else if (joinAsSpectator) {
+        } else if (joinAsSpectator || this.isGameFull(game)) {
+            console.log('game is full');
             return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
-        const unassignedPerson = this.findPersonByField(game, 'id', game.currentModeratorId).assigned === false
-            ? this.findPersonByField(game, 'id', game.currentModeratorId)
-            : game.people.find((person) => person.assigned === false && person.userType === globals.USER_TYPES.PLAYER);
-        if (unassignedPerson) {
-            this.logger.trace('request from client to join game. Assigning: ' + unassignedPerson.name);
-            unassignedPerson.assigned = true;
-            unassignedPerson.name = name;
-            game.isFull = this.isGameFull(game);
-            await this.refreshGame(game);
-            this.namespace.in(game.accessCode).emit(
-                globals.EVENTS.PLAYER_JOINED,
-                GameStateCurator.mapPerson(unassignedPerson),
-                game.isFull
-            );
-            await this.eventManager.publisher?.publish(
-                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                this.eventManager.createMessageToPublish(
-                    game.accessCode,
-                    globals.EVENT_IDS.PLAYER_JOINED,
-                    this.instanceId,
-                    JSON.stringify(unassignedPerson)
-                )
-            );
-            return Promise.resolve(unassignedPerson.cookie);
+        let moderator, newPlayer;
+        const isModeratorJoining = this.findPersonByField(game, 'id', game.currentModeratorId).assigned === false;
+        if (isModeratorJoining) {
+            moderator = this.findPersonByField(game, 'id', game.currentModeratorId);
+            this.logger.trace('Moderator joining. Assigning: ' + name);
+            moderator.assigned = true;
+            moderator.name = name;
         } else {
-            if (game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS) {
-                return Promise.reject({ status: 400, reason: 'This game has reached the maximum number of players and spectators.' });
-            }
-            return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
+            newPlayer = new Person(
+                createRandomId(),
+                createRandomId(),
+                name,
+                globals.USER_TYPES.PLAYER,
+                null,
+                null,
+                null,
+                game.isTestGame
+            );
+            newPlayer.assigned = true;
+            game.people.push(newPlayer);
         }
-    };
+        game.isFull = this.isGameFull(game);
+        await this.refreshGame(game);
+        this.namespace.in(game.accessCode).emit(
+            globals.EVENTS.PLAYER_JOINED,
+            GameStateCurator.mapPerson(moderator || newPlayer),
+            game.isFull
+        );
+        await this.eventManager.publisher?.publish(
+            globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+            this.eventManager.createMessageToPublish(
+                game.accessCode,
+                globals.EVENT_IDS.PLAYER_JOINED,
+                this.instanceId,
+                JSON.stringify(moderator || newPlayer)
+            )
+        );
+        return Promise.resolve(moderator?.cookie || newPlayer?.cookie);
+    }
+
+    prepareDeck (deck) {
+        const cards = [];
+        for (const card of deck) {
+            for (let i = 0; i < card.quantity; i ++) {
+                cards.push(card);
+            }
+        }
+
+        this.shuffle(cards);
+
+        return cards;
+    }
 
     restartGame = async (game, namespace, status = globals.STATUS.IN_PROGRESS) => {
         // kill any outstanding timer threads
@@ -227,17 +250,6 @@ class GameManager {
             delete this.timerManager.timerThreads[game.accessCode];
         }
 
-        // re-shuffle the deck
-        const cards = [];
-        for (const card of game.deck) {
-            for (let i = 0; i < card.quantity; i ++) {
-                cards.push(card);
-            }
-        }
-
-        this.shuffle(cards);
-
-        // make sure no players are marked as out or revealed, and give them new cards.
         for (let i = 0; i < game.people.length; i ++) {
             if (game.people[i].userType === globals.USER_TYPES.KILLED_PLAYER) {
                 game.people[i].userType = globals.USER_TYPES.PLAYER;
@@ -247,30 +259,19 @@ class GameManager {
                 game.people[i].userType = globals.USER_TYPES.BOT;
                 game.people[i].out = false;
             }
+            if (game.people[i].gameRole && game.people[i].id === game.currentModeratorId && game.people[i].userType === globals.USER_TYPES.MODERATOR) {
+                game.people[i].userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
+                game.people[i].out = false;
+            }
             game.people[i].revealed = false;
             game.people[i].killed = false;
-            if (game.people[i].gameRole) {
-                game.people[i].gameRole = cards[i].role;
-                game.people[i].gameRoleDescription = cards[i].description;
-                game.people[i].alignment = cards[i].team;
-                if (game.people[i].id === game.currentModeratorId && game.people[i].userType === globals.USER_TYPES.MODERATOR) {
-                    game.people[i].userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
-                    game.people[i].out = false;
-                }
-            }
+            game.people[i].gameRole = null;
+            game.people[i].gameRoleDescription = null;
+            game.people[i].alignment = null;
+            game.people[i].customRole = null;
         }
 
-        if (status === globals.STATUS.IN_PROGRESS) {
-            game.status = globals.STATUS.IN_PROGRESS;
-            if (game.hasTimer) {
-                game.timerParams.paused = true;
-                game.timerParams.timeRemaining = convertFromHoursToMilliseconds(game.timerParams.hours) +
-                    convertFromMinutesToMilliseconds(game.timerParams.minutes);
-                await this.timerManager.runTimer(game, namespace, this.eventManager, this);
-            }
-        } else {
-            game.status = globals.STATUS.LOBBY;
-        }
+        game.status = globals.STATUS.LOBBY;
 
         await this.refreshGame(game);
         await this.eventManager.publisher?.publish(
@@ -302,12 +303,24 @@ class GameManager {
         return array;
     };
 
-    deal = () => {
-
+    deal = (game) => {
+        const cards = this.prepareDeck(game.deck);
+        let i = 0;
+        for (const person of game.people.filter(person => person.userType === globals.USER_TYPES.PLAYER
+            || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            || person.userType === globals.USER_TYPES.BOT)
+        ) {
+            person.gameRole = cards[i].role;
+            person.customRole = cards[i].custom;
+            person.gameRoleDescription = cards[i].description;
+            person.alignment = cards[i].team;
+            i ++;
+        }
     }
 
     isGameFull = (game) => {
-        return !game.people.find((person) => person.userType === globals.USER_TYPES.PLAYER && person.assigned === false);
+        return game.people.filter(person => person.userType === globals.USER_TYPES.PLAYER
+            || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR).length === game.gameSize;
     }
 
     findPersonByField = (game, fieldName, value) => {
@@ -326,44 +339,27 @@ function initializeModerator (name, hasDedicatedModerator) {
     return new Person(createRandomId(), createRandomId(), name, userType);
 }
 
-function initializePeopleForGame (uniqueRoles, moderator, shuffle, isTestGame) {
+function initializePeopleForGame (uniqueRoles, moderator, shuffle, isTestGame, gameSize) {
     const people = [];
-
-    const cards = [];
-    for (const role of uniqueRoles) {
-        for (let i = 0; i < role.quantity; i ++) {
-            cards.push(role);
+    if (isTestGame) {
+        let j = 0;
+        const number = moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            ? gameSize - 1
+            : gameSize;
+        while (j < number) {
+            const person = new Person(
+                createRandomId(),
+                createRandomId(),
+                UsernameGenerator.generate(),
+                globals.USER_TYPES.BOT,
+                null,
+                null,
+                null,
+                isTestGame
+            );
+            people.push(person);
+            j ++;
         }
-    }
-
-    shuffle(cards); // this shuffles in-place.
-
-    let j = 0;
-    const number = moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-        ? cards.length - 1
-        : cards.length;
-    while (j < number) {
-        const person = new Person(
-            createRandomId(),
-            createRandomId(),
-            UsernameGenerator.generate(),
-            isTestGame ? globals.USER_TYPES.BOT : globals.USER_TYPES.PLAYER,
-            cards[j].role,
-            cards[j].description,
-            cards[j].team,
-            isTestGame
-        );
-        person.customRole = cards[j].custom;
-        person.hasEnteredName = false;
-        people.push(person);
-        j ++;
-    }
-
-    if (moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-        moderator.gameRole = cards[cards.length - 1].role;
-        moderator.customRole = cards[cards.length - 1].custom;
-        moderator.gameRoleDescription = cards[cards.length - 1].description;
-        moderator.alignment = cards[cards.length - 1].team;
     }
 
     people.push(moderator);
@@ -382,15 +378,6 @@ function createRandomId () {
 function isNameTaken (game, name) {
     const processedName = name.toLowerCase().trim();
     return game.people.find((person) => person.name.toLowerCase().trim() === processedName);
-}
-
-function getGameSize (cards) {
-    let quantity = 0;
-    for (const card of cards) {
-        quantity += card.quantity;
-    }
-
-    return quantity;
 }
 
 async function addSpectator (game, name, logger, namespace, eventManager, instanceId, refreshGame) {

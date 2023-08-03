@@ -1,6 +1,5 @@
 const globals = require('../config/globals');
 const GameStateCurator = require('./GameStateCurator');
-const UsernameGenerator = require('./UsernameGenerator');
 const GameCreationRequest = require('../model/GameCreationRequest');
 const EVENT_IDS = globals.EVENT_IDS;
 
@@ -31,23 +30,8 @@ const Events = [
                 (person) => person.id === socketArgs.personId && person.assigned === true
             );
             if (toBeClearedIndex >= 0) {
-                const toBeCleared = game.people[toBeClearedIndex];
-                if (toBeCleared.userType === globals.USER_TYPES.SPECTATOR) {
-                    game.people.splice(toBeClearedIndex, 1);
-                } else {
-                    toBeCleared.assigned = false;
-                    toBeCleared.socketId = null;
-                    toBeCleared.cookie = (() => {
-                        let id = '';
-                        for (let i = 0; i < globals.INSTANCE_ID_LENGTH; i ++) {
-                            id += globals.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * globals.INSTANCE_ID_CHAR_POOL.length)];
-                        }
-                        return id;
-                    })();
-                    toBeCleared.hasEnteredName = false;
-                    toBeCleared.name = UsernameGenerator.generate();
-                    game.isFull = vars.gameManager.isGameFull(game);
-                }
+                game.people.splice(toBeClearedIndex, 1);
+                game.isFull = vars.gameManager.isGameFull(game);
             }
         },
         communicate: async (game, socketArgs, vars) => {
@@ -126,6 +110,7 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {
             if (game.isFull) {
                 game.status = globals.STATUS.IN_PROGRESS;
+                vars.gameManager.deal(game);
                 if (game.hasTimer) {
                     game.timerParams.paused = true;
                     await vars.timerManager.runTimer(game, vars.gameManager.namespace, vars.eventManager, vars.gameManager);

@@ -641,7 +641,6 @@ label[for='moderator'] {
 
 #start-game-button {
     background-color: #1c8a36;
-    animation: shadow-pulse 1.5s infinite ease-out;
 }
 
 #end-game-button {

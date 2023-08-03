@@ -18,6 +18,11 @@ export class Lobby {
 
         this.startGameHandler = (e) => {
             e.preventDefault();
+            if (!stateBucket.currentGameState.isFull) {
+                toast('The number of players does not match the number of cards. ' +
+                    'You must either add/remove players or edit roles and their quantities.', 'error');
+                return;
+            }
             Confirmation('Start game and deal roles?', () => {
                 socket.timeout(5000).emit(
                     globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
@@ -217,6 +222,9 @@ export class Lobby {
         this.socket.on(globals.EVENT_IDS.UPDATE_GAME_ROLES, (deck, gameSize) => {
             this.stateBucket.currentGameState.deck = deck;
             this.stateBucket.currentGameState.gameSize = gameSize;
+            this.stateBucket.currentGameState.isFull = this.stateBucket.currentGameState.people
+                .filter(person => person.userType === globals.USER_TYPES.PLAYER
+                    || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR).length === gameSize;
             this.setLink(getTimeString(this.stateBucket.currentGameState));
             this.setPlayerCount();
         });
@@ -225,7 +233,7 @@ export class Lobby {
     displayStartGamePromptForModerators () {
         const existingPrompt = document.getElementById('start-game-prompt');
         if (existingPrompt) {
-            enableOrDisableStartButton(this.stateBucket.currentGameState, existingPrompt, this.startGameHandler);
+            enableStartButton(existingPrompt, this.startGameHandler);
             document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
         } else {
             const newPrompt = document.createElement('div');
@@ -233,7 +241,7 @@ export class Lobby {
             newPrompt.innerHTML = HTMLFragments.START_GAME_PROMPT;
 
             document.body.appendChild(newPrompt);
-            enableOrDisableStartButton(this.stateBucket.currentGameState, newPrompt, this.startGameHandler);
+            enableStartButton(newPrompt, this.startGameHandler);
             document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
         }
     }
@@ -244,14 +252,9 @@ export class Lobby {
     }
 }
 
-function enableOrDisableStartButton (gameState, buttonContainer, handler) {
-    if (gameState.isFull) {
-        buttonContainer.querySelector('#start-game-button').addEventListener('click', handler);
-        buttonContainer.querySelector('#start-game-button').classList.remove('disabled');
-    } else {
-        buttonContainer.querySelector('#start-game-button').removeEventListener('click', handler);
-        buttonContainer.querySelector('#start-game-button').classList.add('disabled');
-    }
+function enableStartButton (buttonContainer, handler) {
+    buttonContainer.querySelector('#start-game-button').addEventListener('click', handler);
+    buttonContainer.querySelector('#start-game-button').classList.remove('disabled');
 }
 
 function activateLink (linkContainer, link) {

@@ -61,8 +61,14 @@ export class Lobby {
 
         const spectatorHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
-                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
-                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR), this.stateBucket.currentGameState.client), null, true);
+                Confirmation(
+                    SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
+                        .filter(p => p.userType === globals.USER_TYPES.SPECTATOR),
+                    this.stateBucket.currentGameState.client,
+                    this.socket,
+                    this.stateBucket.currentGameState),
+                    null, true
+                );
             }
         };
 
@@ -95,7 +101,7 @@ export class Lobby {
             }
         );
         for (const person of sorted.filter(p => p.userType !== globals.USER_TYPES.SPECTATOR)) {
-            lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name, person.userType, this.stateBucket.currentGameState.client));
+            lobbyPlayersContainer.appendChild(renderLobbyPerson(person, this.stateBucket.currentGameState, this.socket));
         }
         const playerCount = this.stateBucket.currentGameState.people.filter(
             p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
@@ -125,6 +131,32 @@ export class Lobby {
                 this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
                 document.getElementById('spectator-count')
             );
+        });
+
+        this.socket.on(globals.EVENT_IDS.KICK_PERSON, (kickedId, gameIsFull) => {
+            if (kickedId === this.stateBucket.currentGameState.client.id) {
+                window.location = '/?message=' + encodeURIComponent('You were kicked by the moderator.');
+            } else {
+                const kickedIndex = this.stateBucket.currentGameState.people.findIndex(person => person.id === kickedId);
+                if (kickedIndex >= 0) {
+                    this.stateBucket.currentGameState.people
+                        .splice(kickedIndex, 1);
+                }
+                this.stateBucket.currentGameState.isFull = gameIsFull;
+                SharedStateUtil.setNumberOfSpectators(
+                    this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+                    document.getElementById('spectator-count')
+                );
+                this.populatePlayers();
+                if ((
+                    this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                    || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                )
+                ) {
+                    toast('player kicked.', 'success', true, true, 'short');
+                    this.displayStartGamePromptForModerators();
+                }
+            }
         });
     }
 
@@ -192,23 +224,25 @@ function getTimeString (gameState) {
     }
 }
 
-function renderLobbyPerson (name, userType, client) {
+function renderLobbyPerson (person, gameState, socket) {
     const el = document.createElement('div');
     const personNameEl = document.createElement('div');
     personNameEl.classList.add('lobby-player-name');
     const personTypeEl = document.createElement('div');
-    personNameEl.innerText = name;
-    personTypeEl.innerText = userType + globals.USER_TYPE_ICONS[userType];
+    personNameEl.innerText = person.name;
+    personTypeEl.innerText = person.userType + globals.USER_TYPE_ICONS[person.userType];
     el.classList.add('lobby-player');
-    if (userType === globals.USER_TYPES.MODERATOR || userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+    if (person.userType === globals.USER_TYPES.MODERATOR || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
         el.classList.add('moderator');
     }
 
     el.appendChild(personNameEl);
     el.appendChild(personTypeEl);
 
-    if (client.userType === globals.USER_TYPES.MODERATOR || client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-        SharedStateUtil.addPlayerOptions(el);
+    if ((gameState.client.userType === globals.USER_TYPES.MODERATOR || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR)
+        && person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
+        SharedStateUtil.addPlayerOptions(el, person, socket, gameState);
+        el.dataset.pointer = person.id;
     }
 
     return el;

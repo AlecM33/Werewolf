@@ -76,6 +76,14 @@
     border: 1px solid #46455299;
 }
 
+#player-options-modal {
+    z-index: 200001;
+}
+
+#player-options-modal-background {
+    z-index: 200000;
+}
+
 #custom-role-info-modal-name {
     font-family: 'signika-negative', sans-serif;
     font-size: 23px;

@@ -1,5 +1,6 @@
 const globals = require('../config/globals');
 const GameStateCurator = require('./GameStateCurator');
+const UsernameGenerator = require('./UsernameGenerator');
 const EVENT_IDS = globals.EVENT_IDS;
 
 const Events = [
@@ -18,6 +19,40 @@ const Events = [
             vars.gameManager.namespace.in(game.accessCode).emit(
                 globals.EVENTS.PLAYER_JOINED,
                 GameStateCurator.mapPerson(socketArgs),
+                game.isFull
+            );
+        }
+    },
+    {
+        id: EVENT_IDS.KICK_PERSON,
+        stateChange: async (game, socketArgs, vars) => {
+            const toBeClearedIndex = game.people.findIndex(
+                (person) => person.id === socketArgs.personId && person.assigned === true
+            );
+            if (toBeClearedIndex >= 0) {
+                const toBeCleared = game.people[toBeClearedIndex];
+                if (toBeCleared.userType === globals.USER_TYPES.SPECTATOR) {
+                    game.people.splice(toBeClearedIndex, 1);
+                } else {
+                    toBeCleared.assigned = false;
+                    toBeCleared.socketId = null;
+                    toBeCleared.cookie = (() => {
+                        let id = '';
+                        for (let i = 0; i < globals.INSTANCE_ID_LENGTH; i ++) {
+                            id += globals.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * globals.INSTANCE_ID_CHAR_POOL.length)];
+                        }
+                        return id;
+                    })();
+                    toBeCleared.hasEnteredName = false;
+                    toBeCleared.name = UsernameGenerator.generate();
+                    game.isFull = vars.gameManager.isGameFull(game);
+                }
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.KICK_PERSON,
+                socketArgs.personId,
                 game.isFull
             );
         }

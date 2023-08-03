@@ -139,6 +139,15 @@ export const HTMLFragments = {
             <button id='close-mod-transfer-modal-button' class='app-button cancel'>Cancel</button>
         </div>
     </div>`,
+    PLAYER_OPTIONS_MODAL:
+    `<div id='player-options-modal-background' class='modal-background'></div>
+    <div tabindex='-1' id='player-options-modal' class='modal'>
+        <h2>Person Options:</h2>
+        <div id='player-options-modal-content'></div>
+        <div class='modal-button-container'>
+            <button id='close-player-options-modal-button' class='app-button cancel'>Close</button>
+        </div>
+    </div>`,
     MODERATOR_GAME_VIEW:
     `<div id='game-header'>
         <div id='timer-container-moderator'>

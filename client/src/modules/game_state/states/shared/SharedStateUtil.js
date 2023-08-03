@@ -24,7 +24,7 @@ export const SharedStateUtil = {
     },
 
     restartHandler: (stateBucket, status = globals.STATUS.IN_PROGRESS) => {
-        console.log("HEY")
+        console.log('HEY');
         XHRUtility.xhr(
             '/api/games/' + stateBucket.currentGameState.accessCode + '/restart?status=' + status,
             'PATCH',
@@ -175,17 +175,46 @@ export const SharedStateUtil = {
         }
     },
 
-    addPlayerOptions: (personEl) => {
-        const kickButton = document.createElement('img');
-        kickButton.setAttribute('tabIndex', '0');
-        kickButton.setAttribute('className', 'role-remove');
-        kickButton.setAttribute('src', '../images/3-vertical-dots-icon.svg');
-        kickButton.setAttribute('title', 'Kick Player');
-        kickButton.setAttribute('alt', 'Kick Player');
-        personEl.appendChild(kickButton);
+    addPlayerOptions: (personEl, person, socket, gameState) => {
+        const optionsButton = document.createElement('img');
+        const optionsHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                document.getElementById('player-options-modal-content').innerHTML = '';
+                const kickOption = document.createElement('button');
+                kickOption.setAttribute('class', 'player-option');
+                kickOption.innerText = 'Kick Person';
+                kickOption.addEventListener('click', () => {
+                    ModalManager.dispelModal('player-options-modal', 'player-options-modal-background');
+                    Confirmation('Kick \'' + person.name + '\'?', () => {
+                        socket.emit(
+                            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                            globals.EVENT_IDS.KICK_PERSON,
+                            gameState.accessCode,
+                            { personId: person.id }
+                        );
+                    });
+                });
+                document.getElementById('player-options-modal-content').appendChild(kickOption);
+                ModalManager.displayModal(
+                    'player-options-modal',
+                    'player-options-modal-background',
+                    'close-player-options-modal-button'
+                );
+            }
+        };
+
+        optionsButton.addEventListener('click', optionsHandler);
+        optionsButton.addEventListener('keyup', optionsHandler);
+        optionsButton.setAttribute('tabIndex', '0');
+        optionsButton.setAttribute('className', 'role-remove');
+        optionsButton.setAttribute('src', '../images/3-vertical-dots-icon.svg');
+        optionsButton.setAttribute('title', 'Player Options');
+        optionsButton.setAttribute('alt', 'Player Options');
+
+        personEl.appendChild(optionsButton);
     },
 
-    buildSpectatorList (people, client) {
+    buildSpectatorList (people, client, socket, gameState) {
         const list = document.createElement('div');
         const spectators = people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR);
         if (spectators.length === 0) {
@@ -200,7 +229,8 @@ export const SharedStateUtil = {
                 list.appendChild(spectatorEl);
 
                 if (client.userType === globals.USER_TYPES.MODERATOR || client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                    this.addPlayerOptions(spectatorEl);
+                    this.addPlayerOptions(spectatorEl, spectator, socket, gameState);
+                    spectatorEl.dataset.pointer = spectator.id;
                 }
             }
         }
@@ -259,13 +289,12 @@ function processGameState (
             lobby.populatePlayers();
             globals.LOBBY_EVENTS().forEach(e => socket.removeAllListeners(e));
             lobby.setSocketHandlers();
-            if ((
-                currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                    || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-            )
-                && refreshPrompt
-            ) {
-                lobby.displayStartGamePromptForModerators();
+            if (currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                if (refreshPrompt) {
+                    lobby.displayStartGamePromptForModerators();
+                }
+                document.getElementById('player-options-prompt').innerHTML = HTMLFragments.PLAYER_OPTIONS_MODAL;
             }
             break;
         case globals.STATUS.IN_PROGRESS:

@@ -53,7 +53,8 @@ export const globals = {
         ADD_SPECTATOR: 'addSpectator',
         UPDATE_SPECTATORS: 'updateSpectators',
         RESTART_GAME: 'restartGame',
-        ASSIGN_DEDICATED_MOD: 'assignDedicatedMod'
+        ASSIGN_DEDICATED_MOD: 'assignDedicatedMod',
+        KICK_PERSON: 'kickPerson'
     },
     TIMER_EVENTS: function () {
         return [
@@ -66,7 +67,8 @@ export const globals = {
     LOBBY_EVENTS: function () {
         return [
             this.EVENT_IDS.PLAYER_JOINED,
-            this.EVENT_IDS.ADD_SPECTATOR
+            this.EVENT_IDS.ADD_SPECTATOR,
+            this.EVENT_IDS.KICK_PERSON
         ];
     },
     IN_PROGRESS_EVENTS: function () {

@@ -273,9 +273,34 @@ h1 {
     width: 90%;
 }
 
-#role-info-modal .modal-button-container {
+#role-info-modal .modal-button-container, #player-options-modal .modal-button-container {
     margin-top: 1em;
     justify-content: center;
+}
+
+#player-options-modal-content {
+    margin: 1em 0;
+}
+
+.player-option {
+    background-color: #4645525c;
+    border: 2px solid #46455299;
+    color: #d7d7d7;
+    display: flex;
+    font-family: 'signika-negative', sans-serif !important;
+    padding: 10px 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin: 10px 0;
+}
+
+.player-option:hover, .player-option:active {
+    border: 2px solid #e7e7e7;
+    background-color: #33343c;
+    cursor: pointer;
 }
 
 #game-role-info-container .role-info-name {

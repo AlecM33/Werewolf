@@ -272,7 +272,6 @@ class GameManager {
             game.status = globals.STATUS.LOBBY;
         }
 
-
         await this.refreshGame(game);
         await this.eventManager.publisher?.publish(
             globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,

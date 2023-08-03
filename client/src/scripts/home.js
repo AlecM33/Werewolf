@@ -1,9 +1,15 @@
 import { XHRUtility } from '../modules/utility/XHRUtility.js';
 import { toast } from '../modules/front_end_components/Toast.js';
 import { injectNavbar } from '../modules/front_end_components/Navbar.js';
+import { Confirmation } from '../modules/front_end_components/Confirmation.js';
 
 const home = () => {
     injectNavbar();
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    if (message && message.length > 0) {
+        Confirmation(message);
+    }
     document.getElementById('join-form').addEventListener('submit', attemptToJoinGame);
 };
 

@@ -51,7 +51,7 @@ export class InProgress {
                 this.stateBucket.currentGameState.accessCode
             );
             setTimeout(() => {
-                if (this.socket.hasListeners(globals.EVENT_IDS.GET_TIME_REMAINING)) {
+                if (this.socket.hasListeners(globals.EVENT_IDS.GET_TIME_REMAINING) && document.getElementById('game-timer') !== null) {
                     document.getElementById('game-timer').innerText = 'Timer not found.';
                     document.getElementById('game-timer').classList.add('timer-error');
                 }
@@ -65,8 +65,16 @@ export class InProgress {
         const spectatorCount = this.container.querySelector('#spectator-count');
         const spectatorHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
-                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
-                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR)), null, true);
+                Confirmation(
+                    SharedStateUtil.buildSpectatorList(
+                        this.stateBucket.currentGameState.people
+                            .filter(p => p.userType === globals.USER_TYPES.SPECTATOR),
+                        this.stateBucket.currentGameState.client,
+                        this.socket,
+                        this.stateBucket.currentGameState),
+                    null,
+                    true
+                );
             }
         };
 

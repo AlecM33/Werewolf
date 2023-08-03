@@ -55,7 +55,8 @@ const globals = {
         SYNC_GAME_STATE: 'syncGameState',
         UPDATE_SOCKET: 'updateSocket',
         ASSIGN_DEDICATED_MOD: 'assignDedicatedMod',
-        TIMER_EVENT: 'timerEvent'
+        TIMER_EVENT: 'timerEvent',
+        KICK_PERSON: 'kickPerson'
     },
     SYNCABLE_EVENTS: function () {
         return [
@@ -74,7 +75,8 @@ const globals = {
             this.EVENT_IDS.ASSIGN_DEDICATED_MOD,
             this.EVENT_IDS.RESUME_TIMER,
             this.EVENT_IDS.PAUSE_TIMER,
-            this.EVENT_IDS.END_TIMER
+            this.EVENT_IDS.END_TIMER,
+            this.EVENT_IDS.KICK_PERSON
         ];
     },
     TIMER_EVENTS: function () {

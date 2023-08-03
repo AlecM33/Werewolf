@@ -51,6 +51,7 @@ const Events = [
                     (accumulator, currentValue) => accumulator + currentValue.quantity,
                     0
                 );
+                game.isFull = vars.gameManager.isGameFull(game);
             }
         },
         communicate: async (game, socketArgs, vars) => {

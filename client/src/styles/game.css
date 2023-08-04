@@ -294,7 +294,8 @@ h1 {
 }
 
 #game-code span {
-    font-family: "Courier New", monospace;
+    font-family: "signika-negative", sans-serif;
+    letter-spacing: 0.2rem;
     color: #21ba45;
     font-size: 30px;
 }

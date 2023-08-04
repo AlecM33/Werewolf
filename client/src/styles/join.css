@@ -44,6 +44,7 @@
 }
 
 #game-code {
-    font-family: "Courier New", monospace;
+    font-family: "signika-negative", sans-serif;
+    letter-spacing: 0.2rem;
     color: #21ba45;
 }

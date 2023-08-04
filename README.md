@@ -15,7 +15,7 @@ Find the latest production deployment at: https://play-werewolf.app/
 - [Code Formatting](#code-formatting)
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/24642328/218271143-5df50c7f-3a11-4012-8f1a-f288373458f4.jpg" width="750"/>
+    <img src="./client/src/images/readme-collage.webp" width="750"/>
 </p>
 
 ## Overview

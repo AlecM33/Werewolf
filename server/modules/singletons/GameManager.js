@@ -182,7 +182,6 @@ class GameManager {
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
         } else if (joinAsSpectator || this.isGameStartable(game)) {
-            console.log('game is full');
             return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
         let moderator, newPlayer;

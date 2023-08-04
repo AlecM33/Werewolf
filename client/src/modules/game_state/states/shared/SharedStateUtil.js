@@ -24,7 +24,6 @@ export const SharedStateUtil = {
     },
 
     restartHandler: (stateBucket, status = globals.STATUS.IN_PROGRESS) => {
-        console.log('HEY');
         XHRUtility.xhr(
             '/api/games/' + stateBucket.currentGameState.accessCode + '/restart?status=' + status,
             'PATCH',

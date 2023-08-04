@@ -67,7 +67,7 @@ describe('Create page', function () {
                 .toEqual('Test name');
         });
 
-        it('should successstartabley update custom role information after creating it', () => {
+        it('should successfully update custom role information after creating it', () => {
             document.getElementById('role-category-custom').click();
             document.getElementById('custom-role-btn').click();
             document.getElementById('role-name').value = 'Test name';

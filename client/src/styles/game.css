@@ -18,7 +18,7 @@
 }
 
 .lobby-player img, .spectator img {
-    height: 18px;
+    height: 22px;
     margin: 0 8px;
     cursor: pointer;
     padding: 5px;

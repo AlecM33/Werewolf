@@ -178,6 +178,7 @@ export const SharedStateUtil = {
         const optionsButton = document.createElement('img');
         const optionsHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
+                document.querySelector('#player-options-modal-title').innerText = person.name + globals.USER_TYPE_ICONS[person.userType];
                 document.getElementById('player-options-modal-content').innerHTML = '';
                 const kickOption = document.createElement('button');
                 kickOption.setAttribute('class', 'player-option');

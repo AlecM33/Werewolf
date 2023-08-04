@@ -147,7 +147,7 @@ export const HTMLFragments = {
     PLAYER_OPTIONS_MODAL:
     `<div id='player-options-modal-background' class='modal-background'></div>
     <div tabindex='-1' id='player-options-modal' class='modal'>
-        <h2>Person Options:</h2>
+        <h2 id="player-options-modal-title"></h2>
         <div id='player-options-modal-content'></div>
         <div class='modal-button-container'>
             <button id='close-player-options-modal-button' class='app-button cancel'>Close</button>

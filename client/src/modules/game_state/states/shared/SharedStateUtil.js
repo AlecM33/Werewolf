@@ -295,11 +295,16 @@ function processGameState (
                     lobby.displayStartGamePromptForModerators();
                 }
                 document.getElementById('player-options-prompt').innerHTML = HTMLFragments.PLAYER_OPTIONS_MODAL;
+            } else {
+                if (refreshPrompt) {
+                    lobby.displayPlayerPrompt();
+                }
             }
             break;
         case globals.STATUS.IN_PROGRESS:
             if (refreshPrompt) {
                 document.querySelector('#game-control-prompt')?.remove();
+                document.querySelector('#leave-game-prompt')?.remove();
             }
             const inProgressGame = new InProgress('game-state-container', stateBucket, socket);
             globals.IN_PROGRESS_EVENTS().forEach(e => socket.removeAllListeners(e));

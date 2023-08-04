@@ -320,7 +320,8 @@ class GameManager {
 
     isGameStartable = (game) => {
         return game.people.filter(person => person.userType === globals.USER_TYPES.PLAYER
-            || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR).length === game.gameSize;
+            || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            || person.userType === globals.USER_TYPES.BOT).length === game.gameSize;
     }
 
     findPersonByField = (game, fieldName, value) => {

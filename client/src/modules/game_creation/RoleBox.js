@@ -117,8 +117,10 @@ export class RoleBox {
                         const role = this.getDefaultRole(card.role)
                             ? this.getDefaultRole(card.role)
                             : this.getCustomRole(card.role);
-                        role.id = card.id;
-                        this.deckManager.addToDeck(role);
+                        if (role) {
+                            role.id = card.id;
+                            this.deckManager.addToDeck(role);
+                        }
                     } else {
                         this.deckManager.addCopyOfCard(card.role);
                     }

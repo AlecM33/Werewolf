@@ -38,6 +38,25 @@ const Events = [
         }
     },
     {
+        id: EVENT_IDS.LEAVE_ROOM,
+        stateChange: async (game, socketArgs, vars) => {
+            const toBeClearedIndex = game.people.findIndex(
+                (person) => person.id === socketArgs.personId && person.assigned === true
+            );
+            if (toBeClearedIndex >= 0) {
+                game.people.splice(toBeClearedIndex, 1);
+                game.isStartable = vars.gameManager.isGameStartable(game);
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.LEAVE_ROOM,
+                socketArgs.personId,
+                game.isStartable
+            );
+        }
+    },
+    {
         id: EVENT_IDS.UPDATE_GAME_ROLES,
         stateChange: async (game, socketArgs, vars) => {
             if (GameCreationRequest.deckIsValid(socketArgs.deck)) {
@@ -56,7 +75,8 @@ const Events = [
             vars.gameManager.namespace.in(game.accessCode).emit(
                 EVENT_IDS.UPDATE_GAME_ROLES,
                 game.deck,
-                game.gameSize
+                game.gameSize,
+                game.isStartable
             );
         }
     },

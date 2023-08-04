@@ -55,7 +55,8 @@ export const globals = {
         RESTART_GAME: 'restartGame',
         ASSIGN_DEDICATED_MOD: 'assignDedicatedMod',
         KICK_PERSON: 'kickPerson',
-        UPDATE_GAME_ROLES: 'updateGameRoles'
+        UPDATE_GAME_ROLES: 'updateGameRoles',
+        LEAVE_ROOM: 'leaveRoom'
     },
     TIMER_EVENTS: function () {
         return [

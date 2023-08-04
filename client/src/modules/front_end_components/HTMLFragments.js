@@ -47,10 +47,17 @@ export const HTMLFragments = {
     START_GAME_PROMPT:
     `<button id='edit-roles-button'>Edit Roles</button>
     <button id='start-game-button'>Start Game</button>`,
+    LEAVE_GAME_PROMPT:
+    '<button id=\'leave-game-button\'>Leave Room</button>',
     GAME_CONTROL_PROMPT:
     `<div id='game-control-prompt'>
         <button id='end-game-button'>End Game</button>
     </div>`,
+    ROLE_EDIT_BUTTONS:
+    `<button class="app-button cancel" id="cancel-role-changes-button">Cancel</button>
+    <button class="app-button" id="save-role-changes-button">
+        <p>Save</p><img src="../images/save-svgrepo-com.svg" alt='save'>
+    </button>`,
     PLAYER_GAME_VIEW:
     `<div id='game-header'>
         <div>

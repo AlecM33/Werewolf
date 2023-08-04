@@ -57,7 +57,8 @@ const globals = {
         ASSIGN_DEDICATED_MOD: 'assignDedicatedMod',
         TIMER_EVENT: 'timerEvent',
         KICK_PERSON: 'kickPerson',
-        UPDATE_GAME_ROLES: 'updateGameRoles'
+        UPDATE_GAME_ROLES: 'updateGameRoles',
+        LEAVE_ROOM: 'leaveRoom'
     },
     SYNCABLE_EVENTS: function () {
         return [
@@ -78,7 +79,8 @@ const globals = {
             this.EVENT_IDS.PAUSE_TIMER,
             this.EVENT_IDS.END_TIMER,
             this.EVENT_IDS.KICK_PERSON,
-            this.EVENT_IDS.UPDATE_GAME_ROLES
+            this.EVENT_IDS.UPDATE_GAME_ROLES,
+            this.EVENT_IDS.LEAVE_ROOM
         ];
     },
     TIMER_EVENTS: function () {

@@ -71,7 +71,8 @@ export const globals = {
             this.EVENT_IDS.PLAYER_JOINED,
             this.EVENT_IDS.ADD_SPECTATOR,
             this.EVENT_IDS.KICK_PERSON,
-            this.EVENT_IDS.UPDATE_GAME_ROLES
+            this.EVENT_IDS.UPDATE_GAME_ROLES,
+            this.EVENT_IDS.LEAVE_ROOM
         ];
     },
     IN_PROGRESS_EVENTS: function () {

@@ -45,14 +45,19 @@ export const HTMLFragments = {
             </select>
         </div>`,
     START_GAME_PROMPT:
-    `<div>
-        <button id='start-game-button'>Start Game</button>
-        <p>All players must join to start.</p>
-    </div>`,
+    `<button id='edit-roles-button'>Edit Roles</button>
+    <button id='start-game-button'>Start Game</button>`,
+    LEAVE_GAME_PROMPT:
+    '<button id=\'leave-game-button\'>Leave Room</button>',
     GAME_CONTROL_PROMPT:
     `<div id='game-control-prompt'>
         <button id='end-game-button'>End Game</button>
     </div>`,
+    ROLE_EDIT_BUTTONS:
+    `<button class="app-button cancel" id="cancel-role-changes-button">Cancel</button>
+    <button class="app-button" id="save-role-changes-button">
+        <p>Save</p><img src="../images/save-svgrepo-com.svg" alt='save'>
+    </button>`,
     PLAYER_GAME_VIEW:
     `<div id='game-header'>
         <div>
@@ -137,6 +142,15 @@ export const HTMLFragments = {
         <div id='transfer-mod-modal-content'></div>
         <div class='modal-button-container'>
             <button id='close-mod-transfer-modal-button' class='app-button cancel'>Cancel</button>
+        </div>
+    </div>`,
+    PLAYER_OPTIONS_MODAL:
+    `<div id='player-options-modal-background' class='modal-background'></div>
+    <div tabindex='-1' id='player-options-modal' class='modal'>
+        <h2 id="player-options-modal-title"></h2>
+        <div id='player-options-modal-content'></div>
+        <div class='modal-button-container'>
+            <button id='close-player-options-modal-button' class='app-button cancel'>Close</button>
         </div>
     </div>`,
     MODERATOR_GAME_VIEW:
@@ -296,9 +310,6 @@ export const HTMLFragments = {
             <h2>&#x1F3C1; The moderator has ended the game. Roles are revealed.</h2>
             <div id="end-of-game-buttons">
                 <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
-                <a href='/'>
-                    <button class='app-button'>Go Home \uD83C\uDFE0</button>
-                </a>
             </div>
         </div>
         <div id='game-people-container'>
@@ -355,21 +366,21 @@ export const HTMLFragments = {
 
 </div>
         <div class="role-options">
-            <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
-            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
-            <img tabindex="0" class="role-edit" src="images/pencil.svg" title="edit" alt="edit"/>
-            <img tabindex="0" class="role-remove" src="images/delete.svg" title="remove" alt="remove"/>
+            <img tabindex="0" class="role-include" src="../images/add.svg" title="add one" alt="add one"/>
+            <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-edit" src="../images/pencil.svg" title="edit" alt="edit"/>
+            <img tabindex="0" class="role-remove" src="../images/delete.svg" title="remove" alt="remove"/>
         </div>`,
     DECK_SELECT_ROLE_DEFAULT:
         `<div class="role-name"></div>
         <div class="role-options">
-            <img tabindex="0" class="role-include" src="images/add.svg" title="add one" alt="add one"/>
-            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-include" src="../images/add.svg" title="add one" alt="add one"/>
+            <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
         </div>`,
     DECK_SELECT_ROLE_ADDED_TO_DECK:
         `<div class="role-name"></div>
         <div class="role-options">
-            <img tabindex="0" class="role-remove" src="images/remove.svg" title="remove one" alt="remove one"/>
-            <img tabindex="0" class="role-info" src="images/info.svg" title="info" alt="info"/>
+            <img tabindex="0" class="role-remove" src="../images/remove.svg" title="remove one" alt="remove one"/>
+            <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
         </div>`
 };

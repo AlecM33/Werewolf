@@ -34,10 +34,10 @@ describe('Events', () => {
             STATUS.LOBBY,
             [
                 { id: 'a', assigned: true, out: true, killed: false, userType: USER_TYPES.MODERATOR },
-                { id: 'b', gameRole: 'Villager', alignment: 'good', assigned: false, out: false, killed: false, userType: USER_TYPES.PLAYER },
+                { id: 'b', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.PLAYER },
                 { id: 'c', assigned: true, out: true, killed: false, userType: USER_TYPES.SPECTATOR }
             ],
-            [{ quantity: 2 }],
+            [{ quantity: 1 }, { quantity: 1 }],
             false,
             'a',
             true,
@@ -50,7 +50,7 @@ describe('Events', () => {
         spyOn(socket, 'to').and.callThrough();
         spyOn(namespace.in(), 'emit').and.callThrough();
         spyOn(namespace.to(), 'emit').and.callThrough();
-        spyOn(gameManager, 'isGameFull').and.callThrough();
+        spyOn(gameManager, 'isGameStartable').and.callThrough();
         spyOn(GameStateCurator, 'mapPerson').and.callThrough();
         spyOn(eventManager.publisher, 'publish').and.callThrough();
         spyOn(eventManager, 'createMessageToPublish').and.stub();
@@ -60,38 +60,32 @@ describe('Events', () => {
 
     describe(EVENT_IDS.PLAYER_JOINED, () => {
         describe('stateChange', () => {
-            it('should let a player join and mark the game as full', async () => {
+            it('should let a player join and mark the game as startable', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
-                    .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager });
-                expect(gameManager.isGameFull).toHaveBeenCalled();
-                expect(game.isFull).toEqual(true);
+                    .stateChange(game, { id: 'd', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
+                expect(gameManager.isGameStartable).toHaveBeenCalled();
+                expect(game.isStartable).toEqual(true);
                 expect(game.people.find(p => p.id === 'b').assigned).toEqual(true);
             });
-            it('should let a player join and mark the game as NOT full', async () => {
-                game.people.push({ id: 'd', assigned: false, userType: USER_TYPES.PLAYER });
+            it('should let too many players join and mark the game as NOT startable', async () => {
+                game.people.push({ id: 'e', assigned: true, userType: USER_TYPES.PLAYER });
+                game.people.push({ id: 'f', assigned: true, userType: USER_TYPES.PLAYER });
                 await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
                     .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager });
-                expect(gameManager.isGameFull).toHaveBeenCalled();
-                expect(game.isFull).toEqual(false);
+                expect(gameManager.isGameStartable).toHaveBeenCalled();
+                expect(game.isStartable).toEqual(false);
                 expect(game.people.find(p => p.id === 'b').assigned).toEqual(true);
-            });
-            it('should not let the player join if their id does not match some unassigned person', async () => {
-                await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
-                    .stateChange(game, { id: 'd', assigned: true }, { gameManager: gameManager });
-                expect(gameManager.isGameFull).not.toHaveBeenCalled();
-                expect(game.isFull).toEqual(false);
-                expect(game.people.find(p => p.id === 'd')).not.toBeDefined();
             });
         });
         describe('communicate', () => {
             it('should communicate the join event to the rooms sockets, sending the new player', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
-                    .communicate(game, { id: 'b', assigned: true }, { gameManager: gameManager });
+                    .communicate(game, { id: 'd', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(
                     globals.EVENTS.PLAYER_JOINED,
-                    GameStateCurator.mapPerson({ id: 'b', assigned: true }),
-                    game.isFull
+                    GameStateCurator.mapPerson({ id: 'd', assigned: true, userType: USER_TYPES.PLAYER }),
+                    game.isStartable
                 );
             });
         });
@@ -102,8 +96,8 @@ describe('Events', () => {
             it('should add a spectator', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.ADD_SPECTATOR)
                     .stateChange(game, { id: 'e', name: 'ghost', assigned: true }, { gameManager: gameManager });
-                expect(gameManager.isGameFull).not.toHaveBeenCalled();
-                expect(game.isFull).toEqual(false);
+                expect(gameManager.isGameStartable).not.toHaveBeenCalled();
+                expect(game.isStartable).toEqual(false);
                 expect(game.people.find(p => p.id === 'e').assigned).toEqual(true);
                 expect(game.people.find(p => p.id === 'e').name).toEqual('ghost');
             });
@@ -117,6 +111,73 @@ describe('Events', () => {
                     EVENT_IDS.ADD_SPECTATOR,
                     GameStateCurator.mapPerson({ id: 'e', name: 'ghost', assigned: true })
                 );
+            });
+        });
+    });
+
+    describe(EVENT_IDS.UPDATE_GAME_ROLES, () => {
+        describe('stateChange', () => {
+            it('should update the game roles', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.UPDATE_GAME_ROLES)
+                    .stateChange(game, {
+                        deck: [
+                            {
+                                role: 'Parity Hunter',
+                                team: 'good',
+                                description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
+                                id: '6yh9h70h4tu47tt3ev39jbox6nlckmvmvadpt5r042iq31249l',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Seer',
+                                team: 'good',
+                                description: 'Each night, learn if a chosen person is a Werewolf.',
+                                id: 'eat0h7d0a5vzd7h2ddbxi6gy10mqn95u50595dr1eazb47mjm7',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Villager',
+                                team: 'good',
+                                description: 'During the day, find the wolves and kill them.',
+                                id: 'i4ora0tj4excnnrmrkm0l6zbqhvlneivnofq908c3vp0n4uof8',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Sorceress',
+                                team: 'evil',
+                                description: 'Each night, learn if a chosen person is the Seer.',
+                                id: 'ywl9sqpr0lj4uplu81bvsnutlabtghe2ra41hyfstytnu6t85t',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Werewolf',
+                                team: 'evil',
+                                description: "During the night, choose a villager to kill. Don't get killed.",
+                                id: '6wrjy32eqj0171uxmhd6lwql6h7ph90djavtxybfzwbjyal489',
+                                quantity: 1
+                            }
+                        ]
+                    }, { gameManager: gameManager });
+
+                expect(game.gameSize).toEqual(5);
+                expect(game.isStartable).toEqual(false);
+            });
+        });
+    });
+
+    describe(EVENT_IDS.LEAVE_ROOM, () => {
+        describe('stateChange', () => {
+            it('should remove a player and mark the game as startable', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
+                    .stateChange(game, { id: 'd', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
+                    .stateChange(game, { id: 'e', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.LEAVE_ROOM)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+
+                expect(game.people.find(person => person.id === 'b')).not.toBeDefined();
+                expect(game.gameSize).toEqual(2);
+                expect(game.isStartable).toEqual(true);
             });
         });
     });
@@ -197,18 +258,18 @@ describe('Events', () => {
     describe(EVENT_IDS.START_GAME, () => {
         describe('stateChange', () => {
             it('should start the game', async () => {
-                game.isFull = true;
+                game.isStartable = true;
                 await Events.find((e) => e.id === EVENT_IDS.START_GAME)
                     .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager });
                 expect(game.status).toEqual(STATUS.IN_PROGRESS);
             });
-            it('should not start the game if it is not full', async () => {
+            it('should not start the game if it is not startable', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.START_GAME)
                     .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager });
                 expect(game.status).toEqual(STATUS.LOBBY);
             });
             it('should start the game and run the timer if the game has one', async () => {
-                game.isFull = true;
+                game.isStartable = true;
                 game.hasTimer = true;
                 game.timerParams = {};
                 spyOn(timerManager, 'runTimer').and.callFake((a, b) => {});

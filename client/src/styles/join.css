@@ -40,8 +40,11 @@
 
 #game-parameters div:nth-child(1) {
     margin-bottom: 20px;
+    font-size: 35px;
 }
 
 #game-code {
-    font-family: "Courier New", monospace;
+    font-family: "signika-negative", sans-serif;
+    letter-spacing: 0.2rem;
+    color: #21ba45;
 }

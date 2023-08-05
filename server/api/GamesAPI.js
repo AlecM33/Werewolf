@@ -82,7 +82,8 @@ router.patch('/:code/players', async function (req, res) {
             gameManager.joinGame(game, req.body.playerName, inUseCookie, req.body.joinAsSpectator).then((data) => {
                 res.status(200).send({ cookie: data, environment: gameManager.environment });
             }).catch((data) => {
-                res.status(data.status).send(data.reason);
+                console.error(data);
+                res.status(data.status || 500).send(data.reason);
             });
         } else {
             res.status(404).send();
@@ -102,7 +103,7 @@ router.patch('/:code/restart', async function (req, res) {
     } else {
         const game = await gameManager.getActiveGame(req.body.accessCode);
         if (game) {
-            gameManager.restartGame(game, gameManager.namespace).then((data) => {
+            gameManager.restartGame(game, gameManager.namespace, req.query.status).then((data) => {
                 res.status(200).send();
             }).catch((code) => {
                 res.status(code).send();

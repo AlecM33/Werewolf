@@ -15,7 +15,7 @@ describe('game page', () => {
         }
     };
 
-    describe('lobby game', () => {
+    describe('lobby game - moderator view', () => {
         let mockSocket;
 
         beforeEach(async function () {
@@ -34,7 +34,7 @@ describe('game page', () => {
                 emit: function (eventName, ...args) {
                     switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
                         case globals.EVENT_IDS.FETCH_GAME_STATE:
-                            args[args.length - 1](deepCopy(mockGames.gameInLobby)); // copy the game object to prevent leaking of state between specs
+                            args[args.length - 1](deepCopy(mockGames.gameInLobbyAsModerator)); // copy the game object to prevent leaking of state between specs
                     }
                 },
                 removeAllListeners: function (...names) {
@@ -46,6 +46,7 @@ describe('game page', () => {
             };
             await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
             mockSocket.eventHandlers.connect();
+            spyOn(mockSocket, 'emit');
         });
 
         it('should display the connected client', () => {
@@ -69,16 +70,97 @@ describe('game page', () => {
             expect(document.getElementById('current-info-message').innerText).toEqual('Jane joined!');
         });
 
-        it('should activate the start button for the moderator when the game is full', () => {
-            expect(document.getElementById('start-game-button').classList.contains('disabled')).toBeTrue();
+        it('should display the cards currently in the deck when the Edit Roles button is clicked', () => {
+            document.getElementById('edit-roles-button').click();
+
+            expect(document.querySelectorAll('.added-role').length).toEqual(mockGames.gameInLobbyAsModerator.deck.length);
+            expect(document.getElementById('deck-count').innerText).toEqual(mockGames.gameInLobbyAsModerator.gameSize + ' Players');
+        });
+
+        it('should send an update to the game information if I save changes to the deck', () => {
+            document.getElementById('edit-roles-button').click();
+            document.querySelectorAll('.added-role').item(0).querySelector('.role-remove').click();
+            document.getElementById('save-role-changes-button').click();
+
+            expect(mockSocket.emit).toHaveBeenCalledWith(
+                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                globals.EVENT_IDS.UPDATE_GAME_ROLES,
+                mockGames.gameInLobbyAsModerator.accessCode,
+                jasmine.any(Object),
+                jasmine.any(Function)
+            );
+        });
+
+        afterAll(() => {
+            document.body.innerHTML = '';
+        });
+    });
+
+    describe('lobby game - player view', () => {
+        let mockSocket;
+
+        beforeEach(async function () {
+            document.body.innerHTML = '';
+            mockSocket = {
+                eventHandlers: {},
+                on: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
+                once: function (message, handler) {
+                    this.eventHandlers[message] = handler;
+                },
+                timeout: (duration) => {
+                    return mockSocket;
+                },
+                emit: function (eventName, ...args) {
+                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                        case globals.EVENT_IDS.FETCH_GAME_STATE:
+                            args[args.length - 1](deepCopy(mockGames.gameInLobbyAsPlayer)); // copy the game object to prevent leaking of state between specs
+                    }
+                },
+                removeAllListeners: function (...names) {
+
+                },
+                hasListeners: function (listener) {
+                    return false;
+                }
+            };
+            await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
+            mockSocket.eventHandlers.connect();
+            spyOn(mockSocket, 'emit');
+        });
+
+        it('should display the connected client', () => {
+            expect(document.getElementById('client-name').innerText).toEqual('Lys');
+            expect(document.getElementById('client-user-type').innerText).toEqual('player' + globals.USER_TYPE_ICONS.player);
+        });
+
+        it('should display the QR Code', () => {
+            expect(document.getElementById('canvas').innerText).not.toBeNull();
+        });
+
+        it('should display the option to leave the game, and fire the event when it is selected and confirmed', () => {
+            expect(document.getElementById('leave-game-button')).not.toBeNull();
+            document.getElementById('leave-game-button').click();
+            document.getElementById('confirmation-yes-button').click();
+            expect(mockSocket.emit).toHaveBeenCalledWith(
+                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                globals.EVENT_IDS.LEAVE_ROOM,
+                mockGames.gameInLobbyAsModerator.accessCode,
+                { personId: mockGames.gameInLobbyAsPlayer.client.id }
+            );
+        });
+
+        it('should display a new player when they join', () => {
             mockSocket.eventHandlers[globals.EVENT_IDS.PLAYER_JOINED]({
-                name: 'Jack',
-                id: '456',
+                name: 'Jane',
+                id: '123',
                 userType: globals.USER_TYPES.PLAYER,
                 out: false,
                 revealed: false
-            }, true);
-            expect(document.getElementById('start-game-button').classList.contains('disabled')).toBeFalse();
+            }, false);
+            expect(document.querySelectorAll('.lobby-player').length).toEqual(3);
+            expect(document.getElementById('current-info-message').innerText).toEqual('Jane joined!');
         });
 
         afterAll(() => {
@@ -332,7 +414,7 @@ describe('game page', () => {
                 }
             ]);
             expect(document.getElementById('end-of-game-header')).not.toBeNull();
-            expect(document.getElementById('restart-game-button')).not.toBeNull();
+            expect(document.getElementById('return-to-lobby-button')).not.toBeNull();
         });
 
         afterAll(() => {

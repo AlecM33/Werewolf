@@ -4,6 +4,9 @@ import { globals } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { SharedStateUtil } from './shared/SharedStateUtil.js';
+import { GameCreationStepManager } from '../../game_creation/GameCreationStepManager.js';
+import { DeckStateManager } from '../../game_creation/DeckStateManager.js';
+import { hiddenMenus } from '../../../view_templates/CreateTemplate.js';
 
 export class Lobby {
     constructor (containerId, stateBucket, socket) {
@@ -11,9 +14,15 @@ export class Lobby {
         this.socket = socket;
         this.container = document.getElementById(containerId);
         this.container.innerHTML = HTMLFragments.LOBBY;
+        this.gameCreationStepManager = new GameCreationStepManager(new DeckStateManager());
 
         this.startGameHandler = (e) => {
             e.preventDefault();
+            if (!stateBucket.currentGameState.isStartable) {
+                toast('The number of players does not match the number of cards. ' +
+                    'You must either add/remove players or edit roles and their quantities.', 'error', true, true, 'long');
+                return;
+            }
             Confirmation('Start game and deal roles?', () => {
                 socket.timeout(5000).emit(
                     globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
@@ -38,13 +47,69 @@ export class Lobby {
                 );
             });
         };
+
+        this.leaveGameHandler = (e) => {
+            e.preventDefault();
+            Confirmation('Leave the room?', () => {
+                socket.emit(
+                    globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    globals.EVENT_IDS.LEAVE_ROOM,
+                    stateBucket.currentGameState.accessCode,
+                    { personId: stateBucket.currentGameState.client.id }
+                );
+            });
+        };
+
+        this.editRolesHandler = (e) => {
+            e.preventDefault();
+            document.querySelector('#mid-game-role-editor')?.remove();
+            const roleEditContainer = document.createElement('div');
+            const roleEditContainerBackground = document.createElement('div');
+            roleEditContainerBackground.setAttribute('id', 'role-edit-container-background');
+            roleEditContainer.setAttribute('id', 'mid-game-role-editor');
+            roleEditContainer.innerHTML = hiddenMenus;
+            document.getElementById('game-content').style.display = 'none';
+            document.body.appendChild(roleEditContainer);
+            document.body.appendChild(roleEditContainerBackground);
+            this.gameCreationStepManager.deckManager.deck = [];
+            this.gameCreationStepManager
+                .renderRoleSelectionStep(this.stateBucket.currentGameState, 'mid-game-role-editor', '2');
+            this.gameCreationStepManager.roleBox.loadSelectedRolesFromCurrentGame(this.stateBucket.currentGameState);
+            const roleEditPrompt = document.createElement('div');
+            roleEditPrompt.setAttribute('id', 'role-edit-prompt');
+            roleEditPrompt.innerHTML = HTMLFragments.ROLE_EDIT_BUTTONS;
+            roleEditPrompt.querySelector('#save-role-changes-button').addEventListener('click', () => {
+                if (this.gameCreationStepManager.deckManager.getDeckSize() > 50) {
+                    toast('Your deck is too large. The max is 50 cards.', 'error', true);
+                } else if (this.gameCreationStepManager.deckManager.getDeckSize() < 1) {
+                    toast('You must add at least one card', 'error', true);
+                } else {
+                    document.querySelector('#mid-game-role-editor')?.remove();
+                    document.querySelector('#role-edit-container-background')?.remove();
+                    document.getElementById('game-content').style.display = 'flex';
+                    this.socket.emit(
+                        globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                        globals.EVENT_IDS.UPDATE_GAME_ROLES,
+                        stateBucket.currentGameState.accessCode,
+                        { deck: this.gameCreationStepManager.deckManager.deck.filter((card) => card.quantity > 0) },
+                        () => {
+                            toast('Roles updated successfully!', 'success');
+                        }
+                    );
+                }
+            });
+
+            roleEditPrompt.querySelector('#cancel-role-changes-button').addEventListener('click', () => {
+                document.querySelector('#mid-game-role-editor')?.remove();
+                document.querySelector('#role-edit-container-background')?.remove();
+                document.getElementById('game-content').style.display = 'flex';
+            });
+
+            roleEditContainer.appendChild(roleEditPrompt);
+        };
     }
 
-    populateHeader () {
-        const timeString = getTimeString(this.stateBucket.currentGameState);
-        const time = this.container.querySelector('#game-time');
-        time.innerText = timeString;
-
+    setLink (timeString) {
         const linkContainer = this.container.querySelector('#game-link');
         linkContainer.innerHTML = '<img src=\'../images/copy.svg\' alt=\'copy\'/>';
         const link = window.location.protocol + '//' + window.location.host +
@@ -56,13 +121,42 @@ export class Lobby {
         linkContainer.prepend(linkDiv);
         activateLink(linkContainer, link);
 
+        QRCode.toCanvas(document.getElementById('canvas'), link, { scale: 3 }, function (error) {
+            if (error) console.error(error);
+        });
+
+        return link;
+    }
+
+    setPlayerCount () {
         const playerCount = this.container.querySelector('#game-player-count');
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
+        const inLobbyCount = this.stateBucket.currentGameState.people.filter(
+            p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
+        ).length;
+        document.querySelector("label[for='lobby-players']").innerText =
+            'Participants (' + inLobbyCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
+    }
+
+    populateHeader () {
+        const timeString = getTimeString(this.stateBucket.currentGameState);
+        const time = this.container.querySelector('#game-time');
+        time.innerText = timeString;
+
+        const link = this.setLink(timeString);
+
+        this.setPlayerCount();
 
         const spectatorHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
-                Confirmation(SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
-                    .filter(p => p.userType === globals.USER_TYPES.SPECTATOR)), null, true);
+                Confirmation(
+                    SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
+                        .filter(p => p.userType === globals.USER_TYPES.SPECTATOR),
+                    this.stateBucket.currentGameState.client,
+                    this.socket,
+                    this.stateBucket.currentGameState),
+                    null, true
+                );
             }
         };
 
@@ -95,7 +189,7 @@ export class Lobby {
             }
         );
         for (const person of sorted.filter(p => p.userType !== globals.USER_TYPES.SPECTATOR)) {
-            lobbyPlayersContainer.appendChild(renderLobbyPerson(person.name, person.userType));
+            lobbyPlayersContainer.appendChild(renderLobbyPerson(person, this.stateBucket.currentGameState, this.socket));
         }
         const playerCount = this.stateBucket.currentGameState.people.filter(
             p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
@@ -105,10 +199,10 @@ export class Lobby {
     }
 
     setSocketHandlers () {
-        this.socket.on(globals.EVENT_IDS.PLAYER_JOINED, (player, gameIsFull) => {
+        this.socket.on(globals.EVENT_IDS.PLAYER_JOINED, (player, gameIsStartable) => {
             toast(player.name + ' joined!', 'success', true, true, 'short');
             this.stateBucket.currentGameState.people.push(player);
-            this.stateBucket.currentGameState.isFull = gameIsFull;
+            this.stateBucket.currentGameState.isStartable = gameIsStartable;
             this.populatePlayers();
             if ((
                 this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
@@ -126,19 +220,87 @@ export class Lobby {
                 document.getElementById('spectator-count')
             );
         });
+
+        this.socket.on(globals.EVENT_IDS.KICK_PERSON, (kickedId, gameIsStartable) => {
+            if (kickedId === this.stateBucket.currentGameState.client.id) {
+                window.location = '/?message=' + encodeURIComponent('You were kicked by the moderator.');
+            } else {
+                this.handlePersonExiting(kickedId, gameIsStartable, globals.EVENT_IDS.KICK_PERSON);
+            }
+        });
+
+        this.socket.on(globals.EVENT_IDS.UPDATE_GAME_ROLES, (deck, gameSize, isStartable) => {
+            this.stateBucket.currentGameState.deck = deck;
+            this.stateBucket.currentGameState.gameSize = gameSize;
+            this.stateBucket.currentGameState.isStartable = isStartable;
+            this.setLink(getTimeString(this.stateBucket.currentGameState));
+            this.setPlayerCount();
+        });
+
+        this.socket.on(globals.EVENT_IDS.LEAVE_ROOM, (leftId, gameIsStartable) => {
+            if (leftId === this.stateBucket.currentGameState.client.id) {
+                window.location = '/?message=' + encodeURIComponent('You left the room.');
+            } else {
+                this.handlePersonExiting(leftId, gameIsStartable, globals.EVENT_IDS.LEAVE_ROOM);
+            }
+        });
+    }
+
+    handlePersonExiting (id, gameIsStartable, event) {
+        const index = this.stateBucket.currentGameState.people.findIndex(person => person.id === id);
+        if (index >= 0) {
+            this.stateBucket.currentGameState.people
+                .splice(index, 1);
+        }
+        this.stateBucket.currentGameState.isStartable = gameIsStartable;
+        SharedStateUtil.setNumberOfSpectators(
+            this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+            document.getElementById('spectator-count')
+        );
+        this.populatePlayers();
+        if ((
+            this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+        )
+        ) {
+            toast(
+                event === globals.EVENT_IDS.LEAVE_ROOM ? 'A player left.' : 'Player kicked.',
+                event === globals.EVENT_IDS.LEAVE_ROOM ? 'warning' : 'success',
+                true,
+                true,
+                'short'
+            );
+            this.displayStartGamePromptForModerators();
+        }
     }
 
     displayStartGamePromptForModerators () {
         const existingPrompt = document.getElementById('start-game-prompt');
         if (existingPrompt) {
-            enableOrDisableStartButton(this.stateBucket.currentGameState, existingPrompt, this.startGameHandler);
+            enableStartButton(existingPrompt, this.startGameHandler);
+            document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
         } else {
             const newPrompt = document.createElement('div');
             newPrompt.setAttribute('id', 'start-game-prompt');
             newPrompt.innerHTML = HTMLFragments.START_GAME_PROMPT;
 
             document.body.appendChild(newPrompt);
-            enableOrDisableStartButton(this.stateBucket.currentGameState, newPrompt, this.startGameHandler);
+            enableStartButton(newPrompt, this.startGameHandler);
+            document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
+        }
+    }
+
+    displayPlayerPrompt () {
+        const existingPrompt = document.getElementById('leave-game-prompt');
+        if (existingPrompt) {
+            enableLeaveButton(existingPrompt, this.leaveGameHandler);
+        } else {
+            const newPrompt = document.createElement('div');
+            newPrompt.setAttribute('id', 'leave-game-prompt');
+            newPrompt.innerHTML = HTMLFragments.LEAVE_GAME_PROMPT;
+
+            document.body.appendChild(newPrompt);
+            enableLeaveButton(newPrompt, this.leaveGameHandler);
         }
     }
 
@@ -148,14 +310,14 @@ export class Lobby {
     }
 }
 
-function enableOrDisableStartButton (gameState, buttonContainer, handler) {
-    if (gameState.isFull) {
-        buttonContainer.querySelector('#start-game-button').addEventListener('click', handler);
-        buttonContainer.querySelector('#start-game-button').classList.remove('disabled');
-    } else {
-        buttonContainer.querySelector('#start-game-button').removeEventListener('click', handler);
-        buttonContainer.querySelector('#start-game-button').classList.add('disabled');
-    }
+function enableStartButton (buttonContainer, handler) {
+    buttonContainer.querySelector('#start-game-button').addEventListener('click', handler);
+    buttonContainer.querySelector('#start-game-button').classList.remove('disabled');
+}
+
+function enableLeaveButton (buttonContainer, handler) {
+    buttonContainer.querySelector('#leave-game-button').addEventListener('click', handler);
+    buttonContainer.querySelector('#leave-game-button').classList.remove('disabled');
 }
 
 function activateLink (linkContainer, link) {
@@ -192,20 +354,26 @@ function getTimeString (gameState) {
     }
 }
 
-function renderLobbyPerson (name, userType) {
+function renderLobbyPerson (person, gameState, socket) {
     const el = document.createElement('div');
     const personNameEl = document.createElement('div');
     personNameEl.classList.add('lobby-player-name');
     const personTypeEl = document.createElement('div');
-    personNameEl.innerText = name;
-    personTypeEl.innerText = userType + globals.USER_TYPE_ICONS[userType];
+    personNameEl.innerText = person.name;
+    personTypeEl.innerText = person.userType + globals.USER_TYPE_ICONS[person.userType];
     el.classList.add('lobby-player');
-    if (userType === globals.USER_TYPES.MODERATOR || userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+    if (person.userType === globals.USER_TYPES.MODERATOR || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
         el.classList.add('moderator');
     }
 
     el.appendChild(personNameEl);
     el.appendChild(personTypeEl);
+
+    if ((gameState.client.userType === globals.USER_TYPES.MODERATOR || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR)
+        && person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
+        SharedStateUtil.addPlayerOptions(el, person, socket, gameState);
+        el.dataset.pointer = person.id;
+    }
 
     return el;
 }

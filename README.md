@@ -15,13 +15,13 @@ Find the latest production deployment at: https://play-werewolf.app/
 - [Code Formatting](#code-formatting)
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/24642328/218271143-5df50c7f-3a11-4012-8f1a-f288373458f4.jpg" width="750"/>
+    <img src="./client/src/images/readme-collage.webp" width="750"/>
 </p>
 
 ## Overview
 
-An app to create and run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a> with your friends. No sign-up, installation, or payment required. A host builds a game and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
-Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities. Hosts can use any roles they want, in any configuration, and can create their own roles if the provided ones don't meet their needs.
+An app to create and run games of <a href="https://en.wikipedia.org/wiki/Mafia_(party_game)">Werewolf (Mafia)</a> with your friends. No sign-up, installation, or payment required. A moderator creates a room and deals a role to everyone's device, and then the app keeps track of the game state (timer, who is killed/revealed, etc). 
+Since people tend to have their own preferences when it comes to what roles they use or how they run the game, the app tries to take a generalized, flexible, hands-off approach - it won't run day and night for you and won't implement any role abilities. Moderators can choose whether to be dealt in, and they can use any congifuration of roles they want, creating their own roles if needed.
 
 The app prioritizes responsiveness. A key scenario would be when a group is hanging out with only their phones.
 
@@ -30,12 +30,13 @@ Inspired by my time playing <a href="https://boardgamegeek.com/boardgame/152242/
 
 ## Features
 
-- hosts can build their own game for any player count using default roles, or custom roles that they create. They can include a timer, shared by everyone, that the moderator can play or pause.
+- hosts can build their own game for any player count using default roles or custom roles that they create. They can include a timer, shared by everyone, that the moderator can play or pause.
 - party members can join games easily via a shareable link, a QR code, or a 4-character code entered on the homepage.
-- when hosts start the game, cards are dealt randomly and automatically.
+- Players and spectators can freely leave the lobby, or the moderator can kick them. Roles can also be edited in the lobby. This should allow a room to be re-usable for several games, even if the player count changes
+  and the moderator needs to change the cards in the game.
+- When a moderator starts a game, cards are dealt randomly and automatically.
 - players can reference helpful info, such as descriptions of all the roles in the game, the time remaining (if the host has set a timer), and who has been killed or had their role revealed.
 - Moderators have the option to be dealt into the game, and will have their moderator powers automatically delegated to whoever they first remove from the game. Moderators can also transfer their powers to players that have been killed or to people that are spectating.
-- A specific game can be restarted at any time, which will reset the timer and re-deal roles to all players.
 - The app is lightweight and loads fast. 
 
 ## Tech Stack

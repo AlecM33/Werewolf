@@ -23,9 +23,9 @@ export const SharedStateUtil = {
         );
     },
 
-    restartHandler: (stateBucket) => {
+    restartHandler: (stateBucket, status = globals.STATUS.IN_PROGRESS) => {
         XHRUtility.xhr(
-            '/api/games/' + stateBucket.currentGameState.accessCode + '/restart',
+            '/api/games/' + stateBucket.currentGameState.accessCode + '/restart?status=' + status,
             'PATCH',
             null,
             JSON.stringify({
@@ -45,7 +45,7 @@ export const SharedStateUtil = {
         const restartGameButton = document.createElement('button');
         restartGameButton.classList.add('app-button');
         restartGameButton.setAttribute('id', 'restart-game-button');
-        restartGameButton.innerText = 'Restart';
+        restartGameButton.innerText = 'Quick Restart';
         restartGameButton.addEventListener('click', () => {
             Confirmation('Restart the game, dealing everyone new roles?', () => {
                 SharedStateUtil.restartHandler(stateBucket);
@@ -53,6 +53,20 @@ export const SharedStateUtil = {
         });
 
         return restartGameButton;
+    },
+
+    createReturnToLobbyButton: (stateBucket) => {
+        const returnToLobbyButton = document.createElement('button');
+        returnToLobbyButton.classList.add('app-button');
+        returnToLobbyButton.setAttribute('id', 'return-to-lobby-button');
+        returnToLobbyButton.innerText = 'Return to Lobby';
+        returnToLobbyButton.addEventListener('click', () => {
+            Confirmation('Return everyone to the Lobby?', () => {
+                SharedStateUtil.restartHandler(stateBucket, globals.STATUS.LOBBY);
+            });
+        });
+
+        return returnToLobbyButton;
     },
 
     setClientSocketHandlers: (stateBucket, socket) => {
@@ -63,7 +77,7 @@ export const SharedStateUtil = {
 
         const restartGameStateAckFn = (gameState) => {
             SharedStateUtil.gameStateAckFn(gameState, socket);
-            toast('Game restarted!', 'success');
+            toast('Everyone has returned to the Lobby!', 'success');
         };
 
         const fetchGameStateHandler = (ackFn) => {
@@ -160,7 +174,47 @@ export const SharedStateUtil = {
         }
     },
 
-    buildSpectatorList (people) {
+    addPlayerOptions: (personEl, person, socket, gameState) => {
+        const optionsButton = document.createElement('img');
+        const optionsHandler = (e) => {
+            if (e.type === 'click' || e.code === 'Enter') {
+                document.querySelector('#player-options-modal-title').innerText = person.name + globals.USER_TYPE_ICONS[person.userType];
+                document.getElementById('player-options-modal-content').innerHTML = '';
+                const kickOption = document.createElement('button');
+                kickOption.setAttribute('class', 'player-option');
+                kickOption.innerText = 'Kick Person';
+                kickOption.addEventListener('click', () => {
+                    ModalManager.dispelModal('player-options-modal', 'player-options-modal-background');
+                    Confirmation('Kick \'' + person.name + '\'?', () => {
+                        socket.emit(
+                            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
+                            globals.EVENT_IDS.KICK_PERSON,
+                            gameState.accessCode,
+                            { personId: person.id }
+                        );
+                    });
+                });
+                document.getElementById('player-options-modal-content').appendChild(kickOption);
+                ModalManager.displayModal(
+                    'player-options-modal',
+                    'player-options-modal-background',
+                    'close-player-options-modal-button'
+                );
+            }
+        };
+
+        optionsButton.addEventListener('click', optionsHandler);
+        optionsButton.addEventListener('keyup', optionsHandler);
+        optionsButton.setAttribute('tabIndex', '0');
+        optionsButton.setAttribute('className', 'role-remove');
+        optionsButton.setAttribute('src', '../images/3-vertical-dots-icon.svg');
+        optionsButton.setAttribute('title', 'Player Options');
+        optionsButton.setAttribute('alt', 'Player Options');
+
+        personEl.appendChild(optionsButton);
+    },
+
+    buildSpectatorList (people, client, socket, gameState) {
         const list = document.createElement('div');
         const spectators = people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR);
         if (spectators.length === 0) {
@@ -173,6 +227,11 @@ export const SharedStateUtil = {
                     '<div>' + 'spectator' + globals.USER_TYPE_ICONS.spectator + '</div>';
                 spectatorEl.querySelector('.spectator-name').innerText = spectator.name;
                 list.appendChild(spectatorEl);
+
+                if (client.userType === globals.USER_TYPES.MODERATOR || client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    this.addPlayerOptions(spectatorEl, spectator, socket, gameState);
+                    spectatorEl.dataset.pointer = spectator.id;
+                }
             }
         }
 
@@ -230,18 +289,22 @@ function processGameState (
             lobby.populatePlayers();
             globals.LOBBY_EVENTS().forEach(e => socket.removeAllListeners(e));
             lobby.setSocketHandlers();
-            if ((
-                currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                    || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-            )
-                && refreshPrompt
-            ) {
-                lobby.displayStartGamePromptForModerators();
+            if (currentGameState.client.userType === globals.USER_TYPES.MODERATOR
+                || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                if (refreshPrompt) {
+                    lobby.displayStartGamePromptForModerators();
+                }
+                document.getElementById('player-options-prompt').innerHTML = HTMLFragments.PLAYER_OPTIONS_MODAL;
+            } else {
+                if (refreshPrompt) {
+                    lobby.displayPlayerPrompt();
+                }
             }
             break;
         case globals.STATUS.IN_PROGRESS:
             if (refreshPrompt) {
                 document.querySelector('#game-control-prompt')?.remove();
+                document.querySelector('#leave-game-prompt')?.remove();
             }
             const inProgressGame = new InProgress('game-state-container', stateBucket, socket);
             globals.IN_PROGRESS_EVENTS().forEach(e => socket.removeAllListeners(e));
@@ -257,14 +320,15 @@ function processGameState (
             break;
     }
 
-    activateRoleInfoButton(stateBucket.currentGameState.deck);
+    activateRoleInfoButton();
 }
 
-function activateRoleInfoButton (deck) {
-    deck.sort((a, b) => {
-        return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
-    });
+function activateRoleInfoButton () {
     document.getElementById('role-info-button').addEventListener('click', (e) => {
+        const deck = stateBucket.currentGameState.deck;
+        deck.sort((a, b) => {
+            return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
+        });
         e.preventDefault();
         document.getElementById('role-info-prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
         const modalContent = document.getElementById('game-role-info-container');

@@ -1,4 +1,4 @@
-const template =
+export const hiddenMenus =
     `<div id="modal-background" class="modal-background"></div>
     <div tabindex="-1" id="role-modal" class="modal">
         <form id="role-form">
@@ -49,7 +49,10 @@ const template =
         <div class='modal-button-container single-button'>
             <button id='close-deck-template-modal-button' class='cancel app-button'>Close</button>
         </div>
-    </div>
+    </div>`;
+
+export const fullCreateTemplate =
+    hiddenMenus + `
     <h1>Create A Game</h1>
     <div id="tracker-container">
         <div id="creation-step-tracker">
@@ -69,5 +72,3 @@ const template =
         <div class="animated-placeholder animated-placeholder-long"></div>
         <div class="animated-placeholder animated-placeholder-long"></div>
     </div>`;
-
-export default template;

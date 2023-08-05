@@ -1,6 +1,7 @@
 const template =
         `<div id="role-info-prompt"></div>
         <div id="transfer-mod-prompt"></div>
+        <div id="player-options-prompt"></div>
         <div class="spinner-background"></div>
         <div class="spinner-container">
             <div class="lds-spinner">

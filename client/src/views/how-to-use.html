@@ -41,104 +41,116 @@
     <h1 class="how-to-use-header" id="purpose-of-the-app">Purpose of the Application</h1>
     <div class="how-to-use-section">This app serves as a means of running games in a social setting where a traditional
         running of the game is hindered. This might be when people are meeting virtually, and thus roles can't be handed
-        out in-person, or when people are in-person but don't have Werewolf cards with them. You can use a deck of regular
+        out in-person, or when people are in-person but don't have Werewolf/Mafia cards with them. You can use a deck of regular
         playing cards, but it can be difficult for players to remember which card signifies which role, especially if
         you want to build a crazy game with many different roles. Even when people are together and have cards, there's
         information that would be great to centralize for everyone - a timer, role descriptions, and the in/out status of
-        players. This app attempts to provide the utilities necessary to run Werewolf with all the different roles you want,
+        players. This app attempts to provide the utilities necessary to run games with all the different roles you want,
         wherever you can access the internet.
     </div>
     <h1 class="how-to-use-header" id="creating-a-game">Creating a Game</h1>
     <div class="how-to-use-section">
         Creating a game through the app has 3 main components:
         <br>
-        <h3>Step One: Choosing method of moderation</h3>
+        <h3>Step One: Choosing a method of moderation</h3>
         <br>
-        You have two options for moderation during the game. If the moderator isn't playing, you can choose the <span class="emphasized">dedicated
-        moderator</span> option. Dedicated Moderators are not dealt into the game. Once they start the game, they will know
-        everyone's role. At that point, they can kill players, reveal players' roles to everyone else, transfer their
-        moderator powers, play/pause the timer (if there is one), and end the game when team good or evil wins.
+        You have two options for moderation during the game. If the moderator isn't playing, you can choose the <span class="emphasized">Dedicated
+        Moderator</span> option. Dedicated Moderators are not dealt into the game. Once they start the game, they will know
+        everyone's role. During the game, they can kill players, reveal players' roles, transfer their
+        moderator powers, play/pause the timer (if there is one), end the game (revealing everyone's role), or return the game to the lobby.
         <br><br>
-        Similarly, you can also choose the <span class="emphasized">temporary moderator</span> option. You are dealt a role,
-        and you have the same powers as the dedicated moderator, with the exception of game knowledge - you know the same
+        Similarly, you can also choose the <span class="emphasized">Temporary Moderator</span> option. You are dealt a role,
+        and you have the same powers as the Dedicated Moderator, except game knowledge - you know the same
         information that a regular player does. When you remove the first player from the game (which can be yourself),
-        they will automatically become the dedicated moderator. If that person is not you, you will become a regular player.
+        they will automatically become the dedicated moderator.
         <br><br>
-        <span class="emphasized">Dedicated moderators</span> can <span class="emphasized">transfer their moderator powers</span>
-        to a player that is out, or to a spectator. That way, if the current dedicated moderator has to leave, or simply
-        does not want to moderate anymore, they can easily delegate.
+        <span class="emphasized">Dedicated Moderators</span> can transfer their moderator powers to a player that is out,
+        or to a spectator. That way, if the current Dedicated Moderator has to leave, or simply does not want to moderate
+        anymore, they can easily delegate.
         <br><br>
         <h3>Step Two: Build your deck</h3>
         <br>
-        There is a role box on this page that includes a list of <span class="emphasized">default roles</span> and a list of <span class="emphasized">custom roles</span>, which can be
-        displayed by selecting the appropriate button within the box. If you want to add a certain role to the game,
-        <span class="emphasized">click the green plus</span>, and one copy of it will be added to the "deck," which is the other box displaying a player
-        count. Likewise, if you want to remove one copy of a given role, <span class="emphasized">click the red minus button</span> on the role in the deck box.
+        There is a role box on this page that includes a list of <span class="emphasized">Default Roles</span> and a list
+        of <span class="emphasized">Custom Roles</span>, which can be displayed by selecting the appropriate button within the box.
+        If you want to add a certain role to the game, click the <span class="emphasized">green plus</span> and one copy
+        of it will be added to the <span class="emphasized">Deck</span> which is the other box displaying a player count.
+        Likewise, if you want to remove one copy of a given role, click the <span class="emphasized">red minus</span> on the role
+        in the Deck Box.
         <br><br>
         Here I add 3 villagers to the game, and then remove them:
         <br><br>
         <img class='tutorial-image-small' src="../images/tutorial/add-role-to-deck.gif"/>
         <br><br>
-        <span class="emphasized">You can add, edit, and remove custom roles.</span> You can also import and export them via a formatted text file. Click
-        the hamburger menu on the role box to see the import/export options. Here I create a new custom role and observe
+        You can add, edit, and remove Custom Roles. You can also import and export them via a formatted text file. Click
+        the hamburger menu on the role box to see the import/export options. Here I create a new Custom Role and observe
         it in the list:
         <br><br>
         <img alt="create-custom-role" class='tutorial-image-small' src="../images/tutorial/create-custom-role.gif"/>
         <br><br>
         <h3>Step Three: Set an optional timer</h3>
         <br>
-        If you don't fill in these fields, the game will be untimed. If you do, <span class="emphasized">you can use a time between 1 minute
-        and 5 hours.</span> The timer can be played and paused by the current moderator. Importantly, when the timer expires,
-        <span class="emphasized">nothing automatically happens.</span> Users will be notified that it has expired, and
-        the timer will display 0s, but the game will not end. Moderators always choose to end or restart the game manually.<br><br>
+        If you don't fill in these fields, the game will be untimed. If you do, you can use a time between 1 minute
+        and 5 hours. The timer can be played and paused by the current moderator. Importantly, when the timer expires,
+        nothing automatically happens. Users will be notified that it has expired, and the timer will display 0s, but
+        the game will not end. Moderators always choose to end the game manually.<br><br>
     </div>
     <h1 class="how-to-use-header" id="being-the-moderator">Being the Moderator</h1>
     <div class="how-to-use-section">
-        This is an example of what a <span class="emphasized">dedicated moderator</span> sees during the game:
+        <h3>In the Lobby</h3>
+        <br>
+        In the Lobby, moderators can manage the people in the room and the cards in the game. By clicking
+        the <span class="emphasized">three vertical dots (AKA the "kebab menu")</span> next to a given player (<span class="emphasized">point A</span>
+        in the screenshot below), you have the option to kick that player. You can do the same with a spectator by first
+        viewing the spectator list (<span class="emphasized">point C</span>) and clicking their kebab menus. By clicking the
+        "Edit Roles" button (<span class="emphasized">point B</span>), you can change which roles are in the game and the
+        quantities of those roles. This button will bring up the same module you encountered when you first created the room.
+        Saving any changes to the roles may affect the player count. If you wish to <span class="emphasized">start the game (point B)</span>, the number
+        of Players in the Lobby must equal the number of cards in the game.
         <br><br>
-        <img class='tutorial-image-small-portrait' src="../images/screenshots/dedicated_mod_inprogress_mobile.webp"/>
+        <img class='tutorial-image-small-portrait' src="../images/tutorial/dedicated-mod-lobby-mobile.webp"/>
         <br><br>
-        They can see who is on which team and who has each role. The moderator kills and reveals players. They are
-        separate actions - note the two buttons for each player. So if you want to play a game where people's roles are
-        not revealed during the day or night, you can use the "kill" option but not the reveal option. Or, if you happen to
-        have a role that reveals but is not immediately removed from the game, you can use the "reveal" option but not the
-        "kill" option. You of course don't have to utilize either of these options. If you just want to use the app to deal
-        cards, you are free to do that.
+        <h3>During the Game</h3>
+        <br>
+        <span class="emphasized">Dedicated Moderators</span> can see who is on which team and who is which role. The moderator
+        Kills and Reveals players (<span class="emphasized">Point A</span> below). They are separate actions. So, if you
+        want to play a game where people's roles are not revealed during the day or night, you can use the "Kill" option
+        but not the "Reveal" option. Or, if you happen to have a role that reveals but is not immediately removed from the game,
+        you can use the "Reveal" option but not the "Kill" option. You of course don't have to utilize either of these options.
+        If you just want to use the app to deal cards, you are free to do that. The moderator also has permission to
+        play and pause the Timer (<span class="emphasized">Point B</span>), and can end the game (revealing everyone's role)
+        or return the game to the Lobby (<span class="emphasized">Point C</span>), where it can be started anew with different settings.
         <br><br>
-        The moderator also has permissions to play and pause the timer, and can end the game (revealing everyone's role)
-        or restart the game, which will reset the timer, give everyone new roles, and reset the status of anyone that was
-        killed or revealed.
+        <img class='tutorial-image-small-portrait' src="../images/tutorial/dedicated-mod-in-progress-mobile.webp"/>
         <br><br>
-        The <span class="emphasized">temporary moderator view</span> looks like the below image. They have
+        Similarly, the <span class="emphasized">Temporary Moderator view</span> looks like the below image. They have
         much the same abilities as a dedicated moderator, except they don't know role or alignment information and cannot
         transfer their powers. Their powers will be transferred automatically to the first person they remove from the game
         (which can be themselves).
         <br><br>
-        <img class='tutorial-image-small-portrait' src="../images/screenshots/temp_mod_inprogress_mobile.webp"/>
+        <img class='tutorial-image-small-portrait' src="../images/tutorial/temp-mod-in-progress-mobile.webp"/>
         <br><br>
         <h3>Transferring your moderator powers</h3>
         <br>
-        <span class="emphasized">You can transfer your moderator abilities to anyone that has been removed from the game, or to anyone that happens
-            to be spectating.</span> Here we select a spectator and transfer our powers to them, and then we inherit the view
-            of what we were before, which is a player that was removed from the game:
+        You can transfer your moderator abilities to anyone that has been removed from the game, or to anyone that happens
+        to be spectating. Here we select a killed player and transfer our powers to them:
         <br><br>
         <img class='tutorial-image-small-portrait' src="../images/tutorial/mod-transfer.gif"/>
+        <br><br>
     </div>
     <h1 class="how-to-use-header" id="being-a-player">Being a Player</h1>
     <div class="how-to-use-section">
-        This is an example of what a <span class="emphasized">player</span> is seeing. The timer is running, and they view their
+        This is an example of what a <span class="emphasized">Player</span> is seeing. The timer is running, and they view their
         role by double-clicking it:
         <br><br>
         <img class='tutorial-image-small-portrait' src="../images/tutorial/player-view.gif"/>
         <br><br>
-        There are three main things - the <span class="emphasized">timer</span>, your <span class="emphasized">role card</span>
-        and the <span class="emphasized">player list</span>. Players can view the timer, but only the current moderator can play and pause it.
-        <span class="emphasized">Your role card starts flipped over</span> - this is useful if you are in-person and don't want someone else accidentally seeing your role as
-        it is dealt. <span class="emphasized">You can view your role at any time by double-clicking/double-tapping it</span>. Requiring a double-click guards against the possibility
-        of accidentally flipping your role when tapping other things. Within the <span class="emphasized">player list</span>, you can see
-        <span class="emphasized">who is alive or dead</span> and <span class="emphasized">who has had their role revealed</span>. There is
-        also a <span class="emphasized">role info button</span> that, when pressed, displays all the different roles in the current game,
-        including their descriptions and alignment (good/evil).
+        There are three main things - the <span class="emphasized">Timer</span>, your <span class="emphasized">Role Card</span>
+        and the <span class="emphasized">Player List</span>. Players can view the timer, but only the current moderator can play and pause it.
+        Your role card starts flipped over - this is useful if you are in-person and don't want someone else accidentally seeing your role as
+        it is dealt. You can view your role at any time by double-clicking/double-tapping it. Requiring a double-click guards against the possibility
+        of accidentally flipping your role when tapping other things. Within the Player List, you can see who is alive or
+        dead and who has had their role revealed. There is also a <span class="emphasized">role info button</span> that,
+        when pressed, displays all the different roles in the current game, including their descriptions and alignment (Good/Evil).
         <br><br>
     </div>
 </div>

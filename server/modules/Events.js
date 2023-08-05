@@ -1,24 +1,82 @@
 const globals = require('../config/globals');
 const GameStateCurator = require('./GameStateCurator');
+const GameCreationRequest = require('../model/GameCreationRequest');
 const EVENT_IDS = globals.EVENT_IDS;
 
 const Events = [
     {
         id: EVENT_IDS.PLAYER_JOINED,
         stateChange: async (game, socketArgs, vars) => {
-            const toBeAssignedIndex = game.people.findIndex(
-                (person) => person.id === socketArgs.id && person.assigned === false
-            );
-            if (toBeAssignedIndex >= 0) {
-                game.people[toBeAssignedIndex] = socketArgs;
-                game.isFull = vars.gameManager.isGameFull(game);
-            }
+            game.people.push(socketArgs);
+            game.isStartable = vars.gameManager.isGameStartable(game);
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode).emit(
                 globals.EVENTS.PLAYER_JOINED,
                 GameStateCurator.mapPerson(socketArgs),
-                game.isFull
+                game.isStartable
+            );
+        }
+    },
+    {
+        id: EVENT_IDS.KICK_PERSON,
+        stateChange: async (game, socketArgs, vars) => {
+            const toBeClearedIndex = game.people.findIndex(
+                (person) => person.id === socketArgs.personId && person.assigned === true
+            );
+            if (toBeClearedIndex >= 0) {
+                game.people.splice(toBeClearedIndex, 1);
+                game.isStartable = vars.gameManager.isGameStartable(game);
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.KICK_PERSON,
+                socketArgs.personId,
+                game.isStartable
+            );
+        }
+    },
+    {
+        id: EVENT_IDS.LEAVE_ROOM,
+        stateChange: async (game, socketArgs, vars) => {
+            const toBeClearedIndex = game.people.findIndex(
+                (person) => person.id === socketArgs.personId && person.assigned === true
+            );
+            if (toBeClearedIndex >= 0) {
+                game.people.splice(toBeClearedIndex, 1);
+                game.isStartable = vars.gameManager.isGameStartable(game);
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.LEAVE_ROOM,
+                socketArgs.personId,
+                game.isStartable
+            );
+        }
+    },
+    {
+        id: EVENT_IDS.UPDATE_GAME_ROLES,
+        stateChange: async (game, socketArgs, vars) => {
+            if (GameCreationRequest.deckIsValid(socketArgs.deck)) {
+                game.deck = socketArgs.deck;
+                game.gameSize = socketArgs.deck.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue.quantity,
+                    0
+                );
+                game.isStartable = vars.gameManager.isGameStartable(game);
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            if (vars.ackFn) {
+                vars.ackFn();
+            }
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.UPDATE_GAME_ROLES,
+                game.deck,
+                game.gameSize,
+                game.isStartable
             );
         }
     },
@@ -66,8 +124,9 @@ const Events = [
     {
         id: EVENT_IDS.START_GAME,
         stateChange: async (game, socketArgs, vars) => {
-            if (game.isFull) {
+            if (game.isStartable) {
                 game.status = globals.STATUS.IN_PROGRESS;
+                vars.gameManager.deal(game);
                 if (game.hasTimer) {
                     game.timerParams.paused = true;
                     await vars.timerManager.runTimer(game, vars.gameManager.namespace, vars.eventManager, vars.gameManager);

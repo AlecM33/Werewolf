@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="150" src="/client/src/images/new-logo.png"/>
+  <img width="200" src="/client/src/images/new-logo.png"/>
 </p>
 
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)

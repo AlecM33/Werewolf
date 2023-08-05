@@ -1,5 +1,5 @@
 export const mockGames = {
-    gameInLobby: {
+    gameInLobbyAsModerator: {
         accessCode: 'TVV6',
         status: 'lobby',
         currentModeratorId: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
@@ -36,6 +36,63 @@ export const mockGames = {
                 gameRoleDescription: null,
                 alignment: null,
                 out: true,
+                killed: false,
+                revealed: false
+            }
+        ],
+        timerParams: {
+            hours: null,
+            minutes: 10,
+            paused: true,
+            timeRemaining: 600000
+        },
+        isStartable: false
+    },
+    gameInLobbyAsPlayer: {
+        accessCode: 'TVV6',
+        status: 'lobby',
+        currentModeratorId: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+        client: {
+            name: 'Lys',
+            hasEnteredName: false,
+            id: 'v2eOvaYKusGfiUpuZWTCJ0JUiESC29OuH6fpivwMuwcqizpYTCAzetrPl7fF8F5CoR35pTMIKxh',
+            cookie: '28p80dbhY2k1iP1NuEy8UPFmuOctLx3nR0EMONU4MlJFfVrCzNncdNdsav9wEuGEswLQ70DKqa3',
+            userType: 'player'
+        },
+        deck: [
+            {
+                role: 'Villager',
+                team: 'good',
+                description: 'During the day, find the wolves and kill them.',
+                id: '52u5w81ryq5h30qu1gri56xxq',
+                quantity: 6
+            },
+            {
+                role: 'Werewolf',
+                team: 'evil',
+                description: "During the night, choose a villager to kill. Don't get killed.",
+                id: '9uk0jcrm1hkhygzb6iw8xh2a7',
+                quantity: 1
+            }
+        ],
+        gameSize: 7,
+        people: [
+            {
+                name: 'Alec',
+                id: 'w8qarnG6FgAZQvRYsAFefldwU2r6KIeOce3nGaLxnfMlKIBOLj0DhUSC951bQ7yLwbRjDAS72r4',
+                userType: 'moderator',
+                gameRole: null,
+                gameRoleDescription: null,
+                alignment: null,
+                out: true,
+                killed: false,
+                revealed: false
+            },
+            {
+                name: 'Lys',
+                id: 'v2eOvaYKusGfiUpuZWTCJ0JUiESC29OuH6fpivwMuwcqizpYTCAzetrPl7fF8F5CoR35pTMIKxh',
+                userType: 'player',
+                out: false,
                 killed: false,
                 revealed: false
             }

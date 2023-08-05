@@ -6,5 +6,5 @@ export const stateBucket = {
     joinRequestInFlight: true,
     accessCode: null,
     currentGameState: null,
-    environment: null
+    environment: null,
 };

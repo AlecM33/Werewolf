@@ -115,6 +115,73 @@ describe('Events', () => {
         });
     });
 
+    describe(EVENT_IDS.UPDATE_GAME_ROLES, () => {
+        describe('stateChange', () => {
+            it('should update the game roles', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.UPDATE_GAME_ROLES)
+                    .stateChange(game, {
+                        deck: [
+                            {
+                                role: 'Parity Hunter',
+                                team: 'good',
+                                description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.',
+                                id: '6yh9h70h4tu47tt3ev39jbox6nlckmvmvadpt5r042iq31249l',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Seer',
+                                team: 'good',
+                                description: 'Each night, learn if a chosen person is a Werewolf.',
+                                id: 'eat0h7d0a5vzd7h2ddbxi6gy10mqn95u50595dr1eazb47mjm7',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Villager',
+                                team: 'good',
+                                description: 'During the day, find the wolves and kill them.',
+                                id: 'i4ora0tj4excnnrmrkm0l6zbqhvlneivnofq908c3vp0n4uof8',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Sorceress',
+                                team: 'evil',
+                                description: 'Each night, learn if a chosen person is the Seer.',
+                                id: 'ywl9sqpr0lj4uplu81bvsnutlabtghe2ra41hyfstytnu6t85t',
+                                quantity: 1
+                            },
+                            {
+                                role: 'Werewolf',
+                                team: 'evil',
+                                description: "During the night, choose a villager to kill. Don't get killed.",
+                                id: '6wrjy32eqj0171uxmhd6lwql6h7ph90djavtxybfzwbjyal489',
+                                quantity: 1
+                            }
+                        ]
+                    }, { gameManager: gameManager });
+
+                expect(game.gameSize).toEqual(5);
+                expect(game.isStartable).toEqual(false);
+            });
+        });
+    });
+
+    describe(EVENT_IDS.LEAVE_ROOM, () => {
+        describe('stateChange', () => {
+            it('should remove a player and mark the game as startable', async () => {
+                await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
+                    .stateChange(game, { id: 'd', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.PLAYER_JOINED)
+                    .stateChange(game, { id: 'e', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
+                await Events.find((e) => e.id === EVENT_IDS.LEAVE_ROOM)
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager });
+
+                expect(game.people.find(person => person.id === 'b')).not.toBeDefined();
+                expect(game.gameSize).toEqual(2);
+                expect(game.isStartable).toEqual(true);
+            });
+        });
+    });
+
     describe(EVENT_IDS.FETCH_GAME_STATE, () => {
         describe('stateChange', () => {
             it('should find the matching person and update their associated socket id if it is different', async () => {

@@ -34,7 +34,7 @@ export class GameCreationStepManager {
                 }
             },
             2: {
-                title: 'Create your deck of cards:',
+                title: 'Create your deck (you can edit this later):',
                 forwardHandler: () => {
                     if (this.deckManager.getDeckSize() > 50) {
                         toast('Your deck is too large. The max is 50 cards.', 'error', true);

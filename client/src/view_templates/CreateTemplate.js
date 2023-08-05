@@ -53,7 +53,7 @@ export const hiddenMenus =
 
 export const fullCreateTemplate =
     hiddenMenus + `
-    <h1>Create A Game</h1>
+    <h1>Create A Room</h1>
     <div id="tracker-container">
         <div id="creation-step-tracker">
             <div id="tracker-step-1" class="creation-step creation-step-filled"></div>

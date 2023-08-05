@@ -38,7 +38,7 @@ export const HTMLFragments = {
             <input type="text" id="moderator-name" autocomplete='given-name' placeholder="enter your name...">
         </div>
         <div>
-            <label for="test-game">Populate the game with bots?</label>
+            <label for="test-game">Populate the room with bots?</label>
             <select id="test-game">
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>

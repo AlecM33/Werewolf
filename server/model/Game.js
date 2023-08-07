@@ -27,7 +27,9 @@ class Game {
         this.previousModeratorId = null;
         this.createTime = createTime;
         this.timerParams = timerParams;
-        this.isStartable = (this.gameSize === 1 && !this.hasDedicatedModerator) || isTestGame;
+        this.isStartable = (this.gameSize === 1 && !this.hasDedicatedModerator)
+            || (this.gameSize === 0 && this.hasDedicatedModerator)
+            || isTestGame;
         this.timeRemaining = null;
     }
 }

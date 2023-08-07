@@ -31,7 +31,7 @@ class GameCreationRequest {
     };
 
     static deckIsValid = (deck) => {
-        if (Array.isArray(deck) && deck.length > 0) {
+        if (Array.isArray(deck)) {
             for (const entry of deck) {
                 if (entry !== null
                     && typeof entry === 'object'
@@ -45,7 +45,7 @@ class GameCreationRequest {
                     && entry.description.length <= globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
                     && (!entry.custom || typeof entry.custom === 'boolean')
                     && typeof entry.quantity === 'number'
-                    && entry.quantity >= 1
+                    && entry.quantity >= 0
                     && entry.quantity <= 50
                 ) {
                     continue;

@@ -81,8 +81,6 @@ export class Lobby {
             roleEditPrompt.querySelector('#save-role-changes-button').addEventListener('click', () => {
                 if (this.gameCreationStepManager.deckManager.getDeckSize() > 50) {
                     toast('Your deck is too large. The max is 50 cards.', 'error', true);
-                } else if (this.gameCreationStepManager.deckManager.getDeckSize() < 1) {
-                    toast('You must add at least one card', 'error', true);
                 } else {
                     document.querySelector('#mid-game-role-editor')?.remove();
                     document.querySelector('#role-edit-container-background')?.remove();

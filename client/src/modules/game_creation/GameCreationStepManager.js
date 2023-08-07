@@ -435,6 +435,10 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
         div.querySelector('#timer-option').innerText = 'untimed';
     }
 
+    if (game.deck.length > 0) {
+        div.querySelector('#roles-option').innerText = '';
+    }
+
     for (const card of game.deck) {
         const roleEl = document.createElement('div');
         roleEl.innerText = card.quantity + 'x ' + card.role;

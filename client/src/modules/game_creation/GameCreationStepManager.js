@@ -38,8 +38,6 @@ export class GameCreationStepManager {
                 forwardHandler: () => {
                     if (this.deckManager.getDeckSize() > 50) {
                         toast('Your deck is too large. The max is 50 cards.', 'error', true);
-                    } else if (this.deckManager.getDeckSize() < 1) {
-                        toast('You must add at least one card', 'error', true);
                     } else {
                         this.currentGame.deck = this.deckManager.deck.filter((card) => card.quantity > 0);
                         cancelCurrentToast();
@@ -366,7 +364,7 @@ function renderTimerStep (containerId, stepNumber, game, steps) {
     const hoursDiv = document.createElement('div');
     const hoursLabel = document.createElement('label');
     hoursLabel.setAttribute('for', 'game-hours');
-    hoursLabel.innerText = 'Hours (max 5)';
+    hoursLabel.innerText = 'Hours';
     const hours = document.createElement('input');
     hours.addEventListener('keyup', steps[stepNumber].forwardHandler);
     setAttributes(hours, { type: 'number', id: 'game-hours', name: 'game-hours', min: '0', max: '5', value: game.timerParams?.hours });
@@ -414,7 +412,7 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
         '</div>' +
         '<div>' +
             "<label id='roles-option-label' for='roles-option'>Game Deck:</label>" +
-            "<div id='roles-option' class='review-option'></div>" +
+            "<div id='roles-option' class='review-option'>No cards selected.</div>" +
         '</div>';
 
     div.querySelector('#test-game').innerText = game.isTestGame ? 'Yes' : 'No';
@@ -435,6 +433,10 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
         div.querySelector('#timer-option').innerText = formattedHours + ' ' + formattedMinutes;
     } else {
         div.querySelector('#timer-option').innerText = 'untimed';
+    }
+
+    if (game.deck.length > 0) {
+        div.querySelector('#roles-option').innerText = '';
     }
 
     for (const card of game.deck) {

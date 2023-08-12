@@ -411,9 +411,15 @@ input {
     width: 19em !important;
 }
 
-#desktop-links > a:nth-child(1), #mobile-links a:nth-child(1) {
+#desktop-links > a:nth-child(1) {
     margin: 0 0.5em;
     width: 50px;
+}
+
+#mobile-links a:nth-child(1) {
+    width: 80px;
+    margin: 0 auto 3em auto !important;
+    display: flex;
 }
 
 .logo {
@@ -432,7 +438,7 @@ input {
     font-family: 'signika-negative', sans-serif;
     border-radius: 5px;
     padding: 2px 5px;
-    font-size: 18px;
+    font-size: 20px;
     margin: 1em;
     width: fit-content;
 }
@@ -445,7 +451,7 @@ input {
     position: fixed;
     background-size: cover;
     height: 100%;
-    opacity: 50%;
+    opacity: 75%;
     background-color: black;
     width: 100%;
     z-index: 50000;
@@ -473,7 +479,7 @@ input {
 
 .mobile-link {
     margin-top: 1em !important;
-    margin-left: 1em !important;
+    margin-left: 2em !important;
 }
 
 @media(max-width: 1000px) {
@@ -499,7 +505,7 @@ input {
         padding-bottom: 2em;
         width: 100%;
         z-index: 51000;
-        background-color: #191920;
+        background-color: #16141e;
     }
 }
 

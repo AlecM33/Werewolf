@@ -152,7 +152,7 @@ label[for="room-code"], label[for="player-name"] {
 
 @media (min-width: 700px) {
     button#home-create-button {
-        font-size: 35px;
+        font-size: 30px;
     }
 }
 

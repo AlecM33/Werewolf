@@ -3,7 +3,7 @@
     transform-origin: center;
     display: block;
     z-index: 1 !important;
-    background-color: #2d2c38;
+    background-color: #16141e;
 }
 
 #join-game-form .modal-button-container {
@@ -22,7 +22,7 @@
     justify-content: center;
     padding: 5px;
     border-radius: 5px;
-    background-color: #1e1b26;
+    background-color: #4645525c;
 }
 
 .modal-button-container > div > label {

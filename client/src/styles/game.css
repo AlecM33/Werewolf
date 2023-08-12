@@ -137,7 +137,7 @@
 #mod-transfer-button,
 #edit-roles-button,
 #save-role-changes-button {
-    background-color: #045EA6;
+    background-color: #045ea6;
     border: 2px solid #024070;
 }
 
@@ -261,7 +261,7 @@ h1 {
 
 #end-of-game-header #return-to-lobby-button {
     margin-bottom: 1em !important;
-    animation: shadow-pulse 1.5s infinite ease-out;
+    animation: shadow-pulse-blue 1.5s infinite ease-out;
     padding: 10px;
 }
 
@@ -1071,6 +1071,20 @@ canvas {
         box-shadow: 0 0 0 0 rgba(28, 138, 54, 0);
     }
 }
+@keyframes shadow-pulse-blue {
+    0% {
+        box-shadow: 0 0 0 0 rgba(4, 94, 166, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(4, 94, 166, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(4, 94, 166, 0);
+    }
+}
+
 
 @keyframes pulse-low {
     from {

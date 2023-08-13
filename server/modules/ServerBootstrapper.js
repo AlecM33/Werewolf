@@ -1,4 +1,4 @@
-const LOG_LEVEL = require('../config/globals').LOG_LEVEL;
+const { LOG_LEVEL, ENVIRONMENTS } = require('../config/globals');
 const http = require('http');
 const https = require('https');
 const path = require('path');
@@ -7,7 +7,6 @@ const crypto = require('crypto');
 const EventManager = require('./singletons/EventManager.js');
 const GameManager = require('./singletons/GameManager.js');
 const TimerManager = require('./singletons/TimerManager.js');
-const { ENVIRONMENT } = require('../config/globals.js');
 const rateLimit = require('express-rate-limit').default;
 
 const ServerBootstrapper = {
@@ -17,8 +16,8 @@ const ServerBootstrapper = {
             timerManager: new TimerManager(logger, instanceId),
             eventManager: new EventManager(logger, instanceId),
             gameManager: process.env.NODE_ENV.trim() === 'development'
-                ? new GameManager(logger, ENVIRONMENT.LOCAL, instanceId)
-                : new GameManager(logger, ENVIRONMENT.PRODUCTION, instanceId)
+                ? new GameManager(logger, ENVIRONMENTS.LOCAL, instanceId)
+                : new GameManager(logger, ENVIRONMENTS.PRODUCTION, instanceId)
         };
     },
 
@@ -114,7 +113,7 @@ const ServerBootstrapper = {
         });
 
         // API endpoints
-        app.use('/api/games', standardRateLimit, require('../api/GamesAPI'));
+        app.use('/api/games', standardRateLimit, require('../api/RoomsAPI'));
         app.use('/api/admin', (req, res, next) => {
             if (isAuthorized(req)) {
                 next();

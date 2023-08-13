@@ -1,5 +1,5 @@
 // noinspection DuplicatedCode
-const globals = require('../config/globals');
+const { USER_TYPES } = require('../config/globals');
 
 class Person {
     constructor (id, cookie, name, userType, gameRole = null, gameRoleDescription = null, alignment = null, assigned = false) {
@@ -12,7 +12,7 @@ class Person {
         this.gameRoleDescription = gameRoleDescription;
         this.alignment = alignment;
         this.assigned = assigned;
-        this.out = userType === globals.USER_TYPES.MODERATOR || userType === globals.USER_TYPES.SPECTATOR;
+        this.out = userType === USER_TYPES.MODERATOR || userType === USER_TYPES.SPECTATOR;
         this.killed = false;
         this.revealed = false;
         this.hasEnteredName = false;

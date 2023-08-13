@@ -1,5 +1,5 @@
 import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
-import { globals } from '../../config/globals.js';
+import { ALIGNMENT, PRIMITIVES } from '../../config/globals.js';
 import { defaultRoles } from '../../config/defaultRoles.js';
 import { toast } from '../front_end_components/Toast.js';
 import { ModalManager } from '../front_end_components/ModalManager.js';
@@ -8,7 +8,6 @@ import { Confirmation } from '../front_end_components/Confirmation.js';
 export class RoleBox {
     constructor (container, deckManager) {
         this.createMode = false;
-        this.currentlyEditingRoleName = null;
         this.category = 'default';
         this.deckManager = deckManager;
         this.defaultRoles = [];
@@ -32,7 +31,7 @@ export class RoleBox {
     loadDefaultRoles = () => {
         this.defaultRoles = defaultRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
+                return a.team === ALIGNMENT.GOOD ? -1 : 1;
             }
             return a.role.localeCompare(b.role);
         }).map((role) => {
@@ -174,9 +173,9 @@ export class RoleBox {
             defaultRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE_DEFAULT;
             defaultRole.classList.add('default-role');
             defaultRole.dataset.roleId = this.defaultRoles[i].id;
-            const alignmentClass = this.defaultRoles[i].team === globals.ALIGNMENT.GOOD
-                ? globals.ALIGNMENT.GOOD
-                : globals.ALIGNMENT.EVIL;
+            const alignmentClass = this.defaultRoles[i].team === ALIGNMENT.GOOD
+                ? ALIGNMENT.GOOD
+                : ALIGNMENT.EVIL;
             defaultRole.classList.add(alignmentClass);
             defaultRole.querySelector('.role-name').innerText = this.defaultRoles[i].role;
             selectEl.appendChild(defaultRole);
@@ -190,7 +189,7 @@ export class RoleBox {
         this.categoryTransition.play();
         this.customRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
+                return a.team === ALIGNMENT.GOOD ? -1 : 1;
             }
             return a.role.localeCompare(b.role);
         });
@@ -200,7 +199,7 @@ export class RoleBox {
             customRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE;
             customRole.classList.add('custom-role');
             customRole.dataset.roleId = this.customRoles[i].id;
-            const alignmentClass = this.customRoles[i].team === globals.ALIGNMENT.GOOD ? globals.ALIGNMENT.GOOD : globals.ALIGNMENT.EVIL;
+            const alignmentClass = this.customRoles[i].team === ALIGNMENT.GOOD ? ALIGNMENT.GOOD : ALIGNMENT.EVIL;
             customRole.classList.add(alignmentClass);
             customRole.querySelector('.role-name').innerText = this.customRoles[i].role;
             selectEl.appendChild(customRole);
@@ -267,10 +266,10 @@ export class RoleBox {
                     if (e.type === 'click' || e.code === 'Enter') {
                         const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
                         const nameEl = document.getElementById('custom-role-info-modal-name');
-                        alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
-                        alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
-                        nameEl.classList.remove(globals.ALIGNMENT.GOOD);
-                        nameEl.classList.remove(globals.ALIGNMENT.EVIL);
+                        alignmentEl.classList.remove(ALIGNMENT.GOOD);
+                        alignmentEl.classList.remove(ALIGNMENT.EVIL);
+                        nameEl.classList.remove(ALIGNMENT.GOOD);
+                        nameEl.classList.remove(ALIGNMENT.EVIL);
                         e.preventDefault();
                         let role;
                         if (isCustom) {
@@ -351,7 +350,7 @@ export class RoleBox {
 function createRandomId () {
     let id = '';
     for (let i = 0; i < 50; i ++) {
-        id += globals.CHAR_POOL[Math.floor(Math.random() * globals.CHAR_POOL.length)];
+        id += PRIMITIVES.CHAR_POOL[Math.floor(Math.random() * PRIMITIVES.CHAR_POOL.length)];
     }
     return id;
 }
@@ -365,9 +364,9 @@ function validateCustomRoleCookie (cookie) {
             if (Array.isArray(cookieJSON)) {
                 for (const entry of cookieJSON) {
                     if (entry !== null && typeof entry === 'object') {
-                        if (typeof entry.role !== 'string' || entry.role.length > globals.MAX_CUSTOM_ROLE_NAME_LENGTH
-                            || typeof entry.team !== 'string' || (entry.team !== globals.ALIGNMENT.GOOD && entry.team !== globals.ALIGNMENT.EVIL)
-                            || typeof entry.description !== 'string' || entry.description.length > globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
+                        if (typeof entry.role !== 'string' || entry.role.length > PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH
+                            || typeof entry.team !== 'string' || (entry.team !== ALIGNMENT.GOOD && entry.team !== ALIGNMENT.EVIL)
+                            || typeof entry.description !== 'string' || entry.description.length > PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
                         ) {
                             return false;
                         }

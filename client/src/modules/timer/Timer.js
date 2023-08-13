@@ -80,6 +80,20 @@ class Timer {
         }
     }
 }
+function returnHumanReadableTime (milliseconds, tenthsOfSeconds = false) {
+    const tenths = Math.floor((milliseconds / 100) % 10);
+    let seconds = Math.floor((milliseconds / 1000) % 60);
+    let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+    let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return tenthsOfSeconds
+        ? hours + ':' + minutes + ':' + seconds + '.' + tenths
+        : hours + ':' + minutes + ':' + seconds;
+}
 
 class Singleton {
     constructor (totalTime, tickInterval) {
@@ -104,19 +118,4 @@ class Singleton {
             Singleton.instance.timeoutId = timeoutId;
         }
     }
-}
-
-function returnHumanReadableTime (milliseconds, tenthsOfSeconds = false) {
-    const tenths = Math.floor((milliseconds / 100) % 10);
-    let seconds = Math.floor((milliseconds / 1000) % 60);
-    let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
-    let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
-
-    hours = hours < 10 ? '0' + hours : hours;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
-
-    return tenthsOfSeconds
-        ? hours + ':' + minutes + ':' + seconds + '.' + tenths
-        : hours + ':' + minutes + ':' + seconds;
 }

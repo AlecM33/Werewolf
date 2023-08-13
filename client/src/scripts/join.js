@@ -1,14 +1,13 @@
 import { injectNavbar } from '../modules/front_end_components/Navbar.js';
 import { toast } from '../modules/front_end_components/Toast.js';
-import { XHRUtility } from '../modules/utility/XHRUtility.js';
 import { UserUtility } from '../modules/utility/UserUtility.js';
-import { globals } from '../config/globals.js';
+import { ENVIRONMENTS, PRIMITIVES } from '../config/globals.js';
 
 const join = () => {
     injectNavbar();
     const splitUrl = window.location.pathname.split('/join/');
     const accessCode = splitUrl[1];
-    if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
+    if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === PRIMITIVES.ACCESS_CODE_LENGTH) {
         document.getElementById('game-code').innerText = accessCode;
         document.getElementById('game-time').innerText =
             decodeURIComponent((new URL(document.location)).searchParams.get('timer'));
@@ -29,10 +28,11 @@ const joinHandler = (e) => {
     if (validateName(name)) {
         sendJoinRequest(e, name, accessCode)
             .then((res) => {
-                const json = JSON.parse(res.content);
-                UserUtility.setAnonymousUserId(json.cookie, json.environment);
-                resetJoinButtonState(e, res, joinHandler);
-                window.location = '/game/' + accessCode;
+                res.json().then(json => {
+                    UserUtility.setAnonymousUserId(json.cookie, json.environment);
+                    resetJoinButtonState(e, res, joinHandler);
+                    window.location = '/game/' + accessCode;
+                });
             }).catch((res) => {
                 handleJoinError(e, res, joinHandler);
             });
@@ -46,17 +46,22 @@ function sendJoinRequest (e, name, accessCode) {
     document.getElementById('join-submit').classList.add('submitted');
     document.getElementById('join-submit').setAttribute('value', '...');
 
-    return XHRUtility.xhr(
+    return fetch(
         '/api/games/' + accessCode + '/players',
-        'PATCH',
-        null,
-        JSON.stringify({
-            playerName: name,
-            accessCode: accessCode,
-            sessionCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.LOCAL),
-            localCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.PRODUCTION),
-            joinAsSpectator: document.getElementById('join-as-spectator').checked
-        })
+        {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                playerName: name,
+                accessCode: accessCode,
+                sessionCookie: UserUtility.validateAnonUserSignature(ENVIRONMENTS.LOCAL),
+                localCookie: UserUtility.validateAnonUserSignature(ENVIRONMENTS.PRODUCTION),
+                joinAsSpectator: document.getElementById('join-as-spectator').checked
+            })
+        }
     );
 }
 

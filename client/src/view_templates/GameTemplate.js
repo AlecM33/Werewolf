@@ -18,7 +18,7 @@ const template =
                 <div></div>
                 <div></div>
             </div>
-            <p>Connecting to game...</p>
+            <p>Waiting for connection to Room...</p>
         </div>
         <div id="mobile-menu-background-overlay"></div>
         <div id="navbar"></div>

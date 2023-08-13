@@ -1,4 +1,4 @@
-import { globals } from '../../../config/globals.js';
+import { USER_TYPES } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { SharedStateUtil } from './shared/SharedStateUtil.js';
 
@@ -12,14 +12,14 @@ export class Ended {
 
     renderEndOfGame (gameState) {
         if (
-            gameState.client.userType === globals.USER_TYPES.MODERATOR
-            || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            gameState.client.userType === USER_TYPES.MODERATOR
+            || gameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
         ) {
             document.getElementById('end-of-game-buttons').prepend(SharedStateUtil.createReturnToLobbyButton(this.stateBucket));
         }
         SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
-            .find((person) => person.userType === globals.USER_TYPES.MODERATOR
-                || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
+            .find((person) => person.userType === USER_TYPES.MODERATOR
+                || person.userType === USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithRoleInformation();
     }
 
@@ -31,7 +31,7 @@ export class Ended {
         const modType = tempMod ? this.stateBucket.currentGameState.moderator.userType : null;
         renderGroupOfPlayers(
             this.stateBucket.currentGameState.people.filter(
-                p => (p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
+                p => (p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
                     || p.killed
             ),
             this.stateBucket.currentGameState.accessCode,

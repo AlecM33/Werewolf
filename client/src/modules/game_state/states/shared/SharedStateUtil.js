@@ -1,58 +1,41 @@
-import { XHRUtility } from '../../../utility/XHRUtility.js';
 import { UserUtility } from '../../../utility/UserUtility.js';
-import { globals } from '../../../../config/globals.js';
+import {
+    STATUS,
+    EVENT_IDS,
+    ENVIRONMENTS,
+    SOCKET_EVENTS,
+    USER_TYPE_ICONS,
+    USER_TYPES,
+    ALIGNMENT
+} from '../../../../config/globals.js';
 import { toast } from '../../../front_end_components/Toast.js';
 import { Confirmation } from '../../../front_end_components/Confirmation.js';
-import { Lobby } from '../Lobby.js';
 import { stateBucket } from '../../StateBucket.js';
-import { InProgress } from '../InProgress.js';
-import { Ended } from '../Ended.js';
 import { HTMLFragments } from '../../../front_end_components/HTMLFragments.js';
 import { ModalManager } from '../../../front_end_components/ModalManager.js';
 
 // This constant is meant to house logic that is utilized by more than one game state
 export const SharedStateUtil = {
-    gameStateAckFn: (gameState, socket) => {
-        stateBucket.currentGameState = gameState;
-        processGameState(
-            stateBucket.currentGameState,
-            gameState.client.cookie,
-            socket,
-            true,
-            true
-        );
-    },
 
-    restartHandler: (stateBucket, status = globals.STATUS.IN_PROGRESS) => {
-        XHRUtility.xhr(
+    restartHandler: (stateBucket, status = STATUS.IN_PROGRESS) => {
+        fetch(
             '/api/games/' + stateBucket.currentGameState.accessCode + '/restart?status=' + status,
-            'PATCH',
-            null,
-            JSON.stringify({
-                playerName: stateBucket.currentGameState.client.name,
-                accessCode: stateBucket.currentGameState.accessCode,
-                sessionCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.LOCAL),
-                localCookie: UserUtility.validateAnonUserSignature(globals.ENVIRONMENT.PRODUCTION)
-            })
-        )
-            .then((res) => {})
-            .catch((res) => {
-                toast(res.content, 'error', true, true, 'medium');
-            });
-    },
-
-    createRestartButton: (stateBucket) => {
-        const restartGameButton = document.createElement('button');
-        restartGameButton.classList.add('app-button');
-        restartGameButton.setAttribute('id', 'restart-game-button');
-        restartGameButton.innerText = 'Quick Restart';
-        restartGameButton.addEventListener('click', () => {
-            Confirmation('Restart the game, dealing everyone new roles?', () => {
-                SharedStateUtil.restartHandler(stateBucket);
-            });
+            {
+                method: 'PATCH',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    playerName: stateBucket.currentGameState.client.name,
+                    accessCode: stateBucket.currentGameState.accessCode,
+                    sessionCookie: UserUtility.validateAnonUserSignature(ENVIRONMENTS.LOCAL),
+                    localCookie: UserUtility.validateAnonUserSignature(ENVIRONMENTS.PRODUCTION)
+                })
+            }
+        ).catch((res) => {
+            toast(res.content, 'error', true, true, 'medium');
         });
-
-        return restartGameButton;
     },
 
     createReturnToLobbyButton: (stateBucket) => {
@@ -62,123 +45,18 @@ export const SharedStateUtil = {
         returnToLobbyButton.innerText = 'Return to Lobby';
         returnToLobbyButton.addEventListener('click', () => {
             Confirmation('Return everyone to the Lobby?', () => {
-                SharedStateUtil.restartHandler(stateBucket, globals.STATUS.LOBBY);
+                SharedStateUtil.restartHandler(stateBucket, STATUS.LOBBY);
             });
         });
 
         return returnToLobbyButton;
     },
 
-    setClientSocketHandlers: (stateBucket, socket) => {
-        const startGameStateAckFn = (gameState) => {
-            SharedStateUtil.gameStateAckFn(gameState, socket);
-            toast('Game started!', 'success');
-        };
-
-        const restartGameStateAckFn = (gameState) => {
-            SharedStateUtil.gameStateAckFn(gameState, socket);
-            toast('Everyone has returned to the Lobby!', 'success');
-        };
-
-        const fetchGameStateHandler = (ackFn) => {
-            socket.emit(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.FETCH_GAME_STATE,
-                stateBucket.currentGameState.accessCode,
-                { personId: stateBucket.currentGameState.client.cookie },
-                ackFn
-            );
-        };
-
-        socket.on(globals.EVENT_IDS.START_GAME, () => { fetchGameStateHandler(startGameStateAckFn); });
-
-        socket.on(globals.EVENT_IDS.RESTART_GAME, () => { fetchGameStateHandler(restartGameStateAckFn); });
-
-        socket.on(globals.EVENT_IDS.SYNC_GAME_STATE, () => {
-            socket.emit(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.FETCH_GAME_STATE,
-                stateBucket.currentGameState.accessCode,
-                { personId: stateBucket.currentGameState.client.cookie },
-                function (gameState) {
-                    const oldUserType = stateBucket.currentGameState.client.userType;
-                    stateBucket.currentGameState = gameState;
-                    processGameState(
-                        stateBucket.currentGameState,
-                        gameState.client.cookie,
-                        socket,
-                        true,
-                        gameState.client.userType !== oldUserType
-                    );
-                }
-            );
-        });
-
-        socket.on(globals.COMMANDS.END_GAME, (people) => {
-            stateBucket.currentGameState.people = people;
-            stateBucket.currentGameState.status = globals.STATUS.ENDED;
-            processGameState(
-                stateBucket.currentGameState,
-                stateBucket.currentGameState.client.cookie,
-                socket,
-                true,
-                true
-            );
-        });
-    },
-
-    syncWithGame: (socket, cookie, window) => {
-        const splitUrl = window.location.href.split('/game/');
-        const accessCode = splitUrl[1];
-        if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === globals.ACCESS_CODE_LENGTH) {
-            socket.timeout(5000).emit(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.FETCH_GAME_STATE,
-                accessCode,
-                { personId: cookie },
-                (err, gameState) => {
-                    if (err) {
-                        SharedStateUtil.retrySync(accessCode, socket, cookie);
-                    } else {
-                        SharedStateUtil.handleGameState(gameState, cookie, socket);
-                    }
-                }
-            );
-        } else {
-            window.location = '/not-found?reason=' + encodeURIComponent('invalid-access-code');
-        }
-    },
-
-    retrySync: (accessCode, socket, cookie) => {
-        socket.emit(
-            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-            globals.EVENT_IDS.FETCH_GAME_STATE,
-            accessCode,
-            { personId: cookie },
-            (gameState) => {
-                SharedStateUtil.handleGameState(gameState, cookie, socket);
-            }
-        );
-    },
-
-    handleGameState: (gameState, cookie, socket) => {
-        if (gameState === null) {
-            window.location = '/not-found?reason=' + encodeURIComponent('game-not-found');
-        } else {
-            stateBucket.currentGameState = gameState;
-            document.querySelector('.spinner-container')?.remove();
-            document.querySelector('.spinner-background')?.remove();
-            document.getElementById('game-content').innerHTML = HTMLFragments.INITIAL_GAME_DOM;
-            toast('You are connected.', 'success', true, true, 'short');
-            processGameState(stateBucket.currentGameState, cookie, socket, true, true);
-        }
-    },
-
     addPlayerOptions: (personEl, person, socket, gameState) => {
         const optionsButton = document.createElement('img');
         const optionsHandler = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
-                document.querySelector('#player-options-modal-title').innerText = person.name + globals.USER_TYPE_ICONS[person.userType];
+                document.querySelector('#player-options-modal-title').innerText = person.name + USER_TYPE_ICONS[person.userType];
                 document.getElementById('player-options-modal-content').innerHTML = '';
                 const kickOption = document.createElement('button');
                 kickOption.setAttribute('class', 'player-option');
@@ -187,8 +65,8 @@ export const SharedStateUtil = {
                     ModalManager.dispelModal('player-options-modal', 'player-options-modal-background');
                     Confirmation('Kick \'' + person.name + '\'?', () => {
                         socket.emit(
-                            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                            globals.EVENT_IDS.KICK_PERSON,
+                            SOCKET_EVENTS.IN_GAME_MESSAGE,
+                            EVENT_IDS.KICK_PERSON,
                             gameState.accessCode,
                             { personId: person.id }
                         );
@@ -216,7 +94,7 @@ export const SharedStateUtil = {
 
     buildSpectatorList (people, client, socket, gameState) {
         const list = document.createElement('div');
-        const spectators = people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR);
+        const spectators = people.filter(p => p.userType === USER_TYPES.SPECTATOR);
         if (spectators.length === 0) {
             list.innerHTML = '<div>Nobody currently spectating.</div>';
         } else {
@@ -224,11 +102,11 @@ export const SharedStateUtil = {
                 const spectatorEl = document.createElement('div');
                 spectatorEl.classList.add('spectator');
                 spectatorEl.innerHTML = '<div class=\'spectator-name\'></div>' +
-                    '<div>' + 'spectator' + globals.USER_TYPE_ICONS.spectator + '</div>';
+                    '<div>' + 'spectator' + USER_TYPE_ICONS.spectator + '</div>';
                 spectatorEl.querySelector('.spectator-name').innerText = spectator.name;
                 list.appendChild(spectatorEl);
 
-                if (client.userType === globals.USER_TYPES.MODERATOR || client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                if (client.userType === USER_TYPES.MODERATOR || client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                     this.addPlayerOptions(spectatorEl, spectator, socket, gameState);
                     spectatorEl.dataset.pointer = spectator.id;
                 }
@@ -246,126 +124,68 @@ export const SharedStateUtil = {
 
     displayCurrentModerator: (moderator) => {
         document.getElementById('current-moderator-name').innerText = moderator.name;
-        document.getElementById('current-moderator-type').innerText = moderator.userType + globals.USER_TYPE_ICONS[moderator.userType];
+        document.getElementById('current-moderator-type').innerText = moderator.userType + USER_TYPE_ICONS[moderator.userType];
+    },
+
+    returnHumanReadableTime: (milliseconds, tenthsOfSeconds = false) => {
+        const tenths = Math.floor((milliseconds / 100) % 10);
+        let seconds = Math.floor((milliseconds / 1000) % 60);
+        let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+        let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        return tenthsOfSeconds
+            ? hours + ':' + minutes + ':' + seconds + '.' + tenths
+            : hours + ':' + minutes + ':' + seconds;
+    },
+
+    activateRoleInfoButton: () => {
+        document.getElementById('role-info-button').addEventListener('click', (e) => {
+            const deck = stateBucket.currentGameState.deck;
+            deck.sort((a, b) => {
+                return a.team === ALIGNMENT.GOOD ? -1 : 1;
+            });
+            e.preventDefault();
+            document.getElementById('role-info-prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
+            const modalContent = document.getElementById('game-role-info-container');
+            for (const card of deck) {
+                const roleDiv = document.createElement('div');
+                const roleNameDiv = document.createElement('div');
+
+                roleNameDiv.classList.add('role-info-name');
+
+                const roleName = document.createElement('h5');
+                const roleQuantity = document.createElement('h5');
+                const roleDescription = document.createElement('p');
+
+                roleDescription.innerText = card.description;
+                roleName.innerText = card.role;
+                roleQuantity.innerText = card.quantity + 'x';
+
+                if (card.team === ALIGNMENT.GOOD) {
+                    roleName.classList.add(ALIGNMENT.GOOD);
+                } else {
+                    roleName.classList.add(ALIGNMENT.EVIL);
+                }
+
+                roleNameDiv.appendChild(roleQuantity);
+                roleNameDiv.appendChild(roleName);
+
+                roleDiv.appendChild(roleNameDiv);
+                roleDiv.appendChild(roleDescription);
+
+                modalContent.appendChild(roleDiv);
+            }
+            ModalManager.displayModal('role-info-modal', 'role-info-modal-background', 'close-role-info-modal-button');
+        });
+    },
+
+    displayClientInfo: (name, userType) => {
+        document.getElementById('client-name').innerText = name;
+        document.getElementById('client-user-type').innerText = userType;
+        document.getElementById('client-user-type').innerText += USER_TYPE_ICONS[userType];
     }
 };
-
-function processGameState (
-    currentGameState,
-    userId,
-    socket,
-    refreshPrompt = true,
-    animateContainer = false
-) {
-    if (animateContainer) {
-        document.getElementById('game-state-container').animate(
-            [
-                { opacity: '0', transform: 'translateY(10px)' },
-                { opacity: '1', transform: 'translateY(0px)' }
-            ], {
-                duration: 500,
-                easing: 'ease-in-out',
-                fill: 'both'
-            });
-        document.getElementById('client-container').animate([
-            { opacity: '0' },
-            { opacity: '1' }
-        ], {
-            duration: 500,
-            easing: 'ease-out',
-            fill: 'both'
-        });
-    }
-
-    displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
-
-    switch (currentGameState.status) {
-        case globals.STATUS.LOBBY:
-            const lobby = new Lobby('game-state-container', stateBucket, socket);
-            if (refreshPrompt) {
-                lobby.removeStartGameFunctionalityIfPresent();
-            }
-            lobby.populateHeader();
-            lobby.populatePlayers();
-            globals.LOBBY_EVENTS().forEach(e => socket.removeAllListeners(e));
-            lobby.setSocketHandlers();
-            if (currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                || currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                if (refreshPrompt) {
-                    lobby.displayStartGamePromptForModerators();
-                }
-                document.getElementById('player-options-prompt').innerHTML = HTMLFragments.PLAYER_OPTIONS_MODAL;
-            } else {
-                if (refreshPrompt) {
-                    lobby.displayPlayerPrompt();
-                }
-            }
-            break;
-        case globals.STATUS.IN_PROGRESS:
-            if (refreshPrompt) {
-                document.querySelector('#game-control-prompt')?.remove();
-                document.querySelector('#leave-game-prompt')?.remove();
-            }
-            const inProgressGame = new InProgress('game-state-container', stateBucket, socket);
-            globals.IN_PROGRESS_EVENTS().forEach(e => socket.removeAllListeners(e));
-            inProgressGame.setSocketHandlers();
-            inProgressGame.setUserView(currentGameState.client.userType);
-            break;
-        case globals.STATUS.ENDED: {
-            const ended = new Ended('game-state-container', stateBucket, socket);
-            ended.renderEndOfGame(currentGameState);
-            break;
-        }
-        default:
-            break;
-    }
-
-    activateRoleInfoButton();
-}
-
-function activateRoleInfoButton () {
-    document.getElementById('role-info-button').addEventListener('click', (e) => {
-        const deck = stateBucket.currentGameState.deck;
-        deck.sort((a, b) => {
-            return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
-        });
-        e.preventDefault();
-        document.getElementById('role-info-prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
-        const modalContent = document.getElementById('game-role-info-container');
-        for (const card of deck) {
-            const roleDiv = document.createElement('div');
-            const roleNameDiv = document.createElement('div');
-
-            roleNameDiv.classList.add('role-info-name');
-
-            const roleName = document.createElement('h5');
-            const roleQuantity = document.createElement('h5');
-            const roleDescription = document.createElement('p');
-
-            roleDescription.innerText = card.description;
-            roleName.innerText = card.role;
-            roleQuantity.innerText = card.quantity + 'x';
-
-            if (card.team === globals.ALIGNMENT.GOOD) {
-                roleName.classList.add(globals.ALIGNMENT.GOOD);
-            } else {
-                roleName.classList.add(globals.ALIGNMENT.EVIL);
-            }
-
-            roleNameDiv.appendChild(roleQuantity);
-            roleNameDiv.appendChild(roleName);
-
-            roleDiv.appendChild(roleNameDiv);
-            roleDiv.appendChild(roleDescription);
-
-            modalContent.appendChild(roleDiv);
-        }
-        ModalManager.displayModal('role-info-modal', 'role-info-modal-background', 'close-role-info-modal-button');
-    });
-}
-
-function displayClientInfo (name, userType) {
-    document.getElementById('client-name').innerText = name;
-    document.getElementById('client-user-type').innerText = userType;
-    document.getElementById('client-user-type').innerText += globals.USER_TYPE_ICONS[userType];
-}

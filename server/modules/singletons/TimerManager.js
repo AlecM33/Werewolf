@@ -1,6 +1,6 @@
 const { fork } = require('child_process');
 const path = require('path');
-const globals = require('../../config/globals');
+const { REDIS_CHANNELS, GAME_PROCESS_COMMANDS } = require('../../config/globals');
 
 class TimerManager {
     constructor (logger, instanceId) {
@@ -25,7 +25,7 @@ class TimerManager {
             await eventManager.handleEventById(msg.command, null, game, msg.socketId, game.accessCode, msg, null, false);
             await gameManager.refreshGame(game);
             await eventManager.publisher.publish(
-                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                 eventManager.createMessageToPublish(game.accessCode, msg.command, this.instanceId, JSON.stringify(msg))
             );
         });
@@ -34,7 +34,7 @@ class TimerManager {
             this.logger.debug('Game timer thread ' + gameProcess.pid + ' exiting with code ' + code + ' - game ' + game.accessCode);
         });
         gameProcess.send({
-            command: globals.GAME_PROCESS_COMMANDS.START_TIMER,
+            command: GAME_PROCESS_COMMANDS.START_TIMER,
             accessCode: game.accessCode,
             logLevel: this.logger.logLevel,
             hours: game.timerParams.hours,

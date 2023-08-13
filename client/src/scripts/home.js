@@ -1,4 +1,3 @@
-import { XHRUtility } from '../modules/utility/XHRUtility.js';
 import { toast } from '../modules/front_end_components/Toast.js';
 import { injectNavbar } from '../modules/front_end_components/Navbar.js';
 import { Confirmation } from '../modules/front_end_components/Confirmation.js';
@@ -25,32 +24,33 @@ function attemptToJoinGame (event) {
         form.removeEventListener('submit', attemptToJoinGame);
         form.classList.add('submitted');
         document.getElementById('join-button')?.setAttribute('value', 'Joining...');
-        XHRUtility.xhr(
+        fetch(
             '/api/games/' + userCode.toUpperCase().trim() + '/availability',
-            'GET',
-            null,
-            null
-        )
-            .then((res) => {
-                if (res.status === 200) {
-                    const json = JSON.parse(res.content);
+            {
+                method: 'GET',
+                mode: 'cors'
+            }
+        ).then((res) => {
+            if (res.status === 200) {
+                res.json().then(json => {
                     window.location = window.location.protocol + '//' + window.location.host +
                         '/join/' + encodeURIComponent(json.accessCode) +
                         '?playerCount=' + encodeURIComponent(json.playerCount) +
                         '&timer=' + encodeURIComponent(getTimeString(json.timerParams));
-                }
-            }).catch((res) => {
-                form.addEventListener('submit', attemptToJoinGame);
-                form.classList.remove('submitted');
-                document.getElementById('join-button')?.setAttribute('value', 'Join');
-                if (res.status === 404) {
-                    toast('Game not found', 'error', true);
-                } else if (res.status === 400) {
-                    toast(res.content, 'error', true);
-                } else {
-                    toast('An unknown error occurred. Please try again later.', 'error', true);
-                }
-            });
+                });
+            }
+        }).catch((res) => {
+            form.addEventListener('submit', attemptToJoinGame);
+            form.classList.remove('submitted');
+            document.getElementById('join-button')?.setAttribute('value', 'Join');
+            if (res.status === 404) {
+                toast('Game not found', 'error', true);
+            } else if (res.status === 400) {
+                toast(res.content, 'error', true);
+            } else {
+                toast('An unknown error occurred. Please try again later.', 'error', true);
+            }
+        });
     } else {
         toast('Invalid code. Codes are 4 numbers or letters.', 'error', true, true);
     }

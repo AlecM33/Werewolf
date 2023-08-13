@@ -1,6 +1,6 @@
-const globals = require('../config/globals');
+const { LOG_LEVEL } = require('../config/globals');
 
-module.exports = function (logLevel = globals.LOG_LEVEL.INFO) {
+module.exports = function (logLevel = LOG_LEVEL.INFO) {
     return {
         logLevel: logLevel,
         info (message = '') {
@@ -10,7 +10,7 @@ module.exports = function (logLevel = globals.LOG_LEVEL.INFO) {
 
         error (message = '') {
             if (
-                logLevel === globals.LOG_LEVEL.INFO
+                logLevel === LOG_LEVEL.INFO
             ) { return; }
             const now = new Date();
             console.error('ERROR ', now.toGMTString(), ': ', message);
@@ -18,25 +18,25 @@ module.exports = function (logLevel = globals.LOG_LEVEL.INFO) {
 
         warn (message = '') {
             if (
-                logLevel === globals.LOG_LEVEL.INFO
-                || logLevel === globals.LOG_LEVEL.ERROR
+                logLevel === LOG_LEVEL.INFO
+                || logLevel === LOG_LEVEL.ERROR
             ) return;
             const now = new Date();
             console.error('WARN ', now.toGMTString(), ': ', message);
         },
 
         debug (message = '') {
-            if (logLevel === globals.LOG_LEVEL.INFO || logLevel === globals.LOG_LEVEL.ERROR || logLevel === globals.LOG_LEVEL.WARN) return;
+            if (logLevel === LOG_LEVEL.INFO || logLevel === LOG_LEVEL.ERROR || logLevel === LOG_LEVEL.WARN) return;
             const now = new Date();
             console.debug('DEBUG ', now.toGMTString(), ': ', message);
         },
 
         trace (message = '') {
             if (
-                logLevel === globals.LOG_LEVEL.INFO
-                || logLevel === globals.LOG_LEVEL.WARN
-                || logLevel === globals.LOG_LEVEL.DEBUG
-                || logLevel === globals.LOG_LEVEL.ERROR
+                logLevel === LOG_LEVEL.INFO
+                || logLevel === LOG_LEVEL.WARN
+                || logLevel === LOG_LEVEL.DEBUG
+                || logLevel === LOG_LEVEL.ERROR
             ) return;
 
             const now = new Date();

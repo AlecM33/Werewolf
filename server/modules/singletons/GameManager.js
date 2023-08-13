@@ -1,4 +1,12 @@
-const globals = require('../../config/globals');
+const {
+    STATUS,
+    PRIMITIVES,
+    ERROR_MESSAGES,
+    GAME_PROCESS_COMMANDS,
+    USER_TYPES,
+    EVENT_IDS,
+    REDIS_CHANNELS
+} = require('../../config/globals');
 const Game = require('../../model/Game');
 const Person = require('../../model/Person');
 const GameStateCurator = require('../GameStateCurator');
@@ -62,9 +70,9 @@ class GameManager {
                 gameParams.hasDedicatedModerator,
                 gameParams.isTestGame
             );
-            const newAccessCode = await this.generateAccessCode(globals.ACCESS_CODE_CHAR_POOL);
+            const newAccessCode = await this.generateAccessCode(PRIMITIVES.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
-                return Promise.reject(globals.ERROR_MESSAGE.NO_UNIQUE_ACCESS_CODE);
+                return Promise.reject(ERROR_MESSAGES.NO_UNIQUE_ACCESS_CODE);
             }
             const moderator = initializeModerator(req.moderatorName, req.hasDedicatedModerator);
             moderator.assigned = true;
@@ -75,7 +83,7 @@ class GameManager {
             }
             const newGame = new Game(
                 newAccessCode,
-                globals.STATUS.LOBBY,
+                STATUS.LOBBY,
                 null,
                 req.deck,
                 req.hasTimer,
@@ -88,7 +96,7 @@ class GameManager {
             );
             newGame.people = initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame, newGame.gameSize);
             await this.eventManager.publisher.set(newAccessCode, JSON.stringify(newGame), {
-                EX: globals.STALE_GAME_SECONDS
+                EX: PRIMITIVES.STALE_GAME_SECONDS
             });
             return Promise.resolve({ accessCode: newAccessCode, cookie: moderator.cookie, environment: this.environment });
         }).catch((message) => {
@@ -103,7 +111,7 @@ class GameManager {
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
             thread.send({
-                command: globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                command: GAME_PROCESS_COMMANDS.PAUSE_TIMER,
                 accessCode: game.accessCode,
                 logLevel: this.logger.logLevel
             });
@@ -115,7 +123,7 @@ class GameManager {
         if (thread && !thread.killed) {
             this.logger.debug('Timer thread found for game ' + game.accessCode);
             thread.send({
-                command: globals.GAME_PROCESS_COMMANDS.RESUME_TIMER,
+                command: GAME_PROCESS_COMMANDS.RESUME_TIMER,
                 accessCode: game.accessCode,
                 logLevel: this.logger.logLevel
             });
@@ -127,14 +135,14 @@ class GameManager {
             const thread = this.timerManager.timerThreads[game.accessCode];
             if (thread && (!thread.killed && thread.exitCode === null)) {
                 thread.send({
-                    command: globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    command: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                     accessCode: game.accessCode,
                     socketId: socketId,
                     logLevel: this.logger.logLevel
                 });
             } else if (thread) {
                 if (game.timerParams && game.timerParams.timeRemaining === 0) {
-                    this.namespace.to(socketId).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
+                    this.namespace.to(socketId).emit(GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
                 }
             }
         }
@@ -154,9 +162,9 @@ class GameManager {
         let codeDigits, accessCode;
         let attempts = 0;
         while (!accessCode || ((await this.eventManager.publisher.keys('*')).includes(accessCode)
-            && attempts < globals.ACCESS_CODE_GENERATION_ATTEMPTS)) {
+            && attempts < PRIMITIVES.ACCESS_CODE_GENERATION_ATTEMPTS)) {
             codeDigits = [];
-            let iterations = globals.ACCESS_CODE_LENGTH;
+            let iterations = PRIMITIVES.ACCESS_CODE_LENGTH;
             while (iterations > 0) {
                 iterations --;
                 codeDigits.push(charPool[getRandomInt(charCount)]);
@@ -178,7 +186,7 @@ class GameManager {
             return Promise.reject({ status: 400, reason: 'This name is taken.' });
         }
         if (joinAsSpectator
-            && game.people.filter(person => person.userType === globals.USER_TYPES.SPECTATOR).length === globals.MAX_SPECTATORS
+            && game.people.filter(person => person.userType === USER_TYPES.SPECTATOR).length === PRIMITIVES.MAX_SPECTATORS
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
         } else if (joinAsSpectator || this.isGameStartable(game)) {
@@ -196,7 +204,7 @@ class GameManager {
                 createRandomId(),
                 createRandomId(),
                 name,
-                globals.USER_TYPES.PLAYER,
+                USER_TYPES.PLAYER,
                 null,
                 null,
                 null,
@@ -208,15 +216,15 @@ class GameManager {
         game.isStartable = this.isGameStartable(game);
         await this.refreshGame(game);
         this.namespace.in(game.accessCode).emit(
-            globals.EVENTS.PLAYER_JOINED,
+            EVENT_IDS.PLAYER_JOINED,
             GameStateCurator.mapPerson(moderator || newPlayer),
             game.isStartable
         );
         await this.eventManager.publisher?.publish(
-            globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
             this.eventManager.createMessageToPublish(
                 game.accessCode,
-                globals.EVENT_IDS.PLAYER_JOINED,
+                EVENT_IDS.PLAYER_JOINED,
                 this.instanceId,
                 JSON.stringify(moderator || newPlayer)
             )
@@ -237,7 +245,7 @@ class GameManager {
         return cards;
     }
 
-    restartGame = async (game, namespace, status = globals.STATUS.IN_PROGRESS) => {
+    restartGame = async (game, namespace) => {
         // kill any outstanding timer threads
         const subProcess = this.timerManager.timerThreads[game.accessCode];
         if (subProcess) {
@@ -250,16 +258,16 @@ class GameManager {
         }
 
         for (let i = 0; i < game.people.length; i ++) {
-            if (game.people[i].userType === globals.USER_TYPES.KILLED_PLAYER) {
-                game.people[i].userType = globals.USER_TYPES.PLAYER;
+            if (game.people[i].userType === USER_TYPES.KILLED_PLAYER) {
+                game.people[i].userType = USER_TYPES.PLAYER;
                 game.people[i].out = false;
             }
-            if (game.people[i].userType === globals.USER_TYPES.KILLED_BOT) {
-                game.people[i].userType = globals.USER_TYPES.BOT;
+            if (game.people[i].userType === USER_TYPES.KILLED_BOT) {
+                game.people[i].userType = USER_TYPES.BOT;
                 game.people[i].out = false;
             }
-            if (game.people[i].gameRole && game.people[i].id === game.currentModeratorId && game.people[i].userType === globals.USER_TYPES.MODERATOR) {
-                game.people[i].userType = globals.USER_TYPES.TEMPORARY_MODERATOR;
+            if (game.people[i].gameRole && game.people[i].id === game.currentModeratorId && game.people[i].userType === USER_TYPES.MODERATOR) {
+                game.people[i].userType = USER_TYPES.TEMPORARY_MODERATOR;
                 game.people[i].out = false;
             }
             game.people[i].revealed = false;
@@ -270,19 +278,19 @@ class GameManager {
             game.people[i].customRole = null;
         }
 
-        game.status = globals.STATUS.LOBBY;
+        game.status = STATUS.LOBBY;
 
         await this.refreshGame(game);
         await this.eventManager.publisher?.publish(
-            globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
             this.eventManager.createMessageToPublish(
                 game.accessCode,
-                globals.EVENT_IDS.RESTART_GAME,
+                EVENT_IDS.RESTART_GAME,
                 this.instanceId,
                 '{}'
             )
         );
-        namespace.in(game.accessCode).emit(globals.EVENT_IDS.RESTART_GAME);
+        namespace.in(game.accessCode).emit(EVENT_IDS.RESTART_GAME);
     };
 
     /*
@@ -305,9 +313,9 @@ class GameManager {
     deal = (game) => {
         const cards = this.prepareDeck(game.deck);
         let i = 0;
-        for (const person of game.people.filter(person => person.userType === globals.USER_TYPES.PLAYER
-            || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-            || person.userType === globals.USER_TYPES.BOT)
+        for (const person of game.people.filter(person => person.userType === USER_TYPES.PLAYER
+            || person.userType === USER_TYPES.TEMPORARY_MODERATOR
+            || person.userType === USER_TYPES.BOT)
         ) {
             person.gameRole = cards[i].role;
             person.customRole = cards[i].custom;
@@ -318,9 +326,9 @@ class GameManager {
     }
 
     isGameStartable = (game) => {
-        return game.people.filter(person => person.userType === globals.USER_TYPES.PLAYER
-            || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-            || person.userType === globals.USER_TYPES.BOT).length === game.gameSize;
+        return game.people.filter(person => person.userType === USER_TYPES.PLAYER
+            || person.userType === USER_TYPES.TEMPORARY_MODERATOR
+            || person.userType === USER_TYPES.BOT).length === game.gameSize;
     }
 
     findPersonByField = (game, fieldName, value) => {
@@ -334,8 +342,8 @@ function getRandomInt (max) {
 
 function initializeModerator (name, hasDedicatedModerator) {
     const userType = hasDedicatedModerator
-        ? globals.USER_TYPES.MODERATOR
-        : globals.USER_TYPES.TEMPORARY_MODERATOR;
+        ? USER_TYPES.MODERATOR
+        : USER_TYPES.TEMPORARY_MODERATOR;
     return new Person(createRandomId(), createRandomId(), name, userType);
 }
 
@@ -343,7 +351,7 @@ function initializePeopleForGame (uniqueRoles, moderator, shuffle, isTestGame, g
     const people = [];
     if (isTestGame) {
         let j = 0;
-        const number = moderator.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+        const number = moderator.userType === USER_TYPES.TEMPORARY_MODERATOR
             ? gameSize - 1
             : gameSize;
         while (j < number) {
@@ -351,7 +359,7 @@ function initializePeopleForGame (uniqueRoles, moderator, shuffle, isTestGame, g
                 createRandomId(),
                 createRandomId(),
                 UsernameGenerator.generate(),
-                globals.USER_TYPES.BOT,
+                USER_TYPES.BOT,
                 null,
                 null,
                 null,
@@ -369,8 +377,8 @@ function initializePeopleForGame (uniqueRoles, moderator, shuffle, isTestGame, g
 
 function createRandomId () {
     let id = '';
-    for (let i = 0; i < globals.INSTANCE_ID_LENGTH; i ++) {
-        id += globals.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * globals.INSTANCE_ID_CHAR_POOL.length)];
+    for (let i = 0; i < PRIMITIVES.INSTANCE_ID_LENGTH; i ++) {
+        id += PRIMITIVES.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * PRIMITIVES.INSTANCE_ID_CHAR_POOL.length)];
     }
     return id;
 }
@@ -385,21 +393,21 @@ async function addSpectator (game, name, logger, namespace, eventManager, instan
         createRandomId(),
         createRandomId(),
         name,
-        globals.USER_TYPES.SPECTATOR
+        USER_TYPES.SPECTATOR
     );
     spectator.assigned = true;
     logger.trace('new spectator: ' + spectator.name);
     game.people.push(spectator);
     await refreshGame(game);
     namespace.in(game.accessCode).emit(
-        globals.EVENT_IDS.ADD_SPECTATOR,
+        EVENT_IDS.ADD_SPECTATOR,
         GameStateCurator.mapPerson(spectator)
     );
     await eventManager.publisher.publish(
-        globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
         eventManager.createMessageToPublish(
             game.accessCode,
-            globals.EVENT_IDS.ADD_SPECTATOR,
+            EVENT_IDS.ADD_SPECTATOR,
             instanceId,
             JSON.stringify(GameStateCurator.mapPerson(spectator))
         )

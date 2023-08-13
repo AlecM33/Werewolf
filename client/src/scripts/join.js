@@ -28,13 +28,31 @@ const joinHandler = (e) => {
     if (validateName(name)) {
         sendJoinRequest(e, name, accessCode)
             .then((res) => {
-                res.json().then(json => {
-                    UserUtility.setAnonymousUserId(json.cookie, json.environment);
-                    resetJoinButtonState(e, res, joinHandler);
-                    window.location = '/game/' + accessCode;
-                });
-            }).catch((res) => {
-                handleJoinError(e, res, joinHandler);
+                if (!res.ok) {
+                    switch (res.status) {
+                        case 404:
+                            toast('Game not found', 'error', true);
+                            break;
+                        case 400:
+                            res.text().then(text => {
+                                toast(text, 'error', true);
+                            });
+                            break;
+                        default:
+                            toast('There was a problem joining the game', 'error', true);
+                            break;
+                    }
+                    resetJoinButtonState(e, joinHandler);
+                } else {
+                    res.json().then(json => {
+                        UserUtility.setAnonymousUserId(json.cookie, json.environment);
+                        resetJoinButtonState(e, joinHandler);
+                        window.location = '/game/' + accessCode;
+                    });
+                }
+            }).catch(() => {
+                toast('Problems with the server are preventing your request to join the game.', 'error', true);
+                resetJoinButtonState(e, joinHandler);
             });
     } else {
         toast('Name must be between 1 and 30 characters.', 'error', true, true, 'long');
@@ -65,26 +83,10 @@ function sendJoinRequest (e, name, accessCode) {
     );
 }
 
-function resetJoinButtonState (e, res, joinHandler) {
+function resetJoinButtonState (e, joinHandler) {
     document.getElementById('join-game-form').onsubmit = joinHandler;
     e.submitter.classList.remove('submitted');
     e.submitter.setAttribute('value', 'Join');
-}
-
-function handleJoinError (e, res, joinHandler) {
-    resetJoinButtonState(e, res, joinHandler);
-
-    if (res.status === 404) {
-        toast('This game was not found.', 'error', true, true, 'long');
-    } else if (res.status === 400) {
-        toast(res.content, 'error', true, true, 'long');
-    } else if (res.status >= 500) {
-        toast(
-            'The server is experiencing problems. Please try again later',
-            'error',
-            true
-        );
-    }
 }
 
 function validateName (name) {

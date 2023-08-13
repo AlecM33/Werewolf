@@ -6,5 +6,5 @@ import { toast } from '../modules/front_end_components/Toast.js';
 gameHandler(io('/in-game'), window, gameTemplate).then(() => {
     toast('Connecting...', 'warning', true, false);
 }).catch((e) => {
-    toast(e, 'error', true);
+    toast(e.message, 'error', true, false);
 });

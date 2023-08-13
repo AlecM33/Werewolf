@@ -137,21 +137,35 @@ export class GameCreationStepManager {
                             )
                         }).catch((e) => {
                         restoreButton();
-                        if (e.status === 429) {
-                            toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
-                        } else if (e.status === 413) {
-                            toast('Your request is too large.', 'error', true, true);
-                        } else {
-                            toast(e.content, 'error', true, true, 'medium');
-                        }
+                        toast(e.content, 'error', true, true, 'medium');
                     }).then(res => {
-                        res.json().then(json => {
-                            UserUtility.setAnonymousUserId(json.cookie, json.environment);
-                            window.location.replace(
-                                window.location.protocol + '//' + window.location.host +
-                                '/game/' + json.accessCode
-                            );
-                        });
+                        switch (res.status) {
+                            case 429:
+                                toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
+                                restoreButton();
+                                break;
+                            case 413:
+                                toast('Your request is too large.', 'error', true, true);
+                                restoreButton();
+                                break;
+                            case 400:
+                                toast('Your game has invalid parameters..', 'error', true, true);
+                                restoreButton();
+                                break;
+                            case 201:
+                                res.json().then(json => {
+                                    UserUtility.setAnonymousUserId(json.cookie, json.environment);
+                                    window.location.replace(
+                                        window.location.protocol + '//' + window.location.host +
+                                        '/game/' + json.accessCode
+                                    );
+                                });
+                                break;
+                            default:
+                                toast(res.content, 'error', true, true, 'medium');
+                                restoreButton();
+                                break;
+                        }
                     });
                 }
             }

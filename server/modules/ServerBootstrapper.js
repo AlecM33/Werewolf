@@ -113,7 +113,7 @@ const ServerBootstrapper = {
         });
 
         // API endpoints
-        app.use('/api/games', standardRateLimit, require('../api/RoomsAPI'));
+        app.use('/api/games', standardRateLimit, require('../api/GamesAPI'));
         app.use('/api/admin', (req, res, next) => {
             if (isAuthorized(req)) {
                 next();

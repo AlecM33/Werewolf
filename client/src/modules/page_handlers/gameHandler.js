@@ -27,9 +27,13 @@ export const gameHandler = (socket, window, gameDOM) => {
                 method: 'GET',
                 mode: 'cors'
             }
-        ).catch((res) => {
-            reject(res.content);
+        ).catch(() => {
+            reject(new Error('There was a problem connecting to the room.'));
         }).then((response) => {
+            if (!response.ok) {
+                reject(new Error('HTTP ' + response.status + ': Could not connect to the room'));
+                return;
+            }
             response.text().then((text) => {
                 stateBucket.environment = text;
                 socket.on('connect', () => {

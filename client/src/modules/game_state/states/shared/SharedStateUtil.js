@@ -19,7 +19,7 @@ export const SharedStateUtil = {
 
     restartHandler: (stateBucket, status = STATUS.IN_PROGRESS) => {
         fetch(
-            '/api/games/' + stateBucket.currentGameState.accessCode + '/restart?status=' + status,
+            '/api/games/' + stateBucket.currentGameState.accessCode + '/restart',
             {
                 method: 'PATCH',
                 mode: 'cors',

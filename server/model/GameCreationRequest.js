@@ -1,4 +1,4 @@
-const globals = require('../config/globals');
+const { ERROR_MESSAGES, PRIMITIVES, ALIGNMENT } = require('../config/globals');
 
 class GameCreationRequest {
     constructor (
@@ -24,7 +24,7 @@ class GameCreationRequest {
             || expectedKeys.some((key) => !Object.keys(gameParams).includes(key))
             || !valid(gameParams)
         ) {
-            return Promise.reject(globals.ERROR_MESSAGE.BAD_CREATE_REQUEST);
+            return Promise.reject(ERROR_MESSAGES.BAD_CREATE_REQUEST);
         } else {
             return Promise.resolve();
         }
@@ -37,12 +37,12 @@ class GameCreationRequest {
                     && typeof entry === 'object'
                     && typeof entry.role === 'string'
                     && entry.role.length > 0
-                    && entry.role.length <= globals.MAX_CUSTOM_ROLE_NAME_LENGTH
+                    && entry.role.length <= PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH
                     && typeof entry.team === 'string'
-                    && (entry.team === globals.ALIGNMENT.GOOD || entry.team === globals.ALIGNMENT.EVIL)
+                    && (entry.team === ALIGNMENT.GOOD || entry.team === ALIGNMENT.EVIL)
                     && typeof entry.description === 'string'
                     && entry.description.length > 0
-                    && entry.description.length <= globals.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
+                    && entry.description.length <= PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
                     && (!entry.custom || typeof entry.custom === 'boolean')
                     && typeof entry.quantity === 'number'
                     && entry.quantity >= 0

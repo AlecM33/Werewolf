@@ -1,9 +1,6 @@
 // TODO: clean up these deep relative paths? jsconfig.json is not working...
 const Game = require('../../../../server/model/Game');
-const globals = require('../../../../server/config/globals');
-const EVENT_IDS = globals.EVENT_IDS;
-const USER_TYPES = globals.USER_TYPES;
-const STATUS = globals.STATUS;
+const { ENVIRONMENTS, EVENT_IDS, USER_TYPES, STATUS } = require('../../../../server/config/globals.js');
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../server/modules/singletons/EventManager.js');
@@ -21,7 +18,7 @@ describe('Events', () => {
         const toObj = { emit: () => {} };
         namespace = { in: () => { return inObj; }, to: () => { return toObj; }, sockets: new Map() };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
-        gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, 'test');
+        gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, ENVIRONMENTS.PRODUCTION, 'test');
         timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
         eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
         gameManager.setGameSocketNamespace(namespace);
@@ -83,7 +80,7 @@ describe('Events', () => {
                     .communicate(game, { id: 'd', assigned: true, userType: USER_TYPES.PLAYER }, { gameManager: gameManager });
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(
-                    globals.EVENTS.PLAYER_JOINED,
+                    EVENT_IDS.PLAYER_JOINED,
                     GameStateCurator.mapPerson({ id: 'd', assigned: true, userType: USER_TYPES.PLAYER }),
                     game.isStartable
                 );

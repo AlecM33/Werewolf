@@ -1,6 +1,6 @@
 import { QRCode } from '../../third_party/qrcode.js';
 import { toast } from '../../front_end_components/Toast.js';
-import { globals } from '../../../config/globals.js';
+import { EVENT_IDS, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { SharedStateUtil } from './shared/SharedStateUtil.js';
@@ -25,15 +25,15 @@ export class Lobby {
             }
             Confirmation('Start game and deal roles?', () => {
                 socket.timeout(5000).emit(
-                    globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                    globals.EVENT_IDS.START_GAME,
+                    SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    EVENT_IDS.START_GAME,
                     stateBucket.currentGameState.accessCode,
                     null,
                     (err) => {
                         if (err) {
                             socket.emit(
-                                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                                globals.EVENT_IDS.FETCH_GAME_STATE,
+                                SOCKET_EVENTS.IN_GAME_MESSAGE,
+                                EVENT_IDS.FETCH_GAME_STATE,
                                 stateBucket.currentGameState.accessCode,
                                 { personId: stateBucket.currentGameState.client.cookie },
                                 (gameState) => {
@@ -52,8 +52,8 @@ export class Lobby {
             e.preventDefault();
             Confirmation('Leave the room?', () => {
                 socket.emit(
-                    globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                    globals.EVENT_IDS.LEAVE_ROOM,
+                    SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    EVENT_IDS.LEAVE_ROOM,
                     stateBucket.currentGameState.accessCode,
                     { personId: stateBucket.currentGameState.client.id }
                 );
@@ -86,8 +86,8 @@ export class Lobby {
                     document.querySelector('#role-edit-container-background')?.remove();
                     document.getElementById('game-content').style.display = 'flex';
                     this.socket.emit(
-                        globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                        globals.EVENT_IDS.UPDATE_GAME_ROLES,
+                        SOCKET_EVENTS.IN_GAME_MESSAGE,
+                        EVENT_IDS.UPDATE_GAME_ROLES,
                         stateBucket.currentGameState.accessCode,
                         { deck: this.gameCreationStepManager.deckManager.deck.filter((card) => card.quantity > 0) },
                         () => {
@@ -130,7 +130,7 @@ export class Lobby {
         const playerCount = this.container.querySelector('#game-player-count');
         playerCount.innerText = this.stateBucket.currentGameState.gameSize + ' Players';
         const inLobbyCount = this.stateBucket.currentGameState.people.filter(
-            p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
+            p => p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR
         ).length;
         document.querySelector("label[for='lobby-players']").innerText =
             'Participants (' + inLobbyCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
@@ -149,7 +149,7 @@ export class Lobby {
             if (e.type === 'click' || e.code === 'Enter') {
                 Confirmation(
                     SharedStateUtil.buildSpectatorList(this.stateBucket.currentGameState.people
-                        .filter(p => p.userType === globals.USER_TYPES.SPECTATOR),
+                        .filter(p => p.userType === USER_TYPES.SPECTATOR),
                     this.stateBucket.currentGameState.client,
                     this.socket,
                     this.stateBucket.currentGameState),
@@ -162,7 +162,7 @@ export class Lobby {
         this.container.querySelector('#spectator-count').addEventListener('keyup', spectatorHandler);
 
         SharedStateUtil.setNumberOfSpectators(
-            this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+            this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
             this.container.querySelector('#spectator-count')
         );
 
@@ -180,54 +180,54 @@ export class Lobby {
         const lobbyPlayersContainer = this.container.querySelector('#lobby-players');
         const sorted = this.stateBucket.currentGameState.people.sort(
             function (a, b) {
-                if (a.userType === globals.USER_TYPES.MODERATOR || a.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                if (a.userType === USER_TYPES.MODERATOR || a.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                     return -1;
                 }
                 return 1;
             }
         );
-        for (const person of sorted.filter(p => p.userType !== globals.USER_TYPES.SPECTATOR)) {
+        for (const person of sorted.filter(p => p.userType !== USER_TYPES.SPECTATOR)) {
             lobbyPlayersContainer.appendChild(renderLobbyPerson(person, this.stateBucket.currentGameState, this.socket));
         }
         const playerCount = this.stateBucket.currentGameState.people.filter(
-            p => p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR
+            p => p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR
         ).length;
         document.querySelector("label[for='lobby-players']").innerText =
             'Participants (' + playerCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
     }
 
     setSocketHandlers () {
-        this.socket.on(globals.EVENT_IDS.PLAYER_JOINED, (player, gameIsStartable) => {
+        this.socket.on(EVENT_IDS.PLAYER_JOINED, (player, gameIsStartable) => {
             toast(player.name + ' joined!', 'success', true, true, 'short');
             this.stateBucket.currentGameState.people.push(player);
             this.stateBucket.currentGameState.isStartable = gameIsStartable;
             this.populatePlayers();
             if ((
-                this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
             )
             ) {
                 this.displayStartGamePromptForModerators();
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.ADD_SPECTATOR, (spectator) => {
+        this.socket.on(EVENT_IDS.ADD_SPECTATOR, (spectator) => {
             this.stateBucket.currentGameState.people.push(spectator);
             SharedStateUtil.setNumberOfSpectators(
-                this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+                this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
                 document.getElementById('spectator-count')
             );
         });
 
-        this.socket.on(globals.EVENT_IDS.KICK_PERSON, (kickedId, gameIsStartable) => {
+        this.socket.on(EVENT_IDS.KICK_PERSON, (kickedId, gameIsStartable) => {
             if (kickedId === this.stateBucket.currentGameState.client.id) {
                 window.location = '/?message=' + encodeURIComponent('You were kicked by the moderator.');
             } else {
-                this.handlePersonExiting(kickedId, gameIsStartable, globals.EVENT_IDS.KICK_PERSON);
+                this.handlePersonExiting(kickedId, gameIsStartable, EVENT_IDS.KICK_PERSON);
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.UPDATE_GAME_ROLES, (deck, gameSize, isStartable) => {
+        this.socket.on(EVENT_IDS.UPDATE_GAME_ROLES, (deck, gameSize, isStartable) => {
             this.stateBucket.currentGameState.deck = deck;
             this.stateBucket.currentGameState.gameSize = gameSize;
             this.stateBucket.currentGameState.isStartable = isStartable;
@@ -235,11 +235,11 @@ export class Lobby {
             this.setPlayerCount();
         });
 
-        this.socket.on(globals.EVENT_IDS.LEAVE_ROOM, (leftId, gameIsStartable) => {
+        this.socket.on(EVENT_IDS.LEAVE_ROOM, (leftId, gameIsStartable) => {
             if (leftId === this.stateBucket.currentGameState.client.id) {
                 window.location = '/?message=' + encodeURIComponent('You left the room.');
             } else {
-                this.handlePersonExiting(leftId, gameIsStartable, globals.EVENT_IDS.LEAVE_ROOM);
+                this.handlePersonExiting(leftId, gameIsStartable, EVENT_IDS.LEAVE_ROOM);
             }
         });
     }
@@ -252,18 +252,18 @@ export class Lobby {
         }
         this.stateBucket.currentGameState.isStartable = gameIsStartable;
         SharedStateUtil.setNumberOfSpectators(
-            this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+            this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
             document.getElementById('spectator-count')
         );
         this.populatePlayers();
         if ((
-            this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
         )
         ) {
             toast(
-                event === globals.EVENT_IDS.LEAVE_ROOM ? 'A player left.' : 'Player kicked.',
-                event === globals.EVENT_IDS.LEAVE_ROOM ? 'warning' : 'success',
+                event === EVENT_IDS.LEAVE_ROOM ? 'A player left.' : 'Player kicked.',
+                event === EVENT_IDS.LEAVE_ROOM ? 'warning' : 'success',
                 true,
                 true,
                 'short'
@@ -358,17 +358,17 @@ function renderLobbyPerson (person, gameState, socket) {
     personNameEl.classList.add('lobby-player-name');
     const personTypeEl = document.createElement('div');
     personNameEl.innerText = person.name;
-    personTypeEl.innerText = person.userType + globals.USER_TYPE_ICONS[person.userType];
+    personTypeEl.innerText = person.userType + USER_TYPE_ICONS[person.userType];
     el.classList.add('lobby-player');
-    if (person.userType === globals.USER_TYPES.MODERATOR || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+    if (person.userType === USER_TYPES.MODERATOR || person.userType === USER_TYPES.TEMPORARY_MODERATOR) {
         el.classList.add('moderator');
     }
 
     el.appendChild(personNameEl);
     el.appendChild(personTypeEl);
 
-    if ((gameState.client.userType === globals.USER_TYPES.MODERATOR || gameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR)
-        && person.userType !== globals.USER_TYPES.MODERATOR && person.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
+    if ((gameState.client.userType === USER_TYPES.MODERATOR || gameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR)
+        && person.userType !== USER_TYPES.MODERATOR && person.userType !== USER_TYPES.TEMPORARY_MODERATOR) {
         SharedStateUtil.addPlayerOptions(el, person, socket, gameState);
         el.dataset.pointer = person.id;
     }

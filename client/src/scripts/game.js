@@ -1,8 +1,8 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-import { gameHandler } from '../modules/page_handlers/gameHandler';
+import { gameHandler } from '../modules/page_handlers/gameHandler.js';
 import { io } from 'socket.io-client';
-import { XHRUtility } from '../modules/utility/XHRUtility.js';
 import gameTemplate from '../view_templates/GameTemplate.js';
+import { toast } from '../modules/front_end_components/Toast.js';
 
-await gameHandler(io('/in-game'), XHRUtility, window, gameTemplate);
+gameHandler(io('/in-game'), window, gameTemplate).catch((e) => {
+    toast(e.message, 'error', true, false);
+});

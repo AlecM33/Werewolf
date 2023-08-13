@@ -1,8 +1,7 @@
 import { Game } from '../../model/Game.js';
 import { cancelCurrentToast, toast } from '../front_end_components/Toast.js';
 import { ModalManager } from '../front_end_components/ModalManager.js';
-import { XHRUtility } from '../utility/XHRUtility.js';
-import { globals } from '../../config/globals.js';
+import { ALIGNMENT } from '../../config/globals.js';
 import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
 import { UserUtility } from '../utility/UserUtility.js';
 import { RoleBox } from './RoleBox.js';
@@ -118,50 +117,56 @@ export class GameCreationStepManager {
                         button.classList.remove('submitted');
                         button.addEventListener('click', this.steps['5'].forwardHandler);
                     };
-                    XHRUtility.xhr(
+                    fetch(
                         '/api/games/create',
-                        'POST',
-                        null,
-                        JSON.stringify(
-                            new Game(
-                                this.currentGame.deck.filter((card) => card.quantity > 0),
-                                this.currentGame.hasTimer,
-                                this.currentGame.hasDedicatedModerator,
-                                this.currentGame.moderatorName,
-                                this.currentGame.timerParams,
-                                this.currentGame.isTestGame
+                        {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(
+                                new Game(
+                                    this.currentGame.deck.filter((card) => card.quantity > 0),
+                                    this.currentGame.hasTimer,
+                                    this.currentGame.hasDedicatedModerator,
+                                    this.currentGame.moderatorName,
+                                    this.currentGame.timerParams,
+                                    this.currentGame.isTestGame
+                                )
                             )
-                        )
-                    )
-                        .then((res) => {
-                            if (res.status === 201) {
-                                try {
-                                    const json = JSON.parse(res.content);
+                        }).catch((e) => {
+                        restoreButton();
+                        toast(e.content, 'error', true, true, 'medium');
+                    }).then(res => {
+                        switch (res.status) {
+                            case 429:
+                                toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
+                                restoreButton();
+                                break;
+                            case 413:
+                                toast('Your request is too large.', 'error', true, true);
+                                restoreButton();
+                                break;
+                            case 400:
+                                toast('Your game has invalid parameters..', 'error', true, true);
+                                restoreButton();
+                                break;
+                            case 201:
+                                res.json().then(json => {
                                     UserUtility.setAnonymousUserId(json.cookie, json.environment);
                                     window.location.replace(
                                         window.location.protocol + '//' + window.location.host +
                                         '/game/' + json.accessCode
                                     );
-                                } catch (e) {
-                                    restoreButton();
-                                    toast(
-                                        'There was a problem creating the game. Please contact the developers.',
-                                        'error',
-                                        true,
-                                        true
-                                    );
-                                }
-                            }
-                        }).catch((e) => {
-                            restoreButton();
-                            if (e.status === 429) {
-                                toast('You\'ve sent this request too many times.', 'error', true, true, 'medium');
-                            } else if (e.status === 413) {
-                                toast('Your request is too large.', 'error', true, true);
-                            } else {
-                                toast(e.content, 'error', true, true, 'medium');
-                            }
-                        });
+                                });
+                                break;
+                            default:
+                                toast(res.content, 'error', true, true, 'medium');
+                                restoreButton();
+                                break;
+                        }
+                    });
                 }
             }
         };
@@ -442,10 +447,10 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
     for (const card of game.deck) {
         const roleEl = document.createElement('div');
         roleEl.innerText = card.quantity + 'x ' + card.role;
-        if (card.team === globals.ALIGNMENT.GOOD) {
-            roleEl.classList.add(globals.ALIGNMENT.GOOD);
+        if (card.team === ALIGNMENT.GOOD) {
+            roleEl.classList.add(ALIGNMENT.GOOD);
         } else {
-            roleEl.classList.add(globals.ALIGNMENT.EVIL);
+            roleEl.classList.add(ALIGNMENT.EVIL);
         }
         div.querySelector('#roles-option').appendChild(roleEl);
     }
@@ -552,7 +557,7 @@ function initializeRemainingEventListeners (deckManager, roleBox) {
             roleBox.createMode = true;
             roleBox.currentlyEditingRoleName = null;
             document.getElementById('role-name').value = '';
-            document.getElementById('role-alignment').value = globals.ALIGNMENT.GOOD;
+            document.getElementById('role-alignment').value = ALIGNMENT.GOOD;
             document.getElementById('role-description').value = '';
             ModalManager.displayModal(
                 'role-modal',

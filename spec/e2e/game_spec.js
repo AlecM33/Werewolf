@@ -1,52 +1,51 @@
 import { gameHandler } from '../../client/src/modules/page_handlers/gameHandler.js';
 import { mockGames } from '../support/MockGames.js';
 import gameTemplate from '../../client/src/view_templates/GameTemplate.js';
-import { globals } from '../../client/src/config/globals.js';
+import {
+    EVENT_IDS,
+    SOCKET_EVENTS,
+    USER_TYPE_ICONS,
+    USER_TYPES
+} from '../../client/src/config/globals.js';
 
 describe('game page', () => {
-    const XHRUtility = {
-        xhr (url, method = 'GET', headers, body = null) {
-            switch (url) {
-                case '/api/games/environment':
-                    return new Promise((resolve, reject) => {
-                        resolve({ content: 'production' });
-                    });
-            }
+    const mockSocket = {
+        eventHandlers: {},
+        on: function (message, handler) {
+            this.eventHandlers[message] = handler;
+        },
+        once: function (message, handler) {
+            this.eventHandlers[message] = handler;
+        },
+        timeout: (duration) => {
+            return mockSocket;
+        },
+        removeAllListeners: function (...names) {
+
+        },
+        hasListeners: function (listener) {
+            return false;
         }
     };
 
+    const window = { location: { href: 'host/game/ABCD' }, fetch: () => {} };
+
+    beforeEach(async () => {
+        document.body.innerHTML = '';
+        const response = new Response('production', { status: 200, statusText: 'OK' });
+        spyOn(window, 'fetch').and.resolveTo(response);
+    });
     describe('lobby game - moderator view', () => {
-        let mockSocket;
-
-        beforeEach(async function () {
-            document.body.innerHTML = '';
-            mockSocket = {
-                eventHandlers: {},
-                on: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                once: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                timeout: (duration) => {
-                    return mockSocket;
-                },
-                emit: function (eventName, ...args) {
-                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
-                        case globals.EVENT_IDS.FETCH_GAME_STATE:
-                            args[args.length - 1](deepCopy(mockGames.gameInLobbyAsModerator)); // copy the game object to prevent leaking of state between specs
-                    }
-                },
-                removeAllListeners: function (...names) {
-
-                },
-                hasListeners: function (listener) {
-                    return false;
+        beforeEach(async () => {
+            mockSocket.emit = function (eventName, ...args) {
+                switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                    case EVENT_IDS.FETCH_GAME_STATE:
+                        args[args.length - 1](deepCopy(mockGames.gameInLobbyAsModerator)); // copy the game object to prevent leaking of state between specs
                 }
             };
-            await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
+            spyOn(mockSocket, 'emit').and.callThrough();
+            await gameHandler(mockSocket, window, gameTemplate);
             mockSocket.eventHandlers.connect();
-            spyOn(mockSocket, 'emit');
         });
 
         it('should display the connected client', () => {
@@ -59,10 +58,10 @@ describe('game page', () => {
         });
 
         it('should display a new player when they join', () => {
-            mockSocket.eventHandlers[globals.EVENT_IDS.PLAYER_JOINED]({
+            mockSocket.eventHandlers[EVENT_IDS.PLAYER_JOINED]({
                 name: 'Jane',
                 id: '123',
-                userType: globals.USER_TYPES.PLAYER,
+                userType: USER_TYPES.PLAYER,
                 out: false,
                 revealed: false
             }, false);
@@ -83,8 +82,8 @@ describe('game page', () => {
             document.getElementById('save-role-changes-button').click();
 
             expect(mockSocket.emit).toHaveBeenCalledWith(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.UPDATE_GAME_ROLES,
+                SOCKET_EVENTS.IN_GAME_MESSAGE,
+                EVENT_IDS.UPDATE_GAME_ROLES,
                 mockGames.gameInLobbyAsModerator.accessCode,
                 jasmine.any(Object),
                 jasmine.any(Function)
@@ -97,42 +96,21 @@ describe('game page', () => {
     });
 
     describe('lobby game - player view', () => {
-        let mockSocket;
-
-        beforeEach(async function () {
-            document.body.innerHTML = '';
-            mockSocket = {
-                eventHandlers: {},
-                on: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                once: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                timeout: (duration) => {
-                    return mockSocket;
-                },
-                emit: function (eventName, ...args) {
-                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
-                        case globals.EVENT_IDS.FETCH_GAME_STATE:
-                            args[args.length - 1](deepCopy(mockGames.gameInLobbyAsPlayer)); // copy the game object to prevent leaking of state between specs
-                    }
-                },
-                removeAllListeners: function (...names) {
-
-                },
-                hasListeners: function (listener) {
-                    return false;
+        beforeEach(async () => {
+            mockSocket.emit = function (eventName, ...args) {
+                switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                    case EVENT_IDS.FETCH_GAME_STATE:
+                        args[args.length - 1](deepCopy(mockGames.gameInLobbyAsPlayer)); // copy the game object to prevent leaking of state between specs
                 }
             };
-            await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
+            spyOn(mockSocket, 'emit').and.callThrough();
+            await gameHandler(mockSocket, window, gameTemplate);
             mockSocket.eventHandlers.connect();
-            spyOn(mockSocket, 'emit');
         });
 
         it('should display the connected client', () => {
             expect(document.getElementById('client-name').innerText).toEqual('Lys');
-            expect(document.getElementById('client-user-type').innerText).toEqual('player' + globals.USER_TYPE_ICONS.player);
+            expect(document.getElementById('client-user-type').innerText).toEqual('player' + USER_TYPE_ICONS.player);
         });
 
         it('should display the QR Code', () => {
@@ -144,18 +122,18 @@ describe('game page', () => {
             document.getElementById('leave-game-button').click();
             document.getElementById('confirmation-yes-button').click();
             expect(mockSocket.emit).toHaveBeenCalledWith(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.LEAVE_ROOM,
+                SOCKET_EVENTS.IN_GAME_MESSAGE,
+                EVENT_IDS.LEAVE_ROOM,
                 mockGames.gameInLobbyAsModerator.accessCode,
                 { personId: mockGames.gameInLobbyAsPlayer.client.id }
             );
         });
 
         it('should display a new player when they join', () => {
-            mockSocket.eventHandlers[globals.EVENT_IDS.PLAYER_JOINED]({
+            mockSocket.eventHandlers[EVENT_IDS.PLAYER_JOINED]({
                 name: 'Jane',
                 id: '123',
-                userType: globals.USER_TYPES.PLAYER,
+                userType: USER_TYPES.PLAYER,
                 out: false,
                 revealed: false
             }, false);
@@ -169,40 +147,20 @@ describe('game page', () => {
     });
 
     describe('in-progress game - player view', () => {
-        let mockSocket;
-
         beforeEach(async () => {
-            document.body.innerHTML = '';
-            mockSocket = {
-                eventHandlers: {},
-                on: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                timeout: (duration) => {
-                    return mockSocket;
-                },
-                emit: function (eventName, ...args) {
-                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
-                        case globals.EVENT_IDS.FETCH_GAME_STATE:
-                            args[args.length - 1](deepCopy(mockGames.inProgressGame)); // copy the game object to prevent leaking of state between specs
-                            break;
-                        default:
-                            break;
-                    }
-                },
-                hasListeners: function (listener) {
-                    return false;
-                },
-                removeAllListeners: function (...names) {
-
-                },
-                once: function (message, handler) {
-                    this.eventHandlers[message] = handler;
+            mockSocket.emit = function (eventName, ...args) {
+                switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                    case EVENT_IDS.FETCH_GAME_STATE:
+                        args[args.length - 1](deepCopy(mockGames.inProgressGame)); // copy the game object to prevent leaking of state between specs
+                        break;
+                    default:
+                        break;
                 }
             };
-            await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
+            spyOn(mockSocket, 'emit').and.callThrough();
+            await gameHandler(mockSocket, window, gameTemplate);
             mockSocket.eventHandlers.connect();
-            mockSocket.eventHandlers.getTimeRemaining(120000, true);
+            await mockSocket.eventHandlers.getTimeRemaining(120000, true);
         });
 
         it('should display the game role of the client', () => {
@@ -246,44 +204,24 @@ describe('game page', () => {
     });
 
     describe('in-progress game - moderator view', () => {
-        let mockSocket;
-
         beforeEach(async () => {
             document.body.innerHTML = '';
-            mockSocket = {
-                eventHandlers: {},
-                on: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                timeout: (duration) => {
-                    return mockSocket;
-                },
-                once: function (message, handler) {
-                    this.eventHandlers[message] = handler;
-                },
-                emit: function (eventName, ...args) {
-                    switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
-                        case globals.EVENT_IDS.FETCH_GAME_STATE:
-                            args[args.length - 1](deepCopy(mockGames.moderatorGame)); // copy the game object to prevent leaking of state between specs
-                            break;
-                        case globals.EVENT_IDS.END_GAME:
-                            args[args.length - 1]();
-                            break;
-                        default:
-                            break;
-                    }
-                },
-                hasListeners: function (listener) {
-                    return false;
-                },
-                removeAllListeners: function (...names) {
-
+            mockSocket.emit = function (eventName, ...args) {
+                switch (args[0]) { // eventName is currently always "inGameMessage" - the first arg after that is the specific message type
+                    case EVENT_IDS.FETCH_GAME_STATE:
+                        args[args.length - 1](deepCopy(mockGames.moderatorGame)); // copy the game object to prevent leaking of state between specs
+                        break;
+                    case EVENT_IDS.END_GAME:
+                        args[args.length - 1]();
+                        break;
+                    default:
+                        break;
                 }
             };
-            await gameHandler(mockSocket, XHRUtility, { location: { href: 'host/game/ABCD' } }, gameTemplate);
+            spyOn(mockSocket, 'emit').and.callThrough();
+            await gameHandler(mockSocket, window, gameTemplate);
             mockSocket.eventHandlers.connect();
-            mockSocket.eventHandlers.getTimeRemaining(120000, true);
-            spyOn(mockSocket, 'emit');
+            await mockSocket.eventHandlers.getTimeRemaining(120000, true);
         });
 
         it('should display the button to play/pause the timer', () => {
@@ -317,14 +255,14 @@ describe('game page', () => {
                 .querySelector('.kill-player-button').click();
             document.getElementById('confirmation-yes-button').click();
             expect(mockSocket.emit).toHaveBeenCalledWith(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.KILL_PLAYER,
+                SOCKET_EVENTS.IN_GAME_MESSAGE,
+                EVENT_IDS.KILL_PLAYER,
                 mockGames.moderatorGame.accessCode,
                 { personId: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW' }
             );
             mockSocket.eventHandlers.killPlayer({
                 id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW',
-                userType: globals.USER_TYPES.KILLED_PLAYER,
+                userType: USER_TYPES.KILLED_PLAYER,
                 out: true,
                 killed: true,
                 revealed: false,
@@ -339,8 +277,8 @@ describe('game page', () => {
                 .querySelector('.reveal-role-button').click();
             document.getElementById('confirmation-yes-button').click();
             expect(mockSocket.emit).toHaveBeenCalledWith(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.REVEAL_PLAYER,
+                SOCKET_EVENTS.IN_GAME_MESSAGE,
+                EVENT_IDS.REVEAL_PLAYER,
                 mockGames.moderatorGame.accessCode,
                 { personId: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW' }
             );

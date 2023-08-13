@@ -1,4 +1,4 @@
-import { globals } from '../../config/globals.js';
+import { ALIGNMENT } from '../../config/globals.js';
 import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
 import { toast } from '../front_end_components/Toast.js';
 import { ModalManager } from '../front_end_components/ModalManager.js';
@@ -147,7 +147,7 @@ export class DeckStateManager {
             }
             const sortedDeck = this.deck.sort((a, b) => {
                 if (a.team !== b.team) {
-                    return a.team === globals.ALIGNMENT.GOOD ? -1 : 1;
+                    return a.team === ALIGNMENT.GOOD ? -1 : 1;
                 }
                 return a.role.localeCompare(b.role);
             });
@@ -187,10 +187,10 @@ export class DeckStateManager {
         roleEl.dataset.roleId = sortedDeck[i].id;
         roleEl.classList.add('added-role');
         roleEl.innerHTML = HTMLFragments.DECK_SELECT_ROLE_ADDED_TO_DECK;
-        if (sortedDeck[i].team === globals.ALIGNMENT.GOOD) {
-            roleEl.classList.add(globals.ALIGNMENT.GOOD);
+        if (sortedDeck[i].team === ALIGNMENT.GOOD) {
+            roleEl.classList.add(ALIGNMENT.GOOD);
         } else {
-            roleEl.classList.add(globals.ALIGNMENT.EVIL);
+            roleEl.classList.add(ALIGNMENT.EVIL);
         }
         populateRoleElementInfo(roleEl, sortedDeck, i);
         document.getElementById('deck-list').appendChild(roleEl);
@@ -219,10 +219,10 @@ export class DeckStateManager {
             if (e.type === 'click' || e.code === 'Enter') {
                 const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
                 const nameEl = document.getElementById('custom-role-info-modal-name');
-                alignmentEl.classList.remove(globals.ALIGNMENT.GOOD);
-                alignmentEl.classList.remove(globals.ALIGNMENT.EVIL);
-                nameEl.classList.remove(globals.ALIGNMENT.GOOD);
-                nameEl.classList.remove(globals.ALIGNMENT.EVIL);
+                alignmentEl.classList.remove(ALIGNMENT.GOOD);
+                alignmentEl.classList.remove(ALIGNMENT.EVIL);
+                nameEl.classList.remove(ALIGNMENT.GOOD);
+                nameEl.classList.remove(ALIGNMENT.EVIL);
                 e.preventDefault();
                 nameEl.innerText = sortedDeck[i].role;
                 nameEl.classList.add(sortedDeck[i].team);

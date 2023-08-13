@@ -1,7 +1,6 @@
-const globals = require('../config/globals');
 const GameStateCurator = require('./GameStateCurator');
 const GameCreationRequest = require('../model/GameCreationRequest');
-const EVENT_IDS = globals.EVENT_IDS;
+const { EVENT_IDS, STATUS, USER_TYPES, GAME_PROCESS_COMMANDS, REDIS_CHANNELS } = require('../config/globals');
 
 const Events = [
     {
@@ -12,7 +11,7 @@ const Events = [
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode).emit(
-                globals.EVENTS.PLAYER_JOINED,
+                EVENT_IDS.PLAYER_JOINED,
                 GameStateCurator.mapPerson(socketArgs),
                 game.isStartable
             );
@@ -87,7 +86,7 @@ const Events = [
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode).emit(
-                globals.EVENT_IDS.ADD_SPECTATOR,
+                EVENT_IDS.ADD_SPECTATOR,
                 GameStateCurator.mapPerson(socketArgs)
             );
         }
@@ -117,7 +116,7 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const matchingPerson = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);
             if (matchingPerson && vars.gameManager.namespace.sockets.get(matchingPerson.socketId)) {
-                vars.gameManager.namespace.to(matchingPerson.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
+                vars.gameManager.namespace.to(matchingPerson.socketId).emit(EVENT_IDS.SYNC_GAME_STATE);
             }
         }
     },
@@ -125,7 +124,7 @@ const Events = [
         id: EVENT_IDS.START_GAME,
         stateChange: async (game, socketArgs, vars) => {
             if (game.isStartable) {
-                game.status = globals.STATUS.IN_PROGRESS;
+                game.status = STATUS.IN_PROGRESS;
                 vars.gameManager.deal(game);
                 if (game.hasTimer) {
                     game.timerParams.paused = true;
@@ -137,7 +136,7 @@ const Events = [
             if (vars.ackFn) {
                 vars.ackFn();
             }
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.START_GAME);
+            vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.START_GAME);
         }
     },
     {
@@ -145,9 +144,9 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person && !person.out) {
-                person.userType = person.userType === globals.USER_TYPES.BOT
-                    ? globals.USER_TYPES.KILLED_BOT
-                    : globals.USER_TYPES.KILLED_PLAYER;
+                person.userType = person.userType === USER_TYPES.BOT
+                    ? USER_TYPES.KILLED_BOT
+                    : USER_TYPES.KILLED_PLAYER;
                 person.out = true;
                 person.killed = true;
             }
@@ -155,7 +154,7 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person) {
-                vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, person);
+                vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, person);
             }
         }
     },
@@ -171,7 +170,7 @@ const Events = [
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person) {
                 vars.gameManager.namespace.in(game.accessCode).emit(
-                    globals.EVENT_IDS.REVEAL_PLAYER,
+                    EVENT_IDS.REVEAL_PLAYER,
                     {
                         id: person.id,
                         gameRole: person.gameRole,
@@ -184,7 +183,7 @@ const Events = [
     {
         id: EVENT_IDS.END_GAME,
         stateChange: async (game, socketArgs, vars) => {
-            game.status = globals.STATUS.ENDED;
+            game.status = STATUS.ENDED;
             if (game.hasTimer && vars.timerManager.timerThreads[game.accessCode]) {
                 vars.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
                 vars.timerManager.timerThreads[game.accessCode].kill();
@@ -195,7 +194,7 @@ const Events = [
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode)
-                .emit(globals.EVENT_IDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
+                .emit(EVENT_IDS.END_GAME, GameStateCurator.mapPeopleForModerator(game.people));
             if (vars.ackFn) {
                 vars.ackFn();
             }
@@ -208,14 +207,14 @@ const Events = [
             const toTransferTo = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);
             if (currentModerator) {
                 if (currentModerator.gameRole) {
-                    currentModerator.userType = globals.USER_TYPES.KILLED_PLAYER;
+                    currentModerator.userType = USER_TYPES.KILLED_PLAYER;
                 } else {
-                    currentModerator.userType = globals.USER_TYPES.SPECTATOR;
+                    currentModerator.userType = USER_TYPES.SPECTATOR;
                 }
                 game.previousModeratorId = currentModerator.id;
             }
             if (toTransferTo) {
-                toTransferTo.userType = globals.USER_TYPES.MODERATOR;
+                toTransferTo.userType = USER_TYPES.MODERATOR;
                 game.currentModeratorId = toTransferTo.id;
             }
         },
@@ -223,7 +222,7 @@ const Events = [
             if (vars.ackFn) {
                 vars.ackFn();
             }
-            vars.gameManager.namespace.to(game.accessCode).emit(globals.EVENT_IDS.SYNC_GAME_STATE);
+            vars.gameManager.namespace.to(game.accessCode).emit(EVENT_IDS.SYNC_GAME_STATE);
         }
     },
     {
@@ -233,10 +232,10 @@ const Events = [
             const toTransferTo = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);
             if (currentModerator && toTransferTo) {
                 if (currentModerator.id !== toTransferTo.id) {
-                    currentModerator.userType = globals.USER_TYPES.PLAYER;
+                    currentModerator.userType = USER_TYPES.PLAYER;
                 }
 
-                toTransferTo.userType = globals.USER_TYPES.MODERATOR;
+                toTransferTo.userType = USER_TYPES.MODERATOR;
                 toTransferTo.out = true;
                 toTransferTo.killed = true;
                 game.previousModeratorId = currentModerator.id;
@@ -247,14 +246,14 @@ const Events = [
             const moderator = vars.gameManager.findPersonByField(game, 'id', game.currentModeratorId);
             const moderatorSocket = vars.gameManager.namespace.sockets.get(moderator?.socketId);
             if (moderator && moderatorSocket) {
-                vars.gameManager.namespace.to(moderator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
-                moderatorSocket.to(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, moderator);
+                vars.gameManager.namespace.to(moderator.socketId).emit(EVENT_IDS.SYNC_GAME_STATE);
+                moderatorSocket.to(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, moderator);
             } else {
-                vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.KILL_PLAYER, moderator);
+                vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, moderator);
             }
             const previousModerator = vars.gameManager.findPersonByField(game, 'id', game.previousModeratorId);
             if (previousModerator && previousModerator.id !== moderator.id && vars.gameManager.namespace.sockets.get(previousModerator.socketId)) {
-                vars.gameManager.namespace.to(previousModerator.socketId).emit(globals.EVENTS.SYNC_GAME_STATE);
+                vars.gameManager.namespace.to(previousModerator.socketId).emit(EVENT_IDS.SYNC_GAME_STATE);
             }
         }
     },
@@ -274,7 +273,7 @@ const Events = [
             if (vars.ackFn) {
                 vars.ackFn();
             }
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.EVENT_IDS.RESTART_GAME);
+            vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.RESTART_GAME);
         }
     },
     {
@@ -294,7 +293,7 @@ const Events = [
                     const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
                     if (socket) {
                         vars.gameManager.namespace.to(socket.id).emit(
-                            globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                             game.timerParams.timeRemaining,
                             game.timerParams.paused
                         );
@@ -302,10 +301,10 @@ const Events = [
                 }
             } else { // we need to consult another container for the timer data
                 await vars.eventManager.publisher?.publish(
-                    globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                     vars.eventManager.createMessageToPublish(
                         game.accessCode,
-                        globals.EVENT_IDS.SOURCE_TIMER_EVENT,
+                        EVENT_IDS.SOURCE_TIMER_EVENT,
                         vars.instanceId,
                         JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
                     )
@@ -330,7 +329,7 @@ const Events = [
                     });
                 } else {
                     await vars.eventManager.publisher.publish(
-                        globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                         vars.eventManager.createMessageToPublish(
                             game.accessCode,
                             socketArgs.timerEventSubtype,
@@ -353,7 +352,7 @@ const Events = [
             game.timerParams.timeRemaining = 0;
         },
         communicate: async (game, socketArgs, vars) => {
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.END_TIMER);
+            vars.gameManager.namespace.in(game.accessCode).emit(GAME_PROCESS_COMMANDS.END_TIMER);
         }
     },
     {
@@ -363,7 +362,7 @@ const Events = [
             game.timerParams.timeRemaining = socketArgs.timeRemaining;
         },
         communicate: async (game, socketArgs, vars) => {
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.PAUSE_TIMER, socketArgs.timeRemaining);
+            vars.gameManager.namespace.in(game.accessCode).emit(GAME_PROCESS_COMMANDS.PAUSE_TIMER, socketArgs.timeRemaining);
         }
     },
     {
@@ -373,7 +372,7 @@ const Events = [
             game.timerParams.timeRemaining = socketArgs.timeRemaining;
         },
         communicate: async (game, socketArgs, vars) => {
-            vars.gameManager.namespace.in(game.accessCode).emit(globals.GAME_PROCESS_COMMANDS.RESUME_TIMER, socketArgs.timeRemaining);
+            vars.gameManager.namespace.in(game.accessCode).emit(GAME_PROCESS_COMMANDS.RESUME_TIMER, socketArgs.timeRemaining);
         }
     },
     {
@@ -382,7 +381,7 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const socket = vars.gameManager.namespace.sockets.get(socketArgs.socketId);
             if (socket) {
-                vars.gameManager.namespace.to(socket.id).emit(globals.GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, socketArgs.timeRemaining, game.timerParams.paused);
+                vars.gameManager.namespace.to(socket.id).emit(GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, socketArgs.timeRemaining, game.timerParams.paused);
             }
         }
     }

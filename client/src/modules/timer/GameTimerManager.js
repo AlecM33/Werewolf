@@ -1,17 +1,18 @@
-import { globals } from '../../config/globals.js';
+import { EVENT_IDS, SOCKET_EVENTS, USER_TYPES, TIMER_EVENTS, PRIMITIVES } from '../../config/globals.js';
 import { Confirmation } from '../front_end_components/Confirmation.js';
+import { SharedStateUtil } from '../game_state/states/shared/SharedStateUtil.js';
 
 export class GameTimerManager {
     constructor (stateBucket, socket) {
         this.stateBucket = stateBucket;
         this.playListener = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
-                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
+                socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.RESUME_TIMER, this.stateBucket.currentGameState.accessCode);
             }
         };
         this.pauseListener = (e) => {
             if (e.type === 'click' || e.code === 'Enter') {
-                socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
+                socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.PAUSE_TIMER, this.stateBucket.currentGameState.accessCode);
             }
         };
     }
@@ -19,8 +20,8 @@ export class GameTimerManager {
     resumeGameTimer (totalTime, tickRate, soundManager, timerWorker) {
         if (window.Worker) {
             if (
-                this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
             ) {
                 this.swapToPauseButton();
             }
@@ -33,8 +34,8 @@ export class GameTimerManager {
                 timer.classList.add('low');
             }
             timer.innerText = totalTime < 60000
-                ? returnHumanReadableTime(totalTime, true)
-                : returnHumanReadableTime(totalTime);
+                ? SharedStateUtil.returnHumanReadableTime(totalTime, true)
+                : SharedStateUtil.returnHumanReadableTime(totalTime);
             timerWorker.onmessage = function (e) {
                 if (e.data.hasOwnProperty('timeRemainingInMilliseconds') && e.data.timeRemainingInMilliseconds >= 0) {
                     if (e.data.timeRemainingInMilliseconds === 0) {
@@ -54,47 +55,31 @@ export class GameTimerManager {
     pauseGameTimer (timerWorker, timeRemaining) {
         if (window.Worker) {
             if (
-                this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+                this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
             ) {
                 this.swapToPlayButton();
             }
 
             timerWorker.postMessage('stop');
-            const timer = document.getElementById('game-timer');
-            if (timeRemaining < 60000) {
-                timer.innerText = returnHumanReadableTime(timeRemaining, true);
-                timer.classList.add('paused-low');
-                timer.classList.add('low');
-            } else {
-                timer.innerText = returnHumanReadableTime(timeRemaining);
-                timer.classList.add('paused');
-            }
+            populateTimerElement(timeRemaining);
         }
     }
 
     displayPausedTime (time) {
         if (
-            this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
+            this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
         ) {
             this.swapToPlayButton();
         }
 
-        const timer = document.getElementById('game-timer');
-        if (time < 60000) {
-            timer.innerText = returnHumanReadableTime(time, true);
-            timer.classList.add('paused-low');
-            timer.classList.add('low');
-        } else {
-            timer.innerText = returnHumanReadableTime(time);
-            timer.classList.add('paused');
-        }
+        populateTimerElement(time);
     }
 
     displayExpiredTime () {
-        if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR
-            || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR) {
             const currentBtn = document.querySelector('#timer-container-moderator #play-pause img');
             if (currentBtn) {
                 currentBtn.removeEventListener('click', this.pauseListener);
@@ -113,31 +98,31 @@ export class GameTimerManager {
         }
 
         const timer = document.getElementById('game-timer');
-        timer.innerText = returnHumanReadableTime(0, true);
+        timer.innerText = SharedStateUtil.returnHumanReadableTime(0, true);
     }
 
     attachTimerSocketListeners (socket, timerWorker) {
-        globals.TIMER_EVENTS().forEach(e => socket.removeAllListeners(e));
+        TIMER_EVENTS().forEach(e => socket.removeAllListeners(e));
 
-        socket.on(globals.COMMANDS.PAUSE_TIMER, (timeRemaining) => {
+        socket.on(EVENT_IDS.PAUSE_TIMER, (timeRemaining) => {
             this.pauseGameTimer(timerWorker, timeRemaining);
         });
 
-        socket.on(globals.COMMANDS.RESUME_TIMER, (timeRemaining) => {
-            this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
+        socket.on(EVENT_IDS.RESUME_TIMER, (timeRemaining) => {
+            this.resumeGameTimer(timeRemaining, PRIMITIVES.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
         });
 
-        socket.once(globals.COMMANDS.GET_TIME_REMAINING, (timeRemaining, paused) => {
+        socket.once(EVENT_IDS.GET_TIME_REMAINING, (timeRemaining, paused) => {
             if (paused) {
                 this.displayPausedTime(timeRemaining);
             } else if (timeRemaining === 0) {
                 this.displayExpiredTime();
             } else {
-                this.resumeGameTimer(timeRemaining, globals.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
+                this.resumeGameTimer(timeRemaining, PRIMITIVES.CLOCK_TICK_INTERVAL_MILLIS, null, timerWorker);
             }
         });
 
-        socket.on(globals.COMMANDS.END_TIMER, () => {
+        socket.on(EVENT_IDS.END_TIMER, () => {
             Confirmation('The timer has expired!');
         });
     }
@@ -178,17 +163,14 @@ export class GameTimerManager {
     }
 }
 
-function returnHumanReadableTime (milliseconds, tenthsOfSeconds = false) {
-    const tenths = Math.floor((milliseconds / 100) % 10);
-    let seconds = Math.floor((milliseconds / 1000) % 60);
-    let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
-    let hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
-
-    hours = hours < 10 ? '0' + hours : hours;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
-
-    return tenthsOfSeconds
-        ? hours + ':' + minutes + ':' + seconds + '.' + tenths
-        : hours + ':' + minutes + ':' + seconds;
+function populateTimerElement (timeRemaining) {
+    const timer = document.getElementById('game-timer');
+    if (timeRemaining < 60000) {
+        timer.innerText = SharedStateUtil.returnHumanReadableTime(timeRemaining, true);
+        timer.classList.add('paused-low');
+        timer.classList.add('low');
+    } else {
+        timer.innerText = SharedStateUtil.returnHumanReadableTime(timeRemaining);
+        timer.classList.add('paused');
+    }
 }

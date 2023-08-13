@@ -1,4 +1,4 @@
-import { globals } from '../../config/globals.js';
+import { ENVIRONMENTS, PRIMITIVES } from '../../config/globals.js';
 
 /*
     we will use sessionStorage during local development to aid in testing, vs. localStorage for production.
@@ -7,25 +7,25 @@ import { globals } from '../../config/globals.js';
 export const UserUtility = {
 
     setAnonymousUserId (id, environment) {
-        if (environment === globals.ENVIRONMENT.LOCAL) {
-            sessionStorage.setItem(globals.PLAYER_ID_COOKIE_KEY, id);
+        if (environment === ENVIRONMENTS.LOCAL) {
+            sessionStorage.setItem(PRIMITIVES.PLAYER_ID_COOKIE_KEY, id);
         } else {
-            localStorage.setItem(globals.PLAYER_ID_COOKIE_KEY, id);
+            localStorage.setItem(PRIMITIVES.PLAYER_ID_COOKIE_KEY, id);
         }
     },
 
     validateAnonUserSignature (environment) {
         let userSig;
-        if (environment === globals.ENVIRONMENT.LOCAL) {
-            userSig = sessionStorage.getItem(globals.PLAYER_ID_COOKIE_KEY);
+        if (environment === ENVIRONMENTS.LOCAL) {
+            userSig = sessionStorage.getItem(PRIMITIVES.PLAYER_ID_COOKIE_KEY);
         } else {
-            userSig = localStorage.getItem(globals.PLAYER_ID_COOKIE_KEY);
+            userSig = localStorage.getItem(PRIMITIVES.PLAYER_ID_COOKIE_KEY);
         }
         return (
             userSig
             && typeof userSig === 'string'
             && /^[a-zA-Z0-9]+$/.test(userSig)
-            && userSig.length === globals.USER_SIGNATURE_LENGTH
+            && userSig.length === PRIMITIVES.USER_SIGNATURE_LENGTH
         )
             ? userSig
             : false;

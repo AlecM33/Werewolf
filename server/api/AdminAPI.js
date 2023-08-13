@@ -3,13 +3,13 @@ const router = express.Router();
 const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())).includes('debug');
 const logger = require('../modules/Logger')(debugMode);
 const eventManager = (require('../modules/singletons/EventManager.js')).instance;
-const globals = require('../config/globals.js');
 const cors = require('cors');
+const { CORS_OPTIONS, CONTENT_TYPE_VALIDATOR } = require('../config/globals');
 
-router.use(cors(globals.CORS));
+router.use(cors(CORS_OPTIONS));
 
 router.post('/sockets/broadcast', (req, res, next) => {
-    globals.CONTENT_TYPE_VALIDATOR(req, res, next);
+    CONTENT_TYPE_VALIDATOR(req, res, next);
 });
 
 // TODO: implement client-side display of this message.

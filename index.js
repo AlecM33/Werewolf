@@ -4,15 +4,15 @@
     const express = require('express');
     const app = express();
     const ServerBootstrapper = require('./server/modules/ServerBootstrapper');
-    const globals = require('./server/config/globals');
+    const { PRIMITIVES } = require('./server/config/globals');
     const args = ServerBootstrapper.processCLIArgs();
     const logger = require('./server/modules/Logger')(args.logLevel);
     const port = parseInt(process.env.PORT) || args.port || 8080;
     const webServer = ServerBootstrapper.createServerWithCorrectHTTPProtocol(app, args.useHttps, port, logger);
     const singletons = ServerBootstrapper.singletons(logger, (() => {
         let id = '';
-        for (let i = 0; i < globals.INSTANCE_ID_LENGTH; i ++) {
-            id += globals.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * globals.INSTANCE_ID_CHAR_POOL.length)];
+        for (let i = 0; i < PRIMITIVES.INSTANCE_ID_LENGTH; i ++) {
+            id += PRIMITIVES.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * PRIMITIVES.INSTANCE_ID_CHAR_POOL.length)];
         }
         return id;
     })());

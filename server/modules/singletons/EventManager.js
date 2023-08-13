@@ -1,7 +1,7 @@
-const globals = require('../../config/globals');
 const { RateLimiterMemory } = require('rate-limiter-flexible');
 const redis = require('redis');
 const Events = require('../Events');
+const { EVENT_IDS, REDIS_CHANNELS, PRIMITIVES, SOCKET_EVENTS, TIMER_EVENTS, SYNCABLE_EVENTS } = require('../../config/globals');
 
 class EventManager {
     constructor (logger, instanceId) {
@@ -20,7 +20,7 @@ class EventManager {
     }
 
     broadcast = (message) => {
-        this.io?.emit(globals.EVENTS.BROADCAST, message);
+        this.io?.emit(EVENT_IDS.BROADCAST, message);
     };
 
     createRedisPublisher = async () => {
@@ -53,7 +53,7 @@ class EventManager {
             throw new Error('UNABLE TO CONNECT TO REDIS because: ' + e);
         }
 
-        await this.subscriber.subscribe(globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
+        await this.subscriber.subscribe(REDIS_CHANNELS.ACTIVE_GAME_STREAM, async (message) => {
             this.logger.debug('MESSAGE: ' + message);
             let messageComponents, args;
             try {
@@ -64,7 +64,7 @@ class EventManager {
                 }
                 args = JSON.parse(
                     message.slice(
-                        message.indexOf(messageComponents[messageComponents.length - 1]) + (globals.INSTANCE_ID_LENGTH + 1)
+                        message.indexOf(messageComponents[messageComponents.length - 1]) + (PRIMITIVES.INSTANCE_ID_LENGTH + 1)
                     )
                 );
             } catch (e) {
@@ -133,12 +133,12 @@ class EventManager {
     };
 
     registerSocketHandler = (namespace, socket, gameManager) => {
-        socket.on(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args = null, ackFn = null) => {
+        socket.on(SOCKET_EVENTS.IN_GAME_MESSAGE, async (eventId, accessCode, args = null, ackFn = null) => {
             const game = await gameManager.getActiveGame(accessCode);
             if (game) {
-                if (globals.TIMER_EVENTS().includes(eventId)) {
+                if (TIMER_EVENTS().includes(eventId)) {
                     await this.handleEventById(
-                        globals.EVENT_IDS.TIMER_EVENT,
+                        EVENT_IDS.TIMER_EVENT,
                         null,
                         game,
                         socket.id,
@@ -160,10 +160,10 @@ class EventManager {
     handleAndSyncSocketEvent = async (eventId, game, socket, socketArgs, ackFn) => {
         await this.handleEventById(eventId, null, game, socket?.id, game.accessCode, socketArgs, ackFn, false);
         /* This server should publish events initiated by a connected socket to Redis for consumption by other instances. */
-        if (globals.SYNCABLE_EVENTS().includes(eventId)) {
+        if (SYNCABLE_EVENTS().includes(eventId)) {
             await this.gameManager.refreshGame(game);
             await this.publisher?.publish(
-                globals.REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                 this.createMessageToPublish(game.accessCode, eventId, this.instanceId, JSON.stringify(socketArgs))
             );
         }
@@ -194,7 +194,7 @@ class EventManager {
             timerEventSubtype: timerEventSubtype
         };
         if (event) {
-            if (!syncOnly || eventId === globals.EVENT_IDS.RESTART_GAME) {
+            if (!syncOnly || eventId === EVENT_IDS.RESTART_GAME) {
                 await event.stateChange(game, socketArgs, additionalVars);
             }
             await event.communicate(game, socketArgs, additionalVars);

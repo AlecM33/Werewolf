@@ -1,5 +1,12 @@
 import { toast } from '../../front_end_components/Toast.js';
-import { globals } from '../../../config/globals.js';
+import {
+    STATUS,
+    EVENT_IDS,
+    SOCKET_EVENTS,
+    USER_TYPE_ICONS,
+    USER_TYPES,
+    ALIGNMENT
+} from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { ModalManager } from '../../front_end_components/ModalManager.js';
@@ -18,25 +25,25 @@ export class InProgress {
 
     setUserView (userType) {
         switch (userType) {
-            case globals.USER_TYPES.PLAYER:
+            case USER_TYPES.PLAYER:
                 this.container.innerHTML = HTMLFragments.PLAYER_GAME_VIEW;
                 this.renderPlayerView();
                 break;
-            case globals.USER_TYPES.KILLED_PLAYER:
+            case USER_TYPES.KILLED_PLAYER:
                 this.container.innerHTML = HTMLFragments.PLAYER_GAME_VIEW;
                 this.renderPlayerView(true);
                 break;
-            case globals.USER_TYPES.MODERATOR:
+            case USER_TYPES.MODERATOR:
                 document.getElementById('transfer-mod-prompt').innerHTML = HTMLFragments.TRANSFER_MOD_MODAL;
                 this.container.innerHTML = HTMLFragments.MODERATOR_GAME_VIEW;
                 this.renderModeratorView();
                 break;
-            case globals.USER_TYPES.TEMPORARY_MODERATOR:
+            case USER_TYPES.TEMPORARY_MODERATOR:
                 document.getElementById('transfer-mod-prompt').innerHTML = HTMLFragments.TRANSFER_MOD_MODAL;
                 this.container.innerHTML = HTMLFragments.TEMP_MOD_GAME_VIEW;
                 this.renderTempModView();
                 break;
-            case globals.USER_TYPES.SPECTATOR:
+            case USER_TYPES.SPECTATOR:
                 this.container.innerHTML = HTMLFragments.SPECTATOR_GAME_VIEW;
                 this.renderSpectatorView();
                 break;
@@ -46,12 +53,12 @@ export class InProgress {
 
         if (this.stateBucket.currentGameState.timerParams) {
             this.socket.emit(
-                globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                globals.EVENT_IDS.GET_TIME_REMAINING,
+                SOCKET_EVENTS.IN_GAME_MESSAGE,
+                EVENT_IDS.GET_TIME_REMAINING,
                 this.stateBucket.currentGameState.accessCode
             );
             setTimeout(() => {
-                if (this.socket.hasListeners(globals.EVENT_IDS.GET_TIME_REMAINING) && document.getElementById('game-timer') !== null) {
+                if (this.socket.hasListeners(EVENT_IDS.GET_TIME_REMAINING) && document.getElementById('game-timer') !== null) {
                     document.getElementById('game-timer').innerText = 'Timer not found.';
                     document.getElementById('game-timer').classList.add('timer-error');
                 }
@@ -68,7 +75,7 @@ export class InProgress {
                 Confirmation(
                     SharedStateUtil.buildSpectatorList(
                         this.stateBucket.currentGameState.people
-                            .filter(p => p.userType === globals.USER_TYPES.SPECTATOR),
+                            .filter(p => p.userType === USER_TYPES.SPECTATOR),
                         this.stateBucket.currentGameState.client,
                         this.socket,
                         this.stateBucket.currentGameState),
@@ -80,7 +87,7 @@ export class InProgress {
 
         if (spectatorCount) {
             SharedStateUtil.setNumberOfSpectators(
-                this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+                this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
                 spectatorCount
             );
             spectatorCount?.addEventListener('click', spectatorHandler);
@@ -92,13 +99,13 @@ export class InProgress {
         if (isKilled) {
             const clientUserType = document.getElementById('client-user-type');
             if (clientUserType) {
-                clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
+                clientUserType.innerText = USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
             }
         }
         renderPlayerRole(this.stateBucket.currentGameState);
         SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
-            .find((person) => person.userType === globals.USER_TYPES.MODERATOR
-                || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
+            .find((person) => person.userType === USER_TYPES.MODERATOR
+                || person.userType === USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
     }
 
@@ -116,7 +123,7 @@ export class InProgress {
             : null;
         this.renderGroupOfPlayers(
             this.stateBucket.currentGameState.people.filter(
-                p => (p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
+                p => (p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
                 || p.killed
             ),
             this.killPlayerHandlers,
@@ -174,34 +181,34 @@ export class InProgress {
 
     renderSpectatorView () {
         SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
-            .find((person) => person.userType === globals.USER_TYPES.MODERATOR
-                || person.userType === globals.USER_TYPES.TEMPORARY_MODERATOR));
+            .find((person) => person.userType === USER_TYPES.MODERATOR
+                || person.userType === USER_TYPES.TEMPORARY_MODERATOR));
         this.renderPlayersWithNoRoleInformationUnlessRevealed();
     }
 
     setSocketHandlers () {
-        this.socket.on(globals.EVENT_IDS.KILL_PLAYER, (killedPlayer) => {
+        this.socket.on(EVENT_IDS.KILL_PLAYER, (killedPlayer) => {
             this.stateBucket.currentGameState.people = this.stateBucket.currentGameState.people
                 .map(person => person.id === killedPlayer.id ? killedPlayer : person);
-            if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+            if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR) {
                 toast(killedPlayer.name + ' killed.', 'success', true, true, 'medium');
-                this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
+                this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === STATUS.ENDED);
             } else {
                 if (killedPlayer.id === this.stateBucket.currentGameState.client.id) {
                     const clientUserType = document.getElementById('client-user-type');
                     if (clientUserType) {
-                        clientUserType.innerText = globals.USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
+                        clientUserType.innerText = USER_TYPES.KILLED_PLAYER + ' \uD83D\uDC80';
                     }
                     this.updatePlayerCardToKilledState();
                     toast('You have been killed!', 'warning', true, true, 'medium');
                 } else {
                     toast(killedPlayer.name + ' was killed!', 'warning', true, true, 'medium');
-                    if (killedPlayer.userType === globals.USER_TYPES.MODERATOR
-                        && this.stateBucket.currentGameState.client.userType !== globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    if (killedPlayer.userType === USER_TYPES.MODERATOR
+                        && this.stateBucket.currentGameState.client.userType !== USER_TYPES.TEMPORARY_MODERATOR) {
                         SharedStateUtil.displayCurrentModerator(killedPlayer);
                     }
                 }
-                if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                if (this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                     this.removePlayerListEventListeners(false);
                 } else {
                     this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
@@ -209,27 +216,27 @@ export class InProgress {
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.REVEAL_PLAYER, (revealData) => {
+        this.socket.on(EVENT_IDS.REVEAL_PLAYER, (revealData) => {
             const revealedPerson = this.stateBucket.currentGameState.people.find((person) => person.id === revealData.id);
             if (revealedPerson) {
                 revealedPerson.revealed = true;
                 revealedPerson.gameRole = revealData.gameRole;
                 revealedPerson.alignment = revealData.alignment;
-                if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR) {
+                if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR) {
                     if (revealedPerson.id === this.stateBucket.currentGameState.client.id) {
                         toast('You revealed your role.', 'success', true, true, 'medium');
                     } else {
                         toast(revealedPerson.name + ' revealed.', 'success', true, true, 'medium');
                     }
 
-                    this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === globals.STATUS.ENDED);
+                    this.renderPlayersWithRoleAndAlignmentInfo(this.stateBucket.currentGameState.status === STATUS.ENDED);
                 } else {
                     if (revealedPerson.id === this.stateBucket.currentGameState.client.id) {
                         toast('Your role has been revealed!', 'warning', true, true, 'medium');
                     } else {
                         toast(revealedPerson.name + ' was revealed as a ' + revealedPerson.gameRole + '!', 'warning', true, true, 'medium');
                     }
-                    if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+                    if (this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                         this.renderPlayersWithNoRoleInformationUnlessRevealed(true);
                     } else {
                         this.renderPlayersWithNoRoleInformationUnlessRevealed(false);
@@ -238,14 +245,14 @@ export class InProgress {
             }
         });
 
-        this.socket.on(globals.EVENT_IDS.ADD_SPECTATOR, (spectator) => {
+        this.socket.on(EVENT_IDS.ADD_SPECTATOR, (spectator) => {
             this.stateBucket.currentGameState.people.push(spectator);
             SharedStateUtil.setNumberOfSpectators(
-                this.stateBucket.currentGameState.people.filter(p => p.userType === globals.USER_TYPES.SPECTATOR).length,
+                this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
                 document.getElementById('spectator-count')
             );
-            if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.MODERATOR
-                || this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
+            if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+                || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                 this.displayAvailableModerators();
             }
         });
@@ -269,13 +276,13 @@ export class InProgress {
             return a.name >= b.name ? 1 : -1;
         });
         const teamGood = this.stateBucket.currentGameState.people.filter(
-            (p) => p.alignment === globals.ALIGNMENT.GOOD
-                && ((p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
+            (p) => p.alignment === ALIGNMENT.GOOD
+                && ((p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
                     || p.killed)
 
         );
-        const teamEvil = this.stateBucket.currentGameState.people.filter((p) => p.alignment === globals.ALIGNMENT.EVIL
-            && ((p.userType !== globals.USER_TYPES.MODERATOR && p.userType !== globals.USER_TYPES.SPECTATOR)
+        const teamEvil = this.stateBucket.currentGameState.people.filter((p) => p.alignment === ALIGNMENT.EVIL
+            && ((p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
                 || p.killed)
         );
         this.renderGroupOfPlayers(
@@ -283,7 +290,7 @@ export class InProgress {
             this.killPlayerHandlers,
             this.revealRoleHandlers,
             this.stateBucket.currentGameState.accessCode,
-            globals.ALIGNMENT.EVIL,
+            ALIGNMENT.EVIL,
             this.stateBucket.currentGameState.people.find(person =>
                 person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
             this.socket
@@ -293,7 +300,7 @@ export class InProgress {
             this.killPlayerHandlers,
             this.revealRoleHandlers,
             this.stateBucket.currentGameState.accessCode,
-            globals.ALIGNMENT.GOOD,
+            ALIGNMENT.GOOD,
             this.stateBucket.currentGameState.people.find(person =>
                 person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
             this.socket
@@ -328,7 +335,7 @@ export class InProgress {
             const roleElement = playerEl.querySelector('.game-player-role');
 
             // Add role/alignment indicators if necessary
-            if (moderatorType === globals.USER_TYPES.MODERATOR || player.revealed) {
+            if (moderatorType === USER_TYPES.MODERATOR || player.revealed) {
                 if (alignment === null) {
                     roleElement.classList.add(player.alignment);
                 } else {
@@ -349,10 +356,10 @@ export class InProgress {
             } else if (!player.out && moderatorType) {
                 killPlayerHandlers[player.id] = () => {
                     Confirmation('Kill \'' + player.name + '\'?', () => {
-                        if (this.stateBucket.currentGameState.client.userType === globals.USER_TYPES.TEMPORARY_MODERATOR) {
-                            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.ASSIGN_DEDICATED_MOD, accessCode, { personId: player.id });
+                        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
+                            socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.ASSIGN_DEDICATED_MOD, accessCode, { personId: player.id });
                         } else {
-                            socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });
+                            socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });
                         }
                     });
                 };
@@ -368,13 +375,13 @@ export class InProgress {
             } else if (!player.revealed && moderatorType) {
                 revealRoleHandlers[player.id] = () => {
                     Confirmation('Reveal  \'' + player.name + '\'?', () => {
-                        socket.emit(globals.SOCKET_EVENTS.IN_GAME_MESSAGE, globals.EVENT_IDS.REVEAL_PLAYER, accessCode, { personId: player.id });
+                        socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.REVEAL_PLAYER, accessCode, { personId: player.id });
                     });
                 };
                 playerEl.querySelector('.reveal-role-button').addEventListener('click', revealRoleHandlers[player.id]);
             }
 
-            const playerListContainerId = moderatorType === globals.USER_TYPES.MODERATOR
+            const playerListContainerId = moderatorType === USER_TYPES.MODERATOR
                 ? 'player-list-moderator-team-' + alignment
                 : 'game-player-list';
 
@@ -417,7 +424,7 @@ export class InProgress {
 function renderPlayerRole (gameState) {
     const name = document.querySelector('#role-name');
     name.innerText = gameState.client.gameRole;
-    if (gameState.client.alignment === globals.ALIGNMENT.GOOD) {
+    if (gameState.client.alignment === ALIGNMENT.GOOD) {
         document.getElementById('game-role').classList.add('game-role-good');
         name.classList.add('good');
     } else {
@@ -498,8 +505,8 @@ function createEndGamePromptComponent (socket, stateBucket) {
             e.preventDefault();
             Confirmation('End the game?', () => {
                 socket.emit(
-                    globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                    globals.EVENT_IDS.END_GAME,
+                    SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    EVENT_IDS.END_GAME,
                     stateBucket.currentGameState.accessCode,
                     null,
                     () => {
@@ -531,14 +538,14 @@ function insertPlaceholderButton (container, append, type) {
 function renderPotentialMods (gameState, group, transferModHandlers, socket) {
     const modalContent = document.getElementById('transfer-mod-modal-content');
     for (const member of group) {
-        if ((member.userType === globals.USER_TYPES.KILLED_PLAYER || member.userType === globals.USER_TYPES.SPECTATOR) && !(member.id === gameState.client.id)) {
+        if ((member.userType === USER_TYPES.KILLED_PLAYER || member.userType === USER_TYPES.SPECTATOR) && !(member.id === gameState.client.id)) {
             const container = document.createElement('div');
             container.classList.add('potential-moderator');
             container.setAttribute('tabindex', '0');
             container.dataset.pointer = member.id;
             container.innerHTML =
                 '<div class=\'potential-mod-name\'></div>' +
-                '<div>' + member.userType + ' ' + globals.USER_TYPE_ICONS[member.userType] + ' </div>';
+                '<div>' + member.userType + ' ' + USER_TYPE_ICONS[member.userType] + ' </div>';
             container.querySelector('.potential-mod-name').innerText = member.name;
             transferModHandlers[member.id] = (e) => {
                 if (e.type === 'click' || e.code === 'Enter') {
@@ -549,16 +556,16 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                             transferPrompt.innerHTML = '';
                         }
                         socket.timeout(5000).emit(
-                            globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                            globals.EVENT_IDS.TRANSFER_MODERATOR,
+                            SOCKET_EVENTS.IN_GAME_MESSAGE,
+                            EVENT_IDS.TRANSFER_MODERATOR,
                             gameState.accessCode,
                             { personId: member.id },
                             (err) => {
                                 if (err) {
                                     console.error(err);
                                     socket.emit(
-                                        globals.SOCKET_EVENTS.IN_GAME_MESSAGE,
-                                        globals.EVENT_IDS.FETCH_GAME_STATE,
+                                        SOCKET_EVENTS.IN_GAME_MESSAGE,
+                                        EVENT_IDS.FETCH_GAME_STATE,
                                         gameState.accessCode,
                                         { personId: gameState.client.cookie },
                                         (gameState) => {

@@ -36,7 +36,7 @@ export class GameCreationStepManager {
                 title: 'Create your deck (you can edit this later):',
                 forwardHandler: () => {
                     if (this.deckManager.getDeckSize() > PRIMITIVES.MAX_DECK_SIZE) {
-                        toast('Your deck is too large. The max is 50 cards.', 'error', true);
+                        toast('Your deck is too large. The max is ' + PRIMITIVES.MAX_DECK_SIZE + ' cards.', 'error', true);
                     } else {
                         this.currentGame.deck = this.deckManager.deck.filter((card) => card.quantity > 0);
                         cancelCurrentToast();
@@ -98,7 +98,7 @@ export class GameCreationStepManager {
                             this.incrementStep();
                             this.renderStep('creation-step-container', this.step);
                         } else {
-                            toast('Name must be between 1 and 40 characters.', 'error', true);
+                            toast('Name must be between 1 and ' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.', 'error', true);
                         }
                     }
                 },
@@ -570,11 +570,11 @@ function initializeRemainingEventListeners (deckManager, roleBox) {
 
 function processNewCustomRoleSubmission (name, description, team, deckManager, isUpdate, roleBox, option = null) {
     if (name.length > PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH) {
-        toast('Your name is too long (max 50 characters).', 'error', true);
+        toast('Your name is too long (max ' + PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH + ' characters).', 'error', true);
         return;
     }
     if (description.length > PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH) {
-        toast('Your description is too long (max 500 characters).', 'error', true);
+        toast('Your description is too long (max ' + PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH + ' characters).', 'error', true);
         return;
     }
     if (isUpdate) {

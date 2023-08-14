@@ -1,6 +1,6 @@
 import { QRCode } from '../../third_party/qrcode.js';
 import { toast } from '../../front_end_components/Toast.js';
-import { EVENT_IDS, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES } from '../../../config/globals.js';
+import { EVENT_IDS, PRIMITIVES, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
 import { SharedStateUtil } from './shared/SharedStateUtil.js';
@@ -79,7 +79,7 @@ export class Lobby {
             roleEditPrompt.setAttribute('id', 'role-edit-prompt');
             roleEditPrompt.innerHTML = HTMLFragments.ROLE_EDIT_BUTTONS;
             roleEditPrompt.querySelector('#save-role-changes-button').addEventListener('click', () => {
-                if (this.gameCreationStepManager.deckManager.getDeckSize() > 50) {
+                if (this.gameCreationStepManager.deckManager.getDeckSize() > PRIMITIVES.MAX_DECK_SIZE) {
                     toast('Your deck is too large. The max is 50 cards.', 'error', true);
                 } else {
                     document.querySelector('#mid-game-role-editor')?.remove();

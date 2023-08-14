@@ -90,7 +90,7 @@ function resetJoinButtonState (e, joinHandler) {
 }
 
 function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 40;
+    return typeof name === 'string' && name.length > 0 && name.length <= PRIMITIVES.MAX_PERSON_NAME_LENGTH;
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

@@ -1,7 +1,7 @@
 import { Game } from '../../model/Game.js';
 import { cancelCurrentToast, toast } from '../front_end_components/Toast.js';
 import { ModalManager } from '../front_end_components/ModalManager.js';
-import { ALIGNMENT } from '../../config/globals.js';
+import { ALIGNMENT, PRIMITIVES } from '../../config/globals.js';
 import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
 import { UserUtility } from '../utility/UserUtility.js';
 import { RoleBox } from './RoleBox.js';
@@ -35,7 +35,7 @@ export class GameCreationStepManager {
             2: {
                 title: 'Create your deck (you can edit this later):',
                 forwardHandler: () => {
-                    if (this.deckManager.getDeckSize() > 50) {
+                    if (this.deckManager.getDeckSize() > PRIMITIVES.MAX_DECK_SIZE) {
                         toast('Your deck is too large. The max is 50 cards.', 'error', true);
                     } else {
                         this.currentGame.deck = this.deckManager.deck.filter((card) => card.quantity > 0);
@@ -569,11 +569,11 @@ function initializeRemainingEventListeners (deckManager, roleBox) {
 }
 
 function processNewCustomRoleSubmission (name, description, team, deckManager, isUpdate, roleBox, option = null) {
-    if (name.length > 50) {
+    if (name.length > PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH) {
         toast('Your name is too long (max 50 characters).', 'error', true);
         return;
     }
-    if (description.length > 500) {
+    if (description.length > PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH) {
         toast('Your description is too long (max 500 characters).', 'error', true);
         return;
     }
@@ -596,5 +596,5 @@ function hasTimer (hours, minutes) {
 }
 
 function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 40;
+    return typeof name === 'string' && name.length > 0 && name.length <= PRIMITIVES.MAX_PERSON_NAME_LENGTH;
 }

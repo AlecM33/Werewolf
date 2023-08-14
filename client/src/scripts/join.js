@@ -55,7 +55,7 @@ const joinHandler = (e) => {
                 resetJoinButtonState(e, joinHandler);
             });
     } else {
-        toast('Name must be between 1 and 30 characters.', 'error', true, true, 'long');
+        toast('Name must be between 1 and ' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.', 'error', true, true, 'long');
     }
 };
 
@@ -90,7 +90,7 @@ function resetJoinButtonState (e, joinHandler) {
 }
 
 function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 30;
+    return typeof name === 'string' && name.length > 0 && name.length <= PRIMITIVES.MAX_PERSON_NAME_LENGTH;
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

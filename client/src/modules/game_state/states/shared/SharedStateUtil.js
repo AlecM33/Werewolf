@@ -100,8 +100,9 @@ export const SharedStateUtil = {
         } else {
             for (const spectator of spectators) {
                 const spectatorEl = document.createElement('div');
+                spectatorEl.dataset.pointer = spectator.id;
                 spectatorEl.classList.add('spectator');
-                spectatorEl.innerHTML = '<div class=\'spectator-name\'></div>' +
+                spectatorEl.innerHTML = '<div class=\'spectator-name person-name-element\'></div>' +
                     '<div>' + 'spectator' + USER_TYPE_ICONS.spectator + '</div>';
                 spectatorEl.querySelector('.spectator-name').innerText = spectator.name;
                 list.appendChild(spectatorEl);
@@ -123,6 +124,7 @@ export const SharedStateUtil = {
     },
 
     displayCurrentModerator: (moderator) => {
+        document.getElementById('current-moderator').dataset.pointer = moderator.id;
         document.getElementById('current-moderator-name').innerText = moderator.name;
         document.getElementById('current-moderator-type').innerText = moderator.userType + USER_TYPE_ICONS[moderator.userType];
     },
@@ -183,9 +185,30 @@ export const SharedStateUtil = {
         });
     },
 
-    displayClientInfo: (name, userType) => {
-        document.getElementById('client-name').innerText = name;
-        document.getElementById('client-user-type').innerText = userType;
-        document.getElementById('client-user-type').innerText += USER_TYPE_ICONS[userType];
+    displayClientInfo: (gameState, socket) => {
+        document.getElementById('client-name').innerText = gameState.client.name;
+        document.getElementById('client-user-type').innerText = gameState.client.userType;
+        document.getElementById('client-user-type').innerText += USER_TYPE_ICONS[gameState.client.userType];
+        const nameForm = document.createElement('form');
+        nameForm.setAttribute('id', 'name-change-form');
+        nameForm.onsubmit = (e) => {
+            e.preventDefault();
+            document.getElementById('confirmation-yes-button').click();
+        };
+        nameForm.innerHTML = HTMLFragments.NAME_CHANGE_FORM;
+        nameForm.querySelector('#client-new-name').value = gameState.client.name;
+        document.getElementById('edit-name-button').addEventListener('click', () => {
+            Confirmation(nameForm, () => {
+                socket.emit(
+                    SOCKET_EVENTS.IN_GAME_MESSAGE,
+                    EVENT_IDS.CHANGE_NAME,
+                    gameState.accessCode,
+                    { personId: gameState.client.id, newName: document.getElementById('client-new-name').value },
+                    (response) => {
+                        toast(response.message, response.errorFlag === 1 ? 'error' : 'success', true);
+                    }
+                );
+            }, true, 'Update');
+        });
     }
 };

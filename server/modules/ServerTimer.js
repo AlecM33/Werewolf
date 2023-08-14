@@ -7,25 +7,23 @@ This timer is accurate to within a few ms for any amount of time provided.
  */
 
 function stepFn (serverTimerInstance, expected) {
-    const now = Date.now(); //
-    serverTimerInstance.currentTimeInMillis = serverTimerInstance.totalTime - (now - serverTimerInstance.start);
-    if (now - serverTimerInstance.start >= serverTimerInstance.totalTime) { // check if the time has elapsed
+    serverTimerInstance.currentTimeInMillis = serverTimerInstance.totalTime - (Date.now() - serverTimerInstance.start);
+    if (Date.now() - serverTimerInstance.start >= serverTimerInstance.totalTime) { // check if the time has elapsed
         serverTimerInstance.logger.debug(
-            'ELAPSED: ' + (now - serverTimerInstance.start) + 'ms (~' +
-            (Math.abs(serverTimerInstance.totalTime - (now - serverTimerInstance.start)) / serverTimerInstance.totalTime).toFixed(3) + '% error).'
+            'ELAPSED: ' + (Date.now() - serverTimerInstance.start) + 'ms (~' +
+            (Math.abs(serverTimerInstance.totalTime - (Date.now() - serverTimerInstance.start)) / serverTimerInstance.totalTime).toFixed(3) + '% error).'
         );
         serverTimerInstance.timesUpResolver(); // this is a reference to the callback defined in the construction of the promise in runTimer()
         clearTimeout(serverTimerInstance.ticking);
         return;
     }
-    const delta = now - expected;
     expected += serverTimerInstance.interval;
     serverTimerInstance.ticking = setTimeout(function () {
         stepFn(
             serverTimerInstance,
             expected
         );
-    }, Math.max(0, serverTimerInstance.interval - delta)); // take into account drift
+    }, Math.max(0, serverTimerInstance.interval - (Date.now() - expected))); // take into account drift
 }
 
 class ServerTimer {

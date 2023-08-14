@@ -315,7 +315,7 @@ button {
 }
 
 #how-to-use-container h1 {
-    color: #d7d7d7;
+    color: #21ba45;
     font-family: signika-negative, sans-serif;
     background-color: #1e1b26;
     width: fit-content;
@@ -376,6 +376,11 @@ input {
 #how-to-use-container h3 {
     color: #b1afcd;
     font-weight: bold;
+    font-family: signika-negative, sans-serif;
+    background-color: #1e1b26;
+    width: fit-content;
+    padding: 0 5px;
+    border-radius: 5px;
 }
 
 #tutorial-links {text-align: left;
@@ -829,7 +834,7 @@ input {
 
 @media(max-width: 550px) {
     .how-to-use-header {
-        font-size: 25px;
+        font-size: 30px;
     }
     #how-to-use-container h3 {
         font-size: 20px;

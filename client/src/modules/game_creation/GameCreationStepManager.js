@@ -1,7 +1,7 @@
 import { Game } from '../../model/Game.js';
 import { cancelCurrentToast, toast } from '../front_end_components/Toast.js';
 import { ModalManager } from '../front_end_components/ModalManager.js';
-import { ALIGNMENT } from '../../config/globals.js';
+import { ALIGNMENT, PRIMITIVES } from '../../config/globals.js';
 import { HTMLFragments } from '../front_end_components/HTMLFragments.js';
 import { UserUtility } from '../utility/UserUtility.js';
 import { RoleBox } from './RoleBox.js';
@@ -35,8 +35,8 @@ export class GameCreationStepManager {
             2: {
                 title: 'Create your deck (you can edit this later):',
                 forwardHandler: () => {
-                    if (this.deckManager.getDeckSize() > 50) {
-                        toast('Your deck is too large. The max is 50 cards.', 'error', true);
+                    if (this.deckManager.getDeckSize() > PRIMITIVES.MAX_DECK_SIZE) {
+                        toast('Your deck is too large. The max is ' + PRIMITIVES.MAX_DECK_SIZE + ' cards.', 'error', true);
                     } else {
                         this.currentGame.deck = this.deckManager.deck.filter((card) => card.quantity > 0);
                         cancelCurrentToast();
@@ -98,7 +98,7 @@ export class GameCreationStepManager {
                             this.incrementStep();
                             this.renderStep('creation-step-container', this.step);
                         } else {
-                            toast('Name must be between 1 and 30 characters.', 'error', true);
+                            toast('Name must be between 1 and ' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.', 'error', true);
                         }
                     }
                 },
@@ -569,12 +569,12 @@ function initializeRemainingEventListeners (deckManager, roleBox) {
 }
 
 function processNewCustomRoleSubmission (name, description, team, deckManager, isUpdate, roleBox, option = null) {
-    if (name.length > 40) {
-        toast('Your name is too long (max 40 characters).', 'error', true);
+    if (name.length > PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH) {
+        toast('Your name is too long (max ' + PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH + ' characters).', 'error', true);
         return;
     }
-    if (description.length > 500) {
-        toast('Your description is too long (max 500 characters).', 'error', true);
+    if (description.length > PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH) {
+        toast('Your description is too long (max ' + PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH + ' characters).', 'error', true);
         return;
     }
     if (isUpdate) {
@@ -596,5 +596,5 @@ function hasTimer (hours, minutes) {
 }
 
 function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 30;
+    return typeof name === 'string' && name.length > 0 && name.length <= PRIMITIVES.MAX_PERSON_NAME_LENGTH;
 }

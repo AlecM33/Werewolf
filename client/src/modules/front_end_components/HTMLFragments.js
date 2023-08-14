@@ -94,7 +94,7 @@ export const HTMLFragments = {
     </div>
     <div id='game-people-container'>
         <div id="current-moderator" class="moderator">
-            <div id="current-moderator-name"></div>
+            <div id="current-moderator-name" class="person-name-element"></div>
             <div id="current-moderator-type"></div>
         </div>
         <label id='players-alive-label'></label>
@@ -128,7 +128,7 @@ export const HTMLFragments = {
     </div>
     <div id='game-people-container'>
         <div id="current-moderator" class="moderator">
-            <div id="current-moderator-name"></div>
+            <div id="current-moderator-name" class="person-name-element"></div>
             <div id="current-moderator-type"></div>
         </div>
         <label id='players-alive-label'></label>
@@ -245,7 +245,7 @@ export const HTMLFragments = {
     </div>`,
     MODERATOR_PLAYER:
         `<div>
-            <div class='game-player-name'></div>
+            <div class='game-player-name person-name-element'></div>
             <div class='game-player-role'></div>
         </div>
         <div class='player-action-buttons'>
@@ -254,7 +254,7 @@ export const HTMLFragments = {
         </div>`,
     GAME_PLAYER:
         `<div>
-            <div class='game-player-name'></div>
+            <div class='game-player-name person-name-element'></div>
             <div class='game-player-role'></div>
         </div>`,
     INITIAL_GAME_DOM:
@@ -265,6 +265,9 @@ export const HTMLFragments = {
                 <div id='client-name'></div>
                 <div id='client-user-type'></div>
             </div>
+            <button id="edit-name-button">
+                <img alt="edit name" src="../../images/pencil.svg"/>
+            </button>
         </div>
         <div id='game-state-container'></div>`,
     // via https://loading.io/css/
@@ -283,18 +286,10 @@ export const HTMLFragments = {
             <div></div>
             <div></div>
         </div>`,
-    NAME_CHANGE_MODAL:
-        `<div id='change-name-modal-background' class='modal-background'></div>
-        <div tabindex='-1' id='change-name-modal' class='modal'>
-            <form id='change-name-form'>
-                <div id='transfer-mod-form-content'>
-                    <label for='player-new-name'>Your name:</label>
-                    <input id='player-new-name' autocomplete='given-name' type='text'/>
-                </div>
-                <div class='modal-button-container'>
-                    <input type='submit' id='submit-new-name' value='Set Name'/>
-                </div>
-            </form>
+    NAME_CHANGE_FORM:
+        `<div id='change-name-form-content'>
+            <label for='client-new-name'>Your name:</label>
+            <input maxlength="40" id='client-new-name' autocomplete='off' type='text'/>
         </div>`,
     ROLE_INFO_MODAL:
         `<div id='role-info-modal-background' class='modal-background'></div>
@@ -314,7 +309,7 @@ export const HTMLFragments = {
         </div>
         <div id='game-people-container'>
             <div id="current-moderator" class="moderator">
-                <div id="current-moderator-name"></div>
+                <div id="current-moderator-name" class="person-name-element"></div>
                 <div id="current-moderator-type"></div>
             </div>
             <label id='players-alive-label'></label>

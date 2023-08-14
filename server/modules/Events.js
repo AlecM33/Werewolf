@@ -1,6 +1,6 @@
 const GameStateCurator = require('./GameStateCurator');
 const GameCreationRequest = require('../model/GameCreationRequest');
-const { EVENT_IDS, STATUS, USER_TYPES, GAME_PROCESS_COMMANDS, REDIS_CHANNELS } = require('../config/globals');
+const { EVENT_IDS, STATUS, USER_TYPES, GAME_PROCESS_COMMANDS, REDIS_CHANNELS, PRIMITIVES } = require('../config/globals');
 
 const Events = [
     {
@@ -53,6 +53,42 @@ const Events = [
                 socketArgs.personId,
                 game.isStartable
             );
+        }
+    },
+    {
+        id: EVENT_IDS.CHANGE_NAME,
+        stateChange: async (game, socketArgs, vars) => {
+            const toChangeIndex = game.people.findIndex(
+                (person) => person.id === socketArgs.personId
+            );
+            if (toChangeIndex >= 0) {
+                if (vars.gameManager.isNameTaken(game, socketArgs.newName)) {
+                    vars.hasNameChanged = false;
+                    if (game.people[toChangeIndex].name.toLowerCase().trim() === socketArgs.newName.toLowerCase().trim()) {
+                        return;
+                    }
+                    vars.ackFn({ errorFlag: 1, message: 'This name is taken.' });
+                } else if (socketArgs.newName.length > PRIMITIVES.MAX_PERSON_NAME_LENGTH) {
+                    vars.ackFn({ errorFlag: 1, message: 'Your new name is too long - the max is' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.' });
+                    vars.hasNameChanged = false;
+                } else if (socketArgs.newName.length === 0) {
+                    vars.ackFn({ errorFlag: 1, message: 'Your new name cannot be empty.' });
+                    vars.hasNameChanged = false;
+                } else {
+                    game.people[toChangeIndex].name = socketArgs.newName;
+                    vars.ackFn({ errorFlag: 0, message: 'Name updated!' });
+                    vars.hasNameChanged = true;
+                }
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            if (vars.hasNameChanged) {
+                vars.gameManager.namespace.in(game.accessCode).emit(
+                    EVENT_IDS.CHANGE_NAME,
+                    socketArgs.personId,
+                    socketArgs.newName
+                );
+            }
         }
     },
     {

@@ -135,7 +135,7 @@ function processGameState (
         });
     }
 
-    SharedStateUtil.displayClientInfo(currentGameState.client.name, currentGameState.client.userType);
+    SharedStateUtil.displayClientInfo(currentGameState, socket);
 
     switch (currentGameState.status) {
         case STATUS.LOBBY:
@@ -234,6 +234,20 @@ function setClientSocketHandlers (stateBucket, socket) {
                 );
             }
         );
+    });
+
+    socket.on(EVENT_IDS.CHANGE_NAME, (changedId, newName) => {
+        const person = stateBucket.currentGameState.people.find(person => person.id === changedId);
+        if (person) {
+            person.name = newName;
+            if (stateBucket.currentGameState.client.id === changedId) {
+                stateBucket.currentGameState.client.name = newName;
+                SharedStateUtil.displayClientInfo(stateBucket.currentGameState, socket);
+            }
+            document.querySelectorAll('[data-pointer="' + person.id + '"]').forEach((node) => {
+                node.querySelector('.person-name-element').innerText = newName;
+            });
+        }
     });
 
     socket.on(EVENT_IDS.END_GAME, (people) => {

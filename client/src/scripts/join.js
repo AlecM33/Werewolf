@@ -55,7 +55,7 @@ const joinHandler = (e) => {
                 resetJoinButtonState(e, joinHandler);
             });
     } else {
-        toast('Name must be between 1 and 40 characters.', 'error', true, true, 'long');
+        toast('Name must be between 1 and ' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.', 'error', true, true, 'long');
     }
 };
 

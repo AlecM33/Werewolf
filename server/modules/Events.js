@@ -69,7 +69,7 @@ const Events = [
                     }
                     vars.ackFn({ errorFlag: 1, message: 'This name is taken.' });
                 } else if (socketArgs.newName.length > PRIMITIVES.MAX_PERSON_NAME_LENGTH) {
-                    vars.ackFn({ errorFlag: 1, message: 'Your new name is too long - the max is 30 characters.' });
+                    vars.ackFn({ errorFlag: 1, message: 'Your new name is too long - the max is' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.' });
                     vars.hasNameChanged = false;
                 } else if (socketArgs.newName.length === 0) {
                     vars.ackFn({ errorFlag: 1, message: 'Your new name cannot be empty.' });

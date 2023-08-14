@@ -322,6 +322,7 @@ export class InProgress {
         for (const player of people) {
             const playerEl = document.createElement('div');
             playerEl.classList.add('game-player');
+            playerEl.dataset.pointer = player.id;
 
             // add a reference to the player's id for each corresponding element in the list
             if (moderatorType) {

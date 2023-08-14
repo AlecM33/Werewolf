@@ -53,6 +53,7 @@ function renderGroupOfPlayers (
     for (const player of people) {
         const playerEl = document.createElement('div');
         playerEl.classList.add('game-player');
+        playerEl.dataset.pointer = player.id;
         playerEl.innerHTML = HTMLFragments.GAME_PLAYER;
 
         playerEl.querySelector('.game-player-name').innerText = player.name;

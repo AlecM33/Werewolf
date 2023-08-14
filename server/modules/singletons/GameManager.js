@@ -182,7 +182,7 @@ class GameManager {
         if (matchingPerson) {
             return Promise.resolve(matchingPerson.cookie);
         }
-        if (isNameTaken(game, name)) {
+        if (this.isNameTaken(game, name)) {
             return Promise.reject({ status: 400, reason: 'This name is taken.' });
         }
         if (joinAsSpectator
@@ -334,6 +334,11 @@ class GameManager {
     findPersonByField = (game, fieldName, value) => {
         return game.people.find(person => person[fieldName] === value);
     }
+
+    isNameTaken (game, name) {
+        const processedName = name.toLowerCase().trim();
+        return game.people.find((person) => person.name.toLowerCase().trim() === processedName);
+    }
 }
 
 function getRandomInt (max) {
@@ -381,11 +386,6 @@ function createRandomId () {
         id += PRIMITIVES.INSTANCE_ID_CHAR_POOL[Math.floor(Math.random() * PRIMITIVES.INSTANCE_ID_CHAR_POOL.length)];
     }
     return id;
-}
-
-function isNameTaken (game, name) {
-    const processedName = name.toLowerCase().trim();
-    return game.people.find((person) => person.name.toLowerCase().trim() === processedName);
 }
 
 async function addSpectator (game, name, logger, namespace, eventManager, instanceId, refreshGame) {

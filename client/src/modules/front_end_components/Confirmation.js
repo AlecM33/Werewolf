@@ -1,6 +1,6 @@
 import { toast } from './Toast.js';
 
-export const Confirmation = (message, onYes = null, isDOMNode = false) => {
+export const Confirmation = (message, onYes = null, isDOMNode = false, confirmButtonText = 'Yes') => {
     document.querySelector('#confirmation')?.remove();
     document.querySelector('#confirmation-background')?.remove();
 
@@ -11,7 +11,7 @@ export const Confirmation = (message, onYes = null, isDOMNode = false) => {
         ? `<div id="confirmation-message"></div>
          <div class="confirmation-buttons">
             <button id="confirmation-cancel-button" class="app-button cancel">Cancel</button>
-            <button id="confirmation-yes-button" class="app-button">Yes</button>
+            <button id="confirmation-yes-button" class="app-button">` + confirmButtonText + `</button>
         </div>`
         : `<div id="confirmation-message"></div>
          <div class="confirmation-buttons-centered">

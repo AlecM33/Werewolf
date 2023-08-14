@@ -18,7 +18,7 @@ describe('GameManager', () => {
         const inObj = { emit: () => {} };
         namespace = { in: () => { return inObj; }, to: () => { return inObj; } };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
-        gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENT.PRODUCTION, 'test');
+        gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENTS.PRODUCTION, 'test');
         timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
         eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
         eventManager.publisher = { publish: async (...a) => {} };

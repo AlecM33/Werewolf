@@ -564,8 +564,34 @@ h1 {
 }
 
 #client-container {
-    max-width: 35em;
+    max-width: 25em;
+    width: 75%;
     margin: 1em 0;
+    position: relative;
+}
+
+#client-container button {
+    background-color: transparent;
+    height: fit-content;
+    margin: 0 8px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    position: absolute;
+    right: -50px;
+    top: 32px;
+}
+
+#client-container button:hover {
+    cursor: pointer;
+    filter: brightness(1.5);
+    background-color: #8080804d;
+}
+
+#client-container button img {
+    width: 22px;
+    pointer-events: none;
 }
 
 #client {
@@ -575,16 +601,19 @@ h1 {
     align-items: center;
     justify-content: space-between;
     border-radius: 5px;
-    min-width: 15em;
     border: 1px solid #46455299;
     background: #4645525c;
 }
 
 #client-name {
+    max-width: 13em;
     color: #e7e7e7;
     font-family: 'signika-negative', sans-serif;
     font-size: 25px;
     margin: 0.25em 2em 0.25em 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #client-user-type {
@@ -920,8 +949,22 @@ canvas {
     justify-content: center;
 }
 
-#change-name-modal-background {
-    cursor: default;
+#change-name-form-content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 15em;
+    text-align: left;
+    margin: 2px auto;
+}
+
+#change-name-form-content input {
+    font-size: 20px;
+}
+
+#change-name-form-content label {
+    display: flex;
+    margin-bottom: 0.5em;
 }
 
 #lobby-people-container , #game-people-container {
@@ -954,6 +997,16 @@ canvas {
 }
 
 @media(max-width: 500px) {
+    #client-container button img {
+        width: 18px;
+        pointer-events: none;
+    }
+
+    #client-container button {
+        right: -46px;
+        top: 27px;
+    }
+
     label {
         font-size: 18px;
     }
@@ -968,6 +1021,7 @@ canvas {
 
     #client-name {
         font-size: 20px;
+        margin: 0.25em 0 0.25em 0;
     }
 
     #client-user-type, #game-parameters {

@@ -354,8 +354,9 @@ function getTimeString (gameState) {
 
 function renderLobbyPerson (person, gameState, socket) {
     const el = document.createElement('div');
+    el.dataset.pointer = person.id;
     const personNameEl = document.createElement('div');
-    personNameEl.classList.add('lobby-player-name');
+    personNameEl.classList.add('lobby-player-name', 'person-name-element');
     const personTypeEl = document.createElement('div');
     personNameEl.innerText = person.name;
     personTypeEl.innerText = person.userType + USER_TYPE_ICONS[person.userType];

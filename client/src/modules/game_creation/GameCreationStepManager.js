@@ -98,7 +98,7 @@ export class GameCreationStepManager {
                             this.incrementStep();
                             this.renderStep('creation-step-container', this.step);
                         } else {
-                            toast('Name must be between 1 and 30 characters.', 'error', true);
+                            toast('Name must be between 1 and 40 characters.', 'error', true);
                         }
                     }
                 },
@@ -569,8 +569,8 @@ function initializeRemainingEventListeners (deckManager, roleBox) {
 }
 
 function processNewCustomRoleSubmission (name, description, team, deckManager, isUpdate, roleBox, option = null) {
-    if (name.length > 40) {
-        toast('Your name is too long (max 40 characters).', 'error', true);
+    if (name.length > 50) {
+        toast('Your name is too long (max 50 characters).', 'error', true);
         return;
     }
     if (description.length > 500) {
@@ -596,5 +596,5 @@ function hasTimer (hours, minutes) {
 }
 
 function validateName (name) {
-    return typeof name === 'string' && name.length > 0 && name.length <= 30;
+    return typeof name === 'string' && name.length > 0 && name.length <= 40;
 }

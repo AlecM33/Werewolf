@@ -31,7 +31,7 @@ function attemptToJoinGame (event) {
                 mode: 'cors'
             }
         ).then((res) => {
-            if (!res.ok) {
+            if (!res.ok && !(res.status === 304)) {
                 switch (res.status) {
                     case 404:
                         toast('Game not found', 'error', true);

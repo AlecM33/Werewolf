@@ -30,7 +30,7 @@ export const gameHandler = (socket, window, gameDOM) => {
             UserUtility.validateAnonUserSignature(stateBucket.environment),
             window
         );
-    }
+    };
     return new Promise((resolve, reject) => {
         window.fetch(
             '/api/games/environment',

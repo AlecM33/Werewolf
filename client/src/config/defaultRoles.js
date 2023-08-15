@@ -35,6 +35,12 @@ export const defaultRoles = [
         description: 'Each night, learn if a chosen person is a Werewolf.'
     },
     {
+        role: 'Doctor',
+        team: 'good',
+        description: `Each night, choose a player to protect from the Werewolves. This can be yourself. If the Werewolves
+        target this person, they still survive to the following day.`
+    },
+    {
         role: 'Parity Hunter',
         team: 'good',
         description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.'

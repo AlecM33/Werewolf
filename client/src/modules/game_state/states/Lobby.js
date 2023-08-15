@@ -1,5 +1,5 @@
 import { QRCode } from '../../third_party/qrcode.js';
-import { toast } from '../../front_end_components/Toast.js';
+import {cancelCurrentToast, toast} from '../../front_end_components/Toast.js';
 import { EVENT_IDS, PRIMITIVES, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
@@ -59,6 +59,64 @@ export class Lobby {
                 );
             });
         };
+
+        this.editTimerHandler = (e) => {
+            e.preventDefault();
+            document.querySelector('#mid-game-timer-editor')?.remove();
+            const timerEditContainer = document.createElement('div');
+            const timerEditContainerBackground = document.createElement('div');
+            timerEditContainerBackground.setAttribute('id', 'timer-edit-container-background');
+            timerEditContainer.setAttribute('id', 'mid-game-timer-editor');
+            document.getElementById('game-content').style.display = 'none';
+            document.body.appendChild(timerEditContainer);
+            document.body.appendChild(timerEditContainerBackground);
+            this.gameCreationStepManager
+                .renderTimerStep(this.stateBucket.currentGameState, '2', this.stateBucket.currentGameState, this.gameCreationStepManager.steps);
+            const timerEditPrompt = document.createElement('div');
+            timerEditPrompt.setAttribute('id', 'timer-edit-prompt');
+            timerEditPrompt.innerHTML = HTMLFragments.TIMER_EDIT_BUTTONS;
+            timerEditPrompt.querySelector('#save-timer-changes-button').addEventListener('click', () => {
+                let hours = parseInt(document.getElementById('game-hours').value);
+                let minutes = parseInt(document.getElementById('game-minutes').value);
+                hours = this.gameCreationStepManager.standardizeNumberInput(hours);
+                minutes = this.gameCreationStepManager.standardizeNumberInput(minutes)
+                if (this.gameCreationStepManager.timerIsValid(hours, minutes)) {
+                    let hasTimer, timerParams;
+                    if (this.gameCreationStepManager.hasTimer(hours, minutes)) {
+                        hasTimer = true;
+                        timerParams = {
+                            hours: hours,
+                            minutes: minutes
+                        };
+                    } else {
+                        hasTimer = false;
+                        timerParams = null;
+                    }
+                    document.querySelector('#mid-game-timer-editor')?.remove();
+                    document.querySelector('#timer-edit-container-background')?.remove();
+                    document.getElementById('game-content').style.display = 'flex';
+                    this.socket.emit(
+                        SOCKET_EVENTS.IN_GAME_MESSAGE,
+                        EVENT_IDS.UPDATE_GAME_TIMER,
+                        stateBucket.currentGameState.accessCode,
+                        { hasTimer: hasTimer, timerParams: timerParams },
+                        () => {
+                            toast('Timer updated successfully!', 'success');
+                        }
+                    );
+                } else {
+                    toast('Invalid timer options. Hours can be a max of 5, Minutes a max of 59.', 'error', true);
+                }
+            });
+
+            timerEditPrompt.querySelector('#cancel-timer-changes-button').addEventListener('click', () => {
+                document.querySelector('#mid-game-timer-editor')?.remove();
+                document.querySelector('#timer-edit-container-background')?.remove();
+                document.getElementById('game-content').style.display = 'flex';
+            });
+
+            timerEditContainer.appendChild(timerEditPrompt);
+        }
 
         this.editRolesHandler = (e) => {
             e.preventDefault();

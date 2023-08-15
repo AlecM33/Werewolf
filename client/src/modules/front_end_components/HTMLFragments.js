@@ -46,6 +46,7 @@ export const HTMLFragments = {
         </div>`,
     START_GAME_PROMPT:
     `<button id='edit-roles-button'>Edit Roles</button>
+    <button id='edit-timer-button'>Edit Timer</button>
     <button id='start-game-button'>Start Game</button>`,
     LEAVE_GAME_PROMPT:
     '<button id=\'leave-game-button\'>Leave Room</button>',
@@ -58,6 +59,11 @@ export const HTMLFragments = {
     <button class="app-button" id="save-role-changes-button">
         <p>Save</p><img src="../images/save-svgrepo-com.svg" alt='save'>
     </button>`,
+    TIMER_EDIT_BUTTONS:
+        `<button class="app-button cancel" id="cancel-timer-changes-button">Cancel</button>
+        <button class="app-button" id="save-timer-changes-button">
+            <p>Save</p><img src="../images/save-svgrepo-com.svg" alt='save'>
+        </button>`,
     PLAYER_GAME_VIEW:
     `<div id='game-header'>
         <div>

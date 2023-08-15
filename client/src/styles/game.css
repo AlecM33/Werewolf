@@ -136,7 +136,8 @@
 #end-of-game-buttons #return-to-lobby-button,
 #mod-transfer-button,
 #edit-roles-button,
-#save-role-changes-button {
+#save-role-changes-button,
+#edit-timer-button {
     background-color: #045ea6;
     border: 2px solid #024070;
 }
@@ -145,7 +146,8 @@
 #end-of-game-buttons #return-to-lobby-button:hover,
 #mod-transfer-button:hover,
 #edit-roles-button:hover,
-#save-role-changes-button:hover {
+#save-role-changes-button:hover,
+#edit-timer-button:hover {
     background-color: rgba(0, 120, 215, 0.45);
     border: 2px solid #045EA6;
 }
@@ -678,16 +680,21 @@ label[for='moderator'] {
     box-shadow: 0 -6px 40px black;
 }
 
-#start-game-button, #end-game-button, #return-to-lobby-button, #edit-roles-button, #leave-game-button {
+#start-game-button,
+#end-game-button,
+#return-to-lobby-button,
+#edit-roles-button,
+#leave-game-button,
+#edit-timer-button {
     font-family: 'signika-negative', sans-serif !important;
-    padding: 10px;
+    padding: 7px;
     border-radius: 5px;
     color: #e7e7e7;
     cursor: pointer;
     border: 2px solid transparent;
     transition: background-color, border 0.3s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
-    font-size: 25px;
+    font-size: 22px;
     user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
@@ -997,6 +1004,10 @@ canvas {
 }
 
 @media(max-width: 500px) {
+    #game-control-prompt button, #start-game-prompt button, #leave-game-prompt button {
+        margin: 0 10px;
+    }
+
     #client-container button img {
         width: 18px;
         pointer-events: none;
@@ -1068,7 +1079,12 @@ canvas {
         height: 65px;
     }
 
-    #start-game-button, #end-game-button, #return-to-lobby-button, #edit-roles-button, #leave-game-button {
+    #start-game-button,
+    #end-game-button,
+    #return-to-lobby-button,
+    #edit-roles-button,
+    #leave-game-button,
+    #edit-timer-button {
         font-size: 20px;
         padding: 5px;
     }

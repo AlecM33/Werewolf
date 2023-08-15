@@ -20,6 +20,17 @@ import { Ended } from '../game_state/states/Ended.js';
 export const gameHandler = (socket, window, gameDOM) => {
     document.body.innerHTML = gameDOM + document.body.innerHTML;
     injectNavbar();
+    const connectionHandler = () => {
+        if (stateBucket.timerWorker) {
+            stateBucket.timerWorker.terminate();
+            stateBucket.timerWorker = null;
+        }
+        syncWithGame(
+            socket,
+            UserUtility.validateAnonUserSignature(stateBucket.environment),
+            window
+        );
+    }
     return new Promise((resolve, reject) => {
         window.fetch(
             '/api/games/environment',
@@ -30,22 +41,18 @@ export const gameHandler = (socket, window, gameDOM) => {
         ).catch(() => {
             reject(new Error('There was a problem connecting to the room.'));
         }).then((response) => {
-            if (!response.ok) {
-                reject(new Error('HTTP ' + response.status + ': Could not connect to the room'));
+            if (!response.ok && !(response.status === 304)) {
+                console.log('too many requests! returning...');
+                reject(new Error('Could not connect to the room: HTTP ' + response.status + ': ' + response.statusText));
                 return;
             }
             response.text().then((text) => {
                 stateBucket.environment = text;
+                if (socket.connected) {
+                    connectionHandler();
+                }
                 socket.on('connect', () => {
-                    if (stateBucket.timerWorker) {
-                        stateBucket.timerWorker.terminate();
-                        stateBucket.timerWorker = null;
-                    }
-                    syncWithGame(
-                        socket,
-                        UserUtility.validateAnonUserSignature(stateBucket.environment),
-                        window
-                    );
+                    connectionHandler();
                 });
                 socket.on('connect_error', (err) => {
                     toast(err, 'error', true, false);
@@ -72,6 +79,7 @@ function syncWithGame (socket, cookie, window) {
             { personId: cookie },
             (err, gameState) => {
                 if (err) {
+                    console.log(err);
                     retrySync(accessCode, socket, cookie);
                 } else {
                     handleGameState(gameState, cookie, socket);

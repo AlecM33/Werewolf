@@ -53,16 +53,10 @@ export class GameCreationStepManager {
                     if (e.type === 'click' || e.code === 'Enter') {
                         let hours = parseInt(document.getElementById('game-hours').value);
                         let minutes = parseInt(document.getElementById('game-minutes').value);
-                        hours = isNaN(hours) ? null : hours;
-                        minutes = isNaN(minutes) ? null : minutes;
-                        if ((hours === null && minutes === null)
-                            || (hours === null && minutes > 0 && minutes < 60)
-                            || (minutes === null && hours > 0 && hours < 6)
-                            || (hours === 0 && minutes > 0 && minutes < 60)
-                            || (minutes === 0 && hours > 0 && hours < 6)
-                            || (hours > 0 && hours < 6 && minutes >= 0 && minutes < 60)
-                        ) {
-                            if (hasTimer(hours, minutes)) {
+                        hours = this.standardizeNumberInput(hours);
+                        minutes = this.standardizeNumberInput(minutes)
+                        if (this.timerIsValid(hours, minutes)) {
+                            if (this.hasTimer(hours, minutes)) {
                                 this.currentGame.hasTimer = true;
                                 this.currentGame.timerParams = {
                                     hours: hours,
@@ -77,11 +71,7 @@ export class GameCreationStepManager {
                             this.incrementStep();
                             this.renderStep('creation-step-container', this.step);
                         } else {
-                            if (hours === 0 && minutes === 0) {
-                                toast('You must enter a non-zero amount of time.', 'error', true);
-                            } else {
-                                toast('Invalid timer options. Hours can be a max of 5, Minutes a max of 59.', 'error', true);
-                            }
+                            toast('Invalid timer options. Hours can be a max of 5, Minutes a max of 59.', 'error', true);
                         }
                     }
                 },
@@ -198,7 +188,7 @@ export class GameCreationStepManager {
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
                 break;
             case 3:
-                renderTimerStep(containerId, step, this.currentGame, this.steps);
+                this.renderTimerStep(containerId, step, this.currentGame, this.steps);
                 showButtons(true, true, this.steps[step].forwardHandler, this.steps[step].backHandler);
                 break;
             case 4:
@@ -297,6 +287,68 @@ export class GameCreationStepManager {
 
         initializeRemainingEventListeners(this.deckManager, this.roleBox);
     };
+
+    renderTimerStep (containerId, stepNumber, game, steps) {
+        const div = document.createElement('div');
+        div.setAttribute('id', 'step-' + stepNumber);
+        div.classList.add('step');
+
+        const timeContainer = document.createElement('div');
+        timeContainer.setAttribute('id', 'game-time');
+
+        const hoursDiv = document.createElement('div');
+        const hoursLabel = document.createElement('label');
+        hoursLabel.setAttribute('for', 'game-hours');
+        hoursLabel.innerText = 'Hours';
+        const hours = document.createElement('input');
+        hours.addEventListener('keyup', steps[stepNumber].forwardHandler);
+        setAttributes(hours, { type: 'number', id: 'game-hours', name: 'game-hours', min: '0', max: '5', value: game.timerParams?.hours });
+
+        const minutesDiv = document.createElement('div');
+        const minsLabel = document.createElement('label');
+        minsLabel.setAttribute('for', 'game-minutes');
+        minsLabel.innerText = 'Minutes';
+        const minutes = document.createElement('input');
+        minutes.addEventListener('keyup', steps[stepNumber].forwardHandler);
+        setAttributes(minutes, { type: 'number', id: 'game-minutes', name: 'game-minutes', min: '1', max: '60', value: game.timerParams?.minutes });
+
+        hoursDiv.appendChild(hoursLabel);
+        hoursDiv.appendChild(hours);
+        minutesDiv.appendChild(minsLabel);
+        minutesDiv.appendChild(minutes);
+        timeContainer.appendChild(hoursDiv);
+        timeContainer.appendChild(minutesDiv);
+        div.appendChild(timeContainer);
+
+        document.getElementById(containerId).appendChild(div);
+    }
+
+    timerIsValid(hours, minutes) {
+        let valid = true;
+
+        if (hours === null && minutes === null) {
+            return valid;
+        }
+
+        if (hours !== null) {
+            valid = hours <= PRIMITIVES.MAX_HOURS;
+        }
+
+        if (minutes !== null) {
+            valid = minutes <= PRIMITIVES.MAX_MINUTES;
+        }
+
+
+        return valid;
+    }
+
+    hasTimer(hours, minutes) {
+        return hours !== null || minutes !== null;
+    }
+
+    standardizeNumberInput(input) {
+        return (isNaN(input) || input === 0) ? null : input;
+    }
 }
 
 function renderNameStep (containerId, step, game, steps) {
@@ -356,41 +408,6 @@ function renderModerationTypeStep (game, containerId, stepNumber) {
     selfOption.addEventListener('keyup', tempModHandler);
 
     document.getElementById(containerId).appendChild(stepContainer);
-}
-
-function renderTimerStep (containerId, stepNumber, game, steps) {
-    const div = document.createElement('div');
-    div.setAttribute('id', 'step-' + stepNumber);
-    div.classList.add('step');
-
-    const timeContainer = document.createElement('div');
-    timeContainer.setAttribute('id', 'game-time');
-
-    const hoursDiv = document.createElement('div');
-    const hoursLabel = document.createElement('label');
-    hoursLabel.setAttribute('for', 'game-hours');
-    hoursLabel.innerText = 'Hours';
-    const hours = document.createElement('input');
-    hours.addEventListener('keyup', steps[stepNumber].forwardHandler);
-    setAttributes(hours, { type: 'number', id: 'game-hours', name: 'game-hours', min: '0', max: '5', value: game.timerParams?.hours });
-
-    const minutesDiv = document.createElement('div');
-    const minsLabel = document.createElement('label');
-    minsLabel.setAttribute('for', 'game-minutes');
-    minsLabel.innerText = 'Minutes';
-    const minutes = document.createElement('input');
-    minutes.addEventListener('keyup', steps[stepNumber].forwardHandler);
-    setAttributes(minutes, { type: 'number', id: 'game-minutes', name: 'game-minutes', min: '1', max: '60', value: game.timerParams?.minutes });
-
-    hoursDiv.appendChild(hoursLabel);
-    hoursDiv.appendChild(hours);
-    minutesDiv.appendChild(minsLabel);
-    minutesDiv.appendChild(minutes);
-    timeContainer.appendChild(hoursDiv);
-    timeContainer.appendChild(minutesDiv);
-    div.appendChild(timeContainer);
-
-    document.getElementById(containerId).appendChild(div);
 }
 
 function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) {
@@ -589,10 +606,6 @@ function processNewCustomRoleSubmission (name, description, team, deckManager, i
     if (roleBox.category === 'custom') {
         roleBox.displayCustomRoles(document.getElementById('role-select'));
     }
-}
-
-function hasTimer (hours, minutes) {
-    return hours !== null || minutes !== null;
 }
 
 function validateName (name) {

@@ -8,6 +8,8 @@ export const PRIMITIVES = {
     MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH: 1000,
     TOAST_DURATION_DEFAULT: 6,
     ACCESS_CODE_LENGTH: 4,
+    MAX_MINUTES: 59,
+    MAX_HOURS: 5,
     PLAYER_ID_COOKIE_KEY: 'play-werewolf-anon-id'
 };
 
@@ -75,6 +77,7 @@ export const EVENT_IDS = {
     ASSIGN_DEDICATED_MOD: 'assignDedicatedMod',
     KICK_PERSON: 'kickPerson',
     UPDATE_GAME_ROLES: 'updateGameRoles',
+    UPDATE_GAME_TIMER: 'updateGameTimer',
     LEAVE_ROOM: 'leaveRoom'
 };
 

@@ -30,7 +30,7 @@ export const gameHandler = (socket, window, gameDOM) => {
             UserUtility.validateAnonUserSignature(stateBucket.environment),
             window
         );
-    }
+    };
     return new Promise((resolve, reject) => {
         window.fetch(
             '/api/games/environment',
@@ -42,7 +42,6 @@ export const gameHandler = (socket, window, gameDOM) => {
             reject(new Error('There was a problem connecting to the room.'));
         }).then((response) => {
             if (!response.ok && !(response.status === 304)) {
-                console.log('too many requests! returning...');
                 reject(new Error('Could not connect to the room: HTTP ' + response.status + ': ' + response.statusText));
                 return;
             }

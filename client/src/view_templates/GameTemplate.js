@@ -18,7 +18,7 @@ const template =
                 <div></div>
                 <div></div>
             </div>
-            <p>Connecting to the Room...</p>
+            <p>Waiting for Connection to Room...</p>
         </div>
         <div id="mobile-menu-background-overlay"></div>
         <div id="navbar"></div>

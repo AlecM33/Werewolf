@@ -28,7 +28,7 @@ const joinHandler = (e) => {
     if (validateName(name)) {
         sendJoinRequest(e, name, accessCode)
             .then((res) => {
-                if (!res.ok) {
+                if (!res.ok && !(res.status === 304)) {
                     switch (res.status) {
                         case 404:
                             toast('Game not found', 'error', true);

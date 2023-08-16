@@ -416,10 +416,10 @@ function getTimeString (gameState) {
         const hours = gameState.timerParams.hours;
         const minutes = gameState.timerParams.minutes;
         if (hours) {
-            timeString += hours + 'h '
+            timeString += hours + 'h ';
         }
         if (minutes) {
-            timeString += minutes + 'm'
+            timeString += minutes + 'm';
         }
         return timeString;
     } else {

@@ -55,6 +55,13 @@
     justify-content: center;
 }
 
+#custom-role-info-modal-image {
+    margin: 0 auto;
+    width: 200px;
+    background-color: #4645525c;
+    border-radius: 5px;
+}
+
 #custom-role-info-modal {
     color: #d7d7d7;
     text-align: left;
@@ -62,8 +69,14 @@
     align-items: flex-start;
 }
 
+#custom-role-info-modal-image-placeholder {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
 #custom-role-info-modal h3 {
-    margin: 0 0 0.5em 0;
+    margin: 0 auto 0.5em auto;
 }
 
 #custom-role-info-modal-description {

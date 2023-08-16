@@ -216,8 +216,24 @@ export class DeckStateManager {
         roleEl.querySelector('.role-remove').addEventListener('keyup', minusOneHandler);
 
         const infoHandler = (e) => {
+            document.querySelector('#custom-role-info-modal-image')?.remove();
             if (e.type === 'click' || e.code === 'Enter') {
                 const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
+                if (!sortedDeck[i].custom) {
+                    document.getElementById('custom-role-info-modal-image-placeholder').style.display = 'flex';
+                    const roleImg = new Image();
+                    roleImg.id = 'custom-role-info-modal-image';
+                    roleImg.onload = () => {
+                        document.getElementById('custom-role-info-modal-image-placeholder').appendChild(roleImg);
+                    };
+                    if (sortedDeck[i].role.toLowerCase() === 'villager') {
+                        roleImg.src = '../images/roles/Villager' + Math.ceil(Math.random() * 2) + '.png';
+                    } else {
+                        roleImg.src = '../images/roles/' + sortedDeck[i].role.replaceAll(' ', '') + '.png';
+                    }
+                } else {
+                    document.getElementById('custom-role-info-modal-image-placeholder').style.display = 'none';
+                }
                 const nameEl = document.getElementById('custom-role-info-modal-name');
                 alignmentEl.classList.remove(ALIGNMENT.GOOD);
                 alignmentEl.classList.remove(ALIGNMENT.EVIL);

@@ -11,7 +11,7 @@ export const HTMLFragments = {
             <div id='game-parameters'>
                 <div>
                     <img alt='clock' src='/images/clock.svg'/>
-                    <div id='game-time'></div>
+                    <div id='timer-parameters'></div>
                 </div>
                 <div>
                     <img alt='person' src='/images/person.svg'/>

@@ -202,7 +202,7 @@ export class Lobby {
 
     setTimer () {
         const timeString = getTimeString(this.stateBucket.currentGameState);
-        const time = this.container.querySelector('#game-time');
+        const time = this.container.querySelector('#timer-parameters');
         time.innerText = timeString;
 
         return timeString;
@@ -416,14 +416,10 @@ function getTimeString (gameState) {
         const hours = gameState.timerParams.hours;
         const minutes = gameState.timerParams.minutes;
         if (hours) {
-            timeString += hours > 1
-                ? hours + ' hours '
-                : hours + ' hour ';
+            timeString += hours + 'h '
         }
         if (minutes) {
-            timeString += minutes > 1
-                ? minutes + ' minutes '
-                : minutes + ' minute ';
+            timeString += minutes + 'm'
         }
         return timeString;
     } else {

@@ -181,6 +181,10 @@
     border: 2px solid #3b3a4a;
 }
 
+#timer-parameters {
+    width: 65px;
+}
+
 #role-edit-container-background, #timer-edit-container-background {
     position: fixed;
     top: 0;

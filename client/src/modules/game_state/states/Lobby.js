@@ -1,5 +1,5 @@
 import { QRCode } from '../../third_party/qrcode.js';
-import {cancelCurrentToast, toast} from '../../front_end_components/Toast.js';
+import { toast } from '../../front_end_components/Toast.js';
 import { EVENT_IDS, PRIMITIVES, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES } from '../../../config/globals.js';
 import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
 import { Confirmation } from '../../front_end_components/Confirmation.js';
@@ -70,16 +70,22 @@ export class Lobby {
             document.getElementById('game-content').style.display = 'none';
             document.body.appendChild(timerEditContainer);
             document.body.appendChild(timerEditContainerBackground);
-            this.gameCreationStepManager
-                .renderTimerStep(this.stateBucket.currentGameState, '2', this.stateBucket.currentGameState, this.gameCreationStepManager.steps);
             const timerEditPrompt = document.createElement('div');
             timerEditPrompt.setAttribute('id', 'timer-edit-prompt');
             timerEditPrompt.innerHTML = HTMLFragments.TIMER_EDIT_BUTTONS;
+            this.gameCreationStepManager.steps['3'].forwardHandler = (e) => {
+                e.preventDefault();
+                if (e.type === 'click' || e.code === 'Enter') {
+                    timerEditPrompt.querySelector('#save-timer-changes-button')?.click();
+                }
+            };
+            this.gameCreationStepManager
+                .renderTimerStep('mid-game-timer-editor', '3', this.stateBucket.currentGameState, this.gameCreationStepManager.steps);
             timerEditPrompt.querySelector('#save-timer-changes-button').addEventListener('click', () => {
                 let hours = parseInt(document.getElementById('game-hours').value);
                 let minutes = parseInt(document.getElementById('game-minutes').value);
                 hours = this.gameCreationStepManager.standardizeNumberInput(hours);
-                minutes = this.gameCreationStepManager.standardizeNumberInput(minutes)
+                minutes = this.gameCreationStepManager.standardizeNumberInput(minutes);
                 if (this.gameCreationStepManager.timerIsValid(hours, minutes)) {
                     let hasTimer, timerParams;
                     if (this.gameCreationStepManager.hasTimer(hours, minutes)) {
@@ -116,7 +122,7 @@ export class Lobby {
             });
 
             timerEditContainer.appendChild(timerEditPrompt);
-        }
+        };
 
         this.editRolesHandler = (e) => {
             e.preventDefault();
@@ -194,10 +200,16 @@ export class Lobby {
             'Participants (' + inLobbyCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
     }
 
-    populateHeader () {
+    setTimer () {
         const timeString = getTimeString(this.stateBucket.currentGameState);
         const time = this.container.querySelector('#game-time');
         time.innerText = timeString;
+
+        return timeString;
+    }
+
+    populateHeader () {
+        const timeString = this.setTimer();
 
         const link = this.setLink(timeString);
 
@@ -293,6 +305,13 @@ export class Lobby {
             this.setPlayerCount();
         });
 
+        this.socket.on(EVENT_IDS.UPDATE_GAME_TIMER, (hasTimer, timerParams) => {
+            this.stateBucket.currentGameState.hasTimer = hasTimer;
+            this.stateBucket.currentGameState.timerParams = timerParams;
+            const timeString = this.setTimer();
+            this.setLink(timeString);
+        });
+
         this.socket.on(EVENT_IDS.LEAVE_ROOM, (leftId, gameIsStartable) => {
             if (leftId === this.stateBucket.currentGameState.client.id) {
                 window.location = '/?message=' + encodeURIComponent('You left the room.');
@@ -335,6 +354,7 @@ export class Lobby {
         if (existingPrompt) {
             enableStartButton(existingPrompt, this.startGameHandler);
             document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
+            document.getElementById('edit-timer-button').addEventListener('click', this.editTimerHandler);
         } else {
             const newPrompt = document.createElement('div');
             newPrompt.setAttribute('id', 'start-game-prompt');
@@ -343,6 +363,7 @@ export class Lobby {
             document.body.appendChild(newPrompt);
             enableStartButton(newPrompt, this.startGameHandler);
             document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
+            document.getElementById('edit-timer-button').addEventListener('click', this.editTimerHandler);
         }
     }
 

@@ -106,13 +106,13 @@
     max-width: 17em;
 }
 
-#save-role-changes-button, #cancel-role-changes-button {
+#save-role-changes-button, #cancel-role-changes-button, #save-timer-changes-button, #cancel-timer-changes-button {
     padding: 10px;
     font-size: 25px;
     margin: 0.5em 0;
 }
 
-#role-edit-prompt {
+#role-edit-prompt, #timer-edit-prompt {
     display: flex;
     margin: 10px 0;
     padding: 10px 0;
@@ -123,11 +123,15 @@
     background-color: #16141e;
 }
 
-#role-edit-prompt button {
+#timer-edit-prompt {
+    margin-top: 2em;
+}
+
+#role-edit-prompt button, #timer-edit-prompt button {
     margin: 0 20px;
 }
 
-#save-role-changes-button img {
+#save-role-changes-button img, #save-timer-changes-button img {
     width: 20px;
     margin-left: 10px;
 }
@@ -137,7 +141,8 @@
 #mod-transfer-button,
 #edit-roles-button,
 #save-role-changes-button,
-#edit-timer-button {
+#edit-timer-button,
+#save-timer-changes-button {
     background-color: #045ea6;
     border: 2px solid #024070;
 }
@@ -147,12 +152,13 @@
 #mod-transfer-button:hover,
 #edit-roles-button:hover,
 #save-role-changes-button:hover,
-#edit-timer-button:hover {
+#edit-timer-button:hover,
+#save-timer-changes-button:hover {
     background-color: rgba(0, 120, 215, 0.45);
     border: 2px solid #045EA6;
 }
 
-#mid-game-role-editor {
+#mid-game-role-editor, #mid-game-timer-editor {
     display: flex;
     border-radius: 5px;
     position: fixed;
@@ -166,7 +172,16 @@
     overflow: auto;
 }
 
-#role-edit-container-background {
+#mid-game-timer-editor #game-time {
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 5px;
+    margin: 1em;
+    background-color: #16141e;
+    border: 2px solid #3b3a4a;
+}
+
+#role-edit-container-background, #timer-edit-container-background {
     position: fixed;
     top: 0;
     left: 0;
@@ -177,17 +192,15 @@
     cursor: pointer;
 }
 
-#mid-game-role-editor #step-2 {
+#mid-game-role-editor #step-2 , #mid-game-timer-editor #step-3 {
     width: 100%;
     display: flex;
     justify-content: center;
     overflow: auto;
     align-items: center;
+    padding: 0;
 }
 
-#save-button {
-
-}
 
 #mid-game-role-editor #custom-roles-container {
     height: fit-content;
@@ -641,6 +654,7 @@ label[for='moderator'] {
     display: flex;
     flex-direction: row;
     align-items: center;
+    animation: fade-in-slide-up 0.5s ease-in-out;
     justify-content: center;
     position: fixed;
     z-index: 3;
@@ -1167,11 +1181,7 @@ canvas {
 @keyframes fade-in-slide-up {
     0% {
         opacity: 0;
-        transform: translateY(20px);
-    }
-    5% {
-        opacity: 1;
-        transform: translateY(0px);
+        transform: translateY(10px);
     }
     100% {
         opacity: 1;

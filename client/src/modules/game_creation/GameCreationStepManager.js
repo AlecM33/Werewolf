@@ -54,7 +54,7 @@ export class GameCreationStepManager {
                         let hours = parseInt(document.getElementById('game-hours').value);
                         let minutes = parseInt(document.getElementById('game-minutes').value);
                         hours = this.standardizeNumberInput(hours);
-                        minutes = this.standardizeNumberInput(minutes)
+                        minutes = this.standardizeNumberInput(minutes);
                         if (this.timerIsValid(hours, minutes)) {
                             if (this.hasTimer(hours, minutes)) {
                                 this.currentGame.hasTimer = true;
@@ -323,7 +323,7 @@ export class GameCreationStepManager {
         document.getElementById(containerId).appendChild(div);
     }
 
-    timerIsValid(hours, minutes) {
+    timerIsValid (hours, minutes) {
         let valid = true;
 
         if (hours === null && minutes === null) {
@@ -338,15 +338,14 @@ export class GameCreationStepManager {
             valid = minutes <= PRIMITIVES.MAX_MINUTES;
         }
 
-
         return valid;
     }
 
-    hasTimer(hours, minutes) {
+    hasTimer (hours, minutes) {
         return hours !== null || minutes !== null;
     }
 
-    standardizeNumberInput(input) {
+    standardizeNumberInput (input) {
         return (isNaN(input) || input === 0) ? null : input;
     }
 }

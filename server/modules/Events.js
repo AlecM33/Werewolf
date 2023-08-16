@@ -69,7 +69,7 @@ const Events = [
                     }
                     vars.ackFn({ errorFlag: 1, message: 'This name is taken.' });
                 } else if (socketArgs.newName.length > PRIMITIVES.MAX_PERSON_NAME_LENGTH) {
-                    vars.ackFn({ errorFlag: 1, message: 'Your new name is too long - the max is' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.' });
+                    vars.ackFn({ errorFlag: 1, message: 'Your new name is too long - the max is ' + PRIMITIVES.MAX_PERSON_NAME_LENGTH + ' characters.' });
                     vars.hasNameChanged = false;
                 } else if (socketArgs.newName.length === 0) {
                     vars.ackFn({ errorFlag: 1, message: 'Your new name cannot be empty.' });
@@ -379,6 +379,25 @@ const Events = [
                     );
                 }
             }
+        }
+    },
+    {
+        id: EVENT_IDS.UPDATE_GAME_TIMER,
+        stateChange: async (game, socketArgs, vars) => {
+            if (GameCreationRequest.timerParamsAreValid(socketArgs.hasTimer, socketArgs.timerParams)) {
+                game.hasTimer = socketArgs.hasTimer;
+                game.timerParams = socketArgs.timerParams;
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            if (vars.ackFn) {
+                vars.ackFn();
+            }
+            vars.gameManager.namespace.in(game.accessCode).emit(
+                EVENT_IDS.UPDATE_GAME_TIMER,
+                game.hasTimer,
+                game.timerParams
+            );
         }
     },
     {

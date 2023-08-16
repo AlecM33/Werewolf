@@ -166,6 +166,7 @@ export class RoleBox {
     };
 
     displayDefaultRoles = (selectEl) => {
+        document.querySelector('#custom-role-placeholder')?.remove();
         document.querySelectorAll('#role-select .default-role, #role-select .custom-role').forEach(e => e.remove());
         this.categoryTransition.play();
         for (let i = 0; i < this.defaultRoles.length; i ++) {
@@ -184,9 +185,21 @@ export class RoleBox {
         this.addRoleEventListeners(selectEl, true, true, false, false, false);
     };
 
+    displayCustomRolePlaceHolder = () => {
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('id', 'custom-role-placeholder');
+        placeholder.innerText = 'Create a role with the button below.';
+        document.getElementById('role-select').appendChild(placeholder);
+    };
+
     displayCustomRoles = (selectEl) => {
+        document.querySelector('#custom-role-placeholder')?.remove();
         document.querySelectorAll('#role-select .default-role, #role-select .custom-role').forEach(e => e.remove());
         this.categoryTransition.play();
+        if (this.customRoles.length === 0) {
+            this.displayCustomRolePlaceHolder();
+            return;
+        }
         this.customRoles.sort((a, b) => {
             if (a.team !== b.team) {
                 return a.team === ALIGNMENT.GOOD ? -1 : 1;

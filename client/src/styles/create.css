@@ -191,14 +191,14 @@
     margin-top: 0.5em;
 }
 
-#deck-list-placeholder {
+#deck-list-placeholder, #custom-role-placeholder {
     margin: auto;
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    width: 290px;
+    width: fit-content;
     height: 50px;
     font-size: 20px;
     text-align: center;

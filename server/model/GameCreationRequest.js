@@ -56,6 +56,22 @@ class GameCreationRequest {
         }
         return false;
     }
+
+    static timerParamsAreValid = (hasTimer, timerParams) => {
+        if (hasTimer === false) {
+            return timerParams === null;
+        } else {
+            if (timerParams === null || typeof timerParams !== 'object') {
+                return false;
+            }
+
+            return (timerParams.hours === null && timerParams.minutes > 0 && timerParams.minutes < 60)
+                || (timerParams.minutes === null && timerParams.hours > 0 && timerParams.hours < 6)
+                || (timerParams.hours === 0 && timerParams.minutes > 0 && timerParams.minutes < 60)
+                || (timerParams.minutes === 0 && timerParams.hours > 0 && timerParams.hours < 6)
+                || (timerParams.hours > 0 && timerParams.hours < 6 && timerParams.minutes >= 0 && timerParams.minutes < 60);
+        }
+    }
 }
 
 function valid (gameParams) {
@@ -65,24 +81,8 @@ function valid (gameParams) {
         && typeof gameParams.moderatorName === 'string'
         && gameParams.moderatorName.length > 0
         && gameParams.moderatorName.length <= 30
-        && timerParamsAreValid(gameParams.hasTimer, gameParams.timerParams)
+        && GameCreationRequest.timerParamsAreValid(gameParams.hasTimer, gameParams.timerParams)
         && GameCreationRequest.deckIsValid(gameParams.deck);
-}
-
-function timerParamsAreValid (hasTimer, timerParams) {
-    if (hasTimer === false) {
-        return timerParams === null;
-    } else {
-        if (timerParams === null || typeof timerParams !== 'object') {
-            return false;
-        }
-
-        return (timerParams.hours === null && timerParams.minutes > 0 && timerParams.minutes < 60)
-            || (timerParams.minutes === null && timerParams.hours > 0 && timerParams.hours < 6)
-            || (timerParams.hours === 0 && timerParams.minutes > 0 && timerParams.minutes < 60)
-            || (timerParams.minutes === 0 && timerParams.hours > 0 && timerParams.hours < 6)
-            || (timerParams.hours > 0 && timerParams.hours < 6 && timerParams.minutes >= 0 && timerParams.minutes < 60);
-    }
 }
 
 module.exports = GameCreationRequest;

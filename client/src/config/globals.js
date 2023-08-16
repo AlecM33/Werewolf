@@ -96,6 +96,7 @@ export const LOBBY_EVENTS = function () {
         EVENT_IDS.ADD_SPECTATOR,
         EVENT_IDS.KICK_PERSON,
         EVENT_IDS.UPDATE_GAME_ROLES,
+        EVENT_IDS.UPDATE_GAME_TIMER,
         EVENT_IDS.LEAVE_ROOM
     ];
 };

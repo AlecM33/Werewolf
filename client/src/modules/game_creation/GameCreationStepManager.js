@@ -139,7 +139,7 @@ export class GameCreationStepManager {
                                 restoreButton();
                                 break;
                             case 400:
-                                toast('Your game has invalid parameters..', 'error', true, true);
+                                toast('Your game has invalid parameters.', 'error', true, true);
                                 restoreButton();
                                 break;
                             case 201:
@@ -331,11 +331,11 @@ export class GameCreationStepManager {
         }
 
         if (hours !== null) {
-            valid = hours <= PRIMITIVES.MAX_HOURS;
+            valid = hours > 0 && hours <= PRIMITIVES.MAX_HOURS;
         }
 
         if (minutes !== null) {
-            valid = minutes <= PRIMITIVES.MAX_MINUTES;
+            valid = minutes > 0 && minutes <= PRIMITIVES.MAX_MINUTES;
         }
 
         return valid;

@@ -37,8 +37,8 @@ export const defaultRoles = [
     {
         role: 'Doctor',
         team: 'good',
-        description: `Each night, choose a player to protect from the Werewolves. This can be yourself. If the Werewolves
-        target this person, they still survive to the following day.`
+        description: 'Each night, choose a player to protect from the Werewolves. This can be yourself. If the Werewolves ' +
+            'target this person, they still survive to the following day.'
     },
     {
         role: 'Parity Hunter',

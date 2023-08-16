@@ -164,7 +164,7 @@
 }
 
 #deck-status-container {
-    width: 20em;
+    width: 25em;
     max-width: 95%;
     height: 20em;
     overflow-y: auto;
@@ -191,14 +191,14 @@
     margin-top: 0.5em;
 }
 
-#deck-list-placeholder {
+#deck-list-placeholder, #custom-role-placeholder {
     margin: auto;
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    width: 290px;
+    width: fit-content;
     height: 50px;
     font-size: 20px;
     text-align: center;
@@ -457,7 +457,7 @@ input[type="number"] {
 #role-select {
     margin: 0.5em 1em 1.5em 0;
     overflow-y: auto;
-    height: 16em;
+    height: 20em;
 }
 
 .default-role, .custom-role, .added-role {

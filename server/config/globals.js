@@ -78,6 +78,7 @@ const EVENT_IDS = {
     TIMER_EVENT: 'timerEvent',
     KICK_PERSON: 'kickPerson',
     UPDATE_GAME_ROLES: 'updateGameRoles',
+    UPDATE_GAME_TIMER: 'updateGameTimer',
     LEAVE_ROOM: 'leaveRoom',
     BROADCAST: 'broadcast'
 };
@@ -103,6 +104,7 @@ const SYNCABLE_EVENTS = function () {
         EVENT_IDS.END_TIMER,
         EVENT_IDS.KICK_PERSON,
         EVENT_IDS.UPDATE_GAME_ROLES,
+        EVENT_IDS.UPDATE_GAME_TIMER,
         EVENT_IDS.LEAVE_ROOM
     ];
 };

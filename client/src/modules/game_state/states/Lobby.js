@@ -60,6 +60,70 @@ export class Lobby {
             });
         };
 
+        this.editTimerHandler = (e) => {
+            e.preventDefault();
+            document.querySelector('#mid-game-timer-editor')?.remove();
+            const timerEditContainer = document.createElement('div');
+            const timerEditContainerBackground = document.createElement('div');
+            timerEditContainerBackground.setAttribute('id', 'timer-edit-container-background');
+            timerEditContainer.setAttribute('id', 'mid-game-timer-editor');
+            document.getElementById('game-content').style.display = 'none';
+            document.body.appendChild(timerEditContainer);
+            document.body.appendChild(timerEditContainerBackground);
+            const timerEditPrompt = document.createElement('div');
+            timerEditPrompt.setAttribute('id', 'timer-edit-prompt');
+            timerEditPrompt.innerHTML = HTMLFragments.TIMER_EDIT_BUTTONS;
+            this.gameCreationStepManager.steps['3'].forwardHandler = (e) => {
+                e.preventDefault();
+                if (e.type === 'click' || e.code === 'Enter') {
+                    timerEditPrompt.querySelector('#save-timer-changes-button')?.click();
+                }
+            };
+            this.gameCreationStepManager
+                .renderTimerStep('mid-game-timer-editor', '3', this.stateBucket.currentGameState, this.gameCreationStepManager.steps);
+            timerEditPrompt.querySelector('#save-timer-changes-button').addEventListener('click', () => {
+                let hours = parseInt(document.getElementById('game-hours').value);
+                let minutes = parseInt(document.getElementById('game-minutes').value);
+                hours = this.gameCreationStepManager.standardizeNumberInput(hours);
+                minutes = this.gameCreationStepManager.standardizeNumberInput(minutes);
+                if (this.gameCreationStepManager.timerIsValid(hours, minutes)) {
+                    let hasTimer, timerParams;
+                    if (this.gameCreationStepManager.hasTimer(hours, minutes)) {
+                        hasTimer = true;
+                        timerParams = {
+                            hours: hours,
+                            minutes: minutes
+                        };
+                    } else {
+                        hasTimer = false;
+                        timerParams = null;
+                    }
+                    document.querySelector('#mid-game-timer-editor')?.remove();
+                    document.querySelector('#timer-edit-container-background')?.remove();
+                    document.getElementById('game-content').style.display = 'flex';
+                    this.socket.emit(
+                        SOCKET_EVENTS.IN_GAME_MESSAGE,
+                        EVENT_IDS.UPDATE_GAME_TIMER,
+                        stateBucket.currentGameState.accessCode,
+                        { hasTimer: hasTimer, timerParams: timerParams },
+                        () => {
+                            toast('Timer updated successfully!', 'success');
+                        }
+                    );
+                } else {
+                    toast('Invalid timer options. Hours can be a max of 5, Minutes a max of 59.', 'error', true);
+                }
+            });
+
+            timerEditPrompt.querySelector('#cancel-timer-changes-button').addEventListener('click', () => {
+                document.querySelector('#mid-game-timer-editor')?.remove();
+                document.querySelector('#timer-edit-container-background')?.remove();
+                document.getElementById('game-content').style.display = 'flex';
+            });
+
+            timerEditContainer.appendChild(timerEditPrompt);
+        };
+
         this.editRolesHandler = (e) => {
             e.preventDefault();
             document.querySelector('#mid-game-role-editor')?.remove();
@@ -136,10 +200,16 @@ export class Lobby {
             'Participants (' + inLobbyCount + '/' + this.stateBucket.currentGameState.gameSize + ' Players)';
     }
 
-    populateHeader () {
+    setTimer () {
         const timeString = getTimeString(this.stateBucket.currentGameState);
-        const time = this.container.querySelector('#game-time');
+        const time = this.container.querySelector('#timer-parameters');
         time.innerText = timeString;
+
+        return timeString;
+    }
+
+    populateHeader () {
+        const timeString = this.setTimer();
 
         const link = this.setLink(timeString);
 
@@ -235,6 +305,13 @@ export class Lobby {
             this.setPlayerCount();
         });
 
+        this.socket.on(EVENT_IDS.UPDATE_GAME_TIMER, (hasTimer, timerParams) => {
+            this.stateBucket.currentGameState.hasTimer = hasTimer;
+            this.stateBucket.currentGameState.timerParams = timerParams;
+            const timeString = this.setTimer();
+            this.setLink(timeString);
+        });
+
         this.socket.on(EVENT_IDS.LEAVE_ROOM, (leftId, gameIsStartable) => {
             if (leftId === this.stateBucket.currentGameState.client.id) {
                 window.location = '/?message=' + encodeURIComponent('You left the room.');
@@ -277,6 +354,7 @@ export class Lobby {
         if (existingPrompt) {
             enableStartButton(existingPrompt, this.startGameHandler);
             document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
+            document.getElementById('edit-timer-button').addEventListener('click', this.editTimerHandler);
         } else {
             const newPrompt = document.createElement('div');
             newPrompt.setAttribute('id', 'start-game-prompt');
@@ -285,6 +363,7 @@ export class Lobby {
             document.body.appendChild(newPrompt);
             enableStartButton(newPrompt, this.startGameHandler);
             document.getElementById('edit-roles-button').addEventListener('click', this.editRolesHandler);
+            document.getElementById('edit-timer-button').addEventListener('click', this.editTimerHandler);
         }
     }
 
@@ -337,14 +416,10 @@ function getTimeString (gameState) {
         const hours = gameState.timerParams.hours;
         const minutes = gameState.timerParams.minutes;
         if (hours) {
-            timeString += hours > 1
-                ? hours + ' hours '
-                : hours + ' hour ';
+            timeString += hours + 'h ';
         }
         if (minutes) {
-            timeString += minutes > 1
-                ? minutes + ' minutes '
-                : minutes + ' minute ';
+            timeString += minutes + 'm';
         }
         return timeString;
     } else {

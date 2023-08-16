@@ -87,8 +87,8 @@ textarea {
 }
 
 .toast-error {
-    background-color: #fdaeb7;
-    border: 3px solid #c78a8a;
+    background-color: #f98e9a;
+    border: 3px solid #c57272;
 }
 
 .toast-neutral {
@@ -338,12 +338,13 @@ input {
     border-radius: 5px;
     font-family: 'signika-negative', sans-serif;
     font-weight: 100;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.11),
-    0 2px 2px rgba(0,0,0,0.11),
-    0 4px 4px rgba(0,0,0,0.11),
-    0 8px 8px rgba(0,0,0,0.11),
-    0 16px 16px rgba(0,0,0,0.11),
-    0 32px 32px rgba(0,0,0,0.11);
+    box-shadow:
+        0 1px 1px rgba(0,0,0,0.11),
+        0 2px 2px rgba(0,0,0,0.11),
+        0 4px 4px rgba(0,0,0,0.11),
+        0 8px 8px rgba(0,0,0,0.11),
+        0 16px 16px rgba(0,0,0,0.11),
+        0 32px 32px rgba(0,0,0,0.11);
     left: 0;
     right: 0;
     width: fit-content;

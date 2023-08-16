@@ -78,6 +78,7 @@ function syncWithGame (socket, cookie, window) {
             { personId: cookie },
             (err, gameState) => {
                 if (err) {
+                    console.log(err);
                     retrySync(accessCode, socket, cookie);
                 } else {
                     handleGameState(gameState, cookie, socket);
@@ -220,7 +221,10 @@ function setClientSocketHandlers (stateBucket, socket) {
 
     socket.on(EVENT_IDS.START_GAME, () => { fetchGameStateHandler(startGameStateAckFn); });
 
-    socket.on(EVENT_IDS.RESTART_GAME, () => { fetchGameStateHandler(restartGameStateAckFn); });
+    socket.on(EVENT_IDS.RESTART_GAME, () => {
+        document.querySelector('#game-control-prompt')?.remove();
+        fetchGameStateHandler(restartGameStateAckFn);
+    });
 
     socket.on(EVENT_IDS.SYNC_GAME_STATE, () => {
         socket.emit(

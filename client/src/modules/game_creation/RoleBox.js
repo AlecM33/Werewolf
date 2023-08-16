@@ -263,6 +263,7 @@ export class RoleBox {
             }
             if (info) {
                 const infoHandler = (e) => {
+                    document.querySelector('#custom-role-info-modal-image')?.remove();
                     if (e.type === 'click' || e.code === 'Enter') {
                         const alignmentEl = document.getElementById('custom-role-info-modal-alignment');
                         const nameEl = document.getElementById('custom-role-info-modal-name');
@@ -273,9 +274,21 @@ export class RoleBox {
                         e.preventDefault();
                         let role;
                         if (isCustom) {
+                            document.getElementById('custom-role-info-modal-image-placeholder').style.display = 'none';
                             role = this.getCustomRole(name);
                         } else {
+                            document.getElementById('custom-role-info-modal-image-placeholder').style.display = 'flex';
                             role = this.getDefaultRole(name);
+                            const roleImg = new Image();
+                            roleImg.id = 'custom-role-info-modal-image';
+                            roleImg.onload = () => {
+                                document.getElementById('custom-role-info-modal-image-placeholder').appendChild(roleImg);
+                            };
+                            if (name.toLowerCase() === 'villager') {
+                                roleImg.src = '../images/roles/Villager' + Math.ceil(Math.random() * 2) + '.png';
+                            } else {
+                                roleImg.src = '../images/roles/' + name.replaceAll(' ', '') + '.png';
+                            }
                         }
                         nameEl.innerText = name;
                         nameEl.classList.add(role.team);

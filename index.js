@@ -33,14 +33,12 @@
 
     app.set('port', port);
 
-    await (async () => {
-        return new Promise((resolve, reject) => {
-            webServer.listen(app.get('port'), () => {
-                logger.info(`Starting server on port ${app.get('port')}`);
-                resolve();
-            }).on('error', reject);
-        });
-    })();
+    return new Promise((resolve, reject) => {
+        webServer.listen(app.get('port'), () => {
+            logger.info(`Starting server on port ${app.get('port')}`);
+            resolve();
+        }).on('error', reject);
+    });
 })().then(() => console.log('Server startup complete.'))
     .catch((e) => {
         console.error('SERVER FAILED TO START: ' + e);

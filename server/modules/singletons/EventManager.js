@@ -30,8 +30,7 @@ class EventManager {
                 url: process.env.REDIS_URL
             });
         this.publisher.on('error', (e) => {
-            this.logger.error('REDIS PUBLISHER CLIENT ERROR:', e);
-            throw new Error('UNABLE TO CREATE PUBLISHER CLIENT because: ' + e);
+            throw new Error('PUBLISHER CLIENT FAILED because: ' + e);
         });
         try {
             await this.publisher.connect();

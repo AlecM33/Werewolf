@@ -254,6 +254,9 @@ export class DeckStateManager {
 }
 
 function populateRoleElementInfo (roleEl, sortedDeck, i) {
+    roleEl.classList.remove(ALIGNMENT.GOOD);
+    roleEl.classList.remove(ALIGNMENT.EVIL);
+    roleEl.classList.add(sortedDeck[i].team);
     roleEl.querySelector('.role-name').innerHTML =
         `<span class="role-quantity"></span>
          <span class="name"></span>`;

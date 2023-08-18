@@ -571,6 +571,8 @@ input[type="number"] {
     justify-content: center;
     width: 100%;
     height: 50px;
+    position: relative;
+    max-width: 30em;
 }
 
 #upload-custom-roles-modal input[type='file'] {
@@ -581,6 +583,7 @@ input[type="number"] {
     display: flex;
     justify-content: center;
     margin: 0 20px;
+    position: absolute;
 }
 
 #step-forward-button, #step-back-button, #create-game {
@@ -604,6 +607,7 @@ input[type="number"] {
     -moz-user-select: none;
     background-color: #1e1e1e;
     border: 1px solid #4b4b4b;
+    position: absolute;
 }
 
 #step-forward-button:hover, #step-back-button:hover {
@@ -618,12 +622,17 @@ input[type="number"] {
     border: none;
 }
 
-#step-forward-button, #create-game {
-    right: 15%;
+#step-forward-button {
+    right: 30px;
+}
+
+#create-game {
+    right: 5%;
+    position: absolute;
 }
 
 #step-back-button {
-    left: 15%;
+    left: 30px;
 }
 
 #step-1 div {

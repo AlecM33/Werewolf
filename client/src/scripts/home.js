@@ -4,13 +4,6 @@ import { Confirmation } from '../modules/front_end_components/Confirmation.js';
 
 const home = () => {
     injectNavbar();
-    const logo = new Image();
-    logo.alt = 'Werewolf App Logo'
-    logo.onload = () => {
-        document.querySelector('#new-logo-placeholder')?.remove();
-        document.getElementById('home-page-top-section').prepend(logo);
-    }
-    logo.src = '../images/new-logo.png';
     const urlParams = new URLSearchParams(window.location.search);
     const message = urlParams.get('message');
     if (message && message.length > 0) {

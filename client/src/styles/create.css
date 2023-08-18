@@ -156,10 +156,10 @@
 #custom-roles-container, #deck-status-container {
     color: #d7d7d7;
     margin: 1em 0.5em;
-    background-color: #16141e;
+    background-color: #1e1e1e;
     padding: 10px;
     border-radius: 5px;
-    border: 2px solid #3b3a4a;
+    border: 1px solid #4b4b4b;
     position: relative;
 }
 
@@ -173,7 +173,7 @@
 
 #deck-count {
     font-size: 30px;
-    background-color: #3b3a4a;
+    background-color: #4b4b4b;
     width: fit-content;
     padding: 0 5px;
     border-radius: 5px;
@@ -230,9 +230,9 @@
 }
 
 #custom-role-actions {
-    background-color: #16141e;
+    background-color: #1e1e1e;
     border-radius: 5px;
-    border: 2px solid #3b3a4a;
+    border: 2px solid #4b4b4b;
     display: none;
     color: #e7e7e7;
     position: absolute;
@@ -244,7 +244,7 @@
 }
 
 #custom-role-actions div:nth-child(1) {
-    border-bottom: 2px solid #3b3a4a;
+    border-bottom: 2px solid #4b4b4b;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
@@ -258,7 +258,7 @@
     display: flex;
     width: 100%;
     padding: 10px 0;
-    background-color: #16141e;
+    background-color: #1e1e1e;
     border-radius: 5px;
     text-align: center;
     justify-content: center;
@@ -389,8 +389,8 @@ select {
     display: flex;
     flex-wrap: wrap;
     border-radius: 5px;
-    background-color: #16141e;
-    border: 2px solid #3b3a4a;
+    background-color: #1e1e1e;
+    border: 1px solid #4b4b4b;
 }
 
 .step {
@@ -602,8 +602,8 @@ input[type="number"] {
     -ms-user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-    background-color: #16141e;
-    border: 2px solid #3b3a4a;
+    background-color: #1e1e1e;
+    border: 1px solid #4b4b4b;
 }
 
 #step-forward-button:hover, #step-back-button:hover {
@@ -627,19 +627,19 @@ input[type="number"] {
 }
 
 #step-1 div {
-    background-color: #16141e;
+    background-color: #1e1e1e;
     color: #e7e7e7;
     padding: 1em;
     max-width: 20em;
     margin: 0.5em;
     cursor: pointer;
-    border: 2px solid #3b3a4a;
+    border: 1px solid #4b4b4b;
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
 }
 
 #step-1 div.option-selected {
-    border: 2px solid #e7e7e7;
+    border: 1px solid #e7e7e7;
     background-color: #3a3c46;
 }
 
@@ -648,12 +648,12 @@ input[type="number"] {
 }
 
 #step-1 div:hover {
-    border: 2px solid #e7e7e7;
+    border: 1px solid #e7e7e7;
 }
 
 .review-option {
     background-color: #191920;
-    border: 2px solid #3b3a4a;
+    border: 1px solid #4b4b4b;
     color: #e7e7e7;
     padding: 10px;
     font-size: 18px;

@@ -359,7 +359,7 @@ input {
     align-items: center;
     padding: 8px 0;
     width: 100%;
-    background-color: #16141e;
+    background-color: #0f0f10;
     height: 45px;
     z-index: 53000;
 }
@@ -511,7 +511,7 @@ input {
         padding-bottom: 2em;
         width: 100%;
         z-index: 51000;
-        background-color: #16141e;
+        background-color: #1e1e1e;
     }
 }
 
@@ -557,7 +557,7 @@ input {
     overflow: hidden;
     height: 20px;
     border-radius: 5px;
-    opacity: 0.15;
+    opacity: 0.20;
     margin: 0.5em 0;
 }
 
@@ -815,7 +815,7 @@ input {
     display:inline-flex !important;
     align-items: center !important;
     color:#ffffff !important;
-    background-color:#3b3a4a !important;
+    background-color:#4b4b4b !important;
     border-radius: 5px !important;
     border: 1px solid transparent !important;
     padding: 7px 15px 7px 10px !important;

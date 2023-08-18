@@ -674,7 +674,7 @@ label[for='moderator'] {
     height: 100px;
     margin: 0 auto;
     max-width: 100%;
-    background-color: #1b1a24;
+    background-color: #1e1e1e;
 }
 
 #game-control-prompt button, #start-game-prompt button, #leave-game-prompt button {

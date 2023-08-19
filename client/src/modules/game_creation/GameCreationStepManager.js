@@ -101,7 +101,7 @@ export class GameCreationStepManager {
                     const button = document.getElementById('create-game');
                     button.removeEventListener('click', this.steps['5'].forwardHandler);
                     button.classList.add('submitted');
-                    button.innerText = 'Creating...';
+                    button.innerText = '...';
                     const restoreButton = () => {
                         button.innerText = 'Create';
                         button.classList.remove('submitted');

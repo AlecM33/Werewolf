@@ -45,7 +45,7 @@
     border-radius: 5px;
     color: #d7d7d7;
     background-color: #1e1e1e;
-    padding: 0 10px;
+    padding: 2px 10px;
     width: 90%;
     margin-bottom: 0.5em;
 }
@@ -128,7 +128,7 @@
 }
 
 #role-edit-prompt button, #timer-edit-prompt button {
-    margin: 0 20px;
+    margin: 0 15px;
 }
 
 #save-role-changes-button img, #save-timer-changes-button img {
@@ -144,7 +144,7 @@
 #edit-timer-button,
 #save-timer-changes-button {
     background-color: #045ea6;
-    border: 2px solid #024070;
+    border: 3px solid transparent;
 }
 
 #return-to-lobby-button:hover,
@@ -155,7 +155,7 @@
 #edit-timer-button:hover,
 #save-timer-changes-button:hover {
     background-color: rgba(0, 120, 215, 0.45);
-    border: 2px solid #045EA6;
+    border: 3px solid #045EA6;
 }
 
 #mid-game-role-editor, #mid-game-timer-editor {
@@ -178,7 +178,7 @@
     border-radius: 5px;
     margin: 1em;
     background-color: #1e1e1e;
-    border: 2px solid #4b4b4b;
+    border: 1px solid #4b4b4b;
 }
 
 #timer-parameters {
@@ -267,7 +267,7 @@ h1 {
 #end-of-game-header h2 {
     border: 1px solid #4b4b4b;
     border-radius: 5px;
-    background-color: #1a1726;
+    background-color: #232328;
     padding: 7px;
     margin: 0.5em;
 }
@@ -709,7 +709,6 @@ label[for='moderator'] {
     border-radius: 5px;
     color: #e7e7e7;
     cursor: pointer;
-    border: 2px solid transparent;
     transition: background-color, border 0.3s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
     font-size: 22px;
@@ -721,6 +720,7 @@ label[for='moderator'] {
 
 #start-game-button {
     background-color: #1c8a36;
+    border: 3px solid transparent
 }
 
 #end-game-button, #leave-game-button {
@@ -729,12 +729,12 @@ label[for='moderator'] {
 
 #start-game-button:hover {
     background-color: #326243;
-    border: 2px solid #1c8a36;
+    border: 3px solid #1c8a36;
 }
 
 #end-game-button:hover, #leave-game-button:hover {
     background-color: #623232;
-    border: 2px solid #8a1c1c;
+    border: 3px solid #8a1c1c;
 }
 
 #play-pause {
@@ -835,7 +835,7 @@ canvas {
     height: 25px;
     font-size: 16px;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 3px solid transparent;
     transition: background-color, border 0.2s ease-out;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
     margin: 5px 0 5px 25px;
@@ -846,7 +846,7 @@ canvas {
 }
 
 .kill-player-button:hover, .reveal-role-button:hover {
-    border: 2px solid #b1afcd;
+    border: 3px solid #b1afcd;
 }
 
 #game-players-container {
@@ -1023,7 +1023,7 @@ canvas {
 
 @media(max-width: 500px) {
     #game-control-prompt button, #start-game-prompt button, #leave-game-prompt button {
-        margin: 0 10px;
+        margin: 0 12px;
     }
 
     #client-container button img {
@@ -1103,7 +1103,7 @@ canvas {
     #edit-roles-button,
     #leave-game-button,
     #edit-timer-button {
-        font-size: 20px;
+        font-size: 18px;
         padding: 5px;
     }
 

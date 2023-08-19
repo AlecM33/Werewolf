@@ -109,7 +109,7 @@ h3 {
 img[src='../images/new-logo.png'], #new-logo-container {
     max-width: 250px;
     width: 25vw;
-    min-width: 180px;
+    min-width: 150px;
     margin: 1em 0 1em 0;
     aspect-ratio: 500 / 641;
 }

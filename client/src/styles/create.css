@@ -102,8 +102,8 @@
 }
 
 .template-option {
-    background-color: #4645525c;
-    border: 2px solid #46455299;
+    background-color: #000000;
+    border: 1px solid #4b4b4b;
     color: #d7d7d7;
     display: flex;
     justify-content: space-between;
@@ -129,7 +129,7 @@
 }
 
 .template-option:hover, .template-option:active {
-    border: 2px solid #e7e7e7;
+    border: 1px solid #e7e7e7;
     background-color: #33343c;
     cursor: pointer;
 }
@@ -538,7 +538,7 @@ input[type="number"] {
 }
 
 #creation-step-container > div:nth-child(2) {
-    animation: fade-in 0.5s ease-out;
+    animation: fade-in 0.5s ease-in-out;
 }
 
 #step-title {
@@ -572,7 +572,7 @@ input[type="number"] {
     width: 100%;
     height: 50px;
     position: relative;
-    max-width: 30em;
+    max-width: 28em;
 }
 
 #upload-custom-roles-modal input[type='file'] {
@@ -599,8 +599,8 @@ input[type="number"] {
 
 #step-forward-button, #step-back-button {
     padding: 0 !important;
-    width: 50px;
-    height: 44px;
+    width: 65px;
+    height: 50px;
     user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
@@ -623,16 +623,18 @@ input[type="number"] {
 }
 
 #step-forward-button {
-    right: 30px;
+    right: 12px;
 }
 
 #create-game {
-    right: 5%;
+    right: -5px;
     position: absolute;
+    font-size: 20px;
+    height: 50px;
 }
 
 #step-back-button {
-    left: 30px;
+    left: 12px;
 }
 
 #step-1 div {
@@ -697,13 +699,14 @@ input[type="number"] {
         height: 13px;
     }
 
-    #step-forward-button, #step-back-button, #create-game {
+    #step-forward-button, #step-back-button {
         padding: 10px 15px;
         font-size: 16px;
     }
 
     #create-game {
         width: 80px;
+        right: 5px;
     }
 
     .role-name {

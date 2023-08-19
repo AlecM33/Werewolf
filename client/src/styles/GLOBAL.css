@@ -236,22 +236,22 @@ button {
     color: #e7e7e7;
     font-size: 18px;
     cursor: pointer;
-    border: 2px solid #0c541d;
+    border: 3px solid transparent;
     text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
 }
 
 .app-button:active, input[type=submit]:active {
-    border: 2px solid #21ba45;
+    border: 3px solid #21ba45;
 }
 
 .cancel {
     background-color: #7a1a1a !important;
-    border: 2px solid #540c0c !important;
+    border: 3px solid transparent !important;
 }
 
 .cancel:hover {
     background-color: #623232 !important;
-    border: 2px solid #7a1a1a !important;
+    border: 3px solid #7a1a1a !important;
 }
 
 .submitted {
@@ -278,7 +278,7 @@ button {
 
 .app-button:hover, input[type="submit"]:hover, #game-link:hover {
     background-color: #326243;
-    border: 2px solid #1a7a31;
+    border: 3px solid #1a7a31;
 }
 
 .emphasized {

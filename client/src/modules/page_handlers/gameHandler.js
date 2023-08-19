@@ -177,6 +177,9 @@ function processGameState (
             inProgressGame.setUserView(currentGameState.client.userType);
             break;
         case STATUS.ENDED: {
+            if (refreshPrompt) {
+                document.querySelector('#game-control-prompt')?.remove();
+            }
             const ended = new Ended('game-state-container', stateBucket, socket);
             ended.renderEndOfGame(currentGameState);
             break;
@@ -261,6 +264,7 @@ function setClientSocketHandlers (stateBucket, socket) {
     });
 
     socket.on(EVENT_IDS.END_GAME, (people) => {
+        document.querySelector('#game-control-prompt')?.remove();
         stateBucket.currentGameState.people = people;
         stateBucket.currentGameState.status = STATUS.ENDED;
         processGameState(

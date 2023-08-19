@@ -49,11 +49,9 @@ export const HTMLFragments = {
     <button id='edit-timer-button'>Edit Timer</button>
     <button id='start-game-button'>Start Game</button>`,
     LEAVE_GAME_PROMPT:
-    '<button id=\'leave-game-button\'>Leave Room</button>',
-    GAME_CONTROL_PROMPT:
-    `<div id='game-control-prompt'>
-        <button id='end-game-button'>End Game</button>
-    </div>`,
+    '<button id=\'leave-game-button\' class="app-button">Leave Room</button>',
+    END_GAME_BUTTON:
+    '<button id=\'end-game-button\' class=\'app-button\'>End Game</button>',
     ROLE_EDIT_BUTTONS:
     `<button class="app-button cancel" id="cancel-role-changes-button">Cancel</button>
     <button class="app-button" id="save-role-changes-button">

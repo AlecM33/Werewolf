@@ -15,7 +15,7 @@ export class Ended {
             gameState.client.userType === USER_TYPES.MODERATOR
             || gameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
         ) {
-            document.getElementById('end-of-game-buttons').prepend(SharedStateUtil.createReturnToLobbyButton(this.stateBucket));
+            createPromptComponent(this.socket, this.stateBucket);
         }
         SharedStateUtil.displayCurrentModerator(this.stateBucket.currentGameState.people
             .find((person) => person.userType === USER_TYPES.MODERATOR
@@ -42,6 +42,15 @@ export class Ended {
         document.getElementById('players-alive-label').innerText =
             'Players: ' + this.stateBucket.currentGameState.people.filter((person) => !person.out).length + ' / ' +
             this.stateBucket.currentGameState.gameSize + ' Alive';
+    }
+}
+
+function createPromptComponent (socket, stateBucket) {
+    if (document.querySelector('#game-control-prompt') === null) {
+        const div = document.createElement('div');
+        div.id = 'game-control-prompt';
+        div.prepend(SharedStateUtil.createReturnToLobbyButton(stateBucket));
+        document.getElementById('game-content').appendChild(div);
     }
 }
 

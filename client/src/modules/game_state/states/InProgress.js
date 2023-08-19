@@ -501,7 +501,8 @@ function removeExistingPlayerElements (killPlayerHandlers, revealRoleHandlers) {
 function createEndGamePromptComponent (socket, stateBucket) {
     if (document.querySelector('#game-control-prompt') === null) {
         const div = document.createElement('div');
-        div.innerHTML = HTMLFragments.GAME_CONTROL_PROMPT;
+        div.id = 'game-control-prompt';
+        div.innerHTML = HTMLFragments.END_GAME_BUTTON;
         div.querySelector('#end-game-button').addEventListener('click', (e) => {
             e.preventDefault();
             Confirmation('End the game?', () => {
@@ -511,12 +512,12 @@ function createEndGamePromptComponent (socket, stateBucket) {
                     stateBucket.currentGameState.accessCode,
                     null,
                     () => {
-                        document.querySelector('#game-control-prompt')?.remove();
+                        toast('Game ended.', 'success', true);
                     }
                 );
             });
         });
-        div.querySelector('#game-control-prompt').prepend(SharedStateUtil.createReturnToLobbyButton(stateBucket));
+        div.prepend(SharedStateUtil.createReturnToLobbyButton(stateBucket));
         document.getElementById('game-content').appendChild(div);
     }
 }

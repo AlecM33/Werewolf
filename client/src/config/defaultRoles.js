@@ -41,6 +41,11 @@ export const defaultRoles = [
             'target this person, they still survive to the following day.'
     },
     {
+        role: 'Witch',
+        team: 'good',
+        description: 'You have two potions. One saves a player from the Werewolves, and one kills a player. You may use each of them once per game during the night.'
+    },
+    {
         role: 'Parity Hunter',
         team: 'good',
         description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.'

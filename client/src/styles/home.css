@@ -114,6 +114,18 @@ img[src='../images/new-logo.png'], #new-logo-container {
     aspect-ratio: 500 / 641;
 }
 
+h3 a {
+    color: #768df0;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: 'signika-negative', sans-serif;
+    width: fit-content;
+}
+
+h3 a:hover {
+    color: gray;
+}
+
 form > div {
     margin: 15px 0;
 }
@@ -162,6 +174,10 @@ label[for="room-code"], label[for="player-name"] {
     button#home-create-button {
         font-size: 5vw;
         padding: 15px;
+    }
+
+    img[src='../images/new-logo.png'], #new-logo-container {
+        margin: 1em 0 0 0;
     }
 
     #join-container > label {

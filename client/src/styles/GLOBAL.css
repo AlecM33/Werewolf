@@ -357,8 +357,8 @@ input {
 #navbar {
     display: flex;
     align-items: center;
-    padding: 10px 0 0 10px;
-    width: fit-content;
+    padding: 10px 0;
+    width: 100%;
     background-color: #0f0f10;
     height: 45px;
     z-index: 53000;

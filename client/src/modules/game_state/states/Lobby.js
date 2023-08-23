@@ -205,7 +205,6 @@ export class Lobby {
     }
 
     populateHeader () {
-
         const link = this.setLink();
 
         this.setTimer();

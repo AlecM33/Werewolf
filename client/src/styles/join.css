@@ -30,6 +30,10 @@
     cursor: pointer;
 }
 
+label[for="player-new-name"] {
+    font-size: 22px !important;
+}
+
 .modal-button-container > div > input {
     cursor: pointer;
 }

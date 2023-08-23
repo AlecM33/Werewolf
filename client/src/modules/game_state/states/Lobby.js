@@ -171,13 +171,11 @@ export class Lobby {
         };
     }
 
-    setLink (timeString) {
+    setLink () {
         const linkContainer = this.container.querySelector('#game-link');
         linkContainer.innerHTML = '<img src=\'../images/copy.svg\' alt=\'copy\'/>';
         const link = window.location.protocol + '//' + window.location.host +
-            '/join/' + this.stateBucket.currentGameState.accessCode +
-            '?playerCount=' + this.stateBucket.currentGameState.gameSize +
-            '&timer=' + encodeURIComponent(timeString);
+            '/join/' + this.stateBucket.currentGameState.accessCode;
         const linkDiv = document.createElement('div');
         linkDiv.innerText = link;
         linkContainer.prepend(linkDiv);
@@ -204,14 +202,13 @@ export class Lobby {
         const timeString = getTimeString(this.stateBucket.currentGameState);
         const time = this.container.querySelector('#timer-parameters');
         time.innerText = timeString;
-
-        return timeString;
     }
 
     populateHeader () {
-        const timeString = this.setTimer();
 
-        const link = this.setLink(timeString);
+        const link = this.setLink();
+
+        this.setTimer();
 
         this.setPlayerCount();
 
@@ -301,15 +298,13 @@ export class Lobby {
             this.stateBucket.currentGameState.deck = deck;
             this.stateBucket.currentGameState.gameSize = gameSize;
             this.stateBucket.currentGameState.isStartable = isStartable;
-            this.setLink(getTimeString(this.stateBucket.currentGameState));
             this.setPlayerCount();
         });
 
         this.socket.on(EVENT_IDS.UPDATE_GAME_TIMER, (hasTimer, timerParams) => {
             this.stateBucket.currentGameState.hasTimer = hasTimer;
             this.stateBucket.currentGameState.timerParams = timerParams;
-            const timeString = this.setTimer();
-            this.setLink(timeString);
+            this.setTimer();
         });
 
         this.socket.on(EVENT_IDS.LEAVE_ROOM, (leftId, gameIsStartable) => {

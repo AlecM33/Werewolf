@@ -7,9 +7,10 @@
  */
 .hamburger {
     padding: 10px 10px;
-    display: inline-block;
+    display: flex;
     cursor: pointer;
     transition-property: opacity, filter;
+    align-items: center;
     transition-duration: 0.15s;
     transition-timing-function: linear;
     font: inherit;

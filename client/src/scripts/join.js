@@ -9,10 +9,6 @@ const join = () => {
     const accessCode = splitUrl[1];
     if (/^[a-zA-Z0-9]+$/.test(accessCode) && accessCode.length === PRIMITIVES.ACCESS_CODE_LENGTH) {
         document.getElementById('game-code').innerText = accessCode;
-        document.getElementById('game-time').innerText =
-            decodeURIComponent((new URL(document.location)).searchParams.get('timer'));
-        document.getElementById('game-player-count').innerText =
-            decodeURIComponent((new URL(document.location)).searchParams.get('playerCount')) + ' Players';
         const form = document.getElementById('join-game-form');
         form.onsubmit = joinHandler;
     } else {

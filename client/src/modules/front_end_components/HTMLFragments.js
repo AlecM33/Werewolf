@@ -262,7 +262,7 @@ export const HTMLFragments = {
             <div class='game-player-role'></div>
         </div>`,
     INITIAL_GAME_DOM:
-        `<div id='game-title'></div>
+        `
         <div id='client-container'>
             <label for='client'>You</label>
             <div id='client'>
@@ -273,6 +273,7 @@ export const HTMLFragments = {
                 <img alt="edit name" src="../../images/pencil.svg"/>
             </button>
         </div>
+        <div id='lobby-title' style="display:none;">Lobby</div>
         <div id='game-state-container'></div>`,
     // via https://loading.io/css/
     SPINNER:

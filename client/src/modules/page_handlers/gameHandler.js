@@ -146,6 +146,7 @@ function processGameState (
 
     switch (currentGameState.status) {
         case STATUS.LOBBY:
+            document.getElementById('lobby-title').style.display = 'flex';
             const lobby = new Lobby('game-state-container', stateBucket, socket);
             if (refreshPrompt) {
                 lobby.removeStartGameFunctionalityIfPresent();
@@ -167,6 +168,7 @@ function processGameState (
             }
             break;
         case STATUS.IN_PROGRESS:
+            document.getElementById('lobby-title').style.display = 'none';
             if (refreshPrompt) {
                 document.querySelector('#game-control-prompt')?.remove();
                 document.querySelector('#leave-game-prompt')?.remove();
@@ -177,6 +179,7 @@ function processGameState (
             inProgressGame.setUserView(currentGameState.client.userType);
             break;
         case STATUS.ENDED: {
+            document.getElementById('lobby-title').style.display = 'none';
             if (refreshPrompt) {
                 document.querySelector('#game-control-prompt')?.remove();
             }

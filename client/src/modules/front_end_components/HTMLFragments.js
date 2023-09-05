@@ -273,7 +273,7 @@ export const HTMLFragments = {
                 <img alt="edit name" src="../../images/pencil.svg"/>
             </button>
         </div>
-        <div id='lobby-title' style="display:none;">Lobby</div>
+        <div id='lobby-title'>Lobby</div>
         <div id='game-state-container'></div>`,
     // via https://loading.io/css/
     SPINNER:

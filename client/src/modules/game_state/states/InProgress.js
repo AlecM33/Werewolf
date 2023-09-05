@@ -506,6 +506,7 @@ function createEndGamePromptComponent (socket, stateBucket) {
         div.querySelector('#end-game-button').addEventListener('click', (e) => {
             e.preventDefault();
             Confirmation('End the game?', () => {
+                toast('Ending...', 'neutral', true, false);
                 socket.emit(
                     SOCKET_EVENTS.IN_GAME_MESSAGE,
                     EVENT_IDS.END_GAME,
@@ -553,6 +554,7 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                 if (e.type === 'click' || e.code === 'Enter') {
                     ModalManager.dispelModal('transfer-mod-modal', 'transfer-mod-modal-background');
                     Confirmation('Transfer moderator powers to \'' + member.name + '\'?', () => {
+                        toast('Transferring...', 'neutral', true, false);
                         const transferPrompt = document.getElementById('transfer-mod-prompt');
                         if (transferPrompt !== null) {
                             transferPrompt.innerHTML = '';
@@ -562,19 +564,8 @@ function renderPotentialMods (gameState, group, transferModHandlers, socket) {
                             EVENT_IDS.TRANSFER_MODERATOR,
                             gameState.accessCode,
                             { personId: member.id },
-                            (err) => {
-                                if (err) {
-                                    console.error(err);
-                                    socket.emit(
-                                        SOCKET_EVENTS.IN_GAME_MESSAGE,
-                                        EVENT_IDS.FETCH_GAME_STATE,
-                                        gameState.accessCode,
-                                        { personId: gameState.client.cookie },
-                                        (gameState) => {
-                                            SharedStateUtil.gameStateAckFn(gameState, socket);
-                                        }
-                                    );
-                                }
+                            () => {
+                                toast('Transferred!', 'success', true, true);
                             }
                         );
                     });

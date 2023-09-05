@@ -24,25 +24,14 @@ export class Lobby {
                 return;
             }
             Confirmation('Start game and deal roles?', () => {
-                socket.timeout(5000).emit(
+                toast('Starting...', 'neutral', true, false);
+                socket.emit(
                     SOCKET_EVENTS.IN_GAME_MESSAGE,
                     EVENT_IDS.START_GAME,
                     stateBucket.currentGameState.accessCode,
                     null,
-                    (err) => {
-                        if (err) {
-                            socket.emit(
-                                SOCKET_EVENTS.IN_GAME_MESSAGE,
-                                EVENT_IDS.FETCH_GAME_STATE,
-                                stateBucket.currentGameState.accessCode,
-                                { personId: stateBucket.currentGameState.client.cookie },
-                                (gameState) => {
-                                    SharedStateUtil.gameStateAckFn(gameState, socket);
-                                }
-                            );
-                        } else {
-                            this.removeStartGameFunctionalityIfPresent();
-                        }
+                    () => {
+                        this.removeStartGameFunctionalityIfPresent();
                     }
                 );
             });

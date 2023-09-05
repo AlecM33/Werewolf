@@ -36,13 +36,14 @@ export const SharedStateUtil = {
         ).catch((res) => {
             toast(res.content, 'error', true, true, 'medium');
         });
+        toast('Resetting to Lobby...', 'neutral', true, false);
     },
 
     createReturnToLobbyButton: (stateBucket) => {
         const returnToLobbyButton = document.createElement('button');
         returnToLobbyButton.classList.add('app-button');
         returnToLobbyButton.setAttribute('id', 'return-to-lobby-button');
-        returnToLobbyButton.innerText = 'Return to Lobby';
+        returnToLobbyButton.innerText = 'Reset to Lobby';
         returnToLobbyButton.addEventListener('click', () => {
             Confirmation('Return everyone to the Lobby?', () => {
                 SharedStateUtil.restartHandler(stateBucket, STATUS.LOBBY);

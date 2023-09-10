@@ -45,7 +45,7 @@ body {
 
 h1 {
     font-family: 'signika-negative', sans-serif;
-    color: #b1afcd;
+    color: #c9c9c9;
     filter: drop-shadow(2px 2px 4px black);
     margin: 0.5em 0;
 }
@@ -245,13 +245,13 @@ button {
 }
 
 .cancel {
-    background-color: #7a1a1a !important;
+    background-color: #832b2b !important;
     border: 3px solid transparent !important;
 }
 
 .cancel:hover {
-    background-color: #623232 !important;
-    border: 3px solid #7a1a1a !important;
+    background-color: #832b2b8a !important;
+    border: 3px solid #832b2b !important;
 }
 
 .submitted {
@@ -290,12 +290,12 @@ button {
     font-family: signika-negative, sans-serif;
     color: #d7d7d7;
     font-size: 20px;
-    margin: 0.5em;
 }
 
 #game-parameters > div {
     display: flex;
     align-items: center;
+    font-size: 25px;
 }
 
 #game-parameters img {
@@ -317,7 +317,7 @@ button {
 #how-to-use-container h1 {
     color: #21ba45;
     font-family: signika-negative, sans-serif;
-    background-color: #1e1b26;
+    background-color: #252525;
     width: fit-content;
     padding: 0 5px;
     border-radius: 5px;
@@ -375,10 +375,10 @@ input {
 }
 
 #how-to-use-container h3 {
-    color: #b1afcd;
+    color: #c9c9c9;
     font-weight: bold;
     font-family: signika-negative, sans-serif;
-    background-color: #1e1b26;
+    background-color: #252525;
     width: fit-content;
     padding: 0 5px;
     border-radius: 5px;
@@ -601,11 +601,11 @@ input {
 }
 
 .evil-players, #deck-evil {
-    border: 2px solid #e7333363;
+    border: 2px solid rgba(231, 51, 51, 0.39);
 }
 
 .evil, .compact-card.evil .card-role {
-    color: #dd2929 !important;
+    color: #e75555 !important;
     font-weight: bold;
 }
 

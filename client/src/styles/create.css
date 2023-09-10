@@ -15,8 +15,8 @@
 
 .role-category-button {
     background-color: transparent;
-    color: #b1afcd;
-    border: 1px solid #b1afcd;
+    color: #c9c9c9;
+    border: 1px solid #c9c9c9;
     border-radius: 25px;
     font-size: 16px;
     padding: 5px 10px;
@@ -27,7 +27,7 @@
 
 .role-category-button-selected {
     color: black;
-    background-color: #b1afcd;
+    background-color: #c9c9c9;
 }
 
 #role-category-buttons {
@@ -102,8 +102,8 @@
 }
 
 .template-option {
-    background-color: #000000;
-    border: 1px solid #4b4b4b;
+    background-color: #5555555c;
+    border: 1px solid #55555599;
     color: #d7d7d7;
     display: flex;
     justify-content: space-between;
@@ -130,7 +130,6 @@
 
 .template-option:hover, .template-option:active {
     border: 1px solid #e7e7e7;
-    background-color: #33343c;
     cursor: pointer;
 }
 
@@ -651,7 +650,7 @@ input[type="number"] {
 
 #step-1 div.option-selected {
     border: 1px solid #e7e7e7;
-    background-color: #3a3c46;
+    background-color: #494949;
 }
 
 #step-1 div > strong {

@@ -2,7 +2,7 @@ export const HTMLFragments = {
     LOBBY:
     `<div id='lobby-header'>
         <div>
-            <label for='game-link'>Share Link</label>
+            <label for='game-link'>Share this Room:</label>
             <div tabindex='0' id='game-link'></div>
             <div id='game-code'></div>
         </div>

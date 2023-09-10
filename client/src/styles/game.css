@@ -52,8 +52,8 @@
 
 .potential-moderator {
     margin: 0.5em auto;
-    border: 2px solid #46455299;
-    background: #4645525c;
+    border: 2px solid #55555599;
+    background: #5555555c;
 }
 
 #transfer-mod-modal h2 {
@@ -73,7 +73,7 @@
 }
 
 #spectator-count {
-    color: #b1afcd;
+    color: #c9c9c9;
     text-decoration: underline;
     font-size: 17px;
     margin: 5px 0 10px 0;
@@ -265,9 +265,7 @@ h1 {
 }
 
 #end-of-game-header h2 {
-    border: 1px solid #4b4b4b;
     border-radius: 5px;
-    background-color: #232328;
     padding: 7px;
     margin: 0.5em;
 }
@@ -352,8 +350,8 @@ h1 {
 
 #game-role-info-container > div {
     width: 95%;
-    border: 1px solid #46455299;
-    background: #4645525c;
+    border: 1px solid #55555599;
+    background: #5555555c;
     padding: 5px;
     border-radius: 5px;
     margin-bottom: 5px;
@@ -379,8 +377,8 @@ h1 {
 }
 
 .player-option {
-    background-color: #4645525c;
-    border: 2px solid #46455299;
+    background-color: #5555555c;
+    border: 2px solid #55555599;
     color: #d7d7d7;
     display: flex;
     font-family: 'signika-negative', sans-serif !important;
@@ -544,6 +542,10 @@ h1 {
     overflow: hidden;
 }
 
+#game-role #role-name.evil {
+    color: #e15656 !important;
+}
+
 #role-image {
     user-select: none;
     -ms-user-select: none;
@@ -582,10 +584,8 @@ h1 {
     margin: 0.5em auto 0 auto;
     font-family: 'signika-negative', sans-serif;
     color: #d7d7d7;
-    font-size: 25px;
+    font-size: 30px;
     filter: drop-shadow(2px 2px 4px black);
-    border: 1px solid #46455299;
-    background: #4645525c;
     padding: 2px 10px;
     border-radius: 5px;
 }
@@ -628,8 +628,8 @@ h1 {
     align-items: center;
     justify-content: space-between;
     border-radius: 5px;
-    border: 1px solid #46455299;
-    background: #4645525c;
+    border: 1px solid #55555599;
+    background: #5555555c;
 }
 
 #client-name {
@@ -732,7 +732,7 @@ label[for='moderator'] {
 }
 
 #end-game-button, #leave-game-button {
-    background-color: #8a1c1c;
+    background-color: #832b2b;
 }
 
 #start-game-button:hover {
@@ -741,8 +741,8 @@ label[for='moderator'] {
 }
 
 #end-game-button:hover, #leave-game-button:hover {
-    background-color: #623232;
-    border: 3px solid #8a1c1c;
+    background-color: #832b2b8a;
+    border: 3px solid #832b2b;
 }
 
 #play-pause {
@@ -797,8 +797,8 @@ label[for='moderator'] {
     margin-bottom: 1em;
     padding: 0.5em;
     border-radius: 5px;
-    border: 1px solid #46455299;
-    background: #4645525c;
+    border: 1px solid #55555599;
+    background: #5555555c;
 }
 
 canvas {
@@ -854,7 +854,7 @@ canvas {
 }
 
 .kill-player-button:hover, .reveal-role-button:hover {
-    border: 3px solid #b1afcd;
+    border: 3px solid #c9c9c9;
 }
 
 #game-players-container {
@@ -942,8 +942,6 @@ canvas {
 }
 
 #game-parameters {
-    border: 1px solid #46455299;
-    background: #4645525c;
     border-radius: 5px;
     padding: 5px 20px;
 }
@@ -1004,8 +1002,8 @@ canvas {
     padding: 10px;
     border-radius: 5px;
     min-height: 25em;
-    border: 1px solid #46455299;
-    background: #4645525c;
+    border: 1px solid #55555599;
+    background: #5555555c;
     max-width: 35em;
     min-width: 19em;
     margin-top: 1em;

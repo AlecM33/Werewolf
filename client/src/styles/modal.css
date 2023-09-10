@@ -58,7 +58,8 @@
 #custom-role-info-modal-image {
     margin: 0 auto;
     width: 200px;
-    background-color: #4645525c;
+    background-color: #5555555c;
+    border: 1px solid #55555599;
     border-radius: 5px;
 }
 
@@ -81,12 +82,12 @@
 
 #custom-role-info-modal-description {
     border-radius: 5px;
-    background-color: #4645525c;
+    background-color: #5555555c;
     max-height: 10em;
     overflow: auto;
     padding: 5px;
     margin-bottom: 2em;
-    border: 1px solid #46455299;
+    border: 1px solid #55555599;
 }
 
 #player-options-modal {
@@ -108,8 +109,8 @@
 
 #custom-role-info-modal-alignment {
     border-radius: 5px;
-    background-color: #4645525c;
-    border: 1px solid #46455299;
+    background-color: #5555555c;
+    border: 1px solid #55555599;
     font-size: 18px;
     font-weight: bold;
     padding: 5px;

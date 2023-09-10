@@ -1,5 +1,5 @@
 #join-game-modal {
-    border-left: 5px solid #b1afcd;
+    border-left: 5px solid #c9c9c9;
     transform-origin: center;
     display: block;
     z-index: 1 !important;
@@ -22,7 +22,7 @@
     justify-content: center;
     padding: 5px;
     border-radius: 5px;
-    background-color: #4645525c;
+    background-color: #5555555c;
 }
 
 .modal-button-container > div > label {

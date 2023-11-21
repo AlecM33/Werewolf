@@ -20,7 +20,7 @@ import { Ended } from '../game_state/states/Ended.js';
 export const gameHandler = (socket, window, gameDOM) => {
     window.onunload = () => {
         socket.close();
-    }
+    };
     document.body.innerHTML = gameDOM + document.body.innerHTML;
     injectNavbar();
     const connectionHandler = () => {

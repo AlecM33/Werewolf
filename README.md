@@ -45,11 +45,8 @@ This is a Node.js application. It is written purely using JavaScript/HTML/CSS, w
 <a href="https://expressjs.com/">Express.js</a>, <a href="https://socket.io/">Socket.io</a>, and <a href="https://www.npmjs.com/package//redis">Node-Redis</a>. It runs as a containerized application
 via <a href='https://cloud.google.com/run'>Google Cloud Run</a>. 
 
-No data is stored persistently. The app is almost entirely stateless, with instances kept in sync via
-<a href="https://redis.io/">Redis</a>, specifically with the <a href="https://redis.io/docs/manual/pubsub/">pub/sub model</a>.
-The exceptions are a browser cookie used to identify a particular player, and the <a href="https://nodejs.org/api/child_process.html">Node.js child processes</a> that are spawned to 
-keep track of games with a timer, which are stored in an instance's memory and communicated to other instances if needed. In the end, it should not matter
-which instance a given client connects to.
+Instances of this app are part of a stateless architecture that scales up and down as needed. Instances communicate with a separate <a href="https://redis.io/">Redis</a> datastore, sending/receiving client events using the <a href="https://redis.io/docs/manual/pubsub/">pub/sub model</a>. So, it does not matter which instance a given client connects to. Games are purged from Redis after a period of inactivity.
+
 ## Contributing and Developers' Guide
 
 ### Running Locally

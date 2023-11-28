@@ -91,10 +91,12 @@ class GameManager {
                 req.hasDedicatedModerator,
                 moderator.id,
                 new Date().toJSON(),
-                req.timerParams,
-                req.isTestGame
+                req.timerParams
             );
             newGame.people = initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame, newGame.gameSize);
+            newGame.isStartable = newGame.people.filter(person => person.userType === USER_TYPES.PLAYER
+                || person.userType === USER_TYPES.TEMPORARY_MODERATOR
+                || person.userType === USER_TYPES.BOT).length === newGame.gameSize;
             await this.eventManager.publisher.set(newAccessCode, JSON.stringify(newGame), {
                 EX: PRIMITIVES.STALE_GAME_SECONDS
             });

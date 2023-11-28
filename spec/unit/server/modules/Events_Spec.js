@@ -42,6 +42,9 @@ describe('Events', () => {
             new Date().toJSON(),
             null
         );
+        game.isStartable = game.people.filter(person => person.userType === USER_TYPES.PLAYER
+            || person.userType === USER_TYPES.TEMPORARY_MODERATOR
+            || person.userType === USER_TYPES.BOT).length === game.gameSize;
         spyOn(namespace, 'to').and.callThrough();
         spyOn(namespace, 'in').and.callThrough();
         spyOn(socket, 'to').and.callThrough();

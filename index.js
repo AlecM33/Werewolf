@@ -41,6 +41,6 @@
     });
 })().then(() => console.log('Server startup complete.'))
     .catch((e) => {
-        console.error('SERVER FAILED TO START: ' + e);
+        console.error('SERVER FAILED TO START: ' + e.stack);
         process.exit(-1);
     });

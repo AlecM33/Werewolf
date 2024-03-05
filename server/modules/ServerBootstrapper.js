@@ -35,7 +35,7 @@ const ServerBootstrapper = {
         try {
             const args = Array.from(process.argv.map((arg) => arg.trim().toLowerCase()));
             const useHttps = args.includes('protocol=https');
-            const port = process.env.PORT || args
+            const port = process.env.WEB_PORT || args
                 .filter((arg) => {
                     return /port=\d+/.test(arg);
                 })

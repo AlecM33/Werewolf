@@ -7,4 +7,9 @@ services:
     build:
       dockerfile: Dockerfile.dev
     ports:
-      - "5000:5000"
+      - "${CONTAINER_PORT_1}:${WEB_PORT}"
+  web-2:
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${CONTAINER_PORT_2}:${WEB_PORT}"

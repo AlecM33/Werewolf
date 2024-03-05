@@ -25,7 +25,9 @@ class EventManager {
 
     createRedisPublisher = async () => {
         this.publisher = process.env.NODE_ENV.trim() === 'development'
-            ? redis.createClient()
+            ? redis.createClient({
+                url: process.env.REDIS_URL_DEV
+            })
             : redis.createClient({
                 url: process.env.REDIS_URL
             });

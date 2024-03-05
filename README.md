@@ -51,6 +51,16 @@ Instances of this app are part of a stateless architecture that scales up and do
 
 ### Running Locally
 
+#### Using Docker
+
+If you have Docker Desktop installed, running `docker compose up` will spin up, by default, two
+web servers and one redis server for them to connect to. The app can then be accessed at `localhost:5000`
+or `localhost:5001`. Otherwise, read below for setup that does not use Docker.
+
+![image](https://github.com/AlecM33/Werewolf/assets/24642328/36161f89-20a4-4236-ad24-e395985d48c3)
+
+#### Without Docker
+
 The entrypoint for the application is `index.js` at the root. 
 
 Before starting the Node.js server, you'll need a Redis server running locally on the default port. This is what's used 

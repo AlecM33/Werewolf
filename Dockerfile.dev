@@ -1,0 +1,15 @@
+FROM node:14-slim
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . ./
+
+ENV NODE_ENV development
+ENV REDIS_URL_DEV "redis://redis:6379"
+ENV WEB_PORT 5000
+
+CMD [ "npm", "run", "start:dev:docker" ]

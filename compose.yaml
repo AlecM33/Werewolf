@@ -1,0 +1,15 @@
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  web:
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${CONTAINER_PORT_1}:${WEB_PORT}"
+  web-2:
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${CONTAINER_PORT_2}:${WEB_PORT}"

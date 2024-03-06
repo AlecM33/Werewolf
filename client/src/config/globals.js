@@ -106,6 +106,6 @@ export const IN_PROGRESS_EVENTS = function () {
         EVENT_IDS.KILL_PLAYER,
         EVENT_IDS.REVEAL_PLAYER,
         EVENT_IDS.ADD_SPECTATOR,
-        EVENT_IDS.KICK_PERSON,
+        EVENT_IDS.KICK_PERSON
     ];
 };

@@ -316,11 +316,8 @@ export class Lobby {
             document.getElementById('spectator-count')
         );
         this.populatePlayers();
-        if ((
-            this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
-            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
-        )
-        ) {
+        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
             toast(
                 event === EVENT_IDS.LEAVE_ROOM ? 'A player left.' : 'Player kicked.',
                 event === EVENT_IDS.LEAVE_ROOM ? 'warning' : 'success',

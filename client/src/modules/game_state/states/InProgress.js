@@ -35,11 +35,13 @@ export class InProgress {
                 break;
             case USER_TYPES.MODERATOR:
                 document.getElementById('transfer-mod-prompt').innerHTML = HTMLFragments.TRANSFER_MOD_MODAL;
+                document.getElementById('player-options-prompt').innerHTML = HTMLFragments.PLAYER_OPTIONS_MODAL;
                 this.container.innerHTML = HTMLFragments.MODERATOR_GAME_VIEW;
                 this.renderModeratorView();
                 break;
             case USER_TYPES.TEMPORARY_MODERATOR:
                 document.getElementById('transfer-mod-prompt').innerHTML = HTMLFragments.TRANSFER_MOD_MODAL;
+                document.getElementById('player-options-prompt').innerHTML = HTMLFragments.PLAYER_OPTIONS_MODAL;
                 this.container.innerHTML = HTMLFragments.TEMP_MOD_GAME_VIEW;
                 this.renderTempModView();
                 break;
@@ -257,6 +259,14 @@ export class InProgress {
             }
         });
 
+        this.socket.on(EVENT_IDS.KICK_PERSON, (kickedId, gameIsStartable) => {
+            if (kickedId === this.stateBucket.currentGameState.client.id) {
+                window.location = '/?message=' + encodeURIComponent('You were kicked by the moderator.');
+            } else {
+                this.handleSpectatorExiting(kickedId);
+            }
+        });
+
         if (this.stateBucket.currentGameState.timerParams) {
             if (this.stateBucket.timerWorker) {
                 this.stateBucket.timerWorker.terminate();
@@ -387,6 +397,28 @@ export class InProgress {
                 : 'game-player-list';
 
             document.getElementById(playerListContainerId).appendChild(playerEl);
+        }
+    }
+
+    handleSpectatorExiting (id) {
+        const index = this.stateBucket.currentGameState.people.findIndex(person => person.id === id);
+        if (index >= 0) {
+            this.stateBucket.currentGameState.people
+                .splice(index, 1);
+        }
+        SharedStateUtil.setNumberOfSpectators(
+            this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
+            document.getElementById('spectator-count')
+        );
+        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
+            toast(
+                'Spectator kicked.',
+                'success',
+                true,
+                true,
+                'short'
+            );
         }
     }
 

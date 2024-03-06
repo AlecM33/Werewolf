@@ -410,11 +410,8 @@ export class InProgress {
             this.stateBucket.currentGameState.people.filter(p => p.userType === USER_TYPES.SPECTATOR).length,
             document.getElementById('spectator-count')
         );
-        if ((
-            this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
-            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
-        )
-        ) {
+        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
             toast(
                 'Spectator kicked.',
                 'success',

@@ -1,12 +1,12 @@
-import { QRCode } from '../../third_party/qrcode.js';
-import { toast } from '../../front_end_components/Toast.js';
-import { EVENT_IDS, PRIMITIVES, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES } from '../../../config/globals.js';
-import { HTMLFragments } from '../../front_end_components/HTMLFragments.js';
-import { Confirmation } from '../../front_end_components/Confirmation.js';
-import { SharedStateUtil } from './shared/SharedStateUtil.js';
-import { GameCreationStepManager } from '../../game_creation/GameCreationStepManager.js';
-import { DeckStateManager } from '../../game_creation/DeckStateManager.js';
-import { hiddenMenus } from '../../../view_templates/CreateTemplate.js';
+import {QRCode} from '../../third_party/qrcode.js';
+import {toast} from '../../front_end_components/Toast.js';
+import {EVENT_IDS, PRIMITIVES, SOCKET_EVENTS, USER_TYPE_ICONS, USER_TYPES} from '../../../config/globals.js';
+import {HTMLFragments} from '../../front_end_components/HTMLFragments.js';
+import {Confirmation} from '../../front_end_components/Confirmation.js';
+import {SharedStateUtil} from './shared/SharedStateUtil.js';
+import {GameCreationStepManager} from '../../game_creation/GameCreationStepManager.js';
+import {DeckStateManager} from '../../game_creation/DeckStateManager.js';
+import {hiddenMenus} from '../../../view_templates/CreateTemplate.js';
 
 export class Lobby {
     constructor (containerId, stateBucket, socket) {
@@ -316,11 +316,8 @@ export class Lobby {
             document.getElementById('spectator-count')
         );
         this.populatePlayers();
-        if ((
-            this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
-            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
-        )
-        ) {
+        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.MODERATOR
+            || this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
             toast(
                 event === EVENT_IDS.LEAVE_ROOM ? 'A player left.' : 'Player kicked.',
                 event === EVENT_IDS.LEAVE_ROOM ? 'warning' : 'success',

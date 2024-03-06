@@ -23,6 +23,7 @@ const Events = [
             const toBeClearedIndex = game.people.findIndex(
                 (person) => person.id === socketArgs.personId && person.assigned === true
             );
+            console.log(game.people[toBeClearedIndex])
             if (toBeClearedIndex >= 0) {
                 game.people.splice(toBeClearedIndex, 1);
                 game.isStartable = vars.gameManager.isGameStartable(game);

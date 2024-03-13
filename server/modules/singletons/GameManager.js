@@ -191,7 +191,7 @@ class GameManager {
             && game.people.filter(person => person.userType === USER_TYPES.SPECTATOR).length === PRIMITIVES.MAX_SPECTATORS
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
-        } else if (joinAsSpectator || this.isGameStartable(game)) {
+        } else if (joinAsSpectator || this.isGameStartable(game) || game.status === STATUS.IN_PROGRESS) {
             return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
         let moderator, newPlayer;

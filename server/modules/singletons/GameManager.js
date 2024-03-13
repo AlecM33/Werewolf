@@ -191,7 +191,7 @@ class GameManager {
             && game.people.filter(person => person.userType === USER_TYPES.SPECTATOR).length === PRIMITIVES.MAX_SPECTATORS
         ) {
             return Promise.reject({ status: 400, reason: 'There are too many people already spectating.' });
-        } else if (joinAsSpectator || this.isGameStartable(game) || game.status === STATUS.IN_PROGRESS) {
+        } else if (joinAsSpectator || this.isGameStartable(game)) {
             return await addSpectator(game, name, this.logger, this.namespace, this.eventManager, this.instanceId, this.refreshGame);
         }
         let moderator, newPlayer;
@@ -328,9 +328,9 @@ class GameManager {
     }
 
     isGameStartable = (game) => {
-        return game.people.filter(person => person.userType === USER_TYPES.PLAYER
+        return game.status !== STATUS.IN_PROGRESS && (game.people.filter(person => person.userType === USER_TYPES.PLAYER
             || person.userType === USER_TYPES.TEMPORARY_MODERATOR
-            || person.userType === USER_TYPES.BOT).length === game.gameSize;
+            || person.userType === USER_TYPES.BOT).length === game.gameSize);
     }
 
     findPersonByField = (game, fieldName, value) => {

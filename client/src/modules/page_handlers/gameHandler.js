@@ -18,7 +18,7 @@ import { InProgress } from '../game_state/states/InProgress.js';
 import { Ended } from '../game_state/states/Ended.js';
 
 export const gameHandler = (socket, window, gameDOM) => {
-    window.onunload = () => {
+    window.onpagehide = () => {
         socket.close();
     };
     document.body.innerHTML = gameDOM + document.body.innerHTML;
@@ -60,8 +60,11 @@ export const gameHandler = (socket, window, gameDOM) => {
                     toast(err, 'error', true, false);
                 });
 
-                socket.on('disconnect', () => {
+                socket.on('disconnect', (reason) => {
                     toast('Disconnected. Attempting reconnect...', 'error', true, false);
+                    if (reason === 'io client disconnect') { // see https://socket.io/docs/v4/client-api/#event-disconnect
+                        socket.connect();
+                    }
                 });
                 setClientSocketHandlers(stateBucket, socket);
                 resolve();

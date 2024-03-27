@@ -62,7 +62,7 @@ export const gameHandler = (socket, window, gameDOM) => {
 
                 socket.on('disconnect', (reason) => {
                     toast('Disconnected. Attempting reconnect...', 'error', true, false);
-                    if (reason === "io client disconnect") { // see https://socket.io/docs/v4/client-api/#event-disconnect
+                    if (reason === 'io client disconnect') { // see https://socket.io/docs/v4/client-api/#event-disconnect
                         socket.connect();
                     }
                 });

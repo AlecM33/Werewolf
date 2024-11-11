@@ -2,12 +2,12 @@ export const defaultRoles = [
     {
         role: 'Villager',
         team: 'good',
-        description: 'During the day, find the wolves and kill them.'
+        description: 'During the day, find the Werewolves and kill them.'
     },
     {
         role: 'Werewolf',
         team: 'evil',
-        description: "During the night, choose a villager to kill. Don't get killed."
+        description: "During the night, choose a player to eliminate."
     },
     {
         role: 'Dream Wolf',
@@ -22,12 +22,12 @@ export const defaultRoles = [
     {
         role: 'Knowing Minion',
         team: 'evil',
-        description: 'You are an evil Villager, and you know who the Werewolves are.'
+        description: 'You are an evil Villager, and you know who the Werewolves are. You win if the Werewolves win.'
     },
     {
         role: 'Blind Minion',
         team: 'evil',
-        description: "You are an evil villager, but you don't know who the Werewolves are."
+        description: "You are an evil villager, but you do NOT know who the Werewolves are. You win if the Werewolves win."
     },
     {
         role: 'Seer',
@@ -48,11 +48,11 @@ export const defaultRoles = [
     {
         role: 'Parity Hunter',
         team: 'good',
-        description: 'You beat a werewolf in a 1v1 situation, winning the game for the village.'
+        description: 'If you and a Werewolf are the only two players remaining, the Village wins.'
     },
     {
         role: 'Brutal Hunter',
         team: 'good',
-        description: 'When you are eliminated, choose another player to go with you.'
+        description: 'When you are eliminated, choose another player to be eliminated with you.'
     }
 ];

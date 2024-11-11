@@ -44,6 +44,7 @@ function getNavbarLinks (page = null, device) {
     '<a class="' + linkClass + '" href="/create">Create</a>' +
     '<a class="' + linkClass + '" href="/how-to-use">How to Use</a>' +
     '<a class="' + linkClass + ' "href="mailto:play.werewolf.contact@gmail.com?Subject=Werewolf App" target="_top">Feedback</a>' +
+    '<a class="' + linkClass + ' "href="https://buymeacoffee.com/alecm33" target="_top">Support Me</a>' +
     '<a class="' + linkClass + ' "href="https://github.com/alecm33/Werewolf" target="_top">Github</a>';
 }
 

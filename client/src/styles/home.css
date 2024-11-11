@@ -54,6 +54,10 @@ button#home-create-button {
     margin: 0 15px;
 }
 
+#about-container div:nth-child(2) h2 {
+    margin-bottom: 2em;
+}
+
 #homepage-logos {
     display: flex;
     align-items: center;

@@ -7,12 +7,12 @@ export const defaultRoles = [
     {
         role: 'Werewolf',
         team: 'evil',
-        description: "During the night, choose a player to eliminate."
+        description: 'During the night, choose a player to eliminate.'
     },
     {
         role: 'Dream Wolf',
         team: 'evil',
-        description: "You are a Werewolf, but you don't wake up with the other Werewolves until one of them dies."
+        description: 'You are a Werewolf, but you don\'t wake up with the other Werewolves until one of them dies.'
     },
     {
         role: 'Sorceress',
@@ -27,7 +27,7 @@ export const defaultRoles = [
     {
         role: 'Blind Minion',
         team: 'evil',
-        description: "You are an evil villager, but you do NOT know who the Werewolves are. You win if the Werewolves win."
+        description: 'You are an evil villager, but you do NOT know who the Werewolves are. You win if the Werewolves win.'
     },
     {
         role: 'Seer',

@@ -500,7 +500,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
     document.querySelector('#create-game')?.remove();
     if (back) {
         const backButton = document.createElement('button');
-        backButton.innerHTML = '<img alt="back" src="../../images/caret-back.svg"/>';
+        backButton.innerHTML = '<img alt="back" width="40" height="40" src="../../images/caret-back.svg"/>';
         backButton.addEventListener('click', backHandler);
         backButton.setAttribute('id', 'step-back-button');
         backButton.classList.add('app-button');
@@ -509,7 +509,7 @@ function showButtons (back, forward, forwardHandler, backHandler, builtGame = nu
 
     if (forward && builtGame === null) {
         const fwdButton = document.createElement('button');
-        fwdButton.innerHTML = '<img alt="next" src="../../images/caret-forward.svg"/>';
+        fwdButton.innerHTML = '<img alt="next" width="40" height="40" src="../../images/caret-forward.svg"/>';
         fwdButton.addEventListener('click', forwardHandler);
         fwdButton.setAttribute('id', 'step-forward-button');
         fwdButton.classList.add('app-button');

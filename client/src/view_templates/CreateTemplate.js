@@ -36,9 +36,9 @@ export const hiddenMenus =
     <div tabindex="-1" id="custom-role-info-modal" class="modal">
         <h3 id="custom-role-info-modal-name"></h3>
         <div id="custom-role-info-modal-image-placeholder"></div>
-        <label for="custom-role-info-modal-alignment">alignment:</label>
+        <label>alignment:</label>
         <div id="custom-role-info-modal-alignment"></div>
-        <label for="custom-role-info-modal-alignment">description:</label>
+        <label>description:</label>
         <div id="custom-role-info-modal-description"></div>
         <div class="modal-button-container single-button">
             <button id="close-custom-role-info-modal-button" class="cancel app-button">Close</button>

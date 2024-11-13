@@ -15,6 +15,7 @@ th, thead, tr, tt, u, ul, var {
 @font-face {
     font-family: 'signika-negative';
     src: url("../webfonts/SignikaNegative-Light.woff2") format("woff2");
+    font-display: swap;
 }
 
 html {

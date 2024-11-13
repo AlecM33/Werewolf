@@ -95,7 +95,7 @@ const ServerBootstrapper = {
                 res.setHeader(
                     'Content-Security-Policy',
                     "default-src 'self'; font-src 'self' https://fonts.gstatic.com/; img-src 'self' https://img.buymeacoffee.com;" +
-                    " script-src 'self' https://cdnjs.buymeacoffee.com; style-src 'self' https://cdnjs.buymeacoffee.com https://fonts.googleapis.com/ 'nonce-" + nonce + "'; frame-src 'self'"
+                    " script-src 'self'; style-src 'self' https://fonts.googleapis.com/ 'nonce-" + nonce + "'; frame-src 'self'"
                 );
                 next();
             });

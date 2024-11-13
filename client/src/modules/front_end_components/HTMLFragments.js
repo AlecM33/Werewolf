@@ -20,7 +20,7 @@ export const HTMLFragments = {
             </div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
         </div>
     </div>
     <div>

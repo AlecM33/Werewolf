@@ -10,17 +10,17 @@ export const HTMLFragments = {
             <canvas id="canvas"></canvas>
             <div id='game-parameters'>
                 <div>
-                    <img alt='clock' src='/images/clock.svg'/>
+                    <img alt='clock' width="20" height="20" src='/images/clock.svg'/>
                     <div id='timer-parameters'></div>
                 </div>
                 <div>
-                    <img alt='person' src='/images/person.svg'/>
+                    <img alt='person' width="22" height="20" src='/images/person.svg'/>
                     <div id='game-player-count'></div>
                 </div>
             </div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
         </div>
     </div>
     <div>
@@ -84,7 +84,7 @@ export const HTMLFragments = {
             </div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
         </div>
     </div>
     <div id='game-role' tabindex="0">
@@ -127,7 +127,7 @@ export const HTMLFragments = {
             </div>
         </div>
         <div>
-            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
         </div>
     </div>
     <div id='game-people-container'>
@@ -187,7 +187,7 @@ export const HTMLFragments = {
             Transfer Mod Powers <img alt='transfer icon' src='/images/shuffle.svg'/>
         </button>
         <div>
-            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+            <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
         </div>
     </div>
     <div id="game-players-container">
@@ -229,7 +229,7 @@ export const HTMLFragments = {
                 <div id='play-pause'> </div>
             </div>
             <div>
-                <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+                <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
             </div>
         </div>
         <div id='game-role' tabindex="0">
@@ -309,7 +309,7 @@ export const HTMLFragments = {
         `<div id='end-of-game-header'>
             <h2>&#x1F3C1; The moderator has ended the game. Roles are revealed.</h2>
             <div id="end-of-game-buttons">
-                <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' src='/images/info.svg'/></button>
+                <button id='role-info-button' class='app-button'>Roles in This Game <img alt='Info icon' width="25" height="25" src='/images/info.svg'/></button>
             </div>
         </div>
         <div id='game-people-container'>

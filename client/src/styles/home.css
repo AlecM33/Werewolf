@@ -95,7 +95,7 @@ a button {
 
 #join-button:hover {
     background-color: #326243;
-    border: 2px solid #1c8a36;
+    border: 3px solid #1c8a36;
 }
 
 #join-form div:nth-child(1) {

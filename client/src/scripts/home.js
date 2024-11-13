@@ -46,9 +46,7 @@ function attemptToJoinGame (event) {
             } else {
                 res.json().then(json => {
                     window.location = window.location.protocol + '//' + window.location.host +
-                        '/join/' + encodeURIComponent(json.accessCode) +
-                        '?playerCount=' + encodeURIComponent(json.playerCount) +
-                        '&timer=' + encodeURIComponent(getTimeString(json.timerParams));
+                        '/join/' + encodeURIComponent(json.accessCode);
                 });
             }
         }).catch(() => {
@@ -59,29 +57,6 @@ function attemptToJoinGame (event) {
         });
     } else {
         toast('Invalid code. Codes are 4 numbers or letters.', 'error', true, true);
-    }
-}
-
-function getTimeString (timerParams) {
-    let timeString = '';
-    if (timerParams) {
-        const hours = timerParams.hours;
-        const minutes = timerParams.minutes;
-        if (hours) {
-            timeString += hours > 1
-                ? hours + ' hours '
-                : hours + ' hour ';
-        }
-        if (minutes) {
-            timeString += minutes > 1
-                ? minutes + ' minutes '
-                : minutes + ' minute ';
-        }
-
-        return timeString;
-    } else {
-        timeString = 'untimed';
-        return timeString;
     }
 }
 

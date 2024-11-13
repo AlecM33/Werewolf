@@ -15,6 +15,7 @@ th, thead, tr, tt, u, ul, var {
 @font-face {
     font-family: 'signika-negative';
     src: url("../webfonts/SignikaNegative-Light.woff2") format("woff2");
+    font-display: swap;
 }
 
 html {
@@ -68,129 +69,10 @@ textarea {
     resize: none;
 }
 
-.toast-top {
-    top: 2rem;
-}
-
-.toast-bottom {
-    bottom: 140px;
-}
-
-.toast-success {
-    background-color: #bef5cb;
-    border: 3px solid #8ac78a;
-}
-
-.toast-warning {
-    background-color: #fff5b1;
-    border: 3px solid #c7c28a;
-}
-
-.toast-error {
-    background-color: #f98e9a;
-    border: 3px solid #c57272;
-}
-
-.toast-neutral {
-    background-color: #e9e9e9;
-    border: 3px solid #b7b7b7;
-}
-
-.toast-dispel-automatically {
-    animation: fade-in-slide-down-then-exit ease normal forwards;
-}
-
-.toast-not-dispelled-automatically {
-    animation: fade-in-slide-down ease normal forwards;
-}
-
-.toast-short {
-    animation-duration: 3s;
-}
-
-.toast-medium {
-    animation-duration: 5s;
-}
-
-.toast-long {
-    animation-duration: 8s;
-}
-
-.toast-plus-one {
-    color: #1c8a36;
-    font-weight: bold;
-    font-size: 20px;
-    margin-right: 5px;
-}
-
-.toast-minus-one {
-    font-size: 20px;
-    margin-right: 5px;
-    color: #e73333;
-    font-weight: bold;
-}
-
-.toast-plus-role-quantity {
-    color: #1c8a36;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-.toast-minus-role-quantity {
-    color: #e73333;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-#footer {
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    color: #d7d7d7;
-    font-size: 14px;
-    margin-top: 4em;
-    margin-bottom: 0.5em;
-}
-#footer a:not([href='https://www.buymeacoffee.com/alecm33']) img {
-    width: 32px;
-}
-
-#footer a[href='https://www.buymeacoffee.com/alecm33'] img {
-    width: 200px;
-}
-
-#footer a {
-    color: #f7f7f7;
-    text-decoration: none;
-    cursor: pointer;
-    font-family: 'signika-negative', sans-serif;
-    margin: 0 0.25em;
-}
-
-#footer a:hover {
-    color: gray;
-}
-
-#footer div {
-    display: flex;
-}
-
 .teaser {
     text-align:center;
     color:gray;
     margin-bottom:3em;
-}
-
-#footer > div, #footer > a {
-    margin: 0.5em;
-}
-
-#footer div:nth-child(2) > a, #footer div:nth-child(2) > p {
-    margin: 0 5px;
 }
 
 label {

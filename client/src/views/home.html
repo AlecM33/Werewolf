@@ -11,15 +11,464 @@
         <meta property="og:url" content="https://play-werewolf.app">
         <meta property="og:description" content="An app to create and run games of Werewolf (Mafia) with your friends. No sign-up, installation, or payment required.">
         <meta property="og:image" content="image.png">
-
         <link rel="icon" href="/favicon.ico">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-        <link rel="stylesheet" href="./styles/GLOBAL.css">
-        <link rel="stylesheet" href="./styles/home.css">
         <link rel="stylesheet" href="/styles/hamburgers.css">
         <link rel="stylesheet" href="./styles/confirmation.css">
+        <link rel="preload" href="./styles/toast.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="./styles/toast.css"></noscript>
+        <style>
+            canvas, caption, center, cite, code,
+            dd, del, dfn, div, dl, dt, em, embed,
+            fieldset, font, form, h1, h2, h3, h4,
+            h5, h6, hr, i, iframe, img, ins, kbd,
+            label, legend, li, menu, object, ol, p,
+            pre, q, s, samp, small, span, strike,
+            strong, sub, sup, table, tbody, td, tfoot,
+            th, thead, tr, tt, u, ul, var {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                background: transparent;
+            }
+
+            @font-face {
+                font-family: 'signika-negative';
+                src: url("../webfonts/SignikaNegative-Light.woff2") format("woff2");
+                font-display: swap;
+            }
+
+            html {
+                font-family: 'signika-negative', sans-serif !important;
+                background-color: #0f0f10;
+                overflow: auto;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                margin: 0 auto;
+                background-color: #0f0f10;
+            }
+
+            h2 {
+                color: #e7e7e7;
+                font-size: 25px;
+                font-weight: bold;
+            }
+
+            label {
+                color: #d7d7d7;
+                font-family: 'signika-negative', sans-serif;
+                font-size: 20px;
+                font-weight: normal;
+            }
+
+            input, textarea {
+                background-color: transparent;
+                border: 1px solid white;
+                border-radius: 5px;
+                color: #d7d7d7;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            textarea, input {
+                font-family: 'signika-negative', sans-serif;
+                font-size: 16px;
+            }
+
+            button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .app-button, input[type="submit"] {
+                font-family: 'signika-negative', sans-serif !important;
+                padding: 10px;
+                background-color: #1a7a31;
+                border-radius: 5px;
+                color: #e7e7e7;
+                font-size: 18px;
+                cursor: pointer;
+                border: 3px solid transparent;
+                text-shadow: 0 3px 4px rgb(0 0 0 / 55%);
+            }
+
+            .app-button:active, input[type=submit]:active {
+                border: 3px solid #21ba45;
+            }
+
+            .submitted {
+                filter: opacity(0.5);
+                pointer-events: none;
+            }
+
+            .app-button:hover, input[type="submit"]:hover, #game-link:hover {
+                background-color: #326243;
+                border: 3px solid #1a7a31;
+            }
+
+            input {
+                padding: 10px;
+            }
+
+            .info-message {
+                pointer-events: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: fixed;
+                z-index: 1000000;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: 'signika-negative', sans-serif;
+                font-weight: 100;
+                box-shadow:
+                        0 1px 1px rgba(0,0,0,0.11),
+                        0 2px 2px rgba(0,0,0,0.11),
+                        0 4px 4px rgba(0,0,0,0.11),
+                        0 8px 8px rgba(0,0,0,0.11),
+                        0 16px 16px rgba(0,0,0,0.11),
+                        0 32px 32px rgba(0,0,0,0.11);
+                left: 0;
+                right: 0;
+                width: fit-content;
+                max-width: 80%;
+                min-width: 15em;
+                font-size: 20px;
+                margin: 0 auto;
+            }
+
+            #navbar {
+                display: flex;
+                align-items: center;
+                padding: 10px 0;
+                width: 100%;
+                background-color: #0f0f10;
+                height: 45px;
+                z-index: 53000;
+            }
+
+            #desktop-links > a:nth-child(1) {
+                margin: 0 0.5em;
+                width: 50px;
+            }
+
+            #mobile-links a:nth-child(1) {
+                width: 80px;
+                margin: 0 auto 3em auto !important;
+                display: flex;
+            }
+
+            .logo {
+                display: flex;
+                align-items: center;
+            }
+
+            #navbar img {
+                width: 100%;
+            }
+
+            #navbar a:not(.logo) {
+                color: #f7f7f7;
+                text-decoration: none;
+                cursor: pointer;
+                font-family: 'signika-negative', sans-serif;
+                border-radius: 5px;
+                padding: 2px 5px;
+                font-size: 20px;
+                margin: 1em;
+                width: fit-content;
+            }
+
+            #navbar a:hover {
+                color: gray;
+            }
+
+            .overlay {
+                position: fixed;
+                background-size: cover;
+                height: 100%;
+                opacity: 75%;
+                background-color: black;
+                width: 100%;
+                z-index: 50000;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+            #mobile-links {
+                display: flex;
+                flex-direction: column;
+                margin-top: 3em;
+            }
+
+            .mobile-link {
+                margin-top: 1em !important;
+                margin-left: 2em !important;
+            }
+
+            @media(max-width: 1000px) {
+                #navbar {
+                    display: flex;
+                    padding: 0;
+                }
+
+                #navbar-hamburger {
+                    z-index: 52000;
+                    position: relative;
+                }
+
+                #desktop-menu {
+                    display: none;
+                }
+
+                #mobile-menu {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    height: auto;
+                    padding-bottom: 2em;
+                    width: 100%;
+                    z-index: 51000;
+                    background-color: #1e1e1e;
+                }
+            }
+
+            @media(min-width: 1001px) {
+
+                #navbar-hamburger, #mobile-menu, #mobile-menu-background-overlay {
+                    display: none;
+                }
+
+                .desktop-link {
+                    display: flex;
+                }
+
+                #desktop-links {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+
+            @media(max-width: 550px) {
+                h1 {
+                    font-size: 30px;
+                }
+
+                #step-1 div {
+                    font-size: 20px;
+                }
+
+                .info-message {
+                    padding: 5px;
+                    font-size: 16px;
+                }
+            }
+            body {
+                align-items: center;
+            }
+
+            button#home-create-button {
+                padding: 20px;
+            }
+
+            #framed-phone-screenshot, #framed-phone-screenshot-2, .framed-phone-screenshot-container {
+                max-width: 250px;
+                width: 40vw;
+                min-width: 175px;
+                border-radius: 21px;
+                aspect-ratio: 1522 / 3290;
+
+            }
+
+            .framed-phone-screenshot-container {
+                margin: 0 0 20px 0;
+                border: 1px solid #464552;
+            }
+
+            #about-container {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+            }
+
+            #about-container > div {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: fit-content;
+                flex-wrap: wrap;
+                padding: 25px 0;
+            }
+
+            #join-container form {
+                margin: 0;
+            }
+
+            #about-container h2 {
+                max-width: 17em;
+                font-size: 22px;
+                border-left: 1px solid #bababa;
+                padding: 15px;
+                margin: 0 15px;
+            }
+
+            #about-container div:nth-child(2) h2 {
+                margin-bottom: 2em;
+            }
+
+            #homepage-logos {
+                display: flex;
+                align-items: center;
+            }
+
+            #home-page-top-section {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                background-color: #0f0f10;
+            }
+
+            form {
+                display: flex;
+                flex-wrap: wrap;
+                margin: 10px 0;
+                border-radius: 5px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            a button {
+                text-shadow: 0 3px 4px rgb(0 0 0 / 85%);
+            }
+
+            #join-button {
+                min-width: 6em;
+                max-height: 3em;
+                background-color: #1c8a36;
+                color: #e7e7e7;
+                font-size: 16px;
+            }
+
+            #join-button:hover {
+                background-color: #326243;
+                border: 2px solid #1c8a36;
+            }
+
+            #join-form div:nth-child(1) {
+                margin-right: 0.5em;
+            }
+
+            h3 {
+                color: #d7d7d7;
+                font-weight: normal;
+                font-size: 20px;
+                margin-bottom: 1em;
+                padding: 1em;
+                max-width: 23em;
+                font-family: 'signika-negative', sans-serif;
+            }
+
+            img[src='../images/new-logo.png'], #new-logo-container {
+                max-width: 250px;
+                width: 25vw;
+                min-width: 150px;
+                margin: 1em 0 1em 0;
+                aspect-ratio: 500 / 641;
+            }
+
+            h3 a {
+                color: #768df0;
+                text-decoration: underline;
+                cursor: pointer;
+                font-family: 'signika-negative', sans-serif;
+                width: fit-content;
+            }
+
+            h3 a:hover {
+                color: gray;
+            }
+
+            form > div {
+                margin: 15px 0;
+            }
+
+            #create-join {
+                width: 100%;
+                max-width: 900px;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-evenly;
+                margin-bottom: 1em;
+            }
+
+            #join-container {
+                max-width: 90%;
+                border: 1px solid #55555599;
+                background: #5555555c;
+                padding: 0.5em;
+                border-radius: 5px;
+                margin: 20px
+            }
+
+            #join-container > label {
+                font-size: 35px;
+                font-family: 'signika-negative', sans-serif;
+                color: #e7e7e7;
+                filter: drop-shadow(2px 2px 4px black);
+            }
+
+            #room-code {
+                background-color: #1e1e1e;
+            }
+
+            label[for="room-code"], label[for="player-name"] {
+                margin-right: 0.5em;
+            }
+
+            @media (min-width: 700px) {
+                button#home-create-button {
+                    font-size: 30px;
+                }
+            }
+
+            @media (max-width: 701px) {
+                button#home-create-button {
+                    font-size: 5vw;
+                    padding: 15px;
+                }
+
+                img[src='../images/new-logo.png'], #new-logo-container {
+                    margin: 1em 0 0 0;
+                }
+
+                #join-container > label {
+                    font-size: 26px;
+                }
+
+                #room-code {
+                    max-width: 9em;
+                }
+
+                #about-container h2 {
+                    font-size: 18px;
+                }
+            }
+        </style>
     </head>
     <body>
     <div id="mobile-menu-background-overlay"></div>
@@ -48,13 +497,13 @@
     <div id="about-container">
         <div>
             <div class="framed-phone-screenshot-container">
-                <img id="framed-phone-screenshot" alt="framed phone screenshot" src="../images/framed-phone-screenshot.webp"/>
+                <img id="framed-phone-screenshot" alt="framed phone screenshot" src="../images/framed-phone-screenshot_resized.webp"/>
             </div>
             <h2>Join a game and have a role dealt to your device.</h2>
         </div>
         <div>
             <div class="framed-phone-screenshot-container">
-                <img id="framed-phone-screenshot-2" alt="framed phone screenshot" src="../images/framed-phone-screenshot-2.webp"/>
+                <img id="framed-phone-screenshot-2" alt="framed phone screenshot" src="../images/framed-phone-screenshot-2_resized.webp"/>
             </div>
             <h2>Create your own game with default or custom roles.</h2>
         </div>

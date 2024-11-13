@@ -15,9 +15,13 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="stylesheet" href="./styles/GLOBAL.css">
     <link rel="stylesheet" href="./styles/create.css">
-    <link rel="stylesheet" href="./styles/modal.css">
-    <link rel="stylesheet" href="./styles/confirmation.css">
+    <link rel="preload" href="./styles/confirmation.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="./styles/confirmation.css"></noscript>
+    <link rel="preload" href="./styles/modal.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="./styles/modal.css"></noscript>
     <link rel="stylesheet" href="/styles/hamburgers.css">
+    <link rel="preload" href="./styles/toast.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="./styles/toast.css"></noscript>
 </head>
 <body>
 <div id="mobile-menu-background-overlay"></div>

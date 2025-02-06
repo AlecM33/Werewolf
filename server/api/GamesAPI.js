@@ -83,9 +83,11 @@ router.patch('/:code/players', async function (req, res) {
                 res.status(200).send({ cookie: data, environment: gameManager.environment });
             }).catch((data) => {
                 console.error(data);
+                res.set('content-type', 'text/plain');
                 res.status(data.status || 500).send(data.reason);
             });
         } else {
+            res.set('content-type', 'text/plain');
             res.status(404).send();
         }
     }

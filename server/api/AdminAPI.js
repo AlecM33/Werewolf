@@ -16,6 +16,7 @@ const ADMIN_CORS_OPTIONS = process.env.NODE_ENV?.trim() === 'development'
         optionsSuccessStatus: 200
     };
 router.use(cors(ADMIN_CORS_OPTIONS));
+router.options('/games/state', cors(ADMIN_CORS_OPTIONS));
 
 router.post('/sockets/broadcast', (req, res, next) => {
     CONTENT_TYPE_VALIDATOR(req, res, next);
@@ -27,8 +28,6 @@ router.post('/sockets/broadcast', function (req, res) {
     eventManager.broadcast(req.body?.message);
     res.status(201).send('Broadcasted message to all connected sockets: ' + req.body?.message);
 });
-
-router.options('/games/state', cors(ADMIN_CORS_OPTIONS));
 
 router.get('/games/state', async (req, res) => {
     const gamesArray = [];

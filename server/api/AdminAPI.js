@@ -4,7 +4,7 @@ const debugMode = Array.from(process.argv.map((arg) => arg.trim().toLowerCase())
 const logger = require('../modules/Logger')(debugMode);
 const eventManager = (require('../modules/singletons/EventManager.js')).instance;
 const cors = require('cors');
-const { CONTENT_TYPE_VALIDATOR} = require('../config/globals');
+const { CONTENT_TYPE_VALIDATOR } = require('../config/globals');
 
 const ADMIN_CORS_OPTIONS = process.env.NODE_ENV?.trim() === 'development'
     ? {

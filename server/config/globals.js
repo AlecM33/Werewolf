@@ -41,16 +41,6 @@ const CORS_OPTIONS = process.env.NODE_ENV?.trim() === 'development'
         optionsSuccessStatus: 200
     };
 
-const ADMIN_CORS_OPTIONS = process.env.NODE_ENV?.trim() === 'development'
-    ? {
-        origin: '*',
-        optionsSuccessStatus: 200
-    }
-    : {
-        origin: 'http://localhost:3000',
-        optionsSuccessStatus: 200
-    };
-
 const CONTENT_TYPE_VALIDATOR = (req, res, next) => {
     req.accepts();
     if (req.is('application/json')) {

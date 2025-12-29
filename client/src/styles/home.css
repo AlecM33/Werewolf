@@ -21,7 +21,7 @@ button#home-create-button {
 }
 
 .framed-phone-screenshot-container {
-    margin: 0 0 20px 0;
+    margin: 0 0 0 0;
     border: 1px solid #464552;
 }
 
@@ -194,5 +194,6 @@ label[for="room-code"], label[for="player-name"] {
 
     #about-container h2 {
         font-size: 18px;
+        margin: 0 15px 20px 15px;
     }
 }

@@ -369,7 +369,7 @@ export const HTMLFragments = {
             <img tabindex="0" class="role-include" src="../images/add.svg" title="add one" alt="add one"/>
             <img tabindex="0" class="role-info" src="../images/info.svg" title="info" alt="info"/>
             <img tabindex="0" class="role-edit" src="../images/pencil.svg" title="edit" alt="edit"/>
-            <img tabindex="0" class="role-remove" src="../images/delete.svg" title="remove" alt="remove"/>
+            <img tabindex="0" class="role-remove" src="../images/delete-2.svg" title="remove" alt="remove"/>
         </div>`,
     DECK_SELECT_ROLE_DEFAULT:
         `<div class="role-name"></div>

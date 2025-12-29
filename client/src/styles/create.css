@@ -454,9 +454,9 @@ input[type="number"] {
 }
 
 #role-select {
-    margin: 0.5em 1em 1.5em 0;
+    margin: 0.5em 0;
     overflow-y: auto;
-    height: 20em;
+    height: 22em;
 }
 
 .default-role, .custom-role, .added-role {
@@ -492,8 +492,8 @@ input[type="number"] {
 }
 
 #role-select img, #deck-status-container img {
-    height: 20px;
-    margin: 0 8px;
+    height: 25px;
+    margin: 0 10px;
     cursor: pointer;
     padding: 5px;
     border-radius: 5px;
@@ -505,7 +505,7 @@ input[type="number"] {
 }
 
 #role-select img:nth-child(4) {
-    height: 18px;
+    height: 25px;
 }
 
 #role-select img:hover, #deck-status-container img:hover {
@@ -683,7 +683,7 @@ input[type="number"] {
 
 @media(max-width: 550px) {
     #custom-roles-container, #deck-status-container {
-        min-width: 85%;
+        min-width: 90%;
     }
     h1 {
         font-size: 32px;

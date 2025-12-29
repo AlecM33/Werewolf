@@ -182,7 +182,7 @@
 }
 
 #timer-parameters {
-    width: 65px;
+    width: fit-content;
 }
 
 #role-edit-container-background, #timer-edit-container-background {
@@ -268,6 +268,7 @@ h1 {
     border-radius: 5px;
     padding: 7px;
     margin: 0.5em;
+    text-align: center;
 }
 
 #end-of-game-header button {

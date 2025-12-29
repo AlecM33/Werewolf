@@ -6,7 +6,7 @@ const eventManager = (require('../modules/singletons/EventManager.js')).instance
 const cors = require('cors');
 const { CONTENT_TYPE_VALIDATOR } = require('../config/globals');
 
-const ADMIN_CORS_OPTIONS = process.env.NODE_ENV?.trim() === 'development'
+const ADMIN_CORS_OPTIONS = (process.env.NODE_ENV?.trim() === 'development'
     ? {
         origin: '*',
         optionsSuccessStatus: 200
@@ -14,9 +14,11 @@ const ADMIN_CORS_OPTIONS = process.env.NODE_ENV?.trim() === 'development'
     : {
         origin: 'http://localhost:3000',
         optionsSuccessStatus: 200
-    };
+    });
 router.use(cors(ADMIN_CORS_OPTIONS));
-router.options('/games/state', cors(ADMIN_CORS_OPTIONS));
+router.options('/games/state', cors(ADMIN_CORS_OPTIONS), (req, res) => {
+    res.sendStatus(200);
+});
 
 router.post('/sockets/broadcast', (req, res, next) => {
     CONTENT_TYPE_VALIDATOR(req, res, next);

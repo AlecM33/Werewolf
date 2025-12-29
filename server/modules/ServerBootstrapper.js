@@ -162,7 +162,7 @@ const ServerBootstrapper = {
 };
 
 function isAuthorized (req) {
-    if (process.env.NODE_ENV.trim() === 'development') {
+    if (process.env.NODE_ENV.trim() === 'development' || req.method === 'OPTIONS') {
         return true;
     }
 

@@ -1,6 +1,6 @@
 // TODO: clean up these deep relative paths? jsconfig.json is not working...
 const Game = require('../../../../server/model/Game');
-const { ENVIRONMENTS, EVENT_IDS, USER_TYPES, STATUS } = require('../../../../server/config/globals.js');
+const { ENVIRONMENTS, EVENT_IDS, USER_TYPES, STATUS, GAME_PROCESS_COMMANDS } = require('../../../../server/config/globals.js');
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../server/modules/singletons/EventManager.js');
@@ -55,7 +55,7 @@ describe('Events', () => {
         spyOn(eventManager.publisher, 'publish').and.callThrough();
         spyOn(eventManager, 'createMessageToPublish').and.stub();
         namespace.sockets = new Map();
-        timerManager.timerThreads = {};
+        timerManager.timers = {};
     });
 
     describe(EVENT_IDS.PLAYER_JOINED, () => {
@@ -529,23 +529,23 @@ describe('Events', () => {
 
     describe(EVENT_IDS.RESTART_GAME, () => {
         describe('stateChange', () => {
-            it('should kill any alive timer thread if the instance is home to it', async () => {
-                const mockThread = { kill: () => {}, killed: false };
-                timerManager.timerThreads = { ABCD: mockThread };
-                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+            it('should stop any timer if the instance is home to it', async () => {
+                const mockTimer = { stopTimer: () => {} };
+                timerManager.timers = { ABCD: mockTimer };
+                spyOn(timerManager.timers.ABCD, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
                     .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '222' });
-                expect(mockThread.kill).toHaveBeenCalled();
-                expect(Object.keys(timerManager.timerThreads).length).toEqual(0);
+                expect(mockTimer.stopTimer).toHaveBeenCalled();
+                expect(Object.keys(timerManager.timers).length).toEqual(0);
             });
-            it('should not kill the timer thread if the instance sent the event', async () => {
-                const mockThread = { kill: () => {}, killed: false };
-                timerManager.timerThreads = { ABCD: mockThread };
-                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+            it('should not stop the timer if the instance sent the event', async () => {
+                const mockTimer = { stopTimer: () => {} };
+                timerManager.timers = { ABCD: mockTimer };
+                spyOn(timerManager.timers.ABCD, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
                     .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '111' });
-                expect(mockThread.kill).not.toHaveBeenCalled();
-                expect(Object.keys(timerManager.timerThreads).length).toEqual(1);
+                expect(mockTimer.stopTimer).not.toHaveBeenCalled();
+                expect(Object.keys(timerManager.timers).length).toEqual(1);
             });
         });
         describe('communicate', () => {
@@ -569,30 +569,41 @@ describe('Events', () => {
 
     describe(EVENT_IDS.TIMER_EVENT, () => {
         describe('communicate', () => {
-            it('should publish an event to source timer data if the timer thread is not found', async () => {
+            it('should publish an event to source timer data if the timer is not found', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
-                    .communicate(game, {}, { gameManager: gameManager, timerManager: timerManager, eventManager: eventManager });
+                    .communicate(game, {}, { 
+                        gameManager: gameManager, 
+                        timerManager: timerManager, 
+                        eventManager: eventManager, 
+                        timerEventSubtype: GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                        requestingSocketId: '2'
+                    });
                 expect(eventManager.publisher.publish).toHaveBeenCalled();
             });
-            it('should send a message to the thread if it is found', async () => {
-                const mockThread = { exitCode: null, kill: () => {}, send: (...args) => {}, killed: false };
-                timerManager.timerThreads = { ABCD: mockThread };
-                spyOn(timerManager.timerThreads.ABCD, 'send').and.callThrough();
+            it('should call timer methods directly if the timer is found', async () => {
+                const mockTimer = { currentTimeInMillis: 5000 };
+                timerManager.timers = { ABCD: mockTimer };
+                game.timerParams = { paused: true };
+                const mockSocket = { id: '2' };
+                const mockEmitObj = { emit: jasmine.createSpy('emit') };
+                
+                namespace.sockets.set('2', mockSocket);
+                namespace.to.and.returnValue(mockEmitObj);
+                
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, {
                         gameManager: gameManager,
                         timerManager: timerManager,
                         eventManager: eventManager,
-                        timerEventSubtype: EVENT_IDS.GET_TIME_REMAINING,
+                        timerEventSubtype: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                         requestingSocketId: '2',
                         logger: { logLevel: 'trace' }
                     });
-                expect(mockThread.send).toHaveBeenCalledWith({
-                    command: EVENT_IDS.GET_TIME_REMAINING,
-                    accessCode: 'ABCD',
-                    socketId: '2',
-                    logLevel: 'trace'
-                });
+                expect(mockEmitObj.emit).toHaveBeenCalledWith(
+                    GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    5000,
+                    true
+                );
             });
         });
     });

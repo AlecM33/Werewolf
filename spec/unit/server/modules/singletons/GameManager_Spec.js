@@ -91,16 +91,16 @@ describe('GameManager', () => {
         it('should reset all relevant game parameters, including when the game has a timer', async () => {
             game.timerParams = { hours: 2, minutes: 2, paused: false };
             game.hasTimer = true;
-            timerManager.timerThreads = { ABCD: { kill: () => {} } };
+            timerManager.timers = { ABCD: { stopTimer: () => {} } };
             game.status = STATUS.ENDED;
 
-            const threadKillSpy = spyOn(timerManager.timerThreads.ABCD, 'kill');
+            const timerStopSpy = spyOn(timerManager.timers.ABCD, 'stopTimer');
             const emitSpy = spyOn(namespace.in(), 'emit');
 
             await gameManager.restartGame(game, namespace);
 
             expect(game.status).toEqual(STATUS.LOBBY);
-            expect(threadKillSpy).toHaveBeenCalled();
+            expect(timerStopSpy).toHaveBeenCalled();
             expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 

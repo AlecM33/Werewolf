@@ -372,26 +372,15 @@ const Events = [
                 }
             } else {
                 // Timer not on this instance, consult another container
-                if (vars.timerEventSubtype === GAME_PROCESS_COMMANDS.GET_TIME_REMAINING) {
-                    const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
-                    if (socket) {
-                        vars.gameManager.namespace.to(socket.id).emit(
-                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                            game.timerParams.timeRemaining,
-                            game.timerParams.paused
-                        );
-                    }
-                } else {
-                    await vars.eventManager.publisher?.publish(
-                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                        vars.eventManager.createMessageToPublish(
-                            game.accessCode,
-                            EVENT_IDS.SOURCE_TIMER_EVENT,
-                            vars.instanceId,
-                            JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
-                        )
-                    );
-                }
+                await vars.eventManager.publisher?.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        EVENT_IDS.SOURCE_TIMER_EVENT,
+                        vars.instanceId,
+                        JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
+                    )
+                );
             }
         }
     },

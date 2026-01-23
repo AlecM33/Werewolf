@@ -297,12 +297,11 @@ const Events = [
         id: EVENT_IDS.RESTART_GAME,
         stateChange: async (game, socketArgs, vars) => {
             if (vars.instanceId !== vars.senderInstanceId
-                && vars.timerManager.timerThreads[game.accessCode]
+                && vars.timerManager.timers[game.accessCode]
             ) {
-                if (!vars.timerManager.timerThreads[game.accessCode].killed) {
-                    vars.timerManager.timerThreads[game.accessCode].kill();
-                }
-                delete vars.timerManager.timerThreads[game.accessCode];
+                const timer = vars.timerManager.timers[game.accessCode];
+                timer.stopTimer();
+                delete vars.timerManager.timers[game.accessCode];
             }
         },
         communicate: async (game, socketArgs, vars) => {
@@ -316,16 +315,62 @@ const Events = [
         id: EVENT_IDS.TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            const thread = vars.timerManager.timerThreads[game.accessCode];
-            if (thread) {
-                if (!thread.killed && thread.exitCode === null) {
-                    thread.send({
-                        command: vars.timerEventSubtype,
-                        accessCode: game.accessCode,
-                        socketId: vars.requestingSocketId,
-                        logLevel: vars.logger.logLevel
-                    });
-                } else {
+            const timer = vars.timerManager.timers[game.accessCode];
+            if (timer) {
+                // Handle timer commands directly
+                switch (vars.timerEventSubtype) {
+                    case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
+                        timer.stopTimer();
+                        game.timerParams.paused = true;
+                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
+                        await vars.gameManager.refreshGame(game);
+                        vars.gameManager.namespace.in(game.accessCode).emit(
+                            GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                            timer.currentTimeInMillis
+                        );
+                        await vars.eventManager.publisher.publish(
+                            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                            vars.eventManager.createMessageToPublish(
+                                game.accessCode,
+                                GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                                vars.instanceId,
+                                JSON.stringify({ timeRemaining: timer.currentTimeInMillis })
+                            )
+                        );
+                        break;
+                    case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                        timer.resumeTimer();
+                        game.timerParams.paused = false;
+                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
+                        await vars.gameManager.refreshGame(game);
+                        vars.gameManager.namespace.in(game.accessCode).emit(
+                            GAME_PROCESS_COMMANDS.RESUME_TIMER,
+                            timer.currentTimeInMillis
+                        );
+                        await vars.eventManager.publisher.publish(
+                            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                            vars.eventManager.createMessageToPublish(
+                                game.accessCode,
+                                GAME_PROCESS_COMMANDS.RESUME_TIMER,
+                                vars.instanceId,
+                                JSON.stringify({ timeRemaining: timer.currentTimeInMillis })
+                            )
+                        );
+                        break;
+                    case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+                        const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
+                        if (socket) {
+                            vars.gameManager.namespace.to(socket.id).emit(
+                                GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                                timer.currentTimeInMillis,
+                                game.timerParams.paused
+                            );
+                        }
+                        break;
+                }
+            } else {
+                // Timer not on this instance, consult another container
+                if (vars.timerEventSubtype === GAME_PROCESS_COMMANDS.GET_TIME_REMAINING) {
                     const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
                     if (socket) {
                         vars.gameManager.namespace.to(socket.id).emit(
@@ -334,50 +379,90 @@ const Events = [
                             game.timerParams.paused
                         );
                     }
+                } else {
+                    await vars.eventManager.publisher?.publish(
+                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                        vars.eventManager.createMessageToPublish(
+                            game.accessCode,
+                            EVENT_IDS.SOURCE_TIMER_EVENT,
+                            vars.instanceId,
+                            JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
+                        )
+                    );
                 }
-            } else { // we need to consult another container for the timer data
-                await vars.eventManager.publisher?.publish(
-                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    vars.eventManager.createMessageToPublish(
-                        game.accessCode,
-                        EVENT_IDS.SOURCE_TIMER_EVENT,
-                        vars.instanceId,
-                        JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
-                    )
-                );
             }
         }
     },
     {
         /* This event is a request from another instance to consult its timer data. In response
-        * to this event, this instance will check if it is home to a particular timer thread. */
+        * to this event, this instance will check if it is home to a particular timer. */
         id: EVENT_IDS.SOURCE_TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            const thread = vars.timerManager.timerThreads[game.accessCode];
-            if (thread) {
-                if (!thread.killed && thread.exitCode === null) {
-                    thread.send({
-                        command: socketArgs.timerEventSubtype,
-                        accessCode: game.accessCode,
-                        socketId: socketArgs.socketId,
-                        logLevel: vars.logger.logLevel
-                    });
-                } else {
-                    await vars.eventManager.publisher.publish(
-                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                        vars.eventManager.createMessageToPublish(
-                            game.accessCode,
-                            socketArgs.timerEventSubtype,
-                            vars.instanceId,
-                            JSON.stringify({
-                                socketId: socketArgs.socketId,
-                                timeRemaining: game.timerParams.timeRemaining,
-                                paused: game.timerParams.paused
-                            })
-                        )
-                    );
+            const timer = vars.timerManager.timers[game.accessCode];
+            if (timer) {
+                // Handle the timer command on this instance
+                switch (socketArgs.timerEventSubtype) {
+                    case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
+                        timer.stopTimer();
+                        game.timerParams.paused = true;
+                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
+                        await vars.gameManager.refreshGame(game);
+                        await vars.eventManager.publisher.publish(
+                            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                            vars.eventManager.createMessageToPublish(
+                                game.accessCode,
+                                GAME_PROCESS_COMMANDS.PAUSE_TIMER,
+                                vars.instanceId,
+                                JSON.stringify({ timeRemaining: timer.currentTimeInMillis })
+                            )
+                        );
+                        break;
+                    case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                        timer.resumeTimer();
+                        game.timerParams.paused = false;
+                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
+                        await vars.gameManager.refreshGame(game);
+                        await vars.eventManager.publisher.publish(
+                            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                            vars.eventManager.createMessageToPublish(
+                                game.accessCode,
+                                GAME_PROCESS_COMMANDS.RESUME_TIMER,
+                                vars.instanceId,
+                                JSON.stringify({ timeRemaining: timer.currentTimeInMillis })
+                            )
+                        );
+                        break;
+                    case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+                        await vars.eventManager.publisher.publish(
+                            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                            vars.eventManager.createMessageToPublish(
+                                game.accessCode,
+                                GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                                vars.instanceId,
+                                JSON.stringify({
+                                    socketId: socketArgs.socketId,
+                                    timeRemaining: timer.currentTimeInMillis
+                                })
+                            )
+                        );
+                        break;
                 }
+            } else {
+                // Timer not on this instance either, send back stored value
+                await vars.eventManager.publisher.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        socketArgs.timerEventSubtype,
+                        vars.instanceId,
+                        JSON.stringify({
+                            socketId: socketArgs.socketId,
+                            timeRemaining: game.timerParams.timeRemaining,
+                            paused: game.timerParams.paused
+                        })
+                    )
+                );
             }
         }
     },

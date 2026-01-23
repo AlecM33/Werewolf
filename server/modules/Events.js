@@ -339,6 +339,8 @@ const Events = [
                         );
                         break;
                     case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                        // resumeTimer() returns the timesUpPromise, but we don't await it here
+                        // because timer completion is already handled by TimerManager.runTimer()
                         timer.resumeTimer();
                         game.timerParams.paused = false;
                         game.timerParams.timeRemaining = timer.currentTimeInMillis;
@@ -419,6 +421,8 @@ const Events = [
                         );
                         break;
                     case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                        // resumeTimer() returns the timesUpPromise, but we don't await it here
+                        // because timer completion is already handled by TimerManager.runTimer()
                         timer.resumeTimer();
                         game.timerParams.paused = false;
                         game.timerParams.timeRemaining = timer.currentTimeInMillis;

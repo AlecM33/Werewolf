@@ -120,6 +120,7 @@ class GameManager {
         this.timers[game.accessCode] = timer;
         
         // Start timer in paused state initially (pausedInitially = true)
+        // Timer must be explicitly resumed by moderator
         timer.runTimer(true).then(async () => {
             this.logger.debug('Timer finished for ' + game.accessCode);
             // Trigger END_TIMER event
@@ -156,6 +157,7 @@ class GameManager {
         const timer = this.timers[game.accessCode];
         if (timer) {
             this.logger.debug('Timer found for game ' + game.accessCode);
+            // stopTimer() pauses the timer by clearing the setTimeout
             timer.stopTimer();
             return timer.currentTimeInMillis;
         }

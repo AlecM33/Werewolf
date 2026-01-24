@@ -2,6 +2,65 @@ const GameStateCurator = require('./GameStateCurator');
 const GameCreationRequest = require('../model/GameCreationRequest');
 const { EVENT_IDS, STATUS, USER_TYPES, GAME_PROCESS_COMMANDS, REDIS_CHANNELS, PRIMITIVES } = require('../config/globals');
 
+// Helper function to handle timer commands
+async function handleTimerCommand (timerEventSubtype, game, socketId, vars) {
+    switch (timerEventSubtype) {
+        case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
+            const pauseTimeRemaining = await vars.gameManager.pauseTimer(game);
+            if (pauseTimeRemaining !== null) {
+                await vars.eventManager.handleEventById(
+                    EVENT_IDS.PAUSE_TIMER,
+                    null,
+                    game,
+                    null,
+                    game.accessCode,
+                    { timeRemaining: pauseTimeRemaining },
+                    null,
+                    false
+                );
+                await vars.gameManager.refreshGame(game);
+                await vars.eventManager.publisher.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        EVENT_IDS.PAUSE_TIMER,
+                        vars.instanceId,
+                        JSON.stringify({ timeRemaining: pauseTimeRemaining })
+                    )
+                );
+            }
+            break;
+        case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+            const resumeTimeRemaining = await vars.gameManager.resumeTimer(game);
+            if (resumeTimeRemaining !== null) {
+                await vars.eventManager.handleEventById(
+                    EVENT_IDS.RESUME_TIMER,
+                    null,
+                    game,
+                    null,
+                    game.accessCode,
+                    { timeRemaining: resumeTimeRemaining },
+                    null,
+                    false
+                );
+                await vars.gameManager.refreshGame(game);
+                await vars.eventManager.publisher.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        EVENT_IDS.RESUME_TIMER,
+                        vars.instanceId,
+                        JSON.stringify({ timeRemaining: resumeTimeRemaining })
+                    )
+                );
+            }
+            break;
+        case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+            await vars.gameManager.getTimeRemaining(game, socketId);
+            break;
+    }
+}
+
 const Events = [
     {
         id: EVENT_IDS.PLAYER_JOINED,
@@ -318,63 +377,7 @@ const Events = [
             const timer = vars.gameManager.timers[game.accessCode];
             if (timer) {
                 // Timer is running on this instance, handle the request directly
-                switch (vars.timerEventSubtype) {
-                    case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
-                        const pauseTimeRemaining = await vars.gameManager.pauseTimer(game);
-                        if (pauseTimeRemaining !== null) {
-                            // Trigger PAUSE_TIMER event to update state and notify clients
-                            await vars.eventManager.handleEventById(
-                                EVENT_IDS.PAUSE_TIMER,
-                                null,
-                                game,
-                                null,
-                                game.accessCode,
-                                { timeRemaining: pauseTimeRemaining },
-                                null,
-                                false
-                            );
-                            await vars.gameManager.refreshGame(game);
-                            await vars.eventManager.publisher.publish(
-                                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                                vars.eventManager.createMessageToPublish(
-                                    game.accessCode,
-                                    EVENT_IDS.PAUSE_TIMER,
-                                    vars.instanceId,
-                                    JSON.stringify({ timeRemaining: pauseTimeRemaining })
-                                )
-                            );
-                        }
-                        break;
-                    case GAME_PROCESS_COMMANDS.RESUME_TIMER:
-                        const resumeTimeRemaining = await vars.gameManager.resumeTimer(game);
-                        if (resumeTimeRemaining !== null) {
-                            // Trigger RESUME_TIMER event to update state and notify clients
-                            await vars.eventManager.handleEventById(
-                                EVENT_IDS.RESUME_TIMER,
-                                null,
-                                game,
-                                null,
-                                game.accessCode,
-                                { timeRemaining: resumeTimeRemaining },
-                                null,
-                                false
-                            );
-                            await vars.gameManager.refreshGame(game);
-                            await vars.eventManager.publisher.publish(
-                                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                                vars.eventManager.createMessageToPublish(
-                                    game.accessCode,
-                                    EVENT_IDS.RESUME_TIMER,
-                                    vars.instanceId,
-                                    JSON.stringify({ timeRemaining: resumeTimeRemaining })
-                                )
-                            );
-                        }
-                        break;
-                    case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
-                        await vars.gameManager.getTimeRemaining(game, vars.requestingSocketId);
-                        break;
-                }
+                await handleTimerCommand(vars.timerEventSubtype, game, vars.requestingSocketId, vars);
             } else { // we need to consult another container for the timer data
                 await vars.eventManager.publisher?.publish(
                     REDIS_CHANNELS.ACTIVE_GAME_STREAM,
@@ -397,61 +400,7 @@ const Events = [
             const timer = vars.gameManager.timers[game.accessCode];
             if (timer) {
                 // Timer is running on this instance, handle the request
-                switch (socketArgs.timerEventSubtype) {
-                    case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
-                        const pauseTimeRemaining = await vars.gameManager.pauseTimer(game);
-                        if (pauseTimeRemaining !== null) {
-                            await vars.eventManager.handleEventById(
-                                EVENT_IDS.PAUSE_TIMER,
-                                null,
-                                game,
-                                null,
-                                game.accessCode,
-                                { timeRemaining: pauseTimeRemaining },
-                                null,
-                                false
-                            );
-                            await vars.gameManager.refreshGame(game);
-                            await vars.eventManager.publisher.publish(
-                                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                                vars.eventManager.createMessageToPublish(
-                                    game.accessCode,
-                                    EVENT_IDS.PAUSE_TIMER,
-                                    vars.instanceId,
-                                    JSON.stringify({ timeRemaining: pauseTimeRemaining })
-                                )
-                            );
-                        }
-                        break;
-                    case GAME_PROCESS_COMMANDS.RESUME_TIMER:
-                        const resumeTimeRemaining = await vars.gameManager.resumeTimer(game);
-                        if (resumeTimeRemaining !== null) {
-                            await vars.eventManager.handleEventById(
-                                EVENT_IDS.RESUME_TIMER,
-                                null,
-                                game,
-                                null,
-                                game.accessCode,
-                                { timeRemaining: resumeTimeRemaining },
-                                null,
-                                false
-                            );
-                            await vars.gameManager.refreshGame(game);
-                            await vars.eventManager.publisher.publish(
-                                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                                vars.eventManager.createMessageToPublish(
-                                    game.accessCode,
-                                    EVENT_IDS.RESUME_TIMER,
-                                    vars.instanceId,
-                                    JSON.stringify({ timeRemaining: resumeTimeRemaining })
-                                )
-                            );
-                        }
-                        break;
-                    case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
-                        await vars.gameManager.getTimeRemaining(game, socketArgs.socketId);
-                        break;
-                }
+                await handleTimerCommand(socketArgs.timerEventSubtype, game, socketArgs.socketId, vars);
             } else {
                 // Timer not running here, publish stored timer state
                 await vars.eventManager.publisher.publish(

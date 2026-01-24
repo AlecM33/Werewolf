@@ -584,16 +584,16 @@ describe('Events', () => {
             it('should send a message to the thread if it is found', async () => {
                 const mockTimer = { currentTimeInMillis: 5000 };
                 gameManager.timers = { ABCD: mockTimer };
-                spyOn(gameManager, 'getTimeRemaining').and.returnValue(Promise.resolve());
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, {
                         gameManager: gameManager,
                         eventManager: eventManager,
                         timerEventSubtype: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                         requestingSocketId: '2',
-                        logger: { logLevel: 'trace' }
+                        logger: { logLevel: 'trace' },
+                        instanceId: 'test'
                     });
-                expect(gameManager.getTimeRemaining).toHaveBeenCalledWith(game, '2');
+                expect(eventManager.publisher.publish).toHaveBeenCalled();
             });
         });
     });

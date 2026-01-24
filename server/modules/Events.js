@@ -55,7 +55,25 @@ async function handleTimerCommand (timerEventSubtype, game, socketId, vars) {
             }
             break;
         case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
-            await vars.gameManager.getTimeRemaining(game, socketId);
+            const timer = vars.gameManager.timers[game.accessCode];
+            const timeRemaining = timer 
+                ? timer.currentTimeInMillis 
+                : (game.timerParams ? game.timerParams.timeRemaining : 0);
+            const paused = game.timerParams ? game.timerParams.paused : false;
+            
+            await vars.eventManager.publisher.publish(
+                REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                vars.eventManager.createMessageToPublish(
+                    game.accessCode,
+                    GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    vars.instanceId,
+                    JSON.stringify({
+                        socketId: socketId,
+                        timeRemaining: timeRemaining,
+                        paused: paused
+                    })
+                )
+            );
             break;
     }
 }
@@ -396,7 +414,7 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
             const timer = vars.gameManager.timers[game.accessCode];
-            if (timer) {
+            if (timer || socketArgs.timerEventSubtype === GAME_PROCESS_COMMANDS.GET_TIME_REMAINING) {
                 await handleTimerCommand(socketArgs.timerEventSubtype, game, socketArgs.socketId, vars);
             }
         }

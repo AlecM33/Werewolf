@@ -174,16 +174,16 @@ class GameManager {
                 this.namespace.to(socketId).emit(
                     GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                     timer.currentTimeInMillis,
-                    game.timerParams.paused
+                    game.timerParams ? game.timerParams.paused : false
                 );
             } else {
-                if (game.timerParams) {
-                    this.namespace.to(socketId).emit(
-                        GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                        game.timerParams.timeRemaining,
-                        game.timerParams.paused
-                    );
-                }
+                const timeRemaining = game.timerParams ? game.timerParams.timeRemaining : 0;
+                const paused = game.timerParams ? game.timerParams.paused : false;
+                this.namespace.to(socketId).emit(
+                    GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                    timeRemaining,
+                    paused
+                );
             }
         }
     };

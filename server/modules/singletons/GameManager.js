@@ -167,27 +167,6 @@ class GameManager {
         return null;
     };
 
-    getTimeRemaining = async (game, socketId) => {
-        if (socketId) {
-            const timer = this.timers[game.accessCode];
-            if (timer) {
-                this.namespace.to(socketId).emit(
-                    GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                    timer.currentTimeInMillis,
-                    game.timerParams ? game.timerParams.paused : false
-                );
-            } else {
-                const timeRemaining = game.timerParams ? game.timerParams.timeRemaining : 0;
-                const paused = game.timerParams ? game.timerParams.paused : false;
-                this.namespace.to(socketId).emit(
-                    GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                    timeRemaining,
-                    paused
-                );
-            }
-        }
-    };
-
     checkAvailability = async (code) => {
         const game = await this.getActiveGame(code.toUpperCase().trim());
         if (game) {

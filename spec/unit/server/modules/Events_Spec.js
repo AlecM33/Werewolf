@@ -584,6 +584,7 @@ describe('Events', () => {
             it('should send a message to the thread if it is found', async () => {
                 const mockTimer = { currentTimeInMillis: 5000 };
                 gameManager.timers = { ABCD: mockTimer };
+                namespace.sockets.set('2', { id: '2' });
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, {
                         gameManager: gameManager,
@@ -593,7 +594,7 @@ describe('Events', () => {
                         logger: { logLevel: 'trace' },
                         instanceId: 'test'
                     });
-                expect(eventManager.publisher.publish).toHaveBeenCalled();
+                expect(namespace.to).toHaveBeenCalledWith('2');
             });
         });
     });

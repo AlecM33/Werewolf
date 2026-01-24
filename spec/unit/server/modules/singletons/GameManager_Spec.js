@@ -4,12 +4,11 @@ const globals = require('../../../../../server/config/globals');
 const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
 const GameManager = require('../../../../../server/modules/singletons/GameManager.js');
-const TimerManager = require('../../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../../server/modules/singletons/EventManager.js');
 const logger = require('../../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {
-    let gameManager, timerManager, eventManager, namespace, socket, game;
+    let gameManager, eventManager, namespace, socket, game;
 
     beforeAll(() => {
         spyOn(logger, 'debug');
@@ -19,11 +18,9 @@ describe('GameManager', () => {
         namespace = { in: () => { return inObj; }, to: () => { return inObj; } };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
         gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENTS.PRODUCTION, 'test');
-        timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
         eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
         eventManager.publisher = { publish: async (...a) => {} };
         gameManager.eventManager = eventManager;
-        gameManager.timerManager = timerManager;
         gameManager.setGameSocketNamespace(namespace);
         spyOn(gameManager, 'refreshGame').and.callFake(async () => {});
         spyOn(eventManager.publisher, 'publish').and.callFake(async () => {});
@@ -32,7 +29,7 @@ describe('GameManager', () => {
     beforeEach(() => {
         spyOn(namespace, 'to').and.callThrough();
         spyOn(socket, 'to').and.callThrough();
-        timerManager.timerThreads = {};
+        gameManager.timers = {};
         game = new Game(
             'ABCD',
             STATUS.LOBBY,

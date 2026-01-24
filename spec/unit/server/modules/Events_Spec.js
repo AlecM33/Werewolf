@@ -2,14 +2,13 @@
 const Game = require('../../../../server/model/Game');
 const { ENVIRONMENTS, EVENT_IDS, USER_TYPES, STATUS, GAME_PROCESS_COMMANDS } = require('../../../../server/config/globals.js');
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
-const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../server/modules/singletons/EventManager.js');
 const Events = require('../../../../server/modules/Events.js');
 const GameStateCurator = require('../../../../server/modules/GameStateCurator.js');
 const logger = require('../../../../server/modules/Logger.js')(false);
 
 describe('Events', () => {
-    let gameManager, namespace, socket, game, timerManager, eventManager;
+    let gameManager, namespace, socket, game, eventManager;
 
     beforeAll(() => {
         spyOn(logger, 'debug');
@@ -19,7 +18,6 @@ describe('Events', () => {
         namespace = { in: () => { return inObj; }, to: () => { return toObj; }, sockets: new Map() };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
         gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, ENVIRONMENTS.PRODUCTION, 'test');
-        timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
         eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
         gameManager.setGameSocketNamespace(namespace);
         eventManager.publisher = { publish: (...args) => {} };
@@ -55,7 +53,6 @@ describe('Events', () => {
         spyOn(eventManager.publisher, 'publish').and.callThrough();
         spyOn(eventManager, 'createMessageToPublish').and.stub();
         namespace.sockets = new Map();
-        timerManager.timerThreads = {};
         gameManager.timers = {};
     });
 
@@ -275,7 +272,7 @@ describe('Events', () => {
                 game.timerParams = {};
                 spyOn(gameManager, 'runTimer').and.callFake(() => {});
                 await Events.find((e) => e.id === EVENT_IDS.START_GAME)
-                    .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager, timerManager: timerManager });
+                    .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager });
                 expect(game.status).toEqual(STATUS.IN_PROGRESS);
                 expect(game.timerParams.paused).toEqual(true);
                 expect(gameManager.runTimer).toHaveBeenCalled();
@@ -368,7 +365,7 @@ describe('Events', () => {
                 gameManager.timers = { ABCD: mockTimer };
                 const stopTimerSpy = spyOn(mockTimer, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.END_GAME)
-                    .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager, timerManager: timerManager, logger: { trace: () => {} } });
+                    .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager, logger: { trace: () => {} } });
                 expect(game.status).toEqual(STATUS.ENDED);
                 expect(game.people.find(p => p.id === 'b').revealed).toBeTrue();
                 expect(stopTimerSpy).toHaveBeenCalled();
@@ -537,7 +534,7 @@ describe('Events', () => {
                 gameManager.timers = { ABCD: mockTimer };
                 spyOn(gameManager.timers.ABCD, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
-                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '222' });
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager, instanceId: '111', senderInstanceId: '222' });
                 expect(mockTimer.stopTimer).toHaveBeenCalled();
                 expect(Object.keys(gameManager.timers).length).toEqual(0);
             });
@@ -546,7 +543,7 @@ describe('Events', () => {
                 gameManager.timers = { ABCD: mockTimer };
                 spyOn(gameManager.timers.ABCD, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
-                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '111' });
+                    .stateChange(game, { personId: 'b' }, { gameManager: gameManager, instanceId: '111', senderInstanceId: '111' });
                 expect(mockTimer.stopTimer).not.toHaveBeenCalled();
                 expect(Object.keys(gameManager.timers).length).toEqual(1);
             });
@@ -577,7 +574,6 @@ describe('Events', () => {
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, { 
                         gameManager: gameManager, 
-                        timerManager: timerManager, 
                         eventManager: eventManager, 
                         instanceId: 'test',
                         timerEventSubtype: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
@@ -592,7 +588,6 @@ describe('Events', () => {
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, {
                         gameManager: gameManager,
-                        timerManager: timerManager,
                         eventManager: eventManager,
                         timerEventSubtype: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                         requestingSocketId: '2',

@@ -22,18 +22,16 @@ class GameManager {
         logger.info('CREATING SINGLETON GAME MANAGER');
         this.logger = logger;
         this.environment = environment;
-        this.timerManager = null;
         this.eventManager = null;
         this.namespace = null;
         this.instanceId = instanceId;
-        this.timers = {}; // Map of accessCode -> ServerTimer instance
+        this.timers = {};
         GameManager.instance = this;
     }
 
     getActiveGame = async (accessCode) => {
         const r = await this.eventManager.publisher.get(accessCode);
         if (r === null && this.timers[accessCode]) {
-            // Clean up orphaned timer
             this.timers[accessCode].stopTimer();
             delete this.timers[accessCode];
         }
@@ -119,11 +117,8 @@ class GameManager {
         );
         this.timers[game.accessCode] = timer;
         
-        // Start timer in paused state initially (pausedInitially = true)
-        // Timer must be explicitly resumed by moderator
         timer.runTimer(true).then(async () => {
             this.logger.debug('Timer finished for ' + game.accessCode);
-            // Trigger END_TIMER event
             game = await this.getActiveGame(game.accessCode);
             if (game) {
                 await this.eventManager.handleEventById(
@@ -147,7 +142,6 @@ class GameManager {
                     )
                 );
             }
-            // Clean up timer instance
             delete this.timers[game.accessCode];
         });
         game.startTime = new Date().toJSON();
@@ -157,7 +151,6 @@ class GameManager {
         const timer = this.timers[game.accessCode];
         if (timer) {
             this.logger.debug('Timer found for game ' + game.accessCode);
-            // stopTimer() pauses the timer by clearing the setTimeout
             timer.stopTimer();
             return timer.currentTimeInMillis;
         }
@@ -178,14 +171,12 @@ class GameManager {
         if (socketId) {
             const timer = this.timers[game.accessCode];
             if (timer) {
-                // Timer is running on this instance, emit directly
                 this.namespace.to(socketId).emit(
                     GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                     timer.currentTimeInMillis,
                     game.timerParams.paused
                 );
             } else {
-                // Timer not running on this instance, return stored value
                 if (game.timerParams) {
                     this.namespace.to(socketId).emit(
                         GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
@@ -295,7 +286,6 @@ class GameManager {
     }
 
     restartGame = async (game, namespace) => {
-        // stop any outstanding timers
         const timer = this.timers[game.accessCode];
         if (timer) {
             this.logger.info('Stopping timer for: ' + game.accessCode);

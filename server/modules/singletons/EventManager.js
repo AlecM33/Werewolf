@@ -13,7 +13,6 @@ class EventManager {
         this.io = null;
         this.publisher = null;
         this.subscriber = null;
-        this.timerManager = null;
         this.gameManager = null;
         this.instanceId = instanceId;
         EventManager.instance = this;
@@ -185,7 +184,6 @@ class EventManager {
         const event = Events.find((event) => event.id === eventId);
         const additionalVars = {
             gameManager: this.gameManager,
-            timerManager: this.timerManager,
             eventManager: this,
             requestingSocketId: requestingSocketId,
             ackFn: ackFn,

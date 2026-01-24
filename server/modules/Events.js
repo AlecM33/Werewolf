@@ -2,7 +2,6 @@ const GameStateCurator = require('./GameStateCurator');
 const GameCreationRequest = require('../model/GameCreationRequest');
 const { EVENT_IDS, STATUS, USER_TYPES, GAME_PROCESS_COMMANDS, REDIS_CHANNELS, PRIMITIVES } = require('../config/globals');
 
-// Helper function to handle timer commands
 async function handleTimerCommand (timerEventSubtype, game, socketId, vars) {
     switch (timerEventSubtype) {
         case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
@@ -376,9 +375,8 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const timer = vars.gameManager.timers[game.accessCode];
             if (timer) {
-                // Timer is running on this instance, handle the request directly
                 await handleTimerCommand(vars.timerEventSubtype, game, vars.requestingSocketId, vars);
-            } else { // we need to consult another container for the timer data
+            } else {
                 await vars.eventManager.publisher?.publish(
                     REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                     vars.eventManager.createMessageToPublish(
@@ -399,23 +397,7 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const timer = vars.gameManager.timers[game.accessCode];
             if (timer) {
-                // Timer is running on this instance, handle the request
                 await handleTimerCommand(socketArgs.timerEventSubtype, game, socketArgs.socketId, vars);
-            } else {
-                // Timer not running here, publish stored timer state
-                await vars.eventManager.publisher.publish(
-                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    vars.eventManager.createMessageToPublish(
-                        game.accessCode,
-                        socketArgs.timerEventSubtype,
-                        vars.instanceId,
-                        JSON.stringify({
-                            socketId: socketArgs.socketId,
-                            timeRemaining: game.timerParams.timeRemaining,
-                            paused: game.timerParams.paused
-                        })
-                    )
-                );
             }
         }
     },

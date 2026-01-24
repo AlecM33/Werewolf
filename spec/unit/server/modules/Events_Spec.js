@@ -1,6 +1,6 @@
 // TODO: clean up these deep relative paths? jsconfig.json is not working...
 const Game = require('../../../../server/model/Game');
-const { ENVIRONMENTS, EVENT_IDS, USER_TYPES, STATUS } = require('../../../../server/config/globals.js');
+const { ENVIRONMENTS, EVENT_IDS, USER_TYPES, STATUS, GAME_PROCESS_COMMANDS } = require('../../../../server/config/globals.js');
 const GameManager = require('../../../../server/modules/singletons/GameManager.js');
 const TimerManager = require('../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../server/modules/singletons/EventManager.js');
@@ -272,12 +272,12 @@ describe('Events', () => {
                 game.isStartable = true;
                 game.hasTimer = true;
                 game.timerParams = {};
-                spyOn(timerManager, 'runTimer').and.callFake((a, b) => {});
+                spyOn(gameManager, 'runTimer').and.callFake(() => {});
                 await Events.find((e) => e.id === EVENT_IDS.START_GAME)
                     .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager, timerManager: timerManager });
                 expect(game.status).toEqual(STATUS.IN_PROGRESS);
                 expect(game.timerParams.paused).toEqual(true);
-                expect(timerManager.runTimer).toHaveBeenCalled();
+                expect(gameManager.runTimer).toHaveBeenCalled();
             });
         });
         describe('communicate', () => {
@@ -530,22 +530,22 @@ describe('Events', () => {
     describe(EVENT_IDS.RESTART_GAME, () => {
         describe('stateChange', () => {
             it('should kill any alive timer thread if the instance is home to it', async () => {
-                const mockThread = { kill: () => {}, killed: false };
-                timerManager.timerThreads = { ABCD: mockThread };
-                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+                const mockTimer = { stopTimer: () => {} };
+                gameManager.timers = { ABCD: mockTimer };
+                spyOn(gameManager.timers.ABCD, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
                     .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '222' });
-                expect(mockThread.kill).toHaveBeenCalled();
-                expect(Object.keys(timerManager.timerThreads).length).toEqual(0);
+                expect(mockTimer.stopTimer).toHaveBeenCalled();
+                expect(Object.keys(gameManager.timers).length).toEqual(0);
             });
             it('should not kill the timer thread if the instance sent the event', async () => {
-                const mockThread = { kill: () => {}, killed: false };
-                timerManager.timerThreads = { ABCD: mockThread };
-                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+                const mockTimer = { stopTimer: () => {} };
+                gameManager.timers = { ABCD: mockTimer };
+                spyOn(gameManager.timers.ABCD, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.RESTART_GAME)
                     .stateChange(game, { personId: 'b' }, { gameManager: gameManager, timerManager: timerManager, instanceId: '111', senderInstanceId: '111' });
-                expect(mockThread.kill).not.toHaveBeenCalled();
-                expect(Object.keys(timerManager.timerThreads).length).toEqual(1);
+                expect(mockTimer.stopTimer).not.toHaveBeenCalled();
+                expect(Object.keys(gameManager.timers).length).toEqual(1);
             });
         });
         describe('communicate', () => {
@@ -571,28 +571,30 @@ describe('Events', () => {
         describe('communicate', () => {
             it('should publish an event to source timer data if the timer thread is not found', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
-                    .communicate(game, {}, { gameManager: gameManager, timerManager: timerManager, eventManager: eventManager });
+                    .communicate(game, {}, { 
+                        gameManager: gameManager, 
+                        timerManager: timerManager, 
+                        eventManager: eventManager, 
+                        instanceId: 'test',
+                        timerEventSubtype: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                        requestingSocketId: '2'
+                    });
                 expect(eventManager.publisher.publish).toHaveBeenCalled();
             });
             it('should send a message to the thread if it is found', async () => {
-                const mockThread = { exitCode: null, kill: () => {}, send: (...args) => {}, killed: false };
-                timerManager.timerThreads = { ABCD: mockThread };
-                spyOn(timerManager.timerThreads.ABCD, 'send').and.callThrough();
+                const mockTimer = { currentTimeInMillis: 5000 };
+                gameManager.timers = { ABCD: mockTimer };
+                spyOn(gameManager, 'getTimeRemaining').and.returnValue(Promise.resolve());
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, {
                         gameManager: gameManager,
                         timerManager: timerManager,
                         eventManager: eventManager,
-                        timerEventSubtype: EVENT_IDS.GET_TIME_REMAINING,
+                        timerEventSubtype: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                         requestingSocketId: '2',
                         logger: { logLevel: 'trace' }
                     });
-                expect(mockThread.send).toHaveBeenCalledWith({
-                    command: EVENT_IDS.GET_TIME_REMAINING,
-                    accessCode: 'ABCD',
-                    socketId: '2',
-                    logLevel: 'trace'
-                });
+                expect(gameManager.getTimeRemaining).toHaveBeenCalledWith(game, '2');
             });
         });
     });

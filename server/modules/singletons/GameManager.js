@@ -272,6 +272,10 @@ class GameManager {
             delete this.timers[game.accessCode];
         }
 
+        if (game.timerParams) {
+            game.timerParams.ended = false;
+        }
+
         for (let i = 0; i < game.people.length; i ++) {
             if (game.people[i].userType === USER_TYPES.KILLED_PLAYER) {
                 game.people[i].userType = USER_TYPES.PLAYER;

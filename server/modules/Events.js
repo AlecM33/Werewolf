@@ -313,17 +313,32 @@ const Events = [
     },
     {
         id: EVENT_IDS.TIMER_EVENT,
-        stateChange: async (game, socketArgs, vars) => {},
-        communicate: async (game, socketArgs, vars) => {
+        stateChange: async (game, socketArgs, vars) => {
             const timer = vars.timerManager.timers[game.accessCode];
             if (timer) {
-                // Handle timer commands directly
+                // Update game state based on timer command
                 switch (vars.timerEventSubtype) {
                     case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                         timer.stopTimer();
                         game.timerParams.paused = true;
                         game.timerParams.timeRemaining = timer.currentTimeInMillis;
-                        await vars.gameManager.refreshGame(game);
+                        break;
+                    case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                        // resumeTimer() returns the timesUpPromise, but we don't await it here
+                        // because timer completion is already handled by TimerManager.runTimer()
+                        timer.resumeTimer();
+                        game.timerParams.paused = false;
+                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
+                        break;
+                }
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            const timer = vars.timerManager.timers[game.accessCode];
+            if (timer) {
+                // Communicate timer state to clients and other instances
+                switch (vars.timerEventSubtype) {
+                    case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                         vars.gameManager.namespace.in(game.accessCode).emit(
                             GAME_PROCESS_COMMANDS.PAUSE_TIMER,
                             timer.currentTimeInMillis
@@ -339,12 +354,6 @@ const Events = [
                         );
                         break;
                     case GAME_PROCESS_COMMANDS.RESUME_TIMER:
-                        // resumeTimer() returns the timesUpPromise, but we don't await it here
-                        // because timer completion is already handled by TimerManager.runTimer()
-                        timer.resumeTimer();
-                        game.timerParams.paused = false;
-                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
-                        await vars.gameManager.refreshGame(game);
                         vars.gameManager.namespace.in(game.accessCode).emit(
                             GAME_PROCESS_COMMANDS.RESUME_TIMER,
                             timer.currentTimeInMillis
@@ -388,17 +397,32 @@ const Events = [
         /* This event is a request from another instance to consult its timer data. In response
         * to this event, this instance will check if it is home to a particular timer. */
         id: EVENT_IDS.SOURCE_TIMER_EVENT,
-        stateChange: async (game, socketArgs, vars) => {},
-        communicate: async (game, socketArgs, vars) => {
+        stateChange: async (game, socketArgs, vars) => {
             const timer = vars.timerManager.timers[game.accessCode];
             if (timer) {
-                // Handle the timer command on this instance
+                // Update game state based on timer command
                 switch (socketArgs.timerEventSubtype) {
                     case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                         timer.stopTimer();
                         game.timerParams.paused = true;
                         game.timerParams.timeRemaining = timer.currentTimeInMillis;
-                        await vars.gameManager.refreshGame(game);
+                        break;
+                    case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+                        // resumeTimer() returns the timesUpPromise, but we don't await it here
+                        // because timer completion is already handled by TimerManager.runTimer()
+                        timer.resumeTimer();
+                        game.timerParams.paused = false;
+                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
+                        break;
+                }
+            }
+        },
+        communicate: async (game, socketArgs, vars) => {
+            const timer = vars.timerManager.timers[game.accessCode];
+            if (timer) {
+                // Publish timer state to other instances
+                switch (socketArgs.timerEventSubtype) {
+                    case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
                         await vars.eventManager.publisher.publish(
                             REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                             vars.eventManager.createMessageToPublish(
@@ -410,12 +434,6 @@ const Events = [
                         );
                         break;
                     case GAME_PROCESS_COMMANDS.RESUME_TIMER:
-                        // resumeTimer() returns the timesUpPromise, but we don't await it here
-                        // because timer completion is already handled by TimerManager.runTimer()
-                        timer.resumeTimer();
-                        game.timerParams.paused = false;
-                        game.timerParams.timeRemaining = timer.currentTimeInMillis;
-                        await vars.gameManager.refreshGame(game);
                         await vars.eventManager.publisher.publish(
                             REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                             vars.eventManager.createMessageToPublish(
@@ -441,22 +459,8 @@ const Events = [
                         );
                         break;
                 }
-            } else {
-                // Timer not on this instance either, send back stored value
-                await vars.eventManager.publisher.publish(
-                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    vars.eventManager.createMessageToPublish(
-                        game.accessCode,
-                        socketArgs.timerEventSubtype,
-                        vars.instanceId,
-                        JSON.stringify({
-                            socketId: socketArgs.socketId,
-                            timeRemaining: game.timerParams.timeRemaining,
-                            paused: game.timerParams.paused
-                        })
-                    )
-                );
             }
+            // If timer is not on this instance, do nothing (don't respond)
         }
     },
     {

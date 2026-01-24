@@ -54,6 +54,40 @@ async function handleTimerCommand (timerEventSubtype, game, socketId, vars) {
                 );
             }
             break;
+        case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+            if (game.timerParams && game.timerParams.ended) {
+                const socket = vars.gameManager.namespace.sockets.get(socketId);
+                if (socket) {
+                    vars.gameManager.namespace.to(socket.id).emit(
+                        GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                        0,
+                        false
+                    );
+                }
+            } else {
+                const timer = vars.gameManager.timers[game.accessCode];
+                if (timer) {
+                    const socket = vars.gameManager.namespace.sockets.get(socketId);
+                    if (socket) {
+                        vars.gameManager.namespace.to(socket.id).emit(
+                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                            timer.currentTimeInMillis,
+                            game.timerParams ? game.timerParams.paused : false
+                        );
+                    }
+                } else {
+                    await vars.eventManager.publisher?.publish(
+                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                        vars.eventManager.createMessageToPublish(
+                            game.accessCode,
+                            EVENT_IDS.SOURCE_TIMER_EVENT,
+                            vars.instanceId,
+                            JSON.stringify({ socketId: socketId, timerEventSubtype: timerEventSubtype })
+                        )
+                    );
+                }
+            }
+            break;
     }
 }
 
@@ -370,55 +404,7 @@ const Events = [
         id: EVENT_IDS.TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            if (vars.timerEventSubtype === GAME_PROCESS_COMMANDS.GET_TIME_REMAINING) {
-                if (game.timerParams && game.timerParams.ended) {
-                    const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
-                    if (socket) {
-                        vars.gameManager.namespace.to(socket.id).emit(
-                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                            0,
-                            false
-                        );
-                    }
-                } else {
-                    const timer = vars.gameManager.timers[game.accessCode];
-                    if (timer) {
-                        const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
-                        if (socket) {
-                            vars.gameManager.namespace.to(socket.id).emit(
-                                GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                                timer.currentTimeInMillis,
-                                game.timerParams ? game.timerParams.paused : false
-                            );
-                        }
-                    } else {
-                        await vars.eventManager.publisher?.publish(
-                            REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                            vars.eventManager.createMessageToPublish(
-                                game.accessCode,
-                                EVENT_IDS.SOURCE_TIMER_EVENT,
-                                vars.instanceId,
-                                JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
-                            )
-                        );
-                    }
-                }
-            } else {
-                const timer = vars.gameManager.timers[game.accessCode];
-                if (timer) {
-                    await handleTimerCommand(vars.timerEventSubtype, game, vars.requestingSocketId, vars);
-                } else {
-                    await vars.eventManager.publisher?.publish(
-                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                        vars.eventManager.createMessageToPublish(
-                            game.accessCode,
-                            EVENT_IDS.SOURCE_TIMER_EVENT,
-                            vars.instanceId,
-                            JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
-                        )
-                    );
-                }
-            }
+            await handleTimerCommand(vars.timerEventSubtype, game, vars.requestingSocketId, vars);
         }
     },
     {

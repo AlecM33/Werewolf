@@ -146,14 +146,8 @@ class EventManager {
                         game.accessCode,
                         args,
                         ackFn,
-                        false,
+                        true,
                         eventId
-                    );
-                    // Refresh and sync game state after timer events
-                    await gameManager.refreshGame(game);
-                    await this.publisher?.publish(
-                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                        this.createMessageToPublish(game.accessCode, EVENT_IDS.TIMER_EVENT, this.instanceId, JSON.stringify({ timerEventSubtype: eventId, socketId: socket.id }))
                     );
                 } else {
                     await this.handleAndSyncSocketEvent(eventId, game, socket, args, ackFn);

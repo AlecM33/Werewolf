@@ -220,9 +220,10 @@ const Events = [
         id: EVENT_IDS.END_GAME,
         stateChange: async (game, socketArgs, vars) => {
             game.status = STATUS.ENDED;
-            if (game.hasTimer && vars.timerManager.timerThreads[game.accessCode]) {
-                vars.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
-                vars.timerManager.timerThreads[game.accessCode].kill();
+            if (game.hasTimer && vars.gameManager.timers[game.accessCode]) {
+                vars.logger.trace('STOPPING TIMER FOR ENDED GAME ' + game.accessCode);
+                vars.gameManager.timers[game.accessCode].stopTimer();
+                delete vars.gameManager.timers[game.accessCode];
             }
             for (const person of game.people) {
                 person.revealed = true;

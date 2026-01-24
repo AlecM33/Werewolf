@@ -56,6 +56,7 @@ describe('Events', () => {
         spyOn(eventManager, 'createMessageToPublish').and.stub();
         namespace.sockets = new Map();
         timerManager.timerThreads = {};
+        gameManager.timers = {};
     });
 
     describe(EVENT_IDS.PLAYER_JOINED, () => {
@@ -363,13 +364,15 @@ describe('Events', () => {
             });
             it('should end the game and kill the associated timer thread', async () => {
                 game.hasTimer = true;
-                timerManager.timerThreads = { ABCD: { kill: () => {} } };
-                spyOn(timerManager.timerThreads.ABCD, 'kill').and.callThrough();
+                const mockTimer = { stopTimer: () => {} };
+                gameManager.timers = { ABCD: mockTimer };
+                const stopTimerSpy = spyOn(mockTimer, 'stopTimer').and.callThrough();
                 await Events.find((e) => e.id === EVENT_IDS.END_GAME)
                     .stateChange(game, { id: 'b', assigned: true }, { gameManager: gameManager, timerManager: timerManager, logger: { trace: () => {} } });
                 expect(game.status).toEqual(STATUS.ENDED);
                 expect(game.people.find(p => p.id === 'b').revealed).toBeTrue();
-                expect(timerManager.timerThreads.ABCD.kill).toHaveBeenCalled();
+                expect(stopTimerSpy).toHaveBeenCalled();
+                expect(gameManager.timers.ABCD).toBeUndefined();
             });
         });
         describe('communicate', () => {
@@ -570,6 +573,7 @@ describe('Events', () => {
     describe(EVENT_IDS.TIMER_EVENT, () => {
         describe('communicate', () => {
             it('should publish an event to source timer data if the timer thread is not found', async () => {
+                game.timerParams = { hours: 1, minutes: 0, paused: true, timeRemaining: 3600000 };
                 await Events.find((e) => e.id === EVENT_IDS.TIMER_EVENT)
                     .communicate(game, {}, { 
                         gameManager: gameManager, 

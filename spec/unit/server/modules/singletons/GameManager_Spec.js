@@ -112,6 +112,9 @@ describe('GameManager', () => {
             game.moderator = game.people[0];
             game.people.find(p => p.id === 'b').userType = USER_TYPES.MODERATOR;
             game.hasDedicatedModerator = false;
+            // Add a mock timer
+            const mockTimer = { stopTimer: () => {} };
+            gameManager.timers = { ABCD: mockTimer };
 
             await gameManager.restartGame(game, namespace);
 

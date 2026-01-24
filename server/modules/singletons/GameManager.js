@@ -2,7 +2,6 @@ const {
     STATUS,
     PRIMITIVES,
     ERROR_MESSAGES,
-    GAME_PROCESS_COMMANDS,
     USER_TYPES,
     EVENT_IDS,
     REDIS_CHANNELS
@@ -12,6 +11,7 @@ const Person = require('../../model/Person');
 const GameStateCurator = require('../GameStateCurator');
 const UsernameGenerator = require('../UsernameGenerator');
 const GameCreationRequest = require('../../model/GameCreationRequest');
+const ServerTimer = require('../ServerTimer');
 
 class GameManager {
     constructor (logger, environment, instanceId) {
@@ -21,20 +21,18 @@ class GameManager {
         logger.info('CREATING SINGLETON GAME MANAGER');
         this.logger = logger;
         this.environment = environment;
-        this.timerManager = null;
         this.eventManager = null;
         this.namespace = null;
         this.instanceId = instanceId;
+        this.timers = {};
         GameManager.instance = this;
     }
 
     getActiveGame = async (accessCode) => {
         const r = await this.eventManager.publisher.get(accessCode);
-        if (r === null && this.timerManager.timerThreads[accessCode]) {
-            if (!this.timerManager.timerThreads[accessCode].killed) {
-                this.timerManager.timerThreads[accessCode].kill();
-            }
-            delete this.timerManager.timerThreads[accessCode];
+        if (r === null && this.timers[accessCode]) {
+            this.timers[accessCode].stopTimer();
+            delete this.timers[accessCode];
         }
         let activeGame;
         if (r !== null) {
@@ -108,46 +106,64 @@ class GameManager {
         });
     };
 
-    pauseTimer = async (game, logger) => {
-        const thread = this.timerManager.timerThreads[game.accessCode];
-        if (thread && !thread.killed) {
-            this.logger.debug('Timer thread found for game ' + game.accessCode);
-            thread.send({
-                command: GAME_PROCESS_COMMANDS.PAUSE_TIMER,
-                accessCode: game.accessCode,
-                logLevel: this.logger.logLevel
-            });
-        }
-    };
-
-    resumeTimer = async (game, logger) => {
-        const thread = this.timerManager.timerThreads[game.accessCode];
-        if (thread && !thread.killed) {
-            this.logger.debug('Timer thread found for game ' + game.accessCode);
-            thread.send({
-                command: GAME_PROCESS_COMMANDS.RESUME_TIMER,
-                accessCode: game.accessCode,
-                logLevel: this.logger.logLevel
-            });
-        }
-    };
-
-    getTimeRemaining = async (game, socketId) => {
-        if (socketId) {
-            const thread = this.timerManager.timerThreads[game.accessCode];
-            if (thread && (!thread.killed && thread.exitCode === null)) {
-                thread.send({
-                    command: GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                    accessCode: game.accessCode,
-                    socketId: socketId,
-                    logLevel: this.logger.logLevel
-                });
-            } else if (thread) {
-                if (game.timerParams && game.timerParams.timeRemaining === 0) {
-                    this.namespace.to(socketId).emit(GAME_PROCESS_COMMANDS.GET_TIME_REMAINING, game.timerParams.timeRemaining, game.timerParams.paused);
-                }
+    runTimer = async (game) => {
+        this.logger.debug('running timer for game ' + game.accessCode);
+        const timer = new ServerTimer(
+            game.timerParams.hours,
+            game.timerParams.minutes,
+            PRIMITIVES.CLOCK_TICK_INTERVAL_MILLIS,
+            this.logger
+        );
+        this.timers[game.accessCode] = timer;
+        
+        timer.runTimer(true).then(async () => {
+            this.logger.debug('Timer finished for ' + game.accessCode);
+            game = await this.getActiveGame(game.accessCode);
+            if (game) {
+                await this.eventManager.handleEventById(
+                    EVENT_IDS.END_TIMER,
+                    null,
+                    game,
+                    null,
+                    game.accessCode,
+                    {},
+                    null,
+                    false
+                );
+                await this.refreshGame(game);
+                await this.eventManager.publisher.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    this.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        EVENT_IDS.END_TIMER,
+                        this.instanceId,
+                        '{}'
+                    )
+                );
             }
+            delete this.timers[game.accessCode];
+        });
+        game.startTime = new Date().toJSON();
+    };
+
+    pauseTimer = async (game) => {
+        const timer = this.timers[game.accessCode];
+        if (timer) {
+            this.logger.debug('Timer found for game ' + game.accessCode);
+            timer.stopTimer();
+            return timer.currentTimeInMillis;
         }
+        return null;
+    };
+
+    resumeTimer = async (game) => {
+        const timer = this.timers[game.accessCode];
+        if (timer) {
+            this.logger.debug('Timer found for game ' + game.accessCode);
+            timer.resumeTimer();
+            return timer.currentTimeInMillis;
+        }
+        return null;
     };
 
     checkAvailability = async (code) => {
@@ -248,15 +264,15 @@ class GameManager {
     }
 
     restartGame = async (game, namespace) => {
-        // kill any outstanding timer threads
-        const subProcess = this.timerManager.timerThreads[game.accessCode];
-        if (subProcess) {
-            if (!subProcess.killed) {
-                this.logger.info('Killing timer process ' + subProcess.pid + ' for: ' + game.accessCode);
-                this.timerManager.timerThreads[game.accessCode].kill();
-            }
-            this.logger.debug('Deleting reference to subprocess ' + subProcess.pid);
-            delete this.timerManager.timerThreads[game.accessCode];
+        const timer = this.timers[game.accessCode];
+        if (timer) {
+            this.logger.info('Stopping timer for: ' + game.accessCode);
+            timer.stopTimer();
+            delete this.timers[game.accessCode];
+        }
+
+        if (game.timerParams) {
+            game.timerParams.ended = false;
         }
 
         for (let i = 0; i < game.people.length; i ++) {

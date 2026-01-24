@@ -2,6 +2,95 @@ const GameStateCurator = require('./GameStateCurator');
 const GameCreationRequest = require('../model/GameCreationRequest');
 const { EVENT_IDS, STATUS, USER_TYPES, GAME_PROCESS_COMMANDS, REDIS_CHANNELS, PRIMITIVES } = require('../config/globals');
 
+async function handleTimerCommand (timerEventSubtype, game, socketId, vars) {
+    switch (timerEventSubtype) {
+        case GAME_PROCESS_COMMANDS.PAUSE_TIMER:
+            const pauseTimeRemaining = await vars.gameManager.pauseTimer(game);
+            if (pauseTimeRemaining !== null) {
+                await vars.eventManager.handleEventById(
+                    EVENT_IDS.PAUSE_TIMER,
+                    null,
+                    game,
+                    null,
+                    game.accessCode,
+                    { timeRemaining: pauseTimeRemaining },
+                    null,
+                    false
+                );
+                await vars.gameManager.refreshGame(game);
+                await vars.eventManager.publisher.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        EVENT_IDS.PAUSE_TIMER,
+                        vars.instanceId,
+                        JSON.stringify({ timeRemaining: pauseTimeRemaining })
+                    )
+                );
+            }
+            break;
+        case GAME_PROCESS_COMMANDS.RESUME_TIMER:
+            const resumeTimeRemaining = await vars.gameManager.resumeTimer(game);
+            if (resumeTimeRemaining !== null) {
+                await vars.eventManager.handleEventById(
+                    EVENT_IDS.RESUME_TIMER,
+                    null,
+                    game,
+                    null,
+                    game.accessCode,
+                    { timeRemaining: resumeTimeRemaining },
+                    null,
+                    false
+                );
+                await vars.gameManager.refreshGame(game);
+                await vars.eventManager.publisher.publish(
+                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                    vars.eventManager.createMessageToPublish(
+                        game.accessCode,
+                        EVENT_IDS.RESUME_TIMER,
+                        vars.instanceId,
+                        JSON.stringify({ timeRemaining: resumeTimeRemaining })
+                    )
+                );
+            }
+            break;
+        case GAME_PROCESS_COMMANDS.GET_TIME_REMAINING:
+            if (game.timerParams && game.timerParams.ended) {
+                const socket = vars.gameManager.namespace.sockets.get(socketId);
+                if (socket) {
+                    vars.gameManager.namespace.to(socket.id).emit(
+                        GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                        0,
+                        false
+                    );
+                }
+            } else {
+                const timer = vars.gameManager.timers[game.accessCode];
+                if (timer) {
+                    const socket = vars.gameManager.namespace.sockets.get(socketId);
+                    if (socket) {
+                        vars.gameManager.namespace.to(socket.id).emit(
+                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
+                            timer.currentTimeInMillis,
+                            game.timerParams ? game.timerParams.paused : false
+                        );
+                    }
+                } else {
+                    await vars.eventManager.publisher?.publish(
+                        REDIS_CHANNELS.ACTIVE_GAME_STREAM,
+                        vars.eventManager.createMessageToPublish(
+                            game.accessCode,
+                            EVENT_IDS.SOURCE_TIMER_EVENT,
+                            vars.instanceId,
+                            JSON.stringify({ socketId: socketId, timerEventSubtype: timerEventSubtype })
+                        )
+                    );
+                }
+            }
+            break;
+    }
+}
+
 const Events = [
     {
         id: EVENT_IDS.PLAYER_JOINED,
@@ -164,7 +253,7 @@ const Events = [
                 vars.gameManager.deal(game);
                 if (game.hasTimer) {
                     game.timerParams.paused = true;
-                    await vars.timerManager.runTimer(game, vars.gameManager.namespace, vars.eventManager, vars.gameManager);
+                    await vars.gameManager.runTimer(game);
                 }
             }
         },
@@ -220,9 +309,10 @@ const Events = [
         id: EVENT_IDS.END_GAME,
         stateChange: async (game, socketArgs, vars) => {
             game.status = STATUS.ENDED;
-            if (game.hasTimer && vars.timerManager.timerThreads[game.accessCode]) {
-                vars.logger.trace('KILLING TIMER PROCESS FOR ENDED GAME ' + game.accessCode);
-                vars.timerManager.timerThreads[game.accessCode].kill();
+            if (game.hasTimer && vars.gameManager.timers[game.accessCode]) {
+                vars.logger.trace('STOPPING TIMER FOR ENDED GAME ' + game.accessCode);
+                vars.gameManager.timers[game.accessCode].stopTimer();
+                delete vars.gameManager.timers[game.accessCode];
             }
             for (const person of game.people) {
                 person.revealed = true;
@@ -297,12 +387,10 @@ const Events = [
         id: EVENT_IDS.RESTART_GAME,
         stateChange: async (game, socketArgs, vars) => {
             if (vars.instanceId !== vars.senderInstanceId
-                && vars.timerManager.timerThreads[game.accessCode]
+                && vars.gameManager.timers[game.accessCode]
             ) {
-                if (!vars.timerManager.timerThreads[game.accessCode].killed) {
-                    vars.timerManager.timerThreads[game.accessCode].kill();
-                }
-                delete vars.timerManager.timerThreads[game.accessCode];
+                vars.gameManager.timers[game.accessCode].stopTimer();
+                delete vars.gameManager.timers[game.accessCode];
             }
         },
         communicate: async (game, socketArgs, vars) => {
@@ -316,67 +404,34 @@ const Events = [
         id: EVENT_IDS.TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            const thread = vars.timerManager.timerThreads[game.accessCode];
-            if (thread) {
-                if (!thread.killed && thread.exitCode === null) {
-                    thread.send({
-                        command: vars.timerEventSubtype,
-                        accessCode: game.accessCode,
-                        socketId: vars.requestingSocketId,
-                        logLevel: vars.logger.logLevel
-                    });
-                } else {
-                    const socket = vars.gameManager.namespace.sockets.get(vars.requestingSocketId);
-                    if (socket) {
-                        vars.gameManager.namespace.to(socket.id).emit(
-                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
-                            game.timerParams.timeRemaining,
-                            game.timerParams.paused
-                        );
-                    }
-                }
-            } else { // we need to consult another container for the timer data
-                await vars.eventManager.publisher?.publish(
-                    REDIS_CHANNELS.ACTIVE_GAME_STREAM,
-                    vars.eventManager.createMessageToPublish(
-                        game.accessCode,
-                        EVENT_IDS.SOURCE_TIMER_EVENT,
-                        vars.instanceId,
-                        JSON.stringify({ socketId: vars.requestingSocketId, timerEventSubtype: vars.timerEventSubtype })
-                    )
-                );
-            }
+            await handleTimerCommand(vars.timerEventSubtype, game, vars.requestingSocketId, vars);
         }
     },
     {
-        /* This event is a request from another instance to consult its timer data. In response
-        * to this event, this instance will check if it is home to a particular timer thread. */
         id: EVENT_IDS.SOURCE_TIMER_EVENT,
         stateChange: async (game, socketArgs, vars) => {},
         communicate: async (game, socketArgs, vars) => {
-            const thread = vars.timerManager.timerThreads[game.accessCode];
-            if (thread) {
-                if (!thread.killed && thread.exitCode === null) {
-                    thread.send({
-                        command: socketArgs.timerEventSubtype,
-                        accessCode: game.accessCode,
-                        socketId: socketArgs.socketId,
-                        logLevel: vars.logger.logLevel
-                    });
-                } else {
+            if (socketArgs.timerEventSubtype === GAME_PROCESS_COMMANDS.GET_TIME_REMAINING) {
+                const timer = vars.gameManager.timers[game.accessCode];
+                if (timer) {
                     await vars.eventManager.publisher.publish(
                         REDIS_CHANNELS.ACTIVE_GAME_STREAM,
                         vars.eventManager.createMessageToPublish(
                             game.accessCode,
-                            socketArgs.timerEventSubtype,
+                            GAME_PROCESS_COMMANDS.GET_TIME_REMAINING,
                             vars.instanceId,
                             JSON.stringify({
                                 socketId: socketArgs.socketId,
-                                timeRemaining: game.timerParams.timeRemaining,
-                                paused: game.timerParams.paused
+                                timeRemaining: timer.currentTimeInMillis,
+                                paused: game.timerParams ? game.timerParams.paused : false
                             })
                         )
                     );
+                }
+            } else {
+                const timer = vars.gameManager.timers[game.accessCode];
+                if (timer) {
+                    await handleTimerCommand(socketArgs.timerEventSubtype, game, socketArgs.socketId, vars);
                 }
             }
         }
@@ -405,6 +460,7 @@ const Events = [
         stateChange: async (game, socketArgs, vars) => {
             game.timerParams.paused = false;
             game.timerParams.timeRemaining = 0;
+            game.timerParams.ended = true;
         },
         communicate: async (game, socketArgs, vars) => {
             vars.gameManager.namespace.in(game.accessCode).emit(GAME_PROCESS_COMMANDS.END_TIMER);

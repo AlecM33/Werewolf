@@ -4,12 +4,11 @@ const globals = require('../../../../../server/config/globals');
 const USER_TYPES = globals.USER_TYPES;
 const STATUS = globals.STATUS;
 const GameManager = require('../../../../../server/modules/singletons/GameManager.js');
-const TimerManager = require('../../../../../server/modules/singletons/TimerManager.js');
 const EventManager = require('../../../../../server/modules/singletons/EventManager.js');
 const logger = require('../../../../../server/modules/Logger.js')(false);
 
 describe('GameManager', () => {
-    let gameManager, timerManager, eventManager, namespace, socket, game;
+    let gameManager, eventManager, namespace, socket, game;
 
     beforeAll(() => {
         spyOn(logger, 'debug');
@@ -19,11 +18,9 @@ describe('GameManager', () => {
         namespace = { in: () => { return inObj; }, to: () => { return inObj; } };
         socket = { id: '123', emit: () => {}, to: () => { return { emit: () => {} }; } };
         gameManager = GameManager.instance ? GameManager.instance : new GameManager(logger, globals.ENVIRONMENTS.PRODUCTION, 'test');
-        timerManager = TimerManager.instance ? TimerManager.instance : new TimerManager(logger, 'test');
         eventManager = EventManager.instance ? EventManager.instance : new EventManager(logger, 'test');
         eventManager.publisher = { publish: async (...a) => {} };
         gameManager.eventManager = eventManager;
-        gameManager.timerManager = timerManager;
         gameManager.setGameSocketNamespace(namespace);
         spyOn(gameManager, 'refreshGame').and.callFake(async () => {});
         spyOn(eventManager.publisher, 'publish').and.callFake(async () => {});
@@ -32,7 +29,7 @@ describe('GameManager', () => {
     beforeEach(() => {
         spyOn(namespace, 'to').and.callThrough();
         spyOn(socket, 'to').and.callThrough();
-        timerManager.timerThreads = {};
+        gameManager.timers = {};
         game = new Game(
             'ABCD',
             STATUS.LOBBY,
@@ -91,16 +88,17 @@ describe('GameManager', () => {
         it('should reset all relevant game parameters, including when the game has a timer', async () => {
             game.timerParams = { hours: 2, minutes: 2, paused: false };
             game.hasTimer = true;
-            timerManager.timerThreads = { ABCD: { kill: () => {} } };
+            const mockTimer = { stopTimer: () => {} };
+            gameManager.timers = { ABCD: mockTimer };
             game.status = STATUS.ENDED;
 
-            const threadKillSpy = spyOn(timerManager.timerThreads.ABCD, 'kill');
+            const stopTimerSpy = spyOn(gameManager.timers.ABCD, 'stopTimer');
             const emitSpy = spyOn(namespace.in(), 'emit');
 
             await gameManager.restartGame(game, namespace);
 
             expect(game.status).toEqual(STATUS.LOBBY);
-            expect(threadKillSpy).toHaveBeenCalled();
+            expect(stopTimerSpy).toHaveBeenCalled();
             expect(emitSpy).toHaveBeenCalledWith(globals.EVENT_IDS.RESTART_GAME);
         });
 
@@ -111,6 +109,9 @@ describe('GameManager', () => {
             game.moderator = game.people[0];
             game.people.find(p => p.id === 'b').userType = USER_TYPES.MODERATOR;
             game.hasDedicatedModerator = false;
+            // Add a mock timer
+            const mockTimer = { stopTimer: () => {} };
+            gameManager.timers = { ABCD: mockTimer };
 
             await gameManager.restartGame(game, namespace);
 

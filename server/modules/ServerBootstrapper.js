@@ -6,14 +6,12 @@ const fs = require('fs');
 const crypto = require('crypto');
 const EventManager = require('./singletons/EventManager.js');
 const GameManager = require('./singletons/GameManager.js');
-const TimerManager = require('./singletons/TimerManager.js');
 const rateLimit = require('express-rate-limit').default;
 
 const ServerBootstrapper = {
 
     singletons: (logger, instanceId) => {
         return {
-            timerManager: new TimerManager(logger, instanceId),
             eventManager: new EventManager(logger, instanceId),
             gameManager: process.env.NODE_ENV.trim() === 'development'
                 ? new GameManager(logger, ENVIRONMENTS.LOCAL, instanceId)
@@ -22,12 +20,9 @@ const ServerBootstrapper = {
     },
 
     injectDependencies: (singletons) => {
-        const timerManager = require('./singletons/TimerManager').instance;
         const gameManager = require('./singletons/GameManager').instance;
         const eventManager = require('./singletons/EventManager').instance;
-        singletons.gameManager.timerManager = timerManager;
         singletons.gameManager.eventManager = eventManager;
-        singletons.eventManager.timerManager = timerManager;
         singletons.eventManager.gameManager = gameManager;
     },
 

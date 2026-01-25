@@ -194,11 +194,15 @@ export const HTMLFragments = {
         <label id='players-alive-label'></label>
         <div id="spectator-count" tabindex="0"></div>
         <div id='game-player-list'>
-            <div class='evil-players'>
+            <div id="independent-players" class='independent-players' style="display: none;">
+                <label class='independent'>Team Independent</label>
+                <div id='player-list-moderator-team-independent'></div>
+            </div>
+            <div id="evil-players" class='evil-players' style="display: none;">
                 <label class='evil'>Team Evil</label>
                 <div id='player-list-moderator-team-evil'></div>
             </div>
-            <div class='good-players'>
+            <div id="good-players" class='good-players' style="display: none;">
                 <label class='good'>Team Good</label>
                 <div id='player-list-moderator-team-good'></div>
             </div>

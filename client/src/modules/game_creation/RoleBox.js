@@ -391,7 +391,7 @@ function validateCustomRoleCookie (cookie) {
                 for (const entry of cookieJSON) {
                     if (entry !== null && typeof entry === 'object') {
                         if (typeof entry.role !== 'string' || entry.role.length > PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH
-                            || typeof entry.team !== 'string' || (entry.team !== ALIGNMENT.GOOD && entry.team !== ALIGNMENT.EVIL)
+                            || typeof entry.team !== 'string' || (entry.team !== ALIGNMENT.GOOD && entry.team !== ALIGNMENT.EVIL && entry.team !== ALIGNMENT.INDEPENDENT)
                             || typeof entry.description !== 'string' || entry.description.length > PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
                         ) {
                             return false;

@@ -424,7 +424,7 @@ h1 {
     display: none;
     position: relative;
     border: 5px solid transparent;
-    background-color: #e3e3e3;
+    background-color: #efefef;
     flex-direction: column;
     cursor: pointer;
     justify-content: space-between;
@@ -460,6 +460,10 @@ h1 {
 
 .game-role-evil {
     border: 4px solid #c55454 !important;
+}
+
+.game-role-independent {
+    border: 4px solid #af8523 !important;
 }
 
 #game-role-back {
@@ -548,7 +552,7 @@ h1 {
 }
 
 #game-role #role-name.independent {
-    color: #d4a027 !important;
+    color: #af8523 !important;
 }
 
 #role-image {

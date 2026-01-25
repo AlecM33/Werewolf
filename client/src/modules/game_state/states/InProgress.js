@@ -299,36 +299,45 @@ export class InProgress {
             && ((p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
                 || p.killed)
         );
-        this.renderGroupOfPlayers(
-            teamEvil,
-            this.killPlayerHandlers,
-            this.revealRoleHandlers,
-            this.stateBucket.currentGameState.accessCode,
-            ALIGNMENT.EVIL,
-            this.stateBucket.currentGameState.people.find(person =>
-                person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
-            this.socket
-        );
-        this.renderGroupOfPlayers(
-            teamGood,
-            this.killPlayerHandlers,
-            this.revealRoleHandlers,
-            this.stateBucket.currentGameState.accessCode,
-            ALIGNMENT.GOOD,
-            this.stateBucket.currentGameState.people.find(person =>
-                person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
-            this.socket
-        );
-        this.renderGroupOfPlayers(
-            teamIndependent,
-            this.killPlayerHandlers,
-            this.revealRoleHandlers,
-            this.stateBucket.currentGameState.accessCode,
-            ALIGNMENT.INDEPENDENT,
-            this.stateBucket.currentGameState.people.find(person =>
-                person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
-            this.socket
-        );
+        if (teamEvil.length > 0) {
+            document.getElementById(`${ALIGNMENT.EVIL}-players`).style.display = 'block';
+            this.renderGroupOfPlayers(
+                teamEvil,
+                this.killPlayerHandlers,
+                this.revealRoleHandlers,
+                this.stateBucket.currentGameState.accessCode,
+                ALIGNMENT.EVIL,
+                this.stateBucket.currentGameState.people.find(person =>
+                    person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
+                this.socket
+            );
+        }
+        if (teamGood.length > 0) {
+            document.getElementById(`${ALIGNMENT.GOOD}-players`).style.display = 'block';
+            this.renderGroupOfPlayers(
+                teamGood,
+                this.killPlayerHandlers,
+                this.revealRoleHandlers,
+                this.stateBucket.currentGameState.accessCode,
+                ALIGNMENT.GOOD,
+                this.stateBucket.currentGameState.people.find(person =>
+                    person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
+                this.socket
+            );
+        }
+        if (teamIndependent.length > 0) {
+            document.getElementById(`${ALIGNMENT.INDEPENDENT}-players`).style.display = 'block';
+            this.renderGroupOfPlayers(
+                teamIndependent,
+                this.killPlayerHandlers,
+                this.revealRoleHandlers,
+                this.stateBucket.currentGameState.accessCode,
+                ALIGNMENT.INDEPENDENT,
+                this.stateBucket.currentGameState.people.find(person =>
+                    person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
+                this.socket
+            );
+        }
         document.getElementById('players-alive-label').innerText =
             'Players: ' + this.stateBucket.currentGameState.people.filter((person) => !person.out).length + ' / ' +
             this.stateBucket.currentGameState.gameSize + ' Alive';

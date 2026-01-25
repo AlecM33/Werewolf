@@ -300,7 +300,7 @@ export class InProgress {
                 || p.killed)
         );
         if (teamEvil.length > 0) {
-            document.getElementById(`${ALIGNMENT.EVIL}-players`).style.display = 'block';
+            document.getElementById(`${ALIGNMENT.EVIL}-players`).classList.remove('hidden');
             this.renderGroupOfPlayers(
                 teamEvil,
                 this.killPlayerHandlers,
@@ -313,7 +313,7 @@ export class InProgress {
             );
         }
         if (teamGood.length > 0) {
-            document.getElementById(`${ALIGNMENT.GOOD}-players`).style.display = 'block';
+            document.getElementById(`${ALIGNMENT.GOOD}-players`).classList.remove('hidden');
             this.renderGroupOfPlayers(
                 teamGood,
                 this.killPlayerHandlers,
@@ -326,7 +326,7 @@ export class InProgress {
             );
         }
         if (teamIndependent.length > 0) {
-            document.getElementById(`${ALIGNMENT.INDEPENDENT}-players`).style.display = 'block';
+            document.getElementById(`${ALIGNMENT.INDEPENDENT}-players`).classList.remove('hidden');
             this.renderGroupOfPlayers(
                 teamIndependent,
                 this.killPlayerHandlers,

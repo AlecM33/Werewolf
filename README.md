@@ -3,7 +3,7 @@
 </p>
 
 [![Node.js CI](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/node.js.yml)
-[![CodeQL](https://github.com/AlecM33/Werewolf/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/codeql-analysis.yml)
+[![CodeQL Advanced](https://github.com/AlecM33/Werewolf/actions/workflows/codeql.yml/badge.svg)](https://github.com/AlecM33/Werewolf/actions/workflows/codeql.yml)
 
 Find the latest production deployment at: https://play-werewolf.app/
 

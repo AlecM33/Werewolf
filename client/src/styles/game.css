@@ -462,6 +462,10 @@ h1 {
     border: 4px solid #c55454 !important;
 }
 
+.game-role-independent {
+    border: 4px solid #d4a027 !important;
+}
+
 #game-role-back {
     display: flex;
     align-items: center;

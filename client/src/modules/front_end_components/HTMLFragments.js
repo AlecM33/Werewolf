@@ -202,6 +202,10 @@ export const HTMLFragments = {
                 <label class='good'>Team Good</label>
                 <div id='player-list-moderator-team-good'></div>
             </div>
+            <div class='independent-players'>
+                <label class='independent'>Team Independent</label>
+                <div id='player-list-moderator-team-independent'></div>
+            </div>
         </div>
     </div>`,
     TEMP_MOD_GAME_VIEW:

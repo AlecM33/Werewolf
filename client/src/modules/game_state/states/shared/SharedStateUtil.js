@@ -5,8 +5,7 @@ import {
     ENVIRONMENTS,
     SOCKET_EVENTS,
     USER_TYPE_ICONS,
-    USER_TYPES,
-    ALIGNMENT
+    USER_TYPES
 } from '../../../../config/globals.js';
 import { toast } from '../../../front_end_components/Toast.js';
 import { Confirmation } from '../../../front_end_components/Confirmation.js';

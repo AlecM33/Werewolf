@@ -21,7 +21,8 @@ export const STATUS = {
 
 export const ALIGNMENT = {
     GOOD: 'good',
-    EVIL: 'evil'
+    EVIL: 'evil',
+    INDEPENDENT: 'independent'
 };
 
 export const MESSAGES = {

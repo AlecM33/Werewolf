@@ -608,6 +608,15 @@ input {
     font-weight: bold;
 }
 
+.independent, .compact-card.independent .card-role {
+    color: #af8523 !important;
+    font-weight: bold;
+}
+
+.independent-players, #deck-independent {
+    border: 2px solid rgba(212, 160, 39, 0.39);
+}
+
 @keyframes placeholder {
     0%{
         background-position: 50% 0

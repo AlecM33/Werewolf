@@ -31,7 +31,8 @@ export class RoleBox {
     loadDefaultRoles = () => {
         this.defaultRoles = defaultRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === ALIGNMENT.GOOD ? -1 : 1;
+                const order = { good: 0, evil: 1, independent: 2 };
+                return order[a.team] - order[b.team];
             }
             return a.role.localeCompare(b.role);
         }).map((role) => {
@@ -174,10 +175,7 @@ export class RoleBox {
             defaultRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE_DEFAULT;
             defaultRole.classList.add('default-role');
             defaultRole.dataset.roleId = this.defaultRoles[i].id;
-            const alignmentClass = this.defaultRoles[i].team === ALIGNMENT.GOOD
-                ? ALIGNMENT.GOOD
-                : ALIGNMENT.EVIL;
-            defaultRole.classList.add(alignmentClass);
+            defaultRole.classList.add(this.defaultRoles[i].team);
             defaultRole.querySelector('.role-name').innerText = this.defaultRoles[i].role;
             selectEl.appendChild(defaultRole);
         }
@@ -202,7 +200,8 @@ export class RoleBox {
         }
         this.customRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === ALIGNMENT.GOOD ? -1 : 1;
+                const order = { good: 0, evil: 1, independent: 2 };
+                return order[a.team] - order[b.team];
             }
             return a.role.localeCompare(b.role);
         });
@@ -212,8 +211,7 @@ export class RoleBox {
             customRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE;
             customRole.classList.add('custom-role');
             customRole.dataset.roleId = this.customRoles[i].id;
-            const alignmentClass = this.customRoles[i].team === ALIGNMENT.GOOD ? ALIGNMENT.GOOD : ALIGNMENT.EVIL;
-            customRole.classList.add(alignmentClass);
+            customRole.classList.add(this.customRoles[i].team);
             customRole.querySelector('.role-name').innerText = this.customRoles[i].role;
             selectEl.appendChild(customRole);
         }
@@ -282,8 +280,10 @@ export class RoleBox {
                         const nameEl = document.getElementById('custom-role-info-modal-name');
                         alignmentEl.classList.remove(ALIGNMENT.GOOD);
                         alignmentEl.classList.remove(ALIGNMENT.EVIL);
+                        alignmentEl.classList.remove(ALIGNMENT.INDEPENDENT);
                         nameEl.classList.remove(ALIGNMENT.GOOD);
                         nameEl.classList.remove(ALIGNMENT.EVIL);
+                        nameEl.classList.remove(ALIGNMENT.INDEPENDENT);
                         e.preventDefault();
                         let role;
                         if (isCustom) {
@@ -391,7 +391,7 @@ function validateCustomRoleCookie (cookie) {
                 for (const entry of cookieJSON) {
                     if (entry !== null && typeof entry === 'object') {
                         if (typeof entry.role !== 'string' || entry.role.length > PRIMITIVES.MAX_CUSTOM_ROLE_NAME_LENGTH
-                            || typeof entry.team !== 'string' || (entry.team !== ALIGNMENT.GOOD && entry.team !== ALIGNMENT.EVIL)
+                            || typeof entry.team !== 'string' || (entry.team !== ALIGNMENT.GOOD && entry.team !== ALIGNMENT.EVIL && entry.team !== ALIGNMENT.INDEPENDENT)
                             || typeof entry.description !== 'string' || entry.description.length > PRIMITIVES.MAX_CUSTOM_ROLE_DESCRIPTION_LENGTH
                         ) {
                             return false;

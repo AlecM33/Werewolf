@@ -5,8 +5,7 @@ import {
     ENVIRONMENTS,
     SOCKET_EVENTS,
     USER_TYPE_ICONS,
-    USER_TYPES,
-    ALIGNMENT
+    USER_TYPES
 } from '../../../../config/globals.js';
 import { toast } from '../../../front_end_components/Toast.js';
 import { Confirmation } from '../../../front_end_components/Confirmation.js';
@@ -149,7 +148,11 @@ export const SharedStateUtil = {
         document.getElementById('role-info-button').addEventListener('click', (e) => {
             const deck = stateBucket.currentGameState.deck;
             deck.sort((a, b) => {
-                return a.team === ALIGNMENT.GOOD ? -1 : 1;
+                if (a.team !== b.team) {
+                    const order = { good: 0, evil: 1, independent: 2 };
+                    return order[a.team] - order[b.team];
+                }
+                return a.role.localeCompare(b.role);
             });
             e.preventDefault();
             document.getElementById('role-info-prompt').innerHTML = HTMLFragments.ROLE_INFO_MODAL;
@@ -168,11 +171,7 @@ export const SharedStateUtil = {
                 roleName.innerText = card.role;
                 roleQuantity.innerText = card.quantity + 'x';
 
-                if (card.team === ALIGNMENT.GOOD) {
-                    roleName.classList.add(ALIGNMENT.GOOD);
-                } else {
-                    roleName.classList.add(ALIGNMENT.EVIL);
-                }
+                roleName.classList.add(card.team);
 
                 roleNameDiv.appendChild(roleQuantity);
                 roleNameDiv.appendChild(roleName);

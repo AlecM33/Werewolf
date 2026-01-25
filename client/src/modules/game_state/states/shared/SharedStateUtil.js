@@ -172,11 +172,7 @@ export const SharedStateUtil = {
                 roleName.innerText = card.role;
                 roleQuantity.innerText = card.quantity + 'x';
 
-                if (card.team === ALIGNMENT.GOOD) {
-                    roleName.classList.add(ALIGNMENT.GOOD);
-                } else {
-                    roleName.classList.add(ALIGNMENT.EVIL);
-                }
+                roleName.classList.add(card.team);
 
                 roleNameDiv.appendChild(roleQuantity);
                 roleNameDiv.appendChild(roleName);

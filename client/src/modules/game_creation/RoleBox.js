@@ -175,10 +175,7 @@ export class RoleBox {
             defaultRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE_DEFAULT;
             defaultRole.classList.add('default-role');
             defaultRole.dataset.roleId = this.defaultRoles[i].id;
-            const alignmentClass = this.defaultRoles[i].team === ALIGNMENT.GOOD
-                ? ALIGNMENT.GOOD
-                : ALIGNMENT.EVIL;
-            defaultRole.classList.add(alignmentClass);
+            defaultRole.classList.add(this.defaultRoles[i].team);
             defaultRole.querySelector('.role-name').innerText = this.defaultRoles[i].role;
             selectEl.appendChild(defaultRole);
         }
@@ -214,8 +211,7 @@ export class RoleBox {
             customRole.innerHTML = HTMLFragments.DECK_SELECT_ROLE;
             customRole.classList.add('custom-role');
             customRole.dataset.roleId = this.customRoles[i].id;
-            const alignmentClass = this.customRoles[i].team === ALIGNMENT.GOOD ? ALIGNMENT.GOOD : ALIGNMENT.EVIL;
-            customRole.classList.add(alignmentClass);
+            customRole.classList.add(this.customRoles[i].team);
             customRole.querySelector('.role-name').innerText = this.customRoles[i].role;
             selectEl.appendChild(customRole);
         }

@@ -11,6 +11,7 @@ export const hiddenMenus =
                 <select id="role-alignment" required>
                     <option value="good">good</option>
                     <option value="evil">evil</option>
+                    <option value="independent">independent</option>
                 </select>
             </div>
             <div>

@@ -147,7 +147,8 @@ export class DeckStateManager {
             }
             const sortedDeck = this.deck.sort((a, b) => {
                 if (a.team !== b.team) {
-                    return a.team === ALIGNMENT.GOOD ? -1 : 1;
+                    const order = { good: 0, evil: 1, independent: 2 };
+                    return order[a.team] - order[b.team];
                 }
                 return a.role.localeCompare(b.role);
             });
@@ -187,11 +188,7 @@ export class DeckStateManager {
         roleEl.dataset.roleId = sortedDeck[i].id;
         roleEl.classList.add('added-role');
         roleEl.innerHTML = HTMLFragments.DECK_SELECT_ROLE_ADDED_TO_DECK;
-        if (sortedDeck[i].team === ALIGNMENT.GOOD) {
-            roleEl.classList.add(ALIGNMENT.GOOD);
-        } else {
-            roleEl.classList.add(ALIGNMENT.EVIL);
-        }
+        roleEl.classList.add(sortedDeck[i].team);
         populateRoleElementInfo(roleEl, sortedDeck, i);
         document.getElementById('deck-list').appendChild(roleEl);
         const minusOneHandler = (e) => {
@@ -237,8 +234,10 @@ export class DeckStateManager {
                 const nameEl = document.getElementById('custom-role-info-modal-name');
                 alignmentEl.classList.remove(ALIGNMENT.GOOD);
                 alignmentEl.classList.remove(ALIGNMENT.EVIL);
+                alignmentEl.classList.remove(ALIGNMENT.INDEPENDENT);
                 nameEl.classList.remove(ALIGNMENT.GOOD);
                 nameEl.classList.remove(ALIGNMENT.EVIL);
+                nameEl.classList.remove(ALIGNMENT.INDEPENDENT);
                 e.preventDefault();
                 nameEl.innerText = sortedDeck[i].role;
                 nameEl.classList.add(sortedDeck[i].team);
@@ -256,6 +255,7 @@ export class DeckStateManager {
 function populateRoleElementInfo (roleEl, sortedDeck, i) {
     roleEl.classList.remove(ALIGNMENT.GOOD);
     roleEl.classList.remove(ALIGNMENT.EVIL);
+    roleEl.classList.remove(ALIGNMENT.INDEPENDENT);
     roleEl.classList.add(sortedDeck[i].team);
     roleEl.querySelector('.role-name').innerHTML =
         `<span class="role-quantity"></span>

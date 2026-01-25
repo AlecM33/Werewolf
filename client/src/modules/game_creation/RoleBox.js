@@ -31,7 +31,8 @@ export class RoleBox {
     loadDefaultRoles = () => {
         this.defaultRoles = defaultRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === ALIGNMENT.GOOD ? -1 : 1;
+                const order = { good: 0, evil: 1, independent: 2 };
+                return order[a.team] - order[b.team];
             }
             return a.role.localeCompare(b.role);
         }).map((role) => {
@@ -202,7 +203,8 @@ export class RoleBox {
         }
         this.customRoles.sort((a, b) => {
             if (a.team !== b.team) {
-                return a.team === ALIGNMENT.GOOD ? -1 : 1;
+                const order = { good: 0, evil: 1, independent: 2 };
+                return order[a.team] - order[b.team];
             }
             return a.role.localeCompare(b.role);
         });
@@ -282,8 +284,10 @@ export class RoleBox {
                         const nameEl = document.getElementById('custom-role-info-modal-name');
                         alignmentEl.classList.remove(ALIGNMENT.GOOD);
                         alignmentEl.classList.remove(ALIGNMENT.EVIL);
+                        alignmentEl.classList.remove(ALIGNMENT.INDEPENDENT);
                         nameEl.classList.remove(ALIGNMENT.GOOD);
                         nameEl.classList.remove(ALIGNMENT.EVIL);
+                        nameEl.classList.remove(ALIGNMENT.INDEPENDENT);
                         e.preventDefault();
                         let role;
                         if (isCustom) {

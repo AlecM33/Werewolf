@@ -463,11 +463,7 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
     for (const card of game.deck) {
         const roleEl = document.createElement('div');
         roleEl.innerText = card.quantity + 'x ' + card.role;
-        if (card.team === ALIGNMENT.GOOD) {
-            roleEl.classList.add(ALIGNMENT.GOOD);
-        } else {
-            roleEl.classList.add(ALIGNMENT.EVIL);
-        }
+        roleEl.classList.add(card.team);
         div.querySelector('#roles-option').appendChild(roleEl);
     }
 

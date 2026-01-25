@@ -24,7 +24,8 @@ const LOG_LEVEL = {
 
 const ALIGNMENT = {
     GOOD: 'good',
-    EVIL: 'evil'
+    EVIL: 'evil',
+    INDEPENDENT: 'independent'
 };
 
 const REDIS_CHANNELS = {

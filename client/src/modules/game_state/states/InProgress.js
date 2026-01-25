@@ -295,6 +295,10 @@ export class InProgress {
             && ((p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
                 || p.killed)
         );
+        const teamIndependent = this.stateBucket.currentGameState.people.filter((p) => p.alignment === ALIGNMENT.INDEPENDENT
+            && ((p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
+                || p.killed)
+        );
         this.renderGroupOfPlayers(
             teamEvil,
             this.killPlayerHandlers,
@@ -311,6 +315,16 @@ export class InProgress {
             this.revealRoleHandlers,
             this.stateBucket.currentGameState.accessCode,
             ALIGNMENT.GOOD,
+            this.stateBucket.currentGameState.people.find(person =>
+                person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
+            this.socket
+        );
+        this.renderGroupOfPlayers(
+            teamIndependent,
+            this.killPlayerHandlers,
+            this.revealRoleHandlers,
+            this.stateBucket.currentGameState.accessCode,
+            ALIGNMENT.INDEPENDENT,
             this.stateBucket.currentGameState.people.find(person =>
                 person.id === this.stateBucket.currentGameState.currentModeratorId).userType,
             this.socket
@@ -460,9 +474,12 @@ function renderPlayerRole (gameState) {
     if (gameState.client.alignment === ALIGNMENT.GOOD) {
         document.getElementById('game-role').classList.add('game-role-good');
         name.classList.add('good');
-    } else {
+    } else if (gameState.client.alignment === ALIGNMENT.EVIL) {
         document.getElementById('game-role').classList.add('game-role-evil');
         name.classList.add('evil');
+    } else if (gameState.client.alignment === ALIGNMENT.INDEPENDENT) {
+        document.getElementById('game-role').classList.add('game-role-independent');
+        name.classList.add('independent');
     }
     name.setAttribute('title', gameState.client.gameRole);
     if (gameState.client.out) {

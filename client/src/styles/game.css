@@ -547,6 +547,10 @@ h1 {
     color: #e15656 !important;
 }
 
+#game-role #role-name.independent {
+    color: #d4a027 !important;
+}
+
 #role-image {
     user-select: none;
     -ms-user-select: none;

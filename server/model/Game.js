@@ -9,7 +9,8 @@ class Game {
         hasDedicatedModerator,
         originalModeratorId,
         createTime,
-        timerParams = null
+        timerParams = null,
+        hasAllKillPermission = false
     ) {
         this.accessCode = accessCode;
         this.status = status;
@@ -27,6 +28,7 @@ class Game {
         this.createTime = createTime;
         this.timerParams = timerParams;
         this.timeRemaining = null;
+        this.hasAllKillPermission = hasAllKillPermission;
     }
 }
 

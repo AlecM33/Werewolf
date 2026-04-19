@@ -899,7 +899,7 @@ canvas {
     width: 18px;
 }
 
-#game-player-list > .game-player.killed::after {
+#game-player-list > .game-player.killed:not(:has(.player-action-buttons))::after {
     content: '\01F480';
     font-size: 24px;
     margin-left: 1em;

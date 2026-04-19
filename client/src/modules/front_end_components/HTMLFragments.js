@@ -43,6 +43,16 @@ export const HTMLFragments = {
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
             </select>
+        </div>
+        <div>
+            <label for="all-kill-permission">
+                Give all players kill/reveal permission?
+                <span id="kill-permission-help" class="help-icon" title="If evil players need to kill on the very first night (AKA &quot;Night 0&quot;), and there is no dedicated moderator, enable this to give all players the ability to kill and reveal players.">?</span>
+            </label>
+            <select id="all-kill-permission">
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+            </select>
         </div>`,
     START_GAME_PROMPT:
     `<button id='edit-roles-button'>Edit Roles</button>

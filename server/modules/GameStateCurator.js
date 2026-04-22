@@ -91,8 +91,7 @@ function getGameStateBasedOnPermissions (game, person) {
                     })
                     .map((filteredPerson) => GameStateCurator.mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
-                isStartable: game.isStartable,
-                hasAllKillPermission: game.hasAllKillPermission
+                isStartable: game.isStartable
             };
         default:
             break;

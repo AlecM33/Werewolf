@@ -371,7 +371,7 @@ const Events = [
     },
     {
         id: EVENT_IDS.ASSIGN_DEDICATED_MOD,
-        authorize: (person, game) => isModeratorOrTempMod(person) || (game.hasAllKillPermission && isPlayerOrMod(person)),
+        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             const currentModerator = vars.gameManager.findPersonByField(game, 'id', game.currentModeratorId);
             const toTransferTo = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);

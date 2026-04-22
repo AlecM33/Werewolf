@@ -503,17 +503,10 @@ describe('Events', () => {
                 const result = Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD).authorize(person, game);
                 expect(result).toBeTrue();
             });
-            it('should not allow a regular player when hasAllKillPermission is false', () => {
-                game.hasAllKillPermission = false;
+            it('should not allow a regular player to assign a dedicated mod', () => {
                 const person = { userType: USER_TYPES.PLAYER };
                 const result = Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD).authorize(person, game);
                 expect(result).toBeFalse();
-            });
-            it('should allow a regular player when hasAllKillPermission is true', () => {
-                game.hasAllKillPermission = true;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD).authorize(person, game);
-                expect(result).toBeTrue();
             });
         });
         beforeEach(() => {

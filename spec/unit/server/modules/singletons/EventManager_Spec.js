@@ -50,8 +50,7 @@ describe('EventManager', () => {
     });
 
     describe('#handleEventById - authorization', () => {
-        it('should block a regular player from killing when hasAllKillPermission is false', async () => {
-            game.hasAllKillPermission = false;
+        it('should block a regular player from killing', async () => {
             await eventManager.handleEventById(
                 EVENT_IDS.KILL_PLAYER, null, game, 'socket-b', game.accessCode, { personId: 'b' }, null, false
             );
@@ -60,18 +59,7 @@ describe('EventManager', () => {
             expect(person.killed).toBeFalse();
         });
 
-        it('should allow a regular player to kill when hasAllKillPermission is true', async () => {
-            game.hasAllKillPermission = true;
-            await eventManager.handleEventById(
-                EVENT_IDS.KILL_PLAYER, null, game, 'socket-b', game.accessCode, { personId: 'b' }, null, false
-            );
-            const person = game.people.find(p => p.id === 'b');
-            expect(person.out).toBeTrue();
-            expect(person.killed).toBeTrue();
-        });
-
-        it('should allow a moderator to kill regardless of hasAllKillPermission', async () => {
-            game.hasAllKillPermission = false;
+        it('should allow a moderator to kill regardless', async () => {
             await eventManager.handleEventById(
                 EVENT_IDS.KILL_PLAYER, null, game, 'socket-a', game.accessCode, { personId: 'b' }, null, false
             );
@@ -80,8 +68,7 @@ describe('EventManager', () => {
             expect(person.killed).toBeTrue();
         });
 
-        it('should block a spectator from killing even when hasAllKillPermission is true', async () => {
-            game.hasAllKillPermission = true;
+        it('should block a spectator from killing', async () => {
             game.people.find(p => p.id === 'c').out = false;
             await eventManager.handleEventById(
                 EVENT_IDS.KILL_PLAYER, null, game, 'socket-c', game.accessCode, { personId: 'b' }, null, false

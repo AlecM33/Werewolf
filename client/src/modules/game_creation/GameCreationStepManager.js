@@ -427,20 +427,16 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
             "<div id='mod-name' class='review-option'></div>" +
         '</div>' +
         '<div>' +
+            "<label for='test-game'>Populate game with bots?</label>" +
+            "<div id='test-game' class='review-option'></div>" +
+        '</div>' +
+        '<div>' +
             "<label for='mod-option'>Moderation:</label>" +
             "<div id='mod-option' class='review-option'></div>" +
         '</div>' +
         '<div>' +
             "<label for='timer-option'>Timer:</label>" +
             "<div id='timer-option' class='review-option'></div>" +
-        '</div>' +
-        '<div>' +
-            "<label for='test-game'>Populate game with bots?</label>" +
-            "<div id='test-game' class='review-option'></div>" +
-        '</div>' +
-        '<div>' +
-            "<label for='kill-permission-option'>All players can kill/reveal?</label>" +
-            "<div id='kill-permission-option' class='review-option'></div>" +
         '</div>' +
         '<div>' +
             "<label id='roles-option-label' for='roles-option'>Game Deck:</label>" +
@@ -453,7 +449,6 @@ function renderReviewAndCreateStep (containerId, stepNumber, game, deckManager) 
         ? "Dedicated Moderator - don't deal me a card."
         : 'Temporary Moderator - deal me into the game.';
 
-    div.querySelector('#kill-permission-option').innerText = game.hasAllKillPermission ? 'Yes' : 'No';
 
     if (game.hasTimer) {
         const formattedHours = game.timerParams.hours !== null

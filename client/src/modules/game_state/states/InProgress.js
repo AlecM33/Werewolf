@@ -390,15 +390,7 @@ export class InProgress {
             } else if (!player.out && moderatorType) {
                 killPlayerHandlers[player.id] = () => {
                     Confirmation('Kill \'' + player.name + '\'?', () => {
-                        const gameState = this.stateBucket.currentGameState;
-                        const hasTempMod = gameState.people.some(
-                            p => p.id === gameState.currentModeratorId
-                                && !p.out
-                                && (p.userType === USER_TYPES.TEMPORARY_MODERATOR || p.userType === USER_TYPES.PLAYER)
-                        );
-                        const noOneKilledYet = !gameState.people.some(p => p.killed);
-                        if (gameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
-                            || (gameState.hasAllKillPermission && hasTempMod && noOneKilledYet)) {
+                        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                             socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.ASSIGN_DEDICATED_MOD, accessCode, { personId: player.id });
                         } else {
                             socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });

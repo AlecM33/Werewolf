@@ -90,8 +90,7 @@ class GameManager {
                 req.hasDedicatedModerator,
                 moderator.id,
                 new Date().toJSON(),
-                req.timerParams,
-                req.hasAllKillPermission
+                req.timerParams
             );
             newGame.people = initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame, newGame.gameSize);
             newGame.isStartable = newGame.people.filter(person => person.userType === USER_TYPES.PLAYER

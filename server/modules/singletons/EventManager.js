@@ -193,15 +193,6 @@ class EventManager {
             timerEventSubtype: timerEventSubtype
         };
         if (event) {
-            if (event.authorize) {
-                const requestingPerson = requestingSocketId
-                    ? this.gameManager.findPersonByField(game, 'socketId', requestingSocketId)
-                    : null;
-                if (!syncOnly && requestingPerson && !event.authorize(requestingPerson, game)) {
-                    this.logger.warn('Unauthorized event ' + eventId + ' from ' + requestingPerson?.userType);
-                    return;
-                }
-            }
             if (!syncOnly || eventId === EVENT_IDS.RESTART_GAME) {
                 await event.stateChange(game, socketArgs, additionalVars);
             }

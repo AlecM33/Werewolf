@@ -254,18 +254,6 @@ describe('Events', () => {
     });
 
     describe(EVENT_IDS.START_GAME, () => {
-        describe('authorize', () => {
-            it('should allow a moderator to start the game', () => {
-                const person = { userType: USER_TYPES.MODERATOR };
-                const result = Events.find((e) => e.id === EVENT_IDS.START_GAME).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-            it('should not allow a regular player to start the game', () => {
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.START_GAME).authorize(person, game);
-                expect(result).toBeFalse();
-            });
-        });
         describe('stateChange', () => {
             it('should start the game', async () => {
                 game.isStartable = true;
@@ -309,30 +297,6 @@ describe('Events', () => {
         });
     });
     describe(EVENT_IDS.KILL_PLAYER, () => {
-        describe('authorize', () => {
-            it('should allow a moderator to kill a player', () => {
-                const person = { userType: USER_TYPES.MODERATOR };
-                const result = Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-            it('should allow a temporary moderator to kill a player', () => {
-                const person = { userType: USER_TYPES.TEMPORARY_MODERATOR };
-                const result = Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-            it('should not allow a regular player to kill when hasAllKillPermission is false', () => {
-                game.hasAllKillPermission = false;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER).authorize(person, game);
-                expect(result).toBeFalse();
-            });
-            it('should allow a regular player to kill when hasAllKillPermission is true', () => {
-                game.hasAllKillPermission = true;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-        });
         describe('stateChange', () => {
             it('should kill the indicated player', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER)
@@ -364,25 +328,6 @@ describe('Events', () => {
         });
     });
     describe(EVENT_IDS.REVEAL_PLAYER, () => {
-        describe('authorize', () => {
-            it('should allow a moderator to reveal a player', () => {
-                const person = { userType: USER_TYPES.MODERATOR };
-                const result = Events.find((e) => e.id === EVENT_IDS.REVEAL_PLAYER).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-            it('should not allow a regular player to reveal when hasAllKillPermission is false', () => {
-                game.hasAllKillPermission = false;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.REVEAL_PLAYER).authorize(person, game);
-                expect(result).toBeFalse();
-            });
-            it('should allow a regular player to reveal when hasAllKillPermission is true', () => {
-                game.hasAllKillPermission = true;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.REVEAL_PLAYER).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-        });
         describe('stateChange', () => {
             it('should reveal the indicated player', async () => {
                 await Events.find((e) => e.id === EVENT_IDS.REVEAL_PLAYER)
@@ -497,25 +442,6 @@ describe('Events', () => {
         });
     });
     describe(EVENT_IDS.ASSIGN_DEDICATED_MOD, () => {
-        describe('authorize', () => {
-            it('should allow a temporary moderator to assign a dedicated mod', () => {
-                const person = { userType: USER_TYPES.TEMPORARY_MODERATOR };
-                const result = Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-            it('should not allow a regular player when hasAllKillPermission is false', () => {
-                game.hasAllKillPermission = false;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD).authorize(person, game);
-                expect(result).toBeFalse();
-            });
-            it('should allow a regular player when hasAllKillPermission is true', () => {
-                game.hasAllKillPermission = true;
-                const person = { userType: USER_TYPES.PLAYER };
-                const result = Events.find((e) => e.id === EVENT_IDS.ASSIGN_DEDICATED_MOD).authorize(person, game);
-                expect(result).toBeTrue();
-            });
-        });
         beforeEach(() => {
             game.people = [
                 { id: 'a', gameRole: 'Villager', alignment: 'good', assigned: true, out: false, killed: false, userType: USER_TYPES.TEMPORARY_MODERATOR },

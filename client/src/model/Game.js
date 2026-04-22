@@ -5,8 +5,7 @@ export class Game {
         hasDedicatedModerator,
         moderatorName,
         timerParams = null,
-        isTestGame = false,
-        hasAllKillPermission = false
+        isTestGame = false
     ) {
         this.deck = deck;
         this.hasTimer = hasTimer;
@@ -14,6 +13,5 @@ export class Game {
         this.hasDedicatedModerator = hasDedicatedModerator;
         this.moderatorName = moderatorName;
         this.isTestGame = isTestGame;
-        this.hasAllKillPermission = hasAllKillPermission;
     }
 }

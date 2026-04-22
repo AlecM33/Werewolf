@@ -112,7 +112,7 @@ export class InProgress {
     }
 
     renderPlayersWithNoRoleInformationUnlessRevealed (tempMod = false) {
-        if (tempMod || this.stateBucket.currentGameState.hasAllKillPermission) {
+        if (tempMod) {
             this.removePlayerListEventListeners();
         }
         document.querySelectorAll('.game-player').forEach((el) => el.remove());
@@ -122,7 +122,7 @@ export class InProgress {
         const modType = tempMod
             ? this.stateBucket.currentGameState.people.find(person =>
                 person.id === this.stateBucket.currentGameState.currentModeratorId).userType
-            : (this.stateBucket.currentGameState.hasAllKillPermission ? USER_TYPES.TEMPORARY_MODERATOR : null);
+            : null;
         this.renderGroupOfPlayers(
             this.stateBucket.currentGameState.people.filter(
                 p => (p.userType !== USER_TYPES.MODERATOR && p.userType !== USER_TYPES.SPECTATOR)
@@ -390,15 +390,7 @@ export class InProgress {
             } else if (!player.out && moderatorType) {
                 killPlayerHandlers[player.id] = () => {
                     Confirmation('Kill \'' + player.name + '\'?', () => {
-                        const gameState = this.stateBucket.currentGameState;
-                        const hasTempMod = gameState.people.some(
-                            p => p.id === gameState.currentModeratorId
-                                && !p.out
-                                && (p.userType === USER_TYPES.TEMPORARY_MODERATOR || p.userType === USER_TYPES.PLAYER)
-                        );
-                        const noOneKilledYet = !gameState.people.some(p => p.killed);
-                        if (gameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR
-                            || (gameState.hasAllKillPermission && hasTempMod && noOneKilledYet)) {
+                        if (this.stateBucket.currentGameState.client.userType === USER_TYPES.TEMPORARY_MODERATOR) {
                             socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.ASSIGN_DEDICATED_MOD, accessCode, { personId: player.id });
                         } else {
                             socket.emit(SOCKET_EVENTS.IN_GAME_MESSAGE, EVENT_IDS.KILL_PLAYER, accessCode, { personId: player.id });

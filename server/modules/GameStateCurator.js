@@ -71,8 +71,7 @@ function getGameStateBasedOnPermissions (game, person) {
                 gameSize: game.gameSize,
                 people: GameStateCurator.mapPeopleForModerator(game.people, client),
                 timerParams: game.timerParams,
-                isStartable: game.isStartable,
-                hasAllKillPermission: game.hasAllKillPermission
+                isStartable: game.isStartable
             };
         case USER_TYPES.TEMPORARY_MODERATOR:
         case USER_TYPES.SPECTATOR:
@@ -91,8 +90,7 @@ function getGameStateBasedOnPermissions (game, person) {
                     })
                     .map((filteredPerson) => GameStateCurator.mapPerson(filteredPerson)),
                 timerParams: game.timerParams,
-                isStartable: game.isStartable,
-                hasAllKillPermission: game.hasAllKillPermission
+                isStartable: game.isStartable
             };
         default:
             break;

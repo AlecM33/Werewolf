@@ -66,8 +66,7 @@ class GameManager {
                 gameParams.timerParams,
                 gameParams.moderatorName,
                 gameParams.hasDedicatedModerator,
-                gameParams.isTestGame,
-                gameParams.hasAllKillPermission
+                gameParams.isTestGame
             );
             const newAccessCode = await this.generateAccessCode(PRIMITIVES.ACCESS_CODE_CHAR_POOL);
             if (newAccessCode === null) {
@@ -90,8 +89,7 @@ class GameManager {
                 req.hasDedicatedModerator,
                 moderator.id,
                 new Date().toJSON(),
-                req.timerParams,
-                req.hasAllKillPermission
+                req.timerParams
             );
             newGame.people = initializePeopleForGame(req.deck, moderator, this.shuffle, req.isTestGame, newGame.gameSize);
             newGame.isStartable = newGame.people.filter(person => person.userType === USER_TYPES.PLAYER

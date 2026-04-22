@@ -91,17 +91,6 @@ async function handleTimerCommand (timerEventSubtype, game, socketId, vars) {
     }
 }
 
-const MODERATOR_TYPES = [USER_TYPES.MODERATOR, USER_TYPES.TEMPORARY_MODERATOR];
-const PLAYER_TYPES = [USER_TYPES.PLAYER, USER_TYPES.KILLED_PLAYER, USER_TYPES.TEMPORARY_MODERATOR];
-
-function isModeratorOrTempMod (person) {
-    return MODERATOR_TYPES.includes(person.userType);
-}
-
-function isPlayerOrMod (person) {
-    return MODERATOR_TYPES.includes(person.userType) || PLAYER_TYPES.includes(person.userType);
-}
-
 const Events = [
     {
         id: EVENT_IDS.PLAYER_JOINED,
@@ -119,7 +108,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.KICK_PERSON,
-        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             const toBeClearedIndex = game.people.findIndex(
                 (person) => person.id === socketArgs.personId && person.assigned === true
@@ -194,7 +182,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.UPDATE_GAME_ROLES,
-        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             if (GameCreationRequest.deckIsValid(socketArgs.deck)) {
                 game.deck = socketArgs.deck;
@@ -260,7 +247,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.START_GAME,
-        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             if (game.isStartable) {
                 game.status = STATUS.IN_PROGRESS;
@@ -280,7 +266,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.KILL_PLAYER,
-        authorize: (person, game) => isModeratorOrTempMod(person) || (game.hasAllKillPermission && isPlayerOrMod(person)),
         stateChange: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person && !person.out) {
@@ -300,7 +285,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.REVEAL_PLAYER,
-        authorize: (person, game) => isModeratorOrTempMod(person) || (game.hasAllKillPermission && isPlayerOrMod(person)),
         stateChange: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person && !person.revealed) {
@@ -323,7 +307,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.END_GAME,
-        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             game.status = STATUS.ENDED;
             if (game.hasTimer && vars.gameManager.timers[game.accessCode]) {
@@ -345,7 +328,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.TRANSFER_MODERATOR,
-        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             const currentModerator = vars.gameManager.findPersonByField(game, 'id', game.currentModeratorId);
             const toTransferTo = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);
@@ -371,7 +353,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.ASSIGN_DEDICATED_MOD,
-        authorize: (person, game) => isModeratorOrTempMod(person) || (game.hasAllKillPermission && isPlayerOrMod(person)),
         stateChange: async (game, socketArgs, vars) => {
             const currentModerator = vars.gameManager.findPersonByField(game, 'id', game.currentModeratorId);
             const toTransferTo = vars.gameManager.findPersonByField(game, 'id', socketArgs.personId);
@@ -457,7 +438,6 @@ const Events = [
     },
     {
         id: EVENT_IDS.UPDATE_GAME_TIMER,
-        authorize: (person) => isModeratorOrTempMod(person),
         stateChange: async (game, socketArgs, vars) => {
             if (GameCreationRequest.timerParamsAreValid(socketArgs.hasTimer, socketArgs.timerParams)) {
                 game.hasTimer = socketArgs.hasTimer;

@@ -101,34 +101,4 @@ describe('GameCreationRequest', () => {
             expect(GameCreationRequest.deckIsValid(deck)).toBe(false);
         });
     });
-
-    describe('#validate', () => {
-        const validParams = {
-            deck: [{ role: 'Villager', team: ALIGNMENT.GOOD, description: 'A villager', custom: false, quantity: 1 }],
-            hasTimer: false,
-            timerParams: null,
-            moderatorName: 'TestMod',
-            hasDedicatedModerator: true,
-            isTestGame: false,
-            hasAllKillPermission: false
-        };
-
-        it('should accept valid game params with hasAllKillPermission set to false', async () => {
-            await expectAsync(GameCreationRequest.validate(validParams)).toBeResolved();
-        });
-
-        it('should accept valid game params with hasAllKillPermission set to true', async () => {
-            await expectAsync(GameCreationRequest.validate({ ...validParams, hasAllKillPermission: true })).toBeResolved();
-        });
-
-        it('should reject game params when hasAllKillPermission is missing', async () => {
-            const params = { ...validParams };
-            delete params.hasAllKillPermission;
-            await expectAsync(GameCreationRequest.validate(params)).toBeRejected();
-        });
-
-        it('should reject game params when hasAllKillPermission is not a boolean', async () => {
-            await expectAsync(GameCreationRequest.validate({ ...validParams, hasAllKillPermission: 'yes' })).toBeRejected();
-        });
-    });
 });

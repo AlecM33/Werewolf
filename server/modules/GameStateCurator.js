@@ -14,17 +14,10 @@ const GameStateCurator = {
             .filter((person) => {
                 return person.assigned === true || (person.userType === USER_TYPES.SPECTATOR || person.userType === USER_TYPES.MODERATOR);
             })
-            .map((person) => ({
-                name: person.name,
-                id: person.id,
-                userType: person.userType,
-                gameRole: person.gameRole,
-                gameRoleDescription: person.gameRoleDescription,
-                alignment: person.alignment,
-                out: person.out,
-                killed: person.killed,
-                revealed: person.revealed
-            }));
+            .map(toModeratorPersonView);
+    },
+    mapPersonForModerator: (person) => {
+        return toModeratorPersonView(person);
     },
     mapPerson: (person) => {
         if (person.revealed) {
@@ -95,6 +88,20 @@ function getGameStateBasedOnPermissions (game, person) {
         default:
             break;
     }
+}
+
+function toModeratorPersonView (person) {
+    return {
+        name: person.name,
+        id: person.id,
+        userType: person.userType,
+        gameRole: person.gameRole,
+        gameRoleDescription: person.gameRoleDescription,
+        alignment: person.alignment,
+        out: person.out,
+        killed: person.killed,
+        revealed: person.revealed
+    };
 }
 
 module.exports = GameStateCurator;

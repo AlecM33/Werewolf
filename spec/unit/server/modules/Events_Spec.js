@@ -316,14 +316,44 @@ describe('Events', () => {
             });
         });
         describe('communicate', () => {
-            it('should communicate the killed player to the room', async () => {
+            it('should communicate the killed player to the room without sensitive fields', async () => {
+                const person = game.people.find(p => p.id === 'b');
                 await Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER)
                     .communicate(game, { personId: 'b' }, { gameManager: gameManager });
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
                 expect(namespace.in().emit).toHaveBeenCalledWith(
                     EVENT_IDS.KILL_PLAYER,
-                    game.people.find(p => p.id === 'b')
+                    GameStateCurator.mapPerson(person)
                 );
+                const emittedPerson = namespace.in().emit.calls.mostRecent().args[1];
+                expect(emittedPerson.cookie).toBeUndefined();
+                expect(emittedPerson.socketId).toBeUndefined();
+            });
+            it('should send full role/alignment data to the moderator socket, and limited data to everyone else', async () => {
+                const person = game.people.find(p => p.id === 'b');
+                const moderator = game.people.find(p => p.id === 'a');
+                moderator.socketId = 'mod-socket-id';
+                const socketToObj = { emit: () => {} };
+                spyOn(socketToObj, 'emit').and.callThrough();
+                const modSocket = { to: () => socketToObj, emit: () => {} };
+                spyOn(modSocket, 'to').and.callThrough();
+                namespace.sockets.set('mod-socket-id', modSocket);
+                spyOn(GameStateCurator, 'mapPersonForModerator').and.callThrough();
+                await Events.find((e) => e.id === EVENT_IDS.KILL_PLAYER)
+                    .communicate(game, { personId: 'b' }, { gameManager: gameManager });
+                // moderator gets full data with alignment
+                expect(namespace.to).toHaveBeenCalledWith('mod-socket-id');
+                expect(namespace.to().emit).toHaveBeenCalledWith(
+                    EVENT_IDS.KILL_PLAYER,
+                    GameStateCurator.mapPersonForModerator(person)
+                );
+                const modEmitted = namespace.to().emit.calls.mostRecent().args[1];
+                expect(modEmitted.alignment).toBeDefined();
+                // everyone else gets limited data
+                expect(modSocket.to).toHaveBeenCalledWith(game.accessCode);
+                expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(person));
+                const otherEmitted = socketToObj.emit.calls.mostRecent().args[1];
+                expect(otherEmitted.alignment).toBeUndefined();
             });
         });
     });
@@ -494,7 +524,7 @@ describe('Events', () => {
                 expect(namespace.to().emit).toHaveBeenCalledWith(EVENT_IDS.SYNC_GAME_STATE);
                 // verify the "kill player" event is sent to everyone but the sender
                 expect(mockSocket.to).toHaveBeenCalledWith(game.accessCode);
-                expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, game.people.find(p => p.id === 'a'));
+                expect(socketToObj.emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(game.people.find(p => p.id === 'a')));
             });
             it('should not communicate to the current or previous mod if their sockets are not found', async () => {
                 game.currentModeratorId = 'a';
@@ -522,7 +552,7 @@ describe('Events', () => {
                 expect(namespace.to().emit).not.toHaveBeenCalled();
                 // verify the "kill player" event is sent to everyone in the room (as opposed to everyone but the sender)
                 expect(namespace.in).toHaveBeenCalledWith(game.accessCode);
-                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, game.people.find(p => p.id === 'a'));
+                expect(namespace.in().emit).toHaveBeenCalledWith(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(game.people.find(p => p.id === 'a')));
             });
         });
     });

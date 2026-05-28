@@ -289,7 +289,17 @@ const Events = [
         communicate: async (game, socketArgs, vars) => {
             const person = game.people.find((person) => person.id === socketArgs.personId);
             if (person) {
-                vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, person);
+                const moderator = vars.gameManager.findPersonByField(game, 'id', game.currentModeratorId);
+                const moderatorSocket = vars.gameManager.namespace.sockets.get(moderator?.socketId);
+                if (moderator && moderatorSocket) {
+                    vars.gameManager.namespace.to(moderator.socketId).emit(
+                        EVENT_IDS.KILL_PLAYER,
+                        GameStateCurator.mapPersonForModerator(person)
+                    );
+                    moderatorSocket.to(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(person));
+                } else {
+                    vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(person));
+                }
             }
         }
     },
@@ -387,9 +397,9 @@ const Events = [
             const moderatorSocket = vars.gameManager.namespace.sockets.get(moderator?.socketId);
             if (moderator && moderatorSocket) {
                 vars.gameManager.namespace.to(moderator.socketId).emit(EVENT_IDS.SYNC_GAME_STATE);
-                moderatorSocket.to(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, moderator);
+                moderatorSocket.to(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(moderator));
             } else {
-                vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, moderator);
+                vars.gameManager.namespace.in(game.accessCode).emit(EVENT_IDS.KILL_PLAYER, GameStateCurator.mapPerson(moderator));
             }
             const previousModerator = vars.gameManager.findPersonByField(game, 'id', game.previousModeratorId);
             if (previousModerator && previousModerator.id !== moderator.id && vars.gameManager.namespace.sockets.get(previousModerator.socketId)) {

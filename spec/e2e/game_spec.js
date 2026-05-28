@@ -262,11 +262,14 @@ describe('game page', () => {
             );
             mockSocket.eventHandlers.killPlayer({
                 id: 'pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW',
+                name: 'Andrea',
                 userType: USER_TYPES.KILLED_PLAYER,
+                gameRole: 'Villager',
+                gameRoleDescription: 'During the day, find the wolves and kill them.',
+                alignment: 'good',
                 out: true,
                 killed: true,
-                revealed: false,
-                alignment: 'good'
+                revealed: false
             });
             expect(document.querySelector('div[data-pointer="pTtVXDJaxtXcrlbG8B43Wom67snoeO24RNEkO6eB2BaIftTdvpnfe1QR65DVj9A6I3VOoKZkYQW"].game-player.killed')
             ).not.toBeNull();

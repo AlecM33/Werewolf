@@ -1,15 +1,15 @@
-# fly.toml app configuration file generated for app-wandering-brook-316 on 2026-06-02T00:08:06Z
+# fly.toml app configuration file generated for werewolf-sgzeag on 2026-06-02T00:12:33Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'app-wandering-brook-316'
+app = 'werewolf-sgzeag'
 primary_region = 'iad'
 
 [build]
 
 [http_service]
-  internal_port = 8080
+  internal_port = 3000
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true

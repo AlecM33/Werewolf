@@ -7,6 +7,7 @@ body {
     align-items: center;
 }
 
+
 button#home-create-button {
     padding: 20px;
 }
@@ -104,8 +105,7 @@ a button {
 
 h3 {
     font-size: 20px;
-    margin-bottom: 1em;
-    padding: 1em;
+    padding: 0.5em;
     max-width: 23em;
     font-family: 'signika-negative', sans-serif;
 }
@@ -124,6 +124,10 @@ h3 a {
     cursor: pointer;
     font-family: 'signika-negative', sans-serif;
     width: fit-content;
+}
+
+#donate-text {
+    margin: 0 0 0.5em 0;
 }
 
 h3 a:hover {
@@ -180,12 +184,18 @@ label[for="room-code"], label[for="player-name"] {
         padding: 15px;
     }
 
+
     img[src='../images/new-logo.png'], #new-logo-container {
         margin: 1em 0 0 0;
     }
 
     #join-container > label {
         font-size: 26px;
+    }
+
+    h3 {
+        font-size: 16px;
+        padding: 0.5em;
     }
 
     #room-code {

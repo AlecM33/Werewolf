@@ -452,6 +452,25 @@ input {
     color: gray;
 }
 
+#navbar-donate {
+    background-color: rgba(180, 100, 20, 0.25);
+    border: 1px solid rgba(210, 140, 50, 0.6);
+    border-radius: 5px;
+    color: #f0c070 !important;
+    font-family: 'signika-negative', sans-serif;
+    font-size: 15px;
+    padding: 5px 10px;
+    text-decoration: none !important;
+    white-space: nowrap;
+    cursor: pointer;
+    margin: 1em 1em 1em 2em !important;
+}
+
+#navbar-donate:hover {
+    background-color: rgba(180, 100, 20, 0.42) !important;
+    color: #f0c070 !important;
+}
+
 .overlay {
     position: fixed;
     background-size: cover;
@@ -498,6 +517,12 @@ input {
         position: relative;
     }
 
+    #navbar-donate {
+        z-index: 52000;
+        position: relative;
+        margin-left: 8px;
+    }
+
     #desktop-menu {
         display: none;
     }
@@ -527,6 +552,12 @@ input {
     #desktop-links {
         display: flex;
         align-items: center;
+    }
+
+    #navbar-donate {
+        margin-left: auto;
+        order: 99;
+        margin-right: 1em;
     }
 }
 

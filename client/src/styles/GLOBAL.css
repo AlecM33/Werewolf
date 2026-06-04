@@ -423,7 +423,7 @@ input {
 
 #mobile-links a:nth-child(1) {
     width: 80px;
-    margin: 0 auto 3em auto !important;
+    margin: 1em auto 2em auto !important;
     display: flex;
 }
 
@@ -518,7 +518,7 @@ input {
     }
 
     #navbar-donate {
-        z-index: 52000;
+        z-index: 51000;
         position: relative;
         margin-left: 8px;
     }

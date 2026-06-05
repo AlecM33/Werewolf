@@ -136,6 +136,7 @@ const ServerBootstrapper = {
         app.use('/dist', (req, res, next) => {
             if (req.url.includes('.js.gz')) {
                 res.set('Content-Encoding', 'gzip');
+                res.set('Content-Type', 'application/javascript');
             }
             next();
         });

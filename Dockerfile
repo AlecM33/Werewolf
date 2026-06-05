@@ -1,20 +1,20 @@
-# Use the official lightweight Node.js 14 image.
-# https://hub.docker.com/_/node
-FROM node:20-slim
+FROM node:20-slim AS build
 
-# Create and change to the app directory.
 WORKDIR /usr/src/app
 
-# Copy application dependency manifests to the container image.
-# A wildcard is used to ensure both package.json AND package-lock.json are copied.
-# Copying this separately prevents re-running npm install on every code change.
 COPY package*.json ./
+RUN npm install
 
-# Install production dependencies.
-RUN npm install --only=production
-
-# Copy local code to the container image.
 COPY . ./
+RUN npm run bundle
 
-# Run the web service on container startup.
-CMD [ "npm", "start" ]
+FROM node:20-slim
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install --omit=dev
+
+COPY --from=build /usr/src/app ./
+
+CMD ["npm", "start"]
